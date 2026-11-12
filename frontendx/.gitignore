@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+.env.local
+.review/
+*.log
+.cache/
+.task-cache/
+.impeccable/review/

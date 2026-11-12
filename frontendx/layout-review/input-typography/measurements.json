@@ -1,0 +1,1768 @@
+[
+  {
+    "name": "booking",
+    "width": 1440,
+    "docWidth": 1440,
+    "controls": [
+      {
+        "id": "",
+        "type": "text",
+        "font": 13.12,
+        "left": 309,
+        "right": 1070.546875,
+        "container": 1116
+      },
+      {
+        "id": "booking-sort",
+        "type": "select-one",
+        "font": 12.48,
+        "left": 1085.546875,
+        "right": 1290.546875,
+        "container": 1116
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "booking",
+    "width": 1150,
+    "docWidth": 1150,
+    "controls": [
+      {
+        "id": "booking-status",
+        "type": "select-one",
+        "font": 16,
+        "left": 265,
+        "right": 1105,
+        "container": 880
+      },
+      {
+        "id": "",
+        "type": "text",
+        "font": 16,
+        "left": 267,
+        "right": 1103,
+        "container": 880
+      },
+      {
+        "id": "booking-sort",
+        "type": "select-one",
+        "font": 16,
+        "left": 267,
+        "right": 1012.546875,
+        "container": 880
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "booking",
+    "width": 1000,
+    "docWidth": 1000,
+    "controls": [
+      {
+        "id": "booking-status",
+        "type": "select-one",
+        "font": 16,
+        "left": 265,
+        "right": 955,
+        "container": 730
+      },
+      {
+        "id": "",
+        "type": "text",
+        "font": 16,
+        "left": 267,
+        "right": 953,
+        "container": 730
+      },
+      {
+        "id": "booking-sort",
+        "type": "select-one",
+        "font": 16,
+        "left": 267,
+        "right": 862.546875,
+        "container": 730
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "booking",
+    "width": 768,
+    "docWidth": 768,
+    "controls": [
+      {
+        "id": "booking-status",
+        "type": "select-one",
+        "font": 16,
+        "left": 265,
+        "right": 723,
+        "container": 498
+      },
+      {
+        "id": "",
+        "type": "text",
+        "font": 16,
+        "left": 267,
+        "right": 721,
+        "container": 498
+      },
+      {
+        "id": "booking-sort",
+        "type": "select-one",
+        "font": 16,
+        "left": 267,
+        "right": 630.546875,
+        "container": 498
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "booking",
+    "width": 390,
+    "docWidth": 390,
+    "controls": [
+      {
+        "id": "booking-status",
+        "type": "select-one",
+        "font": 16,
+        "left": 37,
+        "right": 353,
+        "container": 356
+      },
+      {
+        "id": "",
+        "type": "text",
+        "font": 16,
+        "left": 39,
+        "right": 351,
+        "container": 356
+      },
+      {
+        "id": "booking-sort",
+        "type": "select-one",
+        "font": 16,
+        "left": 39,
+        "right": 260.546875,
+        "container": 356
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "booking",
+    "width": 320,
+    "docWidth": 320,
+    "controls": [
+      {
+        "id": "booking-status",
+        "type": "select-one",
+        "font": 16,
+        "left": 37,
+        "right": 283,
+        "container": 286
+      },
+      {
+        "id": "",
+        "type": "text",
+        "font": 16,
+        "left": 39,
+        "right": 281,
+        "container": 286
+      },
+      {
+        "id": "booking-sort",
+        "type": "select-one",
+        "font": 16,
+        "left": 39,
+        "right": 281,
+        "container": 286
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "today",
+    "width": 1440,
+    "docWidth": 1440,
+    "controls": [
+      {
+        "id": "",
+        "type": "text",
+        "font": 13.12,
+        "left": 309,
+        "right": 1161,
+        "container": 1116
+      },
+      {
+        "id": "booking-sort",
+        "type": "select-one",
+        "font": 12.48,
+        "left": 1176,
+        "right": 1381,
+        "container": 1116
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "today",
+    "width": 1150,
+    "docWidth": 1150,
+    "controls": [
+      {
+        "id": "booking-status",
+        "type": "select-one",
+        "font": 16,
+        "left": 265,
+        "right": 1105,
+        "container": 880
+      },
+      {
+        "id": "",
+        "type": "text",
+        "font": 16,
+        "left": 267,
+        "right": 1103,
+        "container": 880
+      },
+      {
+        "id": "booking-sort",
+        "type": "select-one",
+        "font": 16,
+        "left": 267,
+        "right": 1103,
+        "container": 880
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "today",
+    "width": 1000,
+    "docWidth": 1000,
+    "controls": [
+      {
+        "id": "booking-status",
+        "type": "select-one",
+        "font": 16,
+        "left": 265,
+        "right": 955,
+        "container": 730
+      },
+      {
+        "id": "",
+        "type": "text",
+        "font": 16,
+        "left": 267,
+        "right": 953,
+        "container": 730
+      },
+      {
+        "id": "booking-sort",
+        "type": "select-one",
+        "font": 16,
+        "left": 267,
+        "right": 953,
+        "container": 730
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "today",
+    "width": 768,
+    "docWidth": 768,
+    "controls": [
+      {
+        "id": "booking-status",
+        "type": "select-one",
+        "font": 16,
+        "left": 265,
+        "right": 723,
+        "container": 498
+      },
+      {
+        "id": "",
+        "type": "text",
+        "font": 16,
+        "left": 267,
+        "right": 721,
+        "container": 498
+      },
+      {
+        "id": "booking-sort",
+        "type": "select-one",
+        "font": 16,
+        "left": 267,
+        "right": 721,
+        "container": 498
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "today",
+    "width": 390,
+    "docWidth": 390,
+    "controls": [
+      {
+        "id": "booking-status",
+        "type": "select-one",
+        "font": 16,
+        "left": 37,
+        "right": 353,
+        "container": 356
+      },
+      {
+        "id": "",
+        "type": "text",
+        "font": 16,
+        "left": 39,
+        "right": 351,
+        "container": 356
+      },
+      {
+        "id": "booking-sort",
+        "type": "select-one",
+        "font": 16,
+        "left": 39,
+        "right": 351,
+        "container": 356
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "today",
+    "width": 320,
+    "docWidth": 320,
+    "controls": [
+      {
+        "id": "booking-status",
+        "type": "select-one",
+        "font": 16,
+        "left": 37,
+        "right": 283,
+        "container": 286
+      },
+      {
+        "id": "",
+        "type": "text",
+        "font": 16,
+        "left": 39,
+        "right": 281,
+        "container": 286
+      },
+      {
+        "id": "booking-sort",
+        "type": "select-one",
+        "font": 16,
+        "left": 39,
+        "right": 281,
+        "container": 286
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "employees",
+    "width": 1440,
+    "docWidth": 1440,
+    "controls": [
+      {
+        "id": "employee-search",
+        "type": "search",
+        "font": 15,
+        "left": 1017,
+        "right": 1377
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "employees",
+    "width": 1150,
+    "docWidth": 1150,
+    "controls": [
+      {
+        "id": "employee-search",
+        "type": "search",
+        "font": 15,
+        "left": 739,
+        "right": 1099
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "employees",
+    "width": 1000,
+    "docWidth": 1000,
+    "controls": [
+      {
+        "id": "employee-search",
+        "type": "search",
+        "font": 16,
+        "left": 271,
+        "right": 949
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "employees",
+    "width": 768,
+    "docWidth": 768,
+    "controls": [
+      {
+        "id": "employee-search",
+        "type": "search",
+        "font": 16,
+        "left": 271,
+        "right": 717
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "employees",
+    "width": 390,
+    "docWidth": 390,
+    "controls": [
+      {
+        "id": "employee-search",
+        "type": "search",
+        "font": 16,
+        "left": 37,
+        "right": 353
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "employees",
+    "width": 320,
+    "docWidth": 320,
+    "controls": [
+      {
+        "id": "employee-search",
+        "type": "search",
+        "font": 16,
+        "left": 37,
+        "right": 283
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "analytics",
+    "width": 1440,
+    "docWidth": 1440,
+    "controls": [
+      {
+        "id": "report-from",
+        "type": "date",
+        "font": 15,
+        "left": 311,
+        "right": 604.953125
+      },
+      {
+        "id": "report-to",
+        "type": "date",
+        "font": 15,
+        "left": 620.953125,
+        "right": 914.90625
+      },
+      {
+        "id": "report-status",
+        "type": "select-one",
+        "font": 15,
+        "left": 930.90625,
+        "right": 1224.859375
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "analytics",
+    "width": 1150,
+    "docWidth": 1150,
+    "controls": [
+      {
+        "id": "report-from",
+        "type": "date",
+        "font": 15,
+        "left": 269,
+        "right": 484.28125
+      },
+      {
+        "id": "report-to",
+        "type": "date",
+        "font": 15,
+        "left": 500.28125,
+        "right": 715.5625
+      },
+      {
+        "id": "report-status",
+        "type": "select-one",
+        "font": 15,
+        "left": 731.5625,
+        "right": 946.84375
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "analytics",
+    "width": 1000,
+    "docWidth": 1000,
+    "controls": [
+      {
+        "id": "report-from",
+        "type": "date",
+        "font": 16,
+        "left": 269,
+        "right": 602
+      },
+      {
+        "id": "report-to",
+        "type": "date",
+        "font": 16,
+        "left": 618,
+        "right": 951
+      },
+      {
+        "id": "report-status",
+        "type": "select-one",
+        "font": 16,
+        "left": 269,
+        "right": 602
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "analytics",
+    "width": 768,
+    "docWidth": 768,
+    "controls": [
+      {
+        "id": "report-from",
+        "type": "date",
+        "font": 16,
+        "left": 269,
+        "right": 486
+      },
+      {
+        "id": "report-to",
+        "type": "date",
+        "font": 16,
+        "left": 502,
+        "right": 719
+      },
+      {
+        "id": "report-status",
+        "type": "select-one",
+        "font": 16,
+        "left": 269,
+        "right": 486
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "analytics",
+    "width": 390,
+    "docWidth": 390,
+    "controls": [
+      {
+        "id": "report-from",
+        "type": "date",
+        "font": 16,
+        "left": 37,
+        "right": 353
+      },
+      {
+        "id": "report-to",
+        "type": "date",
+        "font": 16,
+        "left": 37,
+        "right": 353
+      },
+      {
+        "id": "report-status",
+        "type": "select-one",
+        "font": 16,
+        "left": 37,
+        "right": 353
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "analytics",
+    "width": 320,
+    "docWidth": 320,
+    "controls": [
+      {
+        "id": "report-from",
+        "type": "date",
+        "font": 16,
+        "left": 37,
+        "right": 283
+      },
+      {
+        "id": "report-to",
+        "type": "date",
+        "font": 16,
+        "left": 37,
+        "right": 283
+      },
+      {
+        "id": "report-status",
+        "type": "select-one",
+        "font": 16,
+        "left": 37,
+        "right": 283
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "reports",
+    "width": 1440,
+    "docWidth": 1440,
+    "controls": [
+      {
+        "id": "report-from",
+        "type": "date",
+        "font": 15,
+        "left": 311,
+        "right": 604.953125
+      },
+      {
+        "id": "report-to",
+        "type": "date",
+        "font": 15,
+        "left": 620.953125,
+        "right": 914.90625
+      },
+      {
+        "id": "report-status",
+        "type": "select-one",
+        "font": 15,
+        "left": 930.90625,
+        "right": 1224.859375
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "reports",
+    "width": 1150,
+    "docWidth": 1150,
+    "controls": [
+      {
+        "id": "report-from",
+        "type": "date",
+        "font": 15,
+        "left": 269,
+        "right": 484.28125
+      },
+      {
+        "id": "report-to",
+        "type": "date",
+        "font": 15,
+        "left": 500.28125,
+        "right": 715.5625
+      },
+      {
+        "id": "report-status",
+        "type": "select-one",
+        "font": 15,
+        "left": 731.5625,
+        "right": 946.84375
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "reports",
+    "width": 1000,
+    "docWidth": 1000,
+    "controls": [
+      {
+        "id": "report-from",
+        "type": "date",
+        "font": 16,
+        "left": 269,
+        "right": 602
+      },
+      {
+        "id": "report-to",
+        "type": "date",
+        "font": 16,
+        "left": 618,
+        "right": 951
+      },
+      {
+        "id": "report-status",
+        "type": "select-one",
+        "font": 16,
+        "left": 269,
+        "right": 602
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "reports",
+    "width": 768,
+    "docWidth": 768,
+    "controls": [
+      {
+        "id": "report-from",
+        "type": "date",
+        "font": 16,
+        "left": 269,
+        "right": 486
+      },
+      {
+        "id": "report-to",
+        "type": "date",
+        "font": 16,
+        "left": 502,
+        "right": 719
+      },
+      {
+        "id": "report-status",
+        "type": "select-one",
+        "font": 16,
+        "left": 269,
+        "right": 486
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "reports",
+    "width": 390,
+    "docWidth": 390,
+    "controls": [
+      {
+        "id": "report-from",
+        "type": "date",
+        "font": 16,
+        "left": 37,
+        "right": 353
+      },
+      {
+        "id": "report-to",
+        "type": "date",
+        "font": 16,
+        "left": 37,
+        "right": 353
+      },
+      {
+        "id": "report-status",
+        "type": "select-one",
+        "font": 16,
+        "left": 37,
+        "right": 353
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "reports",
+    "width": 320,
+    "docWidth": 320,
+    "controls": [
+      {
+        "id": "report-from",
+        "type": "date",
+        "font": 16,
+        "left": 37,
+        "right": 283
+      },
+      {
+        "id": "report-to",
+        "type": "date",
+        "font": 16,
+        "left": 37,
+        "right": 283
+      },
+      {
+        "id": "report-status",
+        "type": "select-one",
+        "font": 16,
+        "left": 37,
+        "right": 283
+      }
+    ],
+    "modals": []
+  },
+  {
+    "name": "appointment",
+    "width": 1440,
+    "docWidth": 1440,
+    "controls": [
+      {
+        "id": "appointment-officerId",
+        "type": "select-one",
+        "font": 16,
+        "left": 418,
+        "right": 1022
+      },
+      {
+        "id": "appointment-purpose",
+        "type": "textarea",
+        "font": 16,
+        "left": 418,
+        "right": 1022
+      }
+    ],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "appointment",
+    "width": 1150,
+    "docWidth": 1150,
+    "controls": [
+      {
+        "id": "appointment-officerId",
+        "type": "select-one",
+        "font": 16,
+        "left": 273,
+        "right": 877
+      },
+      {
+        "id": "appointment-purpose",
+        "type": "textarea",
+        "font": 16,
+        "left": 273,
+        "right": 877
+      }
+    ],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "appointment",
+    "width": 1000,
+    "docWidth": 1000,
+    "controls": [
+      {
+        "id": "appointment-officerId",
+        "type": "select-one",
+        "font": 16,
+        "left": 198,
+        "right": 802
+      },
+      {
+        "id": "appointment-purpose",
+        "type": "textarea",
+        "font": 16,
+        "left": 198,
+        "right": 802
+      }
+    ],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "appointment",
+    "width": 768,
+    "docWidth": 768,
+    "controls": [
+      {
+        "id": "appointment-officerId",
+        "type": "select-one",
+        "font": 16,
+        "left": 82,
+        "right": 686
+      },
+      {
+        "id": "appointment-purpose",
+        "type": "textarea",
+        "font": 16,
+        "left": 82,
+        "right": 686
+      }
+    ],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "appointment",
+    "width": 390,
+    "docWidth": 390,
+    "controls": [
+      {
+        "id": "appointment-officerId",
+        "type": "select-one",
+        "font": 16,
+        "left": 38,
+        "right": 352
+      },
+      {
+        "id": "appointment-purpose",
+        "type": "textarea",
+        "font": 16,
+        "left": 38,
+        "right": 352
+      }
+    ],
+    "modals": [
+      {
+        "width": 358,
+        "scroll": 358
+      }
+    ]
+  },
+  {
+    "name": "appointment",
+    "width": 320,
+    "docWidth": 320,
+    "controls": [
+      {
+        "id": "appointment-officerId",
+        "type": "select-one",
+        "font": 16,
+        "left": 38,
+        "right": 282
+      },
+      {
+        "id": "appointment-purpose",
+        "type": "textarea",
+        "font": 16,
+        "left": 38,
+        "right": 282
+      }
+    ],
+    "modals": [
+      {
+        "width": 288,
+        "scroll": 288
+      }
+    ]
+  },
+  {
+    "name": "calendar",
+    "width": 320,
+    "captions": [
+      {
+        "font": 16,
+        "w": 109,
+        "scroll": 109
+      },
+      {
+        "font": 16,
+        "w": 71,
+        "scroll": 71
+      }
+    ]
+  },
+  {
+    "name": "restricted",
+    "width": 1440,
+    "docWidth": 1440,
+    "controls": [
+      {
+        "id": "restricted-name",
+        "type": "text",
+        "font": 15,
+        "left": 418,
+        "right": 710
+      },
+      {
+        "id": "restricted-organization",
+        "type": "text",
+        "font": 15,
+        "left": 730,
+        "right": 1022
+      },
+      {
+        "id": "restricted-serviceId",
+        "type": "text",
+        "font": 15,
+        "left": 418,
+        "right": 710
+      },
+      {
+        "id": "restricted-host",
+        "type": "select-one",
+        "font": 15,
+        "left": 730,
+        "right": 1022
+      }
+    ],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "restricted",
+    "width": 1150,
+    "docWidth": 1150,
+    "controls": [
+      {
+        "id": "restricted-name",
+        "type": "text",
+        "font": 15,
+        "left": 273,
+        "right": 565
+      },
+      {
+        "id": "restricted-organization",
+        "type": "text",
+        "font": 15,
+        "left": 585,
+        "right": 877
+      },
+      {
+        "id": "restricted-serviceId",
+        "type": "text",
+        "font": 15,
+        "left": 273,
+        "right": 565
+      },
+      {
+        "id": "restricted-host",
+        "type": "select-one",
+        "font": 15,
+        "left": 585,
+        "right": 877
+      }
+    ],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "restricted",
+    "width": 1000,
+    "docWidth": 1000,
+    "controls": [
+      {
+        "id": "restricted-name",
+        "type": "text",
+        "font": 16,
+        "left": 198,
+        "right": 490
+      },
+      {
+        "id": "restricted-organization",
+        "type": "text",
+        "font": 16,
+        "left": 510,
+        "right": 802
+      },
+      {
+        "id": "restricted-serviceId",
+        "type": "text",
+        "font": 16,
+        "left": 198,
+        "right": 490
+      },
+      {
+        "id": "restricted-host",
+        "type": "select-one",
+        "font": 16,
+        "left": 510,
+        "right": 802
+      }
+    ],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "restricted",
+    "width": 768,
+    "docWidth": 768,
+    "controls": [
+      {
+        "id": "restricted-name",
+        "type": "text",
+        "font": 16,
+        "left": 82,
+        "right": 374
+      },
+      {
+        "id": "restricted-organization",
+        "type": "text",
+        "font": 16,
+        "left": 394,
+        "right": 686
+      },
+      {
+        "id": "restricted-serviceId",
+        "type": "text",
+        "font": 16,
+        "left": 82,
+        "right": 374
+      },
+      {
+        "id": "restricted-host",
+        "type": "select-one",
+        "font": 16,
+        "left": 394,
+        "right": 686
+      }
+    ],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "restricted",
+    "width": 390,
+    "docWidth": 390,
+    "controls": [
+      {
+        "id": "",
+        "type": "date",
+        "font": 16,
+        "left": 37,
+        "right": 351
+      },
+      {
+        "id": "restricted-name",
+        "type": "text",
+        "font": 16,
+        "left": 38,
+        "right": 352
+      },
+      {
+        "id": "restricted-organization",
+        "type": "text",
+        "font": 16,
+        "left": 38,
+        "right": 352
+      },
+      {
+        "id": "restricted-serviceId",
+        "type": "text",
+        "font": 16,
+        "left": 38,
+        "right": 352
+      },
+      {
+        "id": "restricted-host",
+        "type": "select-one",
+        "font": 16,
+        "left": 38,
+        "right": 352
+      }
+    ],
+    "modals": [
+      {
+        "width": 358,
+        "scroll": 358
+      }
+    ]
+  },
+  {
+    "name": "restricted",
+    "width": 320,
+    "docWidth": 320,
+    "controls": [
+      {
+        "id": "",
+        "type": "date",
+        "font": 16,
+        "left": 37,
+        "right": 281
+      },
+      {
+        "id": "restricted-name",
+        "type": "text",
+        "font": 16,
+        "left": 38,
+        "right": 282
+      },
+      {
+        "id": "restricted-organization",
+        "type": "text",
+        "font": 16,
+        "left": 38,
+        "right": 282
+      },
+      {
+        "id": "restricted-serviceId",
+        "type": "text",
+        "font": 16,
+        "left": 38,
+        "right": 282
+      },
+      {
+        "id": "restricted-host",
+        "type": "select-one",
+        "font": 16,
+        "left": 38,
+        "right": 282
+      }
+    ],
+    "modals": [
+      {
+        "width": 288,
+        "scroll": 288
+      }
+    ]
+  },
+  {
+    "name": "employee-editor",
+    "width": 1440,
+    "docWidth": 1440,
+    "controls": [
+      {
+        "id": "person-name",
+        "type": "text",
+        "font": 15,
+        "left": 418,
+        "right": 710
+      },
+      {
+        "id": "person-email",
+        "type": "email",
+        "font": 15,
+        "left": 730,
+        "right": 1022
+      },
+      {
+        "id": "person-role",
+        "type": "select-one",
+        "font": 15,
+        "left": 418,
+        "right": 1022
+      },
+      {
+        "id": "person-password",
+        "type": "password",
+        "font": 15,
+        "left": 418,
+        "right": 1022
+      }
+    ],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "employee-editor",
+    "width": 1150,
+    "docWidth": 1150,
+    "controls": [
+      {
+        "id": "person-name",
+        "type": "text",
+        "font": 15,
+        "left": 273,
+        "right": 565
+      },
+      {
+        "id": "person-email",
+        "type": "email",
+        "font": 15,
+        "left": 585,
+        "right": 877
+      },
+      {
+        "id": "person-role",
+        "type": "select-one",
+        "font": 15,
+        "left": 273,
+        "right": 877
+      },
+      {
+        "id": "person-password",
+        "type": "password",
+        "font": 15,
+        "left": 273,
+        "right": 877
+      }
+    ],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "employee-editor",
+    "width": 1000,
+    "docWidth": 1000,
+    "controls": [
+      {
+        "id": "person-name",
+        "type": "text",
+        "font": 16,
+        "left": 198,
+        "right": 490
+      },
+      {
+        "id": "person-email",
+        "type": "email",
+        "font": 16,
+        "left": 510,
+        "right": 802
+      },
+      {
+        "id": "person-role",
+        "type": "select-one",
+        "font": 16,
+        "left": 198,
+        "right": 802
+      },
+      {
+        "id": "person-password",
+        "type": "password",
+        "font": 16,
+        "left": 198,
+        "right": 802
+      }
+    ],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "employee-editor",
+    "width": 768,
+    "docWidth": 768,
+    "controls": [
+      {
+        "id": "person-name",
+        "type": "text",
+        "font": 16,
+        "left": 82,
+        "right": 374
+      },
+      {
+        "id": "person-email",
+        "type": "email",
+        "font": 16,
+        "left": 394,
+        "right": 686
+      },
+      {
+        "id": "person-role",
+        "type": "select-one",
+        "font": 16,
+        "left": 82,
+        "right": 686
+      },
+      {
+        "id": "person-password",
+        "type": "password",
+        "font": 16,
+        "left": 82,
+        "right": 686
+      }
+    ],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "employee-editor",
+    "width": 390,
+    "docWidth": 390,
+    "controls": [
+      {
+        "id": "person-name",
+        "type": "text",
+        "font": 16,
+        "left": 38,
+        "right": 352
+      },
+      {
+        "id": "person-email",
+        "type": "email",
+        "font": 16,
+        "left": 38,
+        "right": 352
+      },
+      {
+        "id": "person-role",
+        "type": "select-one",
+        "font": 16,
+        "left": 38,
+        "right": 352
+      },
+      {
+        "id": "person-password",
+        "type": "password",
+        "font": 16,
+        "left": 38,
+        "right": 352
+      }
+    ],
+    "modals": [
+      {
+        "width": 358,
+        "scroll": 358
+      }
+    ]
+  },
+  {
+    "name": "employee-editor",
+    "width": 320,
+    "docWidth": 320,
+    "controls": [
+      {
+        "id": "person-name",
+        "type": "text",
+        "font": 16,
+        "left": 38,
+        "right": 282
+      },
+      {
+        "id": "person-email",
+        "type": "email",
+        "font": 16,
+        "left": 38,
+        "right": 282
+      },
+      {
+        "id": "person-role",
+        "type": "select-one",
+        "font": 16,
+        "left": 38,
+        "right": 282
+      },
+      {
+        "id": "person-password",
+        "type": "password",
+        "font": 16,
+        "left": 38,
+        "right": 282
+      }
+    ],
+    "modals": [
+      {
+        "width": 288,
+        "scroll": 288
+      }
+    ]
+  },
+  {
+    "name": "integration",
+    "width": 1440,
+    "docWidth": 1440,
+    "controls": [
+      {
+        "id": "integration-endpoint",
+        "type": "url",
+        "font": 15,
+        "left": 418,
+        "right": 1022
+      },
+      {
+        "id": "integration-sender",
+        "type": "email",
+        "font": 15,
+        "left": 418,
+        "right": 1022
+      },
+      {
+        "id": "integration-credential",
+        "type": "password",
+        "font": 15,
+        "left": 418,
+        "right": 1022
+      }
+    ],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "integration",
+    "width": 1150,
+    "docWidth": 1150,
+    "controls": [
+      {
+        "id": "integration-endpoint",
+        "type": "url",
+        "font": 15,
+        "left": 273,
+        "right": 877
+      },
+      {
+        "id": "integration-sender",
+        "type": "email",
+        "font": 15,
+        "left": 273,
+        "right": 877
+      },
+      {
+        "id": "integration-credential",
+        "type": "password",
+        "font": 15,
+        "left": 273,
+        "right": 877
+      }
+    ],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "integration",
+    "width": 1000,
+    "docWidth": 1000,
+    "controls": [
+      {
+        "id": "integration-endpoint",
+        "type": "url",
+        "font": 16,
+        "left": 198,
+        "right": 802
+      },
+      {
+        "id": "integration-sender",
+        "type": "email",
+        "font": 16,
+        "left": 198,
+        "right": 802
+      },
+      {
+        "id": "integration-credential",
+        "type": "password",
+        "font": 16,
+        "left": 198,
+        "right": 802
+      }
+    ],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "integration",
+    "width": 768,
+    "docWidth": 768,
+    "controls": [
+      {
+        "id": "integration-endpoint",
+        "type": "url",
+        "font": 16,
+        "left": 82,
+        "right": 686
+      },
+      {
+        "id": "integration-sender",
+        "type": "email",
+        "font": 16,
+        "left": 82,
+        "right": 686
+      },
+      {
+        "id": "integration-credential",
+        "type": "password",
+        "font": 16,
+        "left": 82,
+        "right": 686
+      }
+    ],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "integration",
+    "width": 390,
+    "docWidth": 390,
+    "controls": [
+      {
+        "id": "integration-endpoint",
+        "type": "url",
+        "font": 16,
+        "left": 38,
+        "right": 352
+      },
+      {
+        "id": "integration-sender",
+        "type": "email",
+        "font": 16,
+        "left": 38,
+        "right": 352
+      },
+      {
+        "id": "integration-credential",
+        "type": "password",
+        "font": 16,
+        "left": 38,
+        "right": 352
+      }
+    ],
+    "modals": [
+      {
+        "width": 358,
+        "scroll": 358
+      }
+    ]
+  },
+  {
+    "name": "integration",
+    "width": 320,
+    "docWidth": 320,
+    "controls": [
+      {
+        "id": "integration-endpoint",
+        "type": "url",
+        "font": 16,
+        "left": 38,
+        "right": 282
+      },
+      {
+        "id": "integration-sender",
+        "type": "email",
+        "font": 16,
+        "left": 38,
+        "right": 282
+      },
+      {
+        "id": "integration-credential",
+        "type": "password",
+        "font": 16,
+        "left": 38,
+        "right": 282
+      }
+    ],
+    "modals": [
+      {
+        "width": 288,
+        "scroll": 288
+      }
+    ]
+  },
+  {
+    "name": "reception-code",
+    "width": 1440,
+    "docWidth": 1440,
+    "controls": [],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "reception-code",
+    "width": 1150,
+    "docWidth": 1150,
+    "controls": [],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "reception-code",
+    "width": 1000,
+    "docWidth": 1000,
+    "controls": [],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "reception-code",
+    "width": 768,
+    "docWidth": 768,
+    "controls": [],
+    "modals": [
+      {
+        "width": 660,
+        "scroll": 660
+      }
+    ]
+  },
+  {
+    "name": "reception-code",
+    "width": 390,
+    "docWidth": 390,
+    "controls": [],
+    "modals": [
+      {
+        "width": 358,
+        "scroll": 358
+      }
+    ]
+  },
+  {
+    "name": "reception-code",
+    "width": 320,
+    "docWidth": 320,
+    "controls": [],
+    "modals": [
+      {
+        "width": 288,
+        "scroll": 288
+      }
+    ]
+  }
+]

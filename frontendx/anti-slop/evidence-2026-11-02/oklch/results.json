@@ -1,0 +1,44 @@
+{
+  "colorLiterals": 277,
+  "files": [
+    "packages/ui/src/tokens.css",
+    "packages/ui/src/styles.css",
+    "apps/admin/src/styles.css",
+    "apps/visitor/src/styles.css",
+    "DESIGN.md"
+  ],
+  "chromiumOklchSupported": true,
+  "maxColorChannelDelta": 0,
+  "comparisons": [
+    {
+      "app": "visitor",
+      "width": 390,
+      "maxChannelDelta": 2,
+      "changedPixels": 2240
+    },
+    {
+      "app": "visitor",
+      "width": 1440,
+      "maxChannelDelta": 2,
+      "changedPixels": 2258
+    },
+    {
+      "app": "admin",
+      "width": 390,
+      "maxChannelDelta": 2,
+      "changedPixels": 4008
+    },
+    {
+      "app": "admin",
+      "width": 1440,
+      "maxChannelDelta": 2,
+      "changedPixels": 4173
+    }
+  ],
+  "limitations": [
+    "Isolated component fixtures, not complete app flows",
+    "Font-face rules excluded from comparison to keep identical local fallback fonts",
+    "Safari and physical devices not verified",
+    "Existing contrast behavior preserved; no complete accessibility audit"
+  ]
+}

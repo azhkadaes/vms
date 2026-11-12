@@ -1,0 +1,7 @@
+- dialog "Cancel visit?":
+  - heading "Cancel visit?" [level=2]
+  - paragraph: A canceled visit cannot be used for entry.
+  - button "Close dialog"
+  - alert: Self-service cancellation is only available before the visit start time. Contact staff for help.
+  - button "Keep visit"
+  - button "Yes, cancel" [disabled]

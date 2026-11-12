@@ -1,0 +1,20 @@
+- dialog "Navigasi backoffice":
+  - heading "Navigasi backoffice" [level=2]
+  - paragraph: Pilih halaman ruang kerja Anda.
+  - button "Tutup navigasi"
+  - link "Visitor Management System (VMS) · Otorita IKN · Beranda":
+    - /url: /
+    - strong: Visitor Management System
+    - text: (VMS) · Otorita IKN
+  - text: Ruang kerja
+  - navigation "Navigasi backoffice":
+    - link "Dashboard":
+      - /url: /admin/dashboard
+    - link "Kunjungan hari ini":
+      - /url: /admin/today
+    - link "Janji temu":
+      - /url: /admin/booking
+  - text: Terhubung untuk melayani. Otorita Ibu Kota Nusantara
+  - link "Portal pengunjung":
+    - /url: /
+  - button "Keluar"

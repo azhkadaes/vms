@@ -1,0 +1,24 @@
+- dialog "Buat kunjungan terbatas":
+  - heading "Buat kunjungan terbatas" [level=2]
+  - paragraph: Tanggal dan waktu wajib diisi. Empat isian lainnya opsional; rincian ditampilkan sesuai hak akses petugas.
+  - button "Tutup dialog"
+  - paragraph: Kolom bertanda bintang wajib diisi.
+  - group:
+    - text: Tanggal
+    - 'button "Tanggal, wajib diisi: 19 Agustus 2099"': 19 Agustus 2099
+    - text: Tanggal · WITA Waktu mulai · WITA
+    - button "Waktu mulai · WITA 10:00": 10:00
+    - text: Jam kerja 08.00–16.00 · WITA Nama (opsional)
+    - textbox "Nama (opsional)": Terbatas Form Name
+    - text: Instansi (opsional)
+    - textbox "Instansi (opsional)": Terbatas Form Org
+    - text: No ID Dinas (opsional)
+    - textbox "No ID Dinas (opsional)": "0012345678"
+    - text: Pejabat yang dituju (opsional)
+    - combobox "Pejabat yang dituju (opsional)":
+      - option "Belum ditentukan"
+      - option "Kepala Otorita IKN"
+      - option "Direktorat Data dan Kecerdasan Buatan" [selected]
+      - option "Direktorat Pelayanan Dasar"
+  - button "Batal"
+  - button "Buat kunjungan terbatas"

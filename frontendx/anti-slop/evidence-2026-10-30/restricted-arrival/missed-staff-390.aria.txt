@@ -1,0 +1,26 @@
+- dialog "Detail kunjungan":
+  - heading "Detail kunjungan" [level=2]
+  - paragraph: Identitas, jadwal, dan riwayat kunjungan.
+  - button "Tutup dialog"
+  - text: MB
+  - heading "Missed Browser Name" [level=3]
+  - paragraph: Missed Browser Org
+  - term: Tujuan
+  - definition: Direktorat Data dan Kecerdasan Buatan
+  - term: Jadwal · WITA
+  - definition: 19 Agustus 2099 · 10:00 (60 menit)
+  - term: Tempat
+  - definition: Ruang Rapat Meranti
+  - term: Jenis identitas
+  - definition: KTP · periksa dokumen asli
+  - term: Rombongan
+  - definition: Missed Browser Name
+  - term: Keperluan
+  - definition: Arrival expiry fixture
+  - term: Nota Dinas atau Permohonan Kunjungan Resmi
+  - definition: Tidak dilampirkan
+  - text: Terlewat
+  - list:
+    - listitem: Permohonan diterima 19/8/2099, 09.00.00 WITA
+    - listitem: "PA: approve 19/8/2099, 09.00.00 WITA"
+  - button "Batalkan kunjungan"

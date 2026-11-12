@@ -1,0 +1,15 @@
+{
+  "checkedLocalLinks": 36,
+  "broken": [],
+  "uniqueRequirementIds": 55,
+  "sourceManifestFiles": 511,
+  "node": "v22.14.0",
+  "fullCheckExitCode": 0,
+  "testGroups": {
+    "logic": 96,
+    "previewApi": 34,
+    "previewBrowser": 50,
+    "productionBrowser": 13
+  },
+  "totalPassingTests": 193
+}

@@ -1,0 +1,62 @@
+- link "Lewati ke konten":
+  - /url: "#content"
+- banner:
+  - link "Visitor Management System (VMS) · Otorita IKN · Beranda":
+    - /url: /
+  - combobox "Bahasa halaman":
+    - option "Bahasa Indonesia" [selected]
+    - option "English"
+- region "Pratinjau lokal": Preview lokal · Data contoh, tanpa email atau unggahan nyata. Gunakan data fiktif.
+- main:
+  - link "Kembali ke beranda":
+    - /url: /
+  - heading "Kunjungan Anda. Semua ada di sini." [level=1]
+  - paragraph: Periksa status dan rincian kunjungan Anda di bawah ini.
+  - heading "Rincian kunjungan" [level=2]
+  - button "Perbarui"
+  - article "Detail kunjungan":
+    - text: Otorita IKN Kunjungan
+    - status: Kunjungan dibatalkan
+    - text: Perwakilan pengunjung
+    - heading "Public History Example" [level=3]
+    - paragraph: History Example Organization
+    - text: Tanggal kunjungan
+    - strong: 19 Agustus 2099
+    - text: Waktu · WITA
+    - strong: 10:00 · 60 menit
+    - term: Bertemu
+    - definition: Direktorat Data dan Kecerdasan Buatan
+    - term: Tempat
+    - definition: Belum ditetapkan
+    - term: Jumlah pengunjung
+    - definition: "1"
+    - term: Keperluan
+    - definition: Public history verification
+    - text: Kode kunjungan
+    - strong: "88000112"
+    - paragraph: QR masuk tidak tersedia untuk status kunjungan ini.
+  - text: Lihat riwayat untuk informasi keputusan dan perubahan kunjungan.
+  - region "Riwayat kunjungan":
+    - heading "Riwayat kunjungan" [level=2]
+    - list:
+      - listitem:
+        - text: Permohonan diterima
+        - time: 19 Agu 2099, 09.00 WITA
+      - listitem:
+        - text: Kunjungan dibatalkan
+        - time: 19 Agu 2099, 09.00 WITA
+  - button "Periksa kunjungan lain"
+  - text: "Contoh: 88000002 · visitor@example.test"
+  - heading "Privasi Anda, bagian dari pelayanan kami." [level=2]
+  - paragraph: "Nama rombongan dan kontak digunakan untuk penjadwalan, pemberitahuan dan verifikasi kunjungan. Bawa identitas asli ke resepsionis. Gunakan data fiktif pada pratinjau ini: dokumen dan email tidak dikirim, dan data contoh hilang saat layanan pengembangan dimulai ulang. Pemberitahuan privasi resmi harus diterbitkan organisasi sebelum layanan produksi digunakan."
+- contentinfo:
+  - link "Visitor Management System (VMS) · Otorita IKN · Beranda":
+    - /url: /
+    - strong: Visitor Management System
+    - text: (VMS) · Otorita IKN
+  - paragraph: Terhubung untuk melayani. Selamat datang di Ibu Kota Nusantara.
+  - strong: Otorita Ibu Kota Nusantara
+  - paragraph: Kawasan Inti Pusat Pemerintahan Nusantara, Kalimantan Timur
+  - link "Akses pegawai":
+    - /url: /admin/
+  - text: © 2099 Otorita Ibu Kota Nusantara

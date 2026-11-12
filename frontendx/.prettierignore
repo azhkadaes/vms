@@ -1,0 +1,4 @@
+**/node_modules/**
+**/dist/**
+anti-slop/**
+packages/ui/src/components/**

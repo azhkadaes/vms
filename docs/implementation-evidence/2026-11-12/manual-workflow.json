@@ -1,0 +1,38 @@
+{
+  "recordedAt": "2026-11-12T15:18:28.1690902+08:00",
+  "scope": "VMS manual development workflow",
+  "testsPassed": 33,
+  "goVet": "passed",
+  "nativeBuild": "passed",
+  "helpersVerified": [
+    "env-setup preserves existing",
+    "swagger generates 1 OpenAPI 3.1.1 operation",
+    "build creates native VMS binary"
+  ],
+  "nativeSmoke": {
+    "scope": "native manual startup against existing isolated database",
+    "envSetupPreservesExisting": true,
+    "processOverridesDotEnv": true,
+    "readiness": true,
+    "catalog": true,
+    "swaggerAuthenticated": true,
+    "openapi": "3.1.1",
+    "makeInstalled": false,
+    "smokePort": 58051,
+    "defaultManualPort": 8080
+  },
+  "smokeProcessStopped": true,
+  "visualBrowserCheck": false,
+  "containerRebuild": false,
+  "schemaMutation": false,
+  "frozenPlanningHashesUnchanged": true,
+  "files": {
+    "Makefile": "007f1f3b352f15bc2d1a523778bb946cb5d6c0eb46923979ef9b79886119f14e",
+    ".env.example": "a9bfa8bf5ea64bc60f795e9a04d8b60748e254e165855bc41c65d968aa267f5a",
+    "README.md": "39ef7ca635b508f59d7f155bf246ee3631e48ab118c8883d8898d96f1e556518",
+    "cmd/vms-dev/main.go": "b5c3727f4e5649ecc4a867b895c68390886ef9ee0c01ba77b9adb8ff1ed5488b",
+    "internal/config/config.go": "38e49e0813e4de09c678c086bdcbff67959aaea7f56019a2de876328ec3e6368",
+    "internal/server/vms/router/swagger_router.go": "38757515bebe4be365327dd4a188156ea86fbc5427b4990963d9020aefb8f3a6",
+    "docs/vms/openapi.json": "0d295e0bdc7f2e652e82ced36d7c10298fa08aa2b5c11b9084d181e0fef88d6f"
+  }
+}

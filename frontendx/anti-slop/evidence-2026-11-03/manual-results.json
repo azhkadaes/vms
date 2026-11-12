@@ -1,0 +1,223 @@
+[
+  {
+    "name": "status-320",
+    "bounds": {
+      "width": 320,
+      "scroll": 320
+    },
+    "labels": [
+      {
+        "id": "status-code",
+        "visible": "Kode kunjungan *",
+        "name": "8 digit kode kunjungan"
+      },
+      {
+        "id": "status-email",
+        "visible": "Email pendaftaran *",
+        "name": "Nama email sebelum @"
+      }
+    ],
+    "violations": [],
+    "labelViolations": []
+  },
+  {
+    "name": "status-390",
+    "bounds": {
+      "width": 390,
+      "scroll": 390
+    },
+    "labels": [
+      {
+        "id": "status-code",
+        "visible": "Kode kunjungan *",
+        "name": "8 digit kode kunjungan"
+      },
+      {
+        "id": "status-email",
+        "visible": "Email pendaftaran *",
+        "name": "Nama email sebelum @"
+      }
+    ],
+    "violations": [],
+    "labelViolations": []
+  },
+  {
+    "name": "status-error",
+    "bounds": {
+      "width": 390,
+      "scroll": 390
+    },
+    "labels": [
+      {
+        "id": "status-code",
+        "visible": "Kode kunjungan *",
+        "name": "8 digit kode kunjungan"
+      },
+      {
+        "id": "status-email",
+        "visible": "Email pendaftaran *",
+        "name": "Nama email sebelum @"
+      }
+    ],
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "html": "<button type=\"button\" aria-label=\"Pilih domain dari daftar\">Ubah</button>",
+            "failure": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "labelViolations": [
+      {
+        "id": "label-content-name-mismatch",
+        "nodes": [
+          "<button type=\"button\" aria-label=\"Pilih domain dari daftar\">Ubah</button>"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "email-return-to-list-focus",
+    "active": {
+      "tag": "BODY",
+      "id": ""
+    },
+    "domainVisible": true
+  },
+  {
+    "name": "status-forced-colors",
+    "bounds": {
+      "width": 390,
+      "scroll": 390
+    },
+    "labels": [
+      {
+        "id": "status-code",
+        "visible": "Kode kunjungan *",
+        "name": "8 digit kode kunjungan"
+      },
+      {
+        "id": "status-email",
+        "visible": "Email pendaftaran *",
+        "name": "Nama email sebelum @"
+      }
+    ],
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "html": "<button type=\"button\" aria-label=\"Pilih domain dari daftar\">Ubah</button>",
+            "failure": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "labelViolations": [
+      {
+        "id": "label-content-name-mismatch",
+        "nodes": [
+          "<button type=\"button\" aria-label=\"Pilih domain dari daftar\">Ubah</button>"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "status-1280",
+    "bounds": {
+      "width": 1280,
+      "scroll": 1280
+    },
+    "labels": [
+      {
+        "id": "status-code",
+        "visible": "Kode kunjungan *",
+        "name": "8 digit kode kunjungan"
+      },
+      {
+        "id": "status-email",
+        "visible": "Email pendaftaran *",
+        "name": "Nama email sebelum @"
+      }
+    ],
+    "violations": [],
+    "labelViolations": []
+  },
+  {
+    "name": "sidebar-alternatives",
+    "collapsed": "0",
+    "expanded": "100",
+    "clicked": "0"
+  },
+  {
+    "name": "staff-mobile-menu",
+    "bounds": {
+      "width": 390,
+      "scroll": 390
+    },
+    "labels": [],
+    "violations": [
+      {
+        "id": "aria-allowed-role",
+        "impact": "minor",
+        "nodes": [
+          {
+            "html": "<aside class=\"sidebar lw-sidebar sidebar-open\" data-expanded=\"false\" id=\"backoffice-sidebar\" role=\"dialog\" aria-describedby=\"radix-_r_2_\" aria-labelledby=\"radix-_r_1_\" data-state=\"open\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+            "failure": "Fix any of the following:\n  ARIA role dialog is not allowed for given element"
+          }
+        ]
+      }
+    ],
+    "labelViolations": []
+  },
+  {
+    "name": "mobile-menu-escape",
+    "focus": "Buka navigasi"
+  },
+  {
+    "name": "staff-create-visit",
+    "bounds": {
+      "width": 390,
+      "scroll": 390
+    },
+    "labels": [
+      {
+        "id": "appointment-email",
+        "visible": "Email pengaju *",
+        "name": "Nama email sebelum @"
+      }
+    ],
+    "violations": [],
+    "labelViolations": []
+  },
+  {
+    "name": "staff-create-validation",
+    "focus": "appointment-officerId"
+  },
+  {
+    "name": "staff-create-errors",
+    "bounds": {
+      "width": 390,
+      "scroll": 390
+    },
+    "labels": [
+      {
+        "id": "appointment-email",
+        "visible": "Email pengaju *",
+        "name": "Nama email sebelum @"
+      }
+    ],
+    "violations": [],
+    "labelViolations": []
+  },
+  {
+    "name": "staff-create-escape",
+    "dialogs": 0,
+    "focus": "Buat janji temu"
+  }
+]

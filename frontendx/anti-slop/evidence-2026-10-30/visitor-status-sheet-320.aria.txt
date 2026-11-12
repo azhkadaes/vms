@@ -1,0 +1,47 @@
+- link "Lewati ke konten":
+  - /url: "#content"
+- text: Preview lokal · Data contoh, tanpa email atau unggahan nyata. Gunakan data fiktif.
+- main:
+  - region "Setiap pertemuan, awal sebuah kemajuan.":
+    - img "Gedung di kawasan Ibu Kota Nusantara dikelilingi lanskap hijau"
+  - link "Kembali":
+    - /url: /
+  - img "Visitor Management System (VMS) — Otorita Ibu Kota Nusantara"
+  - group "Bahasa halaman":
+    - button "Bahasa Indonesia" [pressed]: ID
+    - button "English": EN
+  - heading "Sudah punya rencana? Mari periksa statusnya." [level=2]
+  - paragraph: Masukkan email pendaftaran dan kode kunjungan untuk melihat detail kunjungan.
+  - heading "Temukan kunjungan Anda" [level=3]
+  - paragraph: Masukkan kode kunjungan dan email saat pendaftaran.
+  - paragraph: Kolom bertanda bintang wajib diisi.
+  - text: Kode kunjungan
+  - textbox "8 digit kode kunjungan"
+  - text: Email pendaftaran
+  - textbox "Nama email sebelum @":
+    - /placeholder: nama.anda
+  - combobox "Domain email":
+    - option "Pilih domain" [disabled] [selected]
+    - option "gmail.com"
+    - option "outlook.com"
+    - option "yahoo.com"
+    - option "hotmail.com"
+    - option "icloud.com"
+    - option "ikn.go.id"
+    - option "Domain lain…"
+  - text: Ketik nama sebelum @, lalu pilih domain. Untuk email instansi, pilih Domain lain.
+  - button "Lihat kunjungan"
+  - text: "Contoh: 88000002 · visitor@example.test"
+  - heading "Privasi Anda, bagian dari pelayanan kami." [level=3]
+  - paragraph: Data kontak dan nama rombongan digunakan untuk penjadwalan, pemberitahuan, dan verifikasi kunjungan. Bawa identitas asli saat datang. Preview ini tidak menyimpan foto/nomor identitas, mengirim email, atau mengunggah dokumen. Data contoh berada dalam memori server pengembangan dan hilang saat server dimulai ulang. Dasar pemrosesan, masa retensi, dan saluran hak subjek data untuk layanan produksi harus ditetapkan Otorita IKN sebelum aktivasi.
+- contentinfo:
+  - link "Visitor Management System (VMS) — beranda":
+    - /url: /
+    - strong: Visitor Management System
+    - text: (VMS) · Otorita IKN
+  - paragraph: Terhubung untuk melayani. Selamat datang di Ibu Kota Nusantara.
+  - strong: Otorita Ibu Kota Nusantara
+  - paragraph: Kawasan Inti Pusat Pemerintahan Nusantara, Kalimantan Timur
+  - link "Akses pegawai":
+    - /url: /admin/
+  - text: © 2026 Otorita Ibu Kota Nusantara

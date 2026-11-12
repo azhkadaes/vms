@@ -1,0 +1,14 @@
+{
+  "name": "@vms/admin",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 3002 --strictPort",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@fontsource-variable/geist": "^5.3.0",
+    "@vms/data": "*",
+    "@vms/ui": "*"
+  }
+}

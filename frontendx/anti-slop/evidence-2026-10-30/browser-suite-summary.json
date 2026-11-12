@@ -1,0 +1,18 @@
+{
+  "command": "node --test tests/date-picker.browser.mjs",
+  "runtime": "Bundled Playwright, Chrome channel, headless",
+  "passed": 2,
+  "failed": 7,
+  "tests": [
+    {"name":"visitor shadcn calendar and ReUI time picker preserve ISO values, required validation, leap days and keyboard focus","result":"failed","observed":"Desktop exact-name Lanjutkan locator timed out; current desktop button says Lanjut ke data pengunjung."},
+    {"name":"staff calendar closes before its dialog and date/time changes retain the discard prompt","result":"failed","observed":"Calendar visibility timed out; not diagnosed as a confirmed application defect. Separate focused keyboard check succeeded."},
+    {"name":"rescheduling submits ISO date and minute-precision time through native FormData","result":"passed"},
+    {"name":"restricted creation accepts date/time and editing keeps both controls read-only","result":"failed","observed":"Exact-name Booking navigation locator timed out; current navigation says Janji temu."},
+    {"name":"shadcn date/time fields and calendars fit visitor/staff at 320px","result":"failed","observed":"Attempted to click hour 23; current range disables that hour."},
+    {"name":"shadcn date/time fields and calendars fit visitor/staff at 390px","result":"failed","observed":"Attempted to click hour 23; current range disables that hour."},
+    {"name":"shadcn date/time fields and calendars fit visitor/staff at 768px","result":"failed","observed":"Attempted to click hour 23; current range disables that hour."},
+    {"name":"calendar selection stays on the same WITA date in a different browser timezone","result":"passed"},
+    {"name":"ReUI time columns support draft cancellation, keyboard selection, clear and required errors","result":"failed","observed":"Expected 23:45; actual constrained value was 16:00."}
+  ],
+  "note": "Summary of the observed existing-suite run, not fabricated raw runner output. Application tests and source were not changed."
+}

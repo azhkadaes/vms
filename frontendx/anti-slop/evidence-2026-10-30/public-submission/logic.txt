@@ -1,0 +1,384 @@
+
+> test
+> node --experimental-strip-types --test tests/*.test.ts
+
+TAP version 13
+# (node:18888) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: arrival at 09:29:59.999 WITA: approved, allowed=false
+ok 1 - arrival at 09:29:59.999 WITA: approved, allowed=false
+  ---
+  duration_ms: 15.367
+  ...
+# Subtest: arrival at 09:30:00.000 WITA: approved, allowed=true
+ok 2 - arrival at 09:30:00.000 WITA: approved, allowed=true
+  ---
+  duration_ms: 0.7836
+  ...
+# Subtest: arrival at 10:00:00.000 WITA: approved, allowed=true
+ok 3 - arrival at 10:00:00.000 WITA: approved, allowed=true
+  ---
+  duration_ms: 1.319
+  ...
+# Subtest: arrival at 11:00:00.000 WITA: approved, allowed=true
+ok 4 - arrival at 11:00:00.000 WITA: approved, allowed=true
+  ---
+  duration_ms: 0.6588
+  ...
+# Subtest: arrival at 11:00:00.001 WITA: missed, allowed=false
+ok 5 - arrival at 11:00:00.001 WITA: missed, allowed=false
+  ---
+  duration_ms: 1.0923
+  ...
+# Subtest: Missed is derived without changing stored status and cannot be rescheduled
+ok 6 - Missed is derived without changing stored status and cannot be rescheduled
+  ---
+  duration_ms: 4.6363
+  ...
+# Subtest: checked-in visitors may check out after the scheduled end and never become Missed
+ok 7 - checked-in visitors may check out after the scheduled end and never become Missed
+  ---
+  duration_ms: 1.1377
+  ...
+# Subtest: invalid schedule data never grants check-in
+ok 8 - invalid schedule data never grants check-in
+  ---
+  duration_ms: 0.5971
+  ...
+# (node:13936) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: staff creation requires explicit permission and respects PA assignment and Protocol VIP scope
+ok 9 - staff creation requires explicit permission and respects PA assignment and Protocol VIP scope
+  ---
+  duration_ms: 8.7247
+  ...
+# Subtest: staff drafts share contact and schedule rules without visitor consent impersonation
+ok 10 - staff drafts share contact and schedule rules without visitor consent impersonation
+  ---
+  duration_ms: 131.3229
+  ...
+# Subtest: rejection requires a trimmed public message and accepts a bounded optional internal note
+ok 11 - rejection requires a trimmed public message and accepts a bounded optional internal note
+  ---
+  duration_ms: 5.4297
+  ...
+# Subtest: internal rejection notes are limited to the PA or Protocol decision scope
+ok 12 - internal rejection notes are limited to the PA or Protocol decision scope
+  ---
+  duration_ms: 0.8042
+  ...
+# Subtest: visitor projection removes private and future fields without modifying staff data
+ok 13 - visitor projection removes private and future fields without modifying staff data
+  ---
+  duration_ms: 2.5194
+  ...
+# Subtest: email dropdown uses complete suffixes and preserves local parts and custom addresses
+ok 14 - email dropdown uses complete suffixes and preserves local parts and custom addresses
+  ---
+  duration_ms: 1.0607
+  ...
+# Subtest: composed email requires a valid username and complete domain before lookup or booking
+ok 15 - composed email requires a valid username and complete domain before lookup or booking
+  ---
+  duration_ms: 0.7706
+  ...
+# Subtest: phone paste removes non-digits and preserves leading zeroes
+ok 16 - phone paste removes non-digits and preserves leading zeroes
+  ---
+  duration_ms: 0.6129
+  ...
+# Subtest: booking validation accepts custom email domains and rejects non-numeric phone values
+ok 17 - booking validation accepts custom email domains and rejects non-numeric phone values
+  ---
+  duration_ms: 5.344
+  ...
+# Subtest: past start is rejected on the first step and before privacy acknowledgement
+ok 18 - past start is rejected on the first step and before privacy acknowledgement
+  ---
+  duration_ms: 4.8339
+  ...
+# Subtest: PA scope excludes VIP and unassigned officers; Super Admin has no implicit visit access
+ok 19 - PA scope excludes VIP and unassigned officers; Super Admin has no implicit visit access
+  ---
+  duration_ms: 1.1197
+  ...
+# Subtest: Receptionist visibility and filters include only approved, checked-in and checked-out bookings
+ok 20 - Receptionist visibility and filters include only approved, checked-in and checked-out bookings
+  ---
+  duration_ms: 1.4391
+  ...
+# Subtest: Receptionist check-in and checkout transitions remain restricted to the preceding state
+ok 21 - Receptionist check-in and checkout transitions remain restricted to the preceding state
+  ---
+  duration_ms: 1.544
+  ...
+# Subtest: fixed rescheduling stays available only to correct operational role on approved bookings
+ok 22 - fixed rescheduling stays available only to correct operational role on approved bookings
+  ---
+  duration_ms: 0.6942
+  ...
+# Subtest: default order prioritizes pending and then ascending visit time
+ok 23 - default order prioritizes pending and then ascending visit time
+  ---
+  duration_ms: 5.3019
+  ...
+# Subtest: search ranks representative names before organization matches
+ok 24 - search ranks representative names before organization matches
+  ---
+  duration_ms: 0.4852
+  ...
+# Subtest: named roster and required privacy acknowledgment validated without ID photo/number
+ok 25 - named roster and required privacy acknowledgment validated without ID photo/number
+  ---
+  duration_ms: 1.7913
+  ...
+# Subtest: ND rejects unsupported types, empty documents and oversize uploads
+ok 26 - ND rejects unsupported types, empty documents and oversize uploads
+  ---
+  duration_ms: 0.5579
+  ...
+# Subtest: rescheduling requires future time, valid duration, place and reason
+ok 27 - rescheduling requires future time, valid duration, place and reason
+  ---
+  duration_ms: 0.6412
+  ...
+# (node:8756) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Terbatas requires date/time and permits only four optional fields, preserving leading zeroes
+ok 28 - Terbatas requires date/time and permits only four optional fields, preserving leading zeroes
+  ---
+  duration_ms: 132.8307
+  ...
+# Subtest: only Protocol creates Terbatas for any active host or no host
+ok 29 - only Protocol creates Terbatas for any active host or no host
+  ---
+  duration_ms: 1.766
+  ...
+# Subtest: assigned PA and Super Admin read Terbatas without decision authority; reception retains its lifecycle scope
+ok 30 - assigned PA and Super Admin read Terbatas without decision authority; reception retains its lifecycle scope
+  ---
+  duration_ms: 5.6175
+  ...
+# Subtest: Terbatas projections omit private fields instead of sending blanks or hiding them in the UI
+ok 31 - Terbatas projections omit private fields instead of sending blanks or hiding them in the UI
+  ---
+  duration_ms: 3.3299
+  ...
+# (node:15508) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: same officer conflicts across different rooms
+ok 32 - same officer conflicts across different rooms
+  ---
+  duration_ms: 7.079
+  ...
+# Subtest: same room conflicts across different officers
+ok 33 - same room conflicts across different officers
+  ---
+  duration_ms: 0.6767
+  ...
+# Subtest: different officers and rooms can overlap
+ok 34 - different officers and rooms can overlap
+  ---
+  duration_ms: 0.9583
+  ...
+# Subtest: earlier adjacent interval is allowed
+ok 35 - earlier adjacent interval is allowed
+  ---
+  duration_ms: 0.5963
+  ...
+# Subtest: later adjacent interval is allowed
+ok 36 - later adjacent interval is allowed
+  ---
+  duration_ms: 0.6625
+  ...
+# Subtest: different dates do not conflict
+ok 37 - different dates do not conflict
+  ---
+  duration_ms: 0.353
+  ...
+# Subtest: Pending does not reserve
+ok 38 - Pending does not reserve
+  ---
+  duration_ms: 0.4599
+  ...
+# Subtest: Rejected does not reserve
+ok 39 - Rejected does not reserve
+  ---
+  duration_ms: 0.267
+  ...
+# Subtest: Cancelled does not reserve
+ok 40 - Cancelled does not reserve
+  ---
+  duration_ms: 1.2063
+  ...
+# Subtest: Checked out releases its reservation
+ok 41 - Checked out releases its reservation
+  ---
+  duration_ms: 4.8506
+  ...
+# Subtest: Checked in retains its reservation
+ok 42 - Checked in retains its reservation
+  ---
+  duration_ms: 0.8733
+  ...
+# Subtest: longer commitment covers the candidate
+ok 43 - longer commitment covers the candidate
+  ---
+  duration_ms: 0.4249
+  ...
+# Subtest: partial interval overlap conflicts
+ok 44 - partial interval overlap conflicts
+  ---
+  duration_ms: 0.3334
+  ...
+# Subtest: the record being changed is excluded
+ok 45 - the record being changed is excluded
+  ---
+  duration_ms: 0.4081
+  ...
+# Subtest: empty rooms do not create a shared resource
+ok 46 - empty rooms do not create a shared resource
+  ---
+  duration_ms: 0.4633
+  ...
+# Subtest: empty officers do not create a shared resource
+ok 47 - empty officers do not create a shared resource
+  ---
+  duration_ms: 0.441
+  ...
+# Subtest: resourceless restricted slots can coexist
+ok 48 - resourceless restricted slots can coexist
+  ---
+  duration_ms: 0.5144
+  ...
+# Subtest: extending a duration checks the new end
+ok 49 - extending a duration checks the new end
+  ---
+  duration_ms: 0.8324
+  ...
+# (node:6936) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: public wire normalization preserves identifiers and rejects invalid roster, consent and optional filename
+ok 50 - public wire normalization preserves identifiers and rejects invalid roster, consent and optional filename
+  ---
+  duration_ms: 35.6302
+  ...
+# Subtest: new creation checks service time and active officer while static normalization permits historical replay
+ok 51 - new creation checks service time and active officer while static normalization permits historical replay
+  ---
+  duration_ms: 94.8011
+  ...
+# Subtest: a lost response retries once with the same normalized snapshot and reference
+ok 52 - a lost response retries once with the same normalized snapshot and reference
+  ---
+  duration_ms: 13.2464
+  ...
+# Subtest: two transport failures preserve only the reference and prohibit another send, including after reload
+ok 53 - two transport failures preserve only the reference and prohibit another send, including after reload
+  ---
+  duration_ms: 5.1472
+  ...
+# Subtest: HTTP 401 is not retried and permits a corrected explicit submission
+ok 54 - HTTP 401 is not retried and permits a corrected explicit submission
+  ---
+  duration_ms: 1.8084
+  ...
+# Subtest: HTTP 403 is not retried and permits a corrected explicit submission
+ok 55 - HTTP 403 is not retried and permits a corrected explicit submission
+  ---
+  duration_ms: 1.1329
+  ...
+# Subtest: HTTP 409 is not retried and permits a corrected explicit submission
+ok 56 - HTTP 409 is not retried and permits a corrected explicit submission
+  ---
+  duration_ms: 0.905
+  ...
+# Subtest: HTTP 422 is not retried and permits a corrected explicit submission
+ok 57 - HTTP 422 is not retried and permits a corrected explicit submission
+  ---
+  duration_ms: 1.0165
+  ...
+# Subtest: HTTP 429 is not retried and permits a corrected explicit submission
+ok 58 - HTTP 429 is not retried and permits a corrected explicit submission
+  ---
+  duration_ms: 1.7079
+  ...
+# Subtest: Error/server failure remains uncertain without an automatic network retry
+ok 59 - Error/server failure remains uncertain without an automatic network retry
+  ---
+  duration_ms: 2.9463
+  ...
+# Subtest: Error/timeout remains uncertain without an automatic network retry
+ok 60 - Error/timeout remains uncertain without an automatic network retry
+  ---
+  duration_ms: 1.7814
+  ...
+# Subtest: SyntaxError/invalid response remains uncertain without an automatic network retry
+ok 61 - SyntaxError/invalid response remains uncertain without an automatic network retry
+  ---
+  duration_ms: 1.0988
+  ...
+# Subtest: AbortError/aborted remains uncertain without an automatic network retry
+ok 62 - AbortError/aborted remains uncertain without an automatic network retry
+  ---
+  duration_ms: 1.2789
+  ...
+# Subtest: wrong recovery email retains the pending reference; timeout retries and repeated clicks cannot multiply sends
+ok 63 - wrong recovery email retains the pending reference; timeout retries and repeated clicks cannot multiply sends
+  ---
+  duration_ms: 2.2332
+  ...
+# Subtest: unavailable reference storage fails before the first POST
+ok 64 - unavailable reference storage fails before the first POST
+  ---
+  duration_ms: 4.5801
+  ...
+# Subtest: a completed response retains recovery until the receipt is actually displayed
+ok 65 - a completed response retains recovery until the receipt is actually displayed
+  ---
+  duration_ms: 2.1463
+  ...
+# Subtest: HTTP 401 on retry cannot erase the uncertain first attempt
+ok 66 - HTTP 401 on retry cannot erase the uncertain first attempt
+  ---
+  duration_ms: 2.5497
+  ...
+# Subtest: HTTP 403 on retry cannot erase the uncertain first attempt
+ok 67 - HTTP 403 on retry cannot erase the uncertain first attempt
+  ---
+  duration_ms: 1.4506
+  ...
+# Subtest: HTTP 409 on retry cannot erase the uncertain first attempt
+ok 68 - HTTP 409 on retry cannot erase the uncertain first attempt
+  ---
+  duration_ms: 1.4553
+  ...
+# Subtest: HTTP 422 on retry cannot erase the uncertain first attempt
+ok 69 - HTTP 422 on retry cannot erase the uncertain first attempt
+  ---
+  duration_ms: 1.3959
+  ...
+# Subtest: HTTP 429 on retry cannot erase the uncertain first attempt
+ok 70 - HTTP 429 on retry cannot erase the uncertain first attempt
+  ---
+  duration_ms: 0.8915
+  ...
+# Subtest: a retired form cannot clear a newer form's pending reference
+ok 71 - a retired form cannot clear a newer form's pending reference
+  ---
+  duration_ms: 1.45
+  ...
+# Subtest: two mounted form controllers cannot start independent attempts in the same session
+ok 72 - two mounted form controllers cannot start independent attempts in the same session
+  ---
+  duration_ms: 1.5237
+  ...
+1..72
+# tests 72
+# suites 0
+# pass 72
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1329.44

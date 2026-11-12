@@ -1,0 +1,27 @@
+- dialog "Buat janji temu":
+  - heading "Buat janji temu" [level=2]
+  - paragraph: Catat kunjungan atas nama pengaju. Janji temu langsung disetujui setelah disimpan.
+  - button "Tutup dialog"
+  - navigation "Langkah janji temu": 1. Kunjungan 2. Pengunjung 3. Periksa
+  - paragraph: Kolom bertanda bintang wajib diisi.
+  - group "Detail kunjungan":
+    - text: Detail kunjungan Pejabat atau unit tujuan
+    - combobox "Pejabat atau unit tujuan" [invalid]:
+      - option "Pilih tujuan kunjungan" [selected]
+      - option "Pejabat Contoh"
+    - text: Tujuan sesuai penugasan PA Anda.
+    - alert: Pilih tujuan kunjungan.
+    - text: Tanggal kunjungan
+    - 'button "Tanggal kunjungan, wajib diisi: Pilih tanggal"': Pilih tanggal
+    - text: Tanggal · WITA
+    - alert: Pilih tanggal yang valid, hari ini atau sesudahnya.
+    - text: Waktu mulai · WITA
+    - button "Waktu mulai · WITA Pilih waktu": Pilih waktu
+    - text: Jam kerja 08.00–16.00 · WITA
+    - alert: Pilih waktu mulai antara 08.00–16.00 WITA.
+    - text: Keperluan kunjungan
+    - textbox "Keperluan kunjungan" [invalid]
+    - alert: Jelaskan keperluan minimal 5 karakter.
+    - paragraph: Durasi dan ruangan ditetapkan saat persetujuan. Durasi awal 60 menit.
+  - button "Batal"
+  - button "Lanjutkan"

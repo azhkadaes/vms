@@ -1,0 +1,84 @@
+- link "Lewati ke konten":
+  - /url: "#content"
+- banner:
+  - button "Buka navigasi"
+  - strong: Laporan kunjungan
+  - text: AR
+- region "Pratinjau lokal": Preview lokal · Data contoh, tanpa email atau unggahan nyata. Gunakan data fiktif.
+- main:
+  - heading "Laporan kunjungan" [level=1]
+  - paragraph: Ringkasan tanggal dan status sesuai akses Anda. Kunjungan Terbatas tidak disertakan.
+  - button "Perbarui laporan"
+  - button "Unduh ringkasan CSV" [disabled]
+  - paragraph: Kolom bertanda bintang wajib diisi.
+  - group "Filter laporan":
+    - text: Filter laporan Tanggal awal
+    - textbox "Tanggal awal": 2099-08-01
+    - text: Tanggal akhir
+    - textbox "Tanggal akhir": 2099-08-31
+    - text: Status
+    - combobox "Status":
+      - option "Semua status" [selected]
+      - option "Pending"
+      - option "Disetujui"
+      - option "Ditolak"
+      - option "Dibatalkan"
+      - option "Checked in"
+      - option "Checked out"
+      - option "Terlewat"
+    - button "Terapkan filter"
+  - paragraph: Rentang memakai tanggal kunjungan dalam WITA, maksimal 366 hari pada preview.
+  - region "Ringkasan kunjungan":
+    - alert: Gangguan ringkasan sintetis.
+    - paragraph: Angka terakhir tetap ditampilkan. Perbarui laporan sebelum mengekspor.
+    - button "Coba lagi"
+    - heading "1 Agustus 2099 – 31 Agustus 2099" [level=2]
+    - paragraph: Pejabat dalam penugasan Anda
+    - text: Diperbarui
+    - time: 19/8/2099, 09.00.00
+    - text: WITA
+    - strong: "2"
+    - text: kunjungan sesuai filter
+    - table "Jumlah kunjungan per status untuk periode yang ditampilkan":
+      - caption: Jumlah kunjungan per status untuk periode yang ditampilkan
+      - rowgroup:
+        - row "Status Jumlah":
+          - columnheader "Status"
+          - columnheader "Jumlah"
+      - rowgroup:
+        - row "Pending 2 2":
+          - rowheader "Pending 2":
+            - text: Pending
+            - meter "Pending"
+          - cell "2"
+        - row "Disetujui 0 0":
+          - rowheader "Disetujui 0":
+            - text: Disetujui
+            - meter "Disetujui"
+          - cell "0"
+        - row "Ditolak 0 0":
+          - rowheader "Ditolak 0":
+            - text: Ditolak
+            - meter "Ditolak"
+          - cell "0"
+        - row "Dibatalkan 0 0":
+          - rowheader "Dibatalkan 0":
+            - text: Dibatalkan
+            - meter "Dibatalkan"
+          - cell "0"
+        - row "Checked in 0 0":
+          - rowheader "Checked in 0":
+            - text: Checked in
+            - meter "Checked in"
+          - cell "0"
+        - row "Checked out 0 0":
+          - rowheader "Checked out 0":
+            - text: Checked out
+            - meter "Checked out"
+          - cell "0"
+        - row "Terlewat 0 0":
+          - rowheader "Terlewat 0":
+            - text: Terlewat
+            - meter "Terlewat"
+          - cell "0"
+- contentinfo: © 2099 Otorita Ibu Kota Nusantara Visitor Management System (VMS)

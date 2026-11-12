@@ -1,0 +1,280 @@
+{
+  "artifact": "BACKEND-OPENAPI-2026-11-12.json",
+  "status": "planning-document-checks-passed",
+  "official_openapi_schema": "https://spec.openapis.org/oas/3.1/schema/2025-09-15",
+  "operations_match_contract": 38,
+  "unique_operation_ids": 38,
+  "schemas_meta_schema_valid": 70,
+  "resolved_internal_refs": 660,
+  "schema_cases_passed": 65,
+  "cases": [
+    {
+      "case": "valid business ID 1",
+      "passed": true
+    },
+    {
+      "case": "valid business ID 2147483647",
+      "passed": true
+    },
+    {
+      "case": "valid business ID 999999999",
+      "passed": true
+    },
+    {
+      "case": "valid business ID 2000000000",
+      "passed": true
+    },
+    {
+      "case": "valid business ID 2147483640",
+      "passed": true
+    },
+    {
+      "case": "reject business ID 0",
+      "passed": true
+    },
+    {
+      "case": "reject business ID 01",
+      "passed": true
+    },
+    {
+      "case": "reject business ID -1",
+      "passed": true
+    },
+    {
+      "case": "reject business ID +1",
+      "passed": true
+    },
+    {
+      "case": "reject business ID 1.0",
+      "passed": true
+    },
+    {
+      "case": "reject business ID 2147483648",
+      "passed": true
+    },
+    {
+      "case": "reject business ID 9999999999",
+      "passed": true
+    },
+    {
+      "case": "reject business ID 10000000000",
+      "passed": true
+    },
+    {
+      "case": "reject business ID 1",
+      "passed": true
+    },
+    {
+      "case": "valid version maximum",
+      "passed": true
+    },
+    {
+      "case": "reject version 0",
+      "passed": true
+    },
+    {
+      "case": "reject version -1",
+      "passed": true
+    },
+    {
+      "case": "reject version 1.5",
+      "passed": true
+    },
+    {
+      "case": "reject version 2147483648",
+      "passed": true
+    },
+    {
+      "case": "reject version 1",
+      "passed": true
+    },
+    {
+      "case": "public privacyVersion optional D90",
+      "passed": true
+    },
+    {
+      "case": "public ack mandatory",
+      "passed": true
+    },
+    {
+      "case": "public ack cannot be false",
+      "passed": true
+    },
+    {
+      "case": "public rejects mass-assigned status",
+      "passed": true
+    },
+    {
+      "case": "16:00 start allowed",
+      "passed": true
+    },
+    {
+      "case": "16:01 start rejected",
+      "passed": true
+    },
+    {
+      "case": "invalid date rejected",
+      "passed": true
+    },
+    {
+      "case": "unicode mailbox rejected",
+      "passed": true
+    },
+    {
+      "case": "ASCII punycode mailbox accepted",
+      "passed": true
+    },
+    {
+      "case": "new password 15 ASCII accepted",
+      "passed": true
+    },
+    {
+      "case": "new password 14 ASCII rejected",
+      "passed": true
+    },
+    {
+      "case": "new password 72 bytes accepted",
+      "passed": true
+    },
+    {
+      "case": "new password 73 bytes rejected",
+      "passed": true
+    },
+    {
+      "case": "new password 15 non-BMP code points accepted",
+      "passed": true
+    },
+    {
+      "case": "new password over 72 UTF8 bytes rejected",
+      "passed": true
+    },
+    {
+      "case": "100 assignments accepted",
+      "passed": true
+    },
+    {
+      "case": "101 assignments rejected",
+      "passed": true
+    },
+    {
+      "case": "duplicate assignments rejected",
+      "passed": true
+    },
+    {
+      "case": "duplicate roles rejected",
+      "passed": true
+    },
+    {
+      "case": "employee patch rejects initialPassword",
+      "passed": true
+    },
+    {
+      "case": "restricted update requires schedule",
+      "passed": true
+    },
+    {
+      "case": "restricted update supports explicit clears",
+      "passed": true
+    },
+    {
+      "case": "restricted reception minimal allowed",
+      "passed": true
+    },
+    {
+      "case": "restricted reception rejects name",
+      "passed": true
+    },
+    {
+      "case": "restricted reception rejects code",
+      "passed": true
+    },
+    {
+      "case": "restricted reception rejects organization",
+      "passed": true
+    },
+    {
+      "case": "restricted reception rejects coordinationNote",
+      "passed": true
+    },
+    {
+      "case": "restricted reception rejects serviceId",
+      "passed": true
+    },
+    {
+      "case": "role patch rejects unknown grant",
+      "passed": true
+    },
+    {
+      "case": "secret response cannot expose value",
+      "passed": true
+    },
+    {
+      "case": "SMTP supported values accepted",
+      "passed": true
+    },
+    {
+      "case": "SMTP invalid settings ['endpoint']",
+      "passed": true
+    },
+    {
+      "case": "SMTP invalid settings ['port']",
+      "passed": true
+    },
+    {
+      "case": "SMTP invalid settings ['port']",
+      "passed": true
+    },
+    {
+      "case": "SMTP invalid settings ['port']",
+      "passed": true
+    },
+    {
+      "case": "SMTP invalid settings ['tlsMode']",
+      "passed": true
+    },
+    {
+      "case": "SMTP invalid settings ['host']",
+      "passed": true
+    },
+    {
+      "case": "SMTP invalid settings ['password']",
+      "passed": true
+    },
+    {
+      "case": "SMTP maximum port",
+      "passed": true
+    },
+    {
+      "case": "SMTP secret clear allowlist",
+      "passed": true
+    },
+    {
+      "case": "SMTP unsupported clear key",
+      "passed": true
+    },
+    {
+      "case": "view query {\"view\": \"dashboard\", \"date\": \"2030-01-02\", \"page\": 1}",
+      "passed": true
+    },
+    {
+      "case": "view query {\"view\": \"dashboard\", \"date\": \"2030-01-02\", \"q\": \"private\"}",
+      "passed": true
+    },
+    {
+      "case": "view query {\"view\": \"reception\", \"mode\": \"checkout\"}",
+      "passed": true
+    },
+    {
+      "case": "view query {\"view\": \"reception\"}",
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "No application build, backend test, database, container or live API operation.",
+    "OpenAPI and JSON Schema cannot enforce PG authority, stateful replay, clocks, locks, byte-length extensions or delivery behavior.",
+    "Deferred implementation/release gates remain listed in the artifact; document validation does not verify runtime behavior or authorize implementation."
+  ],
+  "selected_decisions_sequential": 100,
+  "diagram_entity_rows": 20,
+  "artifact_sha256": "42ff8b17592579266fe67aa232980dabcb15b3c3fcd1d11028dd55365f8c0cde"
+}

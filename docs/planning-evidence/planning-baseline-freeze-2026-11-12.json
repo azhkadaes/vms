@@ -1,0 +1,49 @@
+{
+  "status": "approved-frozen-planning-baseline",
+  "date": "2026-11-12",
+  "timezone": "Asia/Makassar",
+  "approvalSource": {
+    "threadId": "01a1ca52-c89c-7c22-9a07-88b31f9d5c86",
+    "questionCallId": "call_8d43793f7c674c40b7b15331ebbfa6f7",
+    "selection": "Approve the planning baseline; freeze planning documents only and retain implementation/release gates."
+  },
+  "scope": "Reviewed planning baseline and labelled proposals; no application, DB/container, migration or deployment authorization. Reference-first future decisions and deferred development backlog retained.",
+  "files": [
+    {
+      "path": "BACKEND-PLAN-2026-11-11.md",
+      "sha256": "c32be9be5ad746f664b1756b49fe78bf0ed804e5bf33775545cca2a4aeb4432b"
+    },
+    {
+      "path": "BACKEND-API-CONTRACT-2026-11-11.md",
+      "sha256": "a56840b541b31c8746530f4e68f7b0bfb5711df43ed231919b0568537b133cf4"
+    },
+    {
+      "path": "BACKEND-SCHEMA-EVIDENCE-2026-11-11.md",
+      "sha256": "1eab649f59a58d036360130c659632b427f2ff9826e47ba74a267d1a1e9bb910"
+    },
+    {
+      "path": "BACKEND-PLANNING-REVIEW-2026-11-11.md",
+      "sha256": "666213d555294bad677dec5bff81e32fec05fb9c0f00b90e77f57f414bf10c9c"
+    },
+    {
+      "path": "BACKEND-OPENAPI-2026-11-12.json",
+      "sha256": "42ff8b17592579266fe67aa232980dabcb15b3c3fcd1d11028dd55365f8c0cde"
+    },
+    {
+      "path": "BACKEND-DEVELOPMENT-DECISIONS-LATER.md",
+      "sha256": "c3613f80e674bfd088b20aa376315178eace231936537f0fe984cc472a7d5141"
+    },
+    {
+      "path": "BACKEND-PLANNING-CHECKPOINT-2026-11-11.md",
+      "sha256": "7dfe6ef5459d5ce7df99827ff8d3c6368568b532ad104cb2cbaaf55483f81943"
+    },
+    {
+      "path": "planning-evidence/validate-planned-openapi.py",
+      "sha256": "d2bb361f4943e411b8d6abe4203c2b3f126a42d07689f6773dcc26d58eac6c82"
+    },
+    {
+      "path": "planning-evidence/openapi-validation-2026-11-12.json",
+      "sha256": "79f3a3d5e099efa1a1856d1014c6774fd686bdea024f5125f863b524b8eeb916"
+    }
+  ]
+}

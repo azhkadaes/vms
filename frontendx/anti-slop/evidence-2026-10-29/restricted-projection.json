@@ -1,0 +1,14 @@
+{
+  "createdStatus": 201,
+  "approvedStatus": 200,
+  "receptionistWithoutCredential": {
+    "name": "Audit Restricted Person",
+    "host": "Direktorat Data dan Kecerdasan Buatan",
+    "organization": "Audit Private Org",
+    "visitors": [
+      "Audit Restricted Person"
+    ]
+  },
+  "assignedPAReadsRestricted": false,
+  "superAdminReadsRestricted": false
+}

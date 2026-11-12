@@ -1,0 +1,12 @@
+[
+  {
+    "app": "admin",
+    "exactConfiguredPrettierOutput": true,
+    "nonWhitespaceContentUnchanged": false
+  },
+  {
+    "app": "visitor",
+    "exactConfiguredPrettierOutput": true,
+    "nonWhitespaceContentUnchanged": false
+  }
+]

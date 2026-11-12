@@ -1,0 +1,1326 @@
+[
+  {
+    "name": "appointment",
+    "width": 1440,
+    "docWidth": 1440,
+    "boxes": [
+      {
+        "cls": "modal staff-appointment-modal",
+        "w": 660,
+        "scroll": 660
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 660,
+        "scroll": 660
+      }
+    ],
+    "controls": [
+      {
+        "id": "appointment-officerId",
+        "type": "select-one",
+        "font": "16px",
+        "w": 604
+      },
+      {
+        "id": "",
+        "type": "text",
+        "font": "16px",
+        "w": 1
+      }
+    ]
+  },
+  {
+    "name": "appointment",
+    "width": 768,
+    "docWidth": 768,
+    "boxes": [
+      {
+        "cls": "modal staff-appointment-modal",
+        "w": 660,
+        "scroll": 660
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 660,
+        "scroll": 660
+      }
+    ],
+    "controls": [
+      {
+        "id": "appointment-officerId",
+        "type": "select-one",
+        "font": "16px",
+        "w": 604
+      },
+      {
+        "id": "",
+        "type": "date",
+        "font": "16px",
+        "w": 292
+      },
+      {
+        "id": "",
+        "type": "text",
+        "font": "16px",
+        "w": 1
+      }
+    ]
+  },
+  {
+    "name": "appointment",
+    "width": 390,
+    "docWidth": 390,
+    "boxes": [
+      {
+        "cls": "modal staff-appointment-modal",
+        "w": 358,
+        "scroll": 358
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 358,
+        "scroll": 358
+      }
+    ],
+    "controls": [
+      {
+        "id": "appointment-officerId",
+        "type": "select-one",
+        "font": "16px",
+        "w": 314
+      },
+      {
+        "id": "",
+        "type": "date",
+        "font": "16px",
+        "w": 314
+      },
+      {
+        "id": "",
+        "type": "text",
+        "font": "16px",
+        "w": 1
+      }
+    ]
+  },
+  {
+    "name": "appointment",
+    "width": 320,
+    "docWidth": 320,
+    "boxes": [
+      {
+        "cls": "modal staff-appointment-modal",
+        "w": 288,
+        "scroll": 288
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 288,
+        "scroll": 288
+      }
+    ],
+    "controls": [
+      {
+        "id": "appointment-officerId",
+        "type": "select-one",
+        "font": "16px",
+        "w": 244
+      },
+      {
+        "id": "",
+        "type": "date",
+        "font": "16px",
+        "w": 244
+      },
+      {
+        "id": "",
+        "type": "text",
+        "font": "16px",
+        "w": 1
+      }
+    ]
+  },
+  {
+    "name": "restricted",
+    "width": 1440,
+    "docWidth": 1440,
+    "boxes": [
+      {
+        "cls": "appointment-type-options",
+        "w": 310,
+        "scroll": 310
+      },
+      {
+        "cls": "modal",
+        "w": 660,
+        "scroll": 660
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 660,
+        "scroll": 660
+      }
+    ],
+    "controls": [
+      {
+        "id": "",
+        "type": "date",
+        "font": "15px",
+        "w": 292
+      },
+      {
+        "id": "",
+        "type": "text",
+        "font": "15px",
+        "w": 1
+      },
+      {
+        "id": "restricted-name",
+        "type": "text",
+        "font": "15px",
+        "w": 292
+      },
+      {
+        "id": "restricted-organization",
+        "type": "text",
+        "font": "15px",
+        "w": 292
+      },
+      {
+        "id": "restricted-serviceId",
+        "type": "text",
+        "font": "15px",
+        "w": 292
+      },
+      {
+        "id": "restricted-host",
+        "type": "select-one",
+        "font": "15px",
+        "w": 292
+      }
+    ]
+  },
+  {
+    "name": "restricted",
+    "width": 768,
+    "docWidth": 768,
+    "boxes": [
+      {
+        "cls": "appointment-type-options",
+        "w": 310,
+        "scroll": 310
+      },
+      {
+        "cls": "modal",
+        "w": 660,
+        "scroll": 660
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 660,
+        "scroll": 660
+      }
+    ],
+    "controls": [
+      {
+        "id": "",
+        "type": "date",
+        "font": "15px",
+        "w": 292
+      },
+      {
+        "id": "",
+        "type": "text",
+        "font": "15px",
+        "w": 1
+      },
+      {
+        "id": "restricted-name",
+        "type": "text",
+        "font": "15px",
+        "w": 292
+      },
+      {
+        "id": "restricted-organization",
+        "type": "text",
+        "font": "15px",
+        "w": 292
+      },
+      {
+        "id": "restricted-serviceId",
+        "type": "text",
+        "font": "15px",
+        "w": 292
+      },
+      {
+        "id": "restricted-host",
+        "type": "select-one",
+        "font": "15px",
+        "w": 292
+      }
+    ]
+  },
+  {
+    "name": "restricted",
+    "width": 390,
+    "docWidth": 390,
+    "boxes": [
+      {
+        "cls": "appointment-type-options",
+        "w": 310,
+        "scroll": 310
+      },
+      {
+        "cls": "modal",
+        "w": 358,
+        "scroll": 358
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 358,
+        "scroll": 358
+      }
+    ],
+    "controls": [
+      {
+        "id": "",
+        "type": "date",
+        "font": "15px",
+        "w": 314
+      },
+      {
+        "id": "",
+        "type": "text",
+        "font": "15px",
+        "w": 1
+      },
+      {
+        "id": "restricted-name",
+        "type": "text",
+        "font": "15px",
+        "w": 314
+      },
+      {
+        "id": "restricted-organization",
+        "type": "text",
+        "font": "15px",
+        "w": 314
+      },
+      {
+        "id": "restricted-serviceId",
+        "type": "text",
+        "font": "15px",
+        "w": 314
+      },
+      {
+        "id": "restricted-host",
+        "type": "select-one",
+        "font": "15px",
+        "w": 314
+      }
+    ]
+  },
+  {
+    "name": "restricted",
+    "width": 320,
+    "docWidth": 320,
+    "boxes": [
+      {
+        "cls": "appointment-type-options",
+        "w": 272,
+        "scroll": 272
+      },
+      {
+        "cls": "modal",
+        "w": 288,
+        "scroll": 288
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 288,
+        "scroll": 288
+      }
+    ],
+    "controls": [
+      {
+        "id": "",
+        "type": "date",
+        "font": "15px",
+        "w": 244
+      },
+      {
+        "id": "",
+        "type": "text",
+        "font": "15px",
+        "w": 1
+      },
+      {
+        "id": "restricted-name",
+        "type": "text",
+        "font": "15px",
+        "w": 244
+      },
+      {
+        "id": "restricted-organization",
+        "type": "text",
+        "font": "15px",
+        "w": 244
+      },
+      {
+        "id": "restricted-serviceId",
+        "type": "text",
+        "font": "15px",
+        "w": 244
+      },
+      {
+        "id": "restricted-host",
+        "type": "select-one",
+        "font": "15px",
+        "w": 244
+      }
+    ]
+  },
+  {
+    "name": "detail",
+    "width": 1440,
+    "docWidth": 1440,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 660,
+        "scroll": 660
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 660,
+        "scroll": 660
+      }
+    ],
+    "controls": []
+  },
+  {
+    "name": "detail",
+    "width": 768,
+    "docWidth": 768,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 660,
+        "scroll": 660
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 660,
+        "scroll": 660
+      }
+    ],
+    "controls": []
+  },
+  {
+    "name": "detail",
+    "width": 390,
+    "docWidth": 390,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 358,
+        "scroll": 358
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 358,
+        "scroll": 358
+      }
+    ],
+    "controls": []
+  },
+  {
+    "name": "detail",
+    "width": 320,
+    "docWidth": 320,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 288,
+        "scroll": 288
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 288,
+        "scroll": 288
+      }
+    ],
+    "controls": []
+  },
+  {
+    "name": "employee",
+    "width": 1440,
+    "docWidth": 1440,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 660,
+        "scroll": 660
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 660,
+        "scroll": 660
+      }
+    ],
+    "controls": [
+      {
+        "id": "person-name",
+        "type": "text",
+        "font": "15px",
+        "w": 292
+      },
+      {
+        "id": "person-email",
+        "type": "email",
+        "font": "15px",
+        "w": 292
+      },
+      {
+        "id": "person-role",
+        "type": "select-one",
+        "font": "15px",
+        "w": 604
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "person-password",
+        "type": "password",
+        "font": "15px",
+        "w": 604
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.28px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      }
+    ]
+  },
+  {
+    "name": "employee",
+    "width": 768,
+    "docWidth": 768,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 660,
+        "scroll": 660
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 660,
+        "scroll": 660
+      }
+    ],
+    "controls": [
+      {
+        "id": "person-name",
+        "type": "text",
+        "font": "15px",
+        "w": 292
+      },
+      {
+        "id": "person-email",
+        "type": "email",
+        "font": "15px",
+        "w": 292
+      },
+      {
+        "id": "person-role",
+        "type": "select-one",
+        "font": "15px",
+        "w": 604
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "person-password",
+        "type": "password",
+        "font": "15px",
+        "w": 604
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.28px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      }
+    ]
+  },
+  {
+    "name": "employee",
+    "width": 390,
+    "docWidth": 390,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 358,
+        "scroll": 358
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 358,
+        "scroll": 358
+      }
+    ],
+    "controls": [
+      {
+        "id": "person-name",
+        "type": "text",
+        "font": "15px",
+        "w": 314
+      },
+      {
+        "id": "person-email",
+        "type": "email",
+        "font": "15px",
+        "w": 314
+      },
+      {
+        "id": "person-role",
+        "type": "select-one",
+        "font": "15px",
+        "w": 314
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "person-password",
+        "type": "password",
+        "font": "15px",
+        "w": 314
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.28px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      }
+    ]
+  },
+  {
+    "name": "employee",
+    "width": 320,
+    "docWidth": 320,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 288,
+        "scroll": 288
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 288,
+        "scroll": 288
+      }
+    ],
+    "controls": [
+      {
+        "id": "person-name",
+        "type": "text",
+        "font": "15px",
+        "w": 244
+      },
+      {
+        "id": "person-email",
+        "type": "email",
+        "font": "15px",
+        "w": 244
+      },
+      {
+        "id": "person-role",
+        "type": "select-one",
+        "font": "15px",
+        "w": 244
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "person-password",
+        "type": "password",
+        "font": "15px",
+        "w": 244
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.28px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      }
+    ]
+  },
+  {
+    "name": "role",
+    "width": 1440,
+    "docWidth": 1440,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 660,
+        "scroll": 660
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 660,
+        "scroll": 660
+      }
+    ],
+    "controls": [
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      }
+    ]
+  },
+  {
+    "name": "role",
+    "width": 768,
+    "docWidth": 768,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 660,
+        "scroll": 660
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 660,
+        "scroll": 660
+      }
+    ],
+    "controls": [
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      }
+    ]
+  },
+  {
+    "name": "role",
+    "width": 390,
+    "docWidth": 390,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 358,
+        "scroll": 358
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 358,
+        "scroll": 358
+      }
+    ],
+    "controls": [
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      }
+    ]
+  },
+  {
+    "name": "role",
+    "width": 320,
+    "docWidth": 320,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 288,
+        "scroll": 288
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 288,
+        "scroll": 288
+      }
+    ],
+    "controls": [
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      }
+    ]
+  },
+  {
+    "name": "integration",
+    "width": 1440,
+    "docWidth": 1440,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 660,
+        "scroll": 660
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 660,
+        "scroll": 660
+      }
+    ],
+    "controls": [
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "integration-endpoint",
+        "type": "url",
+        "font": "15px",
+        "w": 604
+      },
+      {
+        "id": "integration-sender",
+        "type": "email",
+        "font": "15px",
+        "w": 604
+      },
+      {
+        "id": "integration-credential",
+        "type": "password",
+        "font": "15px",
+        "w": 604
+      }
+    ]
+  },
+  {
+    "name": "integration",
+    "width": 768,
+    "docWidth": 768,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 660,
+        "scroll": 660
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 660,
+        "scroll": 660
+      }
+    ],
+    "controls": [
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "integration-endpoint",
+        "type": "url",
+        "font": "15px",
+        "w": 604
+      },
+      {
+        "id": "integration-sender",
+        "type": "email",
+        "font": "15px",
+        "w": 604
+      },
+      {
+        "id": "integration-credential",
+        "type": "password",
+        "font": "15px",
+        "w": 604
+      }
+    ]
+  },
+  {
+    "name": "integration",
+    "width": 390,
+    "docWidth": 390,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 358,
+        "scroll": 358
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 358,
+        "scroll": 358
+      }
+    ],
+    "controls": [
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "integration-endpoint",
+        "type": "url",
+        "font": "15px",
+        "w": 314
+      },
+      {
+        "id": "integration-sender",
+        "type": "email",
+        "font": "15px",
+        "w": 314
+      },
+      {
+        "id": "integration-credential",
+        "type": "password",
+        "font": "15px",
+        "w": 314
+      }
+    ]
+  },
+  {
+    "name": "integration",
+    "width": 320,
+    "docWidth": 320,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 288,
+        "scroll": 288
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 288,
+        "scroll": 288
+      }
+    ],
+    "controls": [
+      {
+        "id": "",
+        "type": "checkbox",
+        "font": "13.6px",
+        "w": 20
+      },
+      {
+        "id": "integration-endpoint",
+        "type": "url",
+        "font": "15px",
+        "w": 244
+      },
+      {
+        "id": "integration-sender",
+        "type": "email",
+        "font": "15px",
+        "w": 244
+      },
+      {
+        "id": "integration-credential",
+        "type": "password",
+        "font": "15px",
+        "w": 244
+      }
+    ]
+  },
+  {
+    "name": "code",
+    "width": 1440,
+    "docWidth": 1440,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 660,
+        "scroll": 660
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 660,
+        "scroll": 660
+      }
+    ],
+    "controls": [
+      {
+        "id": "booking-code",
+        "type": "text",
+        "font": "15px",
+        "w": 347
+      }
+    ]
+  },
+  {
+    "name": "code",
+    "width": 768,
+    "docWidth": 768,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 660,
+        "scroll": 660
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 660,
+        "scroll": 660
+      }
+    ],
+    "controls": [
+      {
+        "id": "booking-code",
+        "type": "text",
+        "font": "15px",
+        "w": 342
+      }
+    ]
+  },
+  {
+    "name": "code",
+    "width": 390,
+    "docWidth": 390,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 358,
+        "scroll": 358
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 358,
+        "scroll": 358
+      }
+    ],
+    "controls": [
+      {
+        "id": "booking-code",
+        "type": "text",
+        "font": "15px",
+        "w": 283
+      }
+    ]
+  },
+  {
+    "name": "code",
+    "width": 320,
+    "docWidth": 320,
+    "boxes": [
+      {
+        "cls": "modal",
+        "w": 288,
+        "scroll": 288
+      },
+      {
+        "cls": "modal-scroll",
+        "w": 288,
+        "scroll": 288
+      }
+    ],
+    "controls": [
+      {
+        "id": "booking-code",
+        "type": "text",
+        "font": "15px",
+        "w": 244
+      }
+    ]
+  },
+  {
+    "name": "create-menu",
+    "width": 1440,
+    "docWidth": 1440,
+    "boxes": [
+      {
+        "cls": "appointment-type-options",
+        "w": 310,
+        "scroll": 310
+      }
+    ],
+    "controls": []
+  },
+  {
+    "name": "create-menu",
+    "width": 768,
+    "docWidth": 768,
+    "boxes": [
+      {
+        "cls": "appointment-type-options",
+        "w": 310,
+        "scroll": 310
+      }
+    ],
+    "controls": []
+  },
+  {
+    "name": "create-menu",
+    "width": 390,
+    "docWidth": 390,
+    "boxes": [
+      {
+        "cls": "appointment-type-options",
+        "w": 310,
+        "scroll": 310
+      }
+    ],
+    "controls": []
+  },
+  {
+    "name": "create-menu",
+    "width": 320,
+    "docWidth": 320,
+    "boxes": [
+      {
+        "cls": "appointment-type-options",
+        "w": 272,
+        "scroll": 272
+      }
+    ],
+    "controls": []
+  },
+  {
+    "name": "reflow-ltr",
+    "width": 720,
+    "docWidth": 720
+  },
+  {
+    "name": "reflow-rtl",
+    "width": 720,
+    "docWidth": 720
+  }
+]

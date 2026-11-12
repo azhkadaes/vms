@@ -1,0 +1,13 @@
+- dialog "Detail kunjungan":
+  - heading "Detail kunjungan" [level=2]
+  - paragraph: Identitas, jadwal, dan riwayat kunjungan.
+  - button "Tutup dialog"
+  - region "Rincian kunjungan terbatas":
+    - heading "TRB-1b612c31" [level=3]
+    - term: Jadwal · WITA
+    - definition: 19 Agustus 2099 · 10:00 (60 menit)
+    - term: Tempat
+    - definition: Belum ditentukan
+    - paragraph: Identitas tidak ditampilkan di rincian umum. Gunakan kode atau QR untuk verifikasi kedatangan.
+  - text: Disetujui
+  - list

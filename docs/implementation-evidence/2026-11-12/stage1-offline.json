@@ -1,0 +1,35 @@
+{
+  "scope": "stage1 offline checks only",
+  "go_version": "go1.27.4",
+  "passed_test_cases": 29,
+  "go_test_all": "passed",
+  "go_vet_all": "passed",
+  "entrypoints_built": [
+    "cmd/vms-api",
+    "cmd/vms-migrate"
+  ],
+  "integration_suite": "compiled only; not executed",
+  "migration_plan": "parsed only: 11 up statements; no SQL execution",
+  "govulncheck": {
+    "version": "v1.1.4",
+    "targets": [
+      "cmd/vms-api",
+      "cmd/vms-migrate"
+    ],
+    "result": "No vulnerabilities found."
+  },
+  "implementation_coverage": {
+    "business_http_operations": 1,
+    "planned_operations": 38,
+    "business_tables_defined": 3,
+    "original_business_entities": 20
+  },
+  "container_or_database_mutation_run": false,
+  "files": {
+    "go.mod": "95726d89999255aef4d61c5a0a79583c3c65a73bf8c52c96c70d7fc933b6c1ed",
+    "go.sum": "f37dc3dbf6ba4eeea1e7b0a5a2b00c3ef8be4ce2ff76e0c3e5965b5aa04a65b4",
+    "Dockerfile.vms": "92a355e6ecc397db8cc24098846be429e9207dc7d755d6f38382a92fff0ee27e",
+    "compose.vms-stage1.yml": "5159c9552972bff99b0b7db6e7bdb6460dc0d38a0453c536bb0195947d7260ef",
+    "migration\\vms\\files\\202611120001_catalog_and_public_limits.sql": "e49bd47db2b9b2a3f50eadffcc5075d29f9723cacd0d22fe07afb82a6b691285"
+  }
+}

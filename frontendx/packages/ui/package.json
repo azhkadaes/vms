@@ -1,0 +1,22 @@
+{
+  "name": "@vms/ui",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./shell": "./src/shell.tsx",
+    "./language": "./src/language.tsx",
+    "./date-picker": "./src/date-picker.tsx",
+    "./time-picker": "./src/time-picker.tsx",
+    "./input-otp": "./src/input-otp.tsx",
+    "./toast": "./src/toast.tsx",
+    "./reference-data-notice": "./src/reference-data-notice.tsx",
+    "./styles.css": "./src/styles.css"
+  },
+  "dependencies": {
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
+    "@radix-ui/react-popover": "1.1.15",
+    "date-fns": "^4.4.0",
+    "react-day-picker": "^10.0.2"
+  }
+}

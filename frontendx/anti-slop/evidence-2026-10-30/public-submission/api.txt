@@ -1,0 +1,142 @@
+
+> test:preview
+> node --experimental-strip-types --test tests/*.integration.mjs
+
+TAP version 13
+# (node:10392) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: preview retries, fixed rescheduling, and stale writes preserve booking state
+ok 1 - preview retries, fixed rescheduling, and stale writes preserve booking state
+  ---
+  duration_ms: 364.0279
+  ...
+# Subtest: visitor lookup and cancellation require the email and booking code together, without OTP
+ok 2 - visitor lookup and cancellation require the email and booking code together, without OTP
+  ---
+  duration_ms: 266.9171
+  ...
+# Subtest: PA rejection separates public and internal remarks across every visitor response
+ok 3 - PA rejection separates public and internal remarks across every visitor response
+  ---
+  duration_ms: 276.5881
+  ...
+# Subtest: Protocol Officer rejection separates public and internal remarks across every visitor response
+ok 4 - Protocol Officer rejection separates public and internal remarks across every visitor response
+  ---
+  duration_ms: 158.4148
+  ...
+# Subtest: Receptionist list and code/QR lookup exclude unapproved requests and retain completed visits
+ok 5 - Receptionist list and code/QR lookup exclude unapproved requests and retain completed visits
+  ---
+  duration_ms: 251.2962
+  ...
+# Subtest: rejection can be completed without an internal note
+ok 6 - rejection can be completed without an internal note
+  ---
+  duration_ms: 16.9645
+  ...
+# Subtest: PA creates scoped Pending appointments with safe idempotent retries
+ok 7 - PA creates scoped Pending appointments with safe idempotent retries
+  ---
+  duration_ms: 109.9814
+  ...
+# Subtest: Protocol Officer creates scoped Pending appointments with safe idempotent retries
+ok 8 - Protocol Officer creates scoped Pending appointments with safe idempotent retries
+  ---
+  duration_ms: 98.787
+  ...
+# (node:21908) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: public creation rejects missing/invalid fields with field errors and creates no partial record
+ok 9 - public creation rejects missing/invalid fields with field errors and creates no partial record
+  ---
+  duration_ms: 985.8435
+  ...
+# Subtest: public input normalization binds replays, derives server fields and rejects changed contents
+ok 10 - public input normalization binds replays, derives server fields and rejects changed contents
+  ---
+  duration_ms: 110.5391
+  ...
+# Subtest: concurrent duplicate POSTs commit one booking and one logical submission event
+ok 11 - concurrent duplicate POSTs commit one booking and one logical submission event
+  ---
+  duration_ms: 187.0812
+  ...
+# Subtest: recovery requires the original email and returns only the visitor projection
+ok 12 - recovery requires the original email and returns only the visitor projection
+  ---
+  duration_ms: 87.7771
+  ...
+# Subtest: resolving an absent reference seals it against late original creation
+ok 13 - resolving an absent reference seals it against late original creation
+  ---
+  duration_ms: 49.9348
+  ...
+# Subtest: an original POST still receiving its body cannot commit after conclusive missing recovery
+ok 14 - an original POST still receiving its body cannot commit after conclusive missing recovery
+  ---
+  duration_ms: 55.8545
+  ...
+# (node:6408) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Pending requests coexist; approval reserves only matching officer or room and leaves conflicts unchanged
+ok 15 - Pending requests coexist; approval reserves only matching officer or room and leaves conflicts unchanged
+  ---
+  duration_ms: 686.8776
+  ...
+# Subtest: competing approvals cannot both reserve the same resource
+ok 16 - competing approvals cannot both reserve the same resource
+  ---
+  duration_ms: 102.8234
+  ...
+# Subtest: approved restricted-host changes use the same policy and blank resources create no phantom reservation
+ok 17 - approved restricted-host changes use the same policy and blank resources create no phantom reservation
+  ---
+  duration_ms: 194.2011
+  ...
+# (node:13324) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: minimal Terbatas creation, payload-bound retry, edits and read-only role projections
+ok 18 - minimal Terbatas creation, payload-bound retry, edits and read-only role projections
+  ---
+  duration_ms: 1124.4454
+  ...
+# Subtest: reception general details redact identity; valid code/QR yields only permitted arrival identity
+ok 19 - reception general details redact identity; valid code/QR yields only permitted arrival identity
+  ---
+  duration_ms: 107.2665
+  ...
+# Subtest: Terbatas edits clear optional values, immediately revoke former PA access and reject legacy fields
+ok 20 - Terbatas edits clear optional values, immediately revoke former PA access and reject legacy fields
+  ---
+  duration_ms: 137.9061
+  ...
+# Subtest: preview enforces arrival cutoff 09:29:59.999 on every code/QR request
+ok 21 - preview enforces arrival cutoff 09:29:59.999 on every code/QR request
+  ---
+  duration_ms: 83.2181
+  ...
+# Subtest: preview enforces arrival cutoff 09:30:00.000 on every code/QR request
+ok 22 - preview enforces arrival cutoff 09:30:00.000 on every code/QR request
+  ---
+  duration_ms: 39.2746
+  ...
+# Subtest: preview enforces arrival cutoff 11:00:00.000 on every code/QR request
+ok 23 - preview enforces arrival cutoff 11:00:00.000 on every code/QR request
+  ---
+  duration_ms: 46.2318
+  ...
+# Subtest: preview enforces arrival cutoff 11:00:00.001 on every code/QR request
+ok 24 - preview enforces arrival cutoff 11:00:00.001 on every code/QR request
+  ---
+  duration_ms: 49.5072
+  ...
+1..24
+# tests 24
+# suites 0
+# pass 24
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3491.8604

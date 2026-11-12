@@ -1,0 +1,75 @@
+{
+  "recordedAt": "2026-11-12T14:42:53.3428451+08:00",
+  "scope": "isolated local VMS stage1 rehearsal; synthetic data only",
+  "project": "vms-backend-stage1",
+  "database": "vms_stage1",
+  "volume": "vms-backend-stage1_pg18_data",
+  "endpoints": {
+    "postgres": "127.0.0.1:55450",
+    "api": "http://127.0.0.1:58050"
+  },
+  "images": {
+    "postgres": "sha256:e3d24f6906d0760bf4da0dae872415391ededefad23fd471c47dc53b0ddf3c42",
+    "api": "sha256:7cc9ceec9b8775efa2f28d4f6373acf4c0297efb471eabfda05f4aaba028903d"
+  },
+  "migration": {
+    "syntheticCatalogRows": 5,
+    "runtimeBusinessSchemaCreate": false,
+    "initialFailure": "schema CREATE permission; inspected empty state, granted migrator-only database CREATE and retried",
+    "businessTables": 3,
+    "repeatApplied": 0,
+    "runtimeDatabaseCreate": false,
+    "supportTablesIncludingLedger": 3,
+    "volumeReset": false,
+    "applied": 1
+  },
+  "verification": {
+    "scope": "isolated vms_stage1 only",
+    "readiness": true,
+    "activeCatalogProjection": true,
+    "vipFromPosition": true,
+    "decimalStringIds": true,
+    "privateMetadataOmitted": true,
+    "uploadsDisabled": true,
+    "unknownQueryRejected": true,
+    "legacyRouteUnavailable": true,
+    "postgresConcurrencyAndRuntimeGrantTest": true,
+    "syntheticDirectoryDataRetained": true,
+    "visitorRegistrationOrLiveEmailEnabled": false
+  },
+  "restart": {
+    "scope": "isolated vms_stage1 only",
+    "apiRestartReadiness": true,
+    "previousAdmissionRecordRetained": true
+  },
+  "tests": {
+    "postgresIntegrationCases": 1,
+    "goVet": "passed after VIP mapping fix",
+    "postgresIntegrationFailures": 0,
+    "unitCases": 29,
+    "raceDetector": "not run: host GCC unavailable",
+    "unitFailures": 0
+  },
+  "frozenPlanningHashesUnchanged": true,
+  "pending": [
+    "37 business operations",
+    "17 business entities",
+    "identity/session",
+    "worker/outbox",
+    "frontend integration",
+    "production deployment",
+    "existing-data cutover",
+    "full source-build Dockerfile verification",
+    "OTel exporter acceptance"
+  ],
+  "files": {
+    "go.mod": "95726d89999255aef4d61c5a0a79583c3c65a73bf8c52c96c70d7fc933b6c1ed",
+    "go.sum": "f37dc3dbf6ba4eeea1e7b0a5a2b00c3ef8be4ce2ff76e0c3e5965b5aa04a65b4",
+    "Dockerfile.vms-local": "69f0c8689cd98a65474886e996819329f8d6ae9b0d5fc14112424775b2429a70",
+    "compose.vms-stage1.yml": "4b84d7207fa2ebd40a3001982079f243a8f3c8d142b82abb831ba70370f89201",
+    "ops/stage1/init-db.sh": "86e734fc02bb970b300a5425eec16d0d784c815726282fb036c49a6908557d2d",
+    "ops/stage1/verify.ps1": "38c8301218c44a6afe34de73b8a5ad36d7579e4ec688fd2efc1f90bb73b2964a",
+    "internal/repository/catalog/implementation/catalog_repository.go": "98fadbda692ac461656487c30ae8bc12fa9ae18f1f29f6bcc342fe7dc3ccf118",
+    "migration/vms/files/202611120001_catalog_and_public_limits.sql": "e49bd47db2b9b2a3f50eadffcc5075d29f9723cacd0d22fe07afb82a6b691285"
+  }
+}

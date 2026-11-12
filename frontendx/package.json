@@ -1,0 +1,54 @@
+{
+  "name": "vms-frontend-next",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "node tooling/dev.mjs",
+    "serve:backend": "node tooling/backend-site.mjs",
+    "test:backend-site": "node --test tests/backend-site.test.mjs",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "test:preview": "node --experimental-strip-types --test tests/*.integration.mjs",
+    "test:refresh": "node --test tests/booking-refresh.browser.mjs",
+    "test:reservations": "node --test tests/reservations.browser.mjs",
+    "test:restricted-arrival": "node --experimental-strip-types --test tests/restricted-arrival.browser.mjs",
+    "test:submission": "node --experimental-strip-types --test tests/public-submission.browser.mjs",
+    "test:reports": "node --experimental-strip-types --test tests/reports.browser.mjs",
+    "test:employees": "node --test tests/employees.browser.mjs",
+    "test:public-history": "node --experimental-strip-types --test tests/public-history.browser.mjs",
+    "test:browser": "node tooling/browser-check.mjs",
+    "test:production": "node --test tests/production.browser.mjs",
+    "check": "node tooling/check.mjs",
+    "format": "prettier --write apps packages/data/src tooling tests package.json tsconfig.json packages/ui/src/index.tsx packages/ui/src/shell.tsx packages/ui/src/date-picker-control.tsx packages/ui/src/reference-data-notice.tsx",
+    "format:check": "prettier --check apps packages/data/src tooling tests package.json tsconfig.json packages/ui/src/index.tsx packages/ui/src/shell.tsx packages/ui/src/date-picker-control.tsx packages/ui/src/reference-data-notice.tsx"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "5.2.2",
+    "@radix-ui/react-dialog": "1.1.15",
+    "@tanstack/react-query": "5.101.1",
+    "lucide-react": "0.575.0",
+    "qrcode": "^1.5.4",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "react-hook-form": "7.71.2",
+    "react-router": "^7.18.4",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@types/node": "22.16.5",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "19.2.0",
+    "@types/react-dom": "19.2.0",
+    "@vitejs/plugin-react": "4.7.0",
+    "playwright": "1.64.1",
+    "prettier": "3.9.10",
+    "typescript": "5.9.3",
+    "vite": "^6.4.5"
+  }
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "Step": "typecheck",
+    "ExitCode": 0
+  },
+  {
+    "Step": "test",
+    "ExitCode": 0
+  },
+  {
+    "Step": "test:preview",
+    "ExitCode": 0
+  },
+  {
+    "Step": "build",
+    "ExitCode": 0
+  },
+  {
+    "Step": "test:browser",
+    "ExitCode": 1
+  },
+  {
+    "Step": "test:production",
+    "ExitCode": 0
+  }
+]

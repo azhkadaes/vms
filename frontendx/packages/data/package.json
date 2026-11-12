@@ -1,0 +1,17 @@
+{
+  "name": "@vms/data",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./query": "./src/query.tsx",
+    "./config": "./src/config.ts",
+    "./domain": "./src/domain.ts",
+    "./validation": "./src/validation.ts",
+    "./submission": "./src/submission.ts",
+    "./reports": "./src/reports.ts",
+    "./management": "./src/management.ts",
+    "./management-contract": "./src/management-contract.ts",
+    "./attachments": "./src/attachments.ts"
+  }
+}

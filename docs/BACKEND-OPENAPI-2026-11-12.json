@@ -1,0 +1,6720 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "VMS planned frontend HTTP API",
+    "version": "1.0.0-planning-2026-11-12",
+    "description": "APPROVED PLANNING BASELINE ONLY. 38 business operations, D01-D100 and the reviewed technical proposals. User approved the planning freeze on12 November2026 WITA. No application, database/container, migration or deployment authorization; no runtime correctness claim. Reference-first future decision policy and recorded development/release gates remain."
+  },
+  "servers": [
+    {
+      "url": "/v1",
+      "description": "Relative same-origin API; configured visitor/staff origins expose only their audience routes."
+    }
+  ],
+  "tags": [
+    {
+      "name": "Identity"
+    },
+    {
+      "name": "Directory"
+    },
+    {
+      "name": "Visits"
+    },
+    {
+      "name": "Documents"
+    },
+    {
+      "name": "Admission"
+    },
+    {
+      "name": "Administration"
+    },
+    {
+      "name": "Reporting"
+    }
+  ],
+  "paths": {
+    "/staff/sessions": {
+      "post": {
+        "operationId": "createSession",
+        "summary": "Sign in",
+        "tags": [
+          "Identity"
+        ],
+        "security": [
+          {
+            "AnonymousBinding": [],
+            "CSRFCookie": [],
+            "SignedCSRF": []
+          }
+        ],
+        "x-inventory-number": 1,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResult"
+                }
+              }
+            },
+            "headers": {
+              "Set-Cookie": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Separate Set-Cookie header for each cookie; preserve Secure/HttpOnly/host-only/SameSite=Lax/path attributes. Never join with commas."
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        },
+        "description": "Anonymous signed binding initialized through private staff HTML delivery (30m). Generic credentials; limits 5 failed/account/15m + 100 requests/IP/15m. Successful login replaces anonymous binding. No public bootstrap operation.",
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uri"
+            },
+            "description": "Must exactly match configured staff origin; URI syntax alone grants no authority."
+          }
+        ]
+      }
+    },
+    "/staff/session": {
+      "get": {
+        "operationId": "getSession",
+        "summary": "Read current session",
+        "tags": [
+          "Identity"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 2,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Session"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteSession",
+        "summary": "Sign out",
+        "tags": [
+          "Identity"
+        ],
+        "security": [
+          {
+            "RefreshCookie": [],
+            "SignedCSRF": [],
+            "CSRFCookie": []
+          }
+        ],
+        "x-inventory-number": 3,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "204": {
+            "description": "Signed out; no response body",
+            "headers": {
+              "Set-Cookie": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Separate Set-Cookie header for each cookie; preserve Secure/HttpOnly/host-only/SameSite=Lax/path attributes. Never join with commas."
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "description": "Safe for absent/expired refresh; revoke if identifiable and clear cookies. Limiter exemption does not make DB revocation failure a success.",
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uri"
+            },
+            "description": "Must exactly match configured staff origin; URI syntax alone grants no authority."
+          }
+        ]
+      }
+    },
+    "/staff/password": {
+      "post": {
+        "operationId": "changePassword",
+        "summary": "Change password",
+        "tags": [
+          "Identity"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 4,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResult"
+                }
+              }
+            },
+            "headers": {
+              "Set-Cookie": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Separate Set-Cookie header for each cookie; preserve Secure/HttpOnly/host-only/SameSite=Lax/path attributes. Never join with commas."
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordChange"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        },
+        "description": "Password-change gate permitted; 5 attempts/employee/15m. Revoke others and replace current credentials, preserve login/absolute deadline."
+      }
+    },
+    "/staff/session/role": {
+      "post": {
+        "operationId": "selectRole",
+        "summary": "Select current session role",
+        "tags": [
+          "Identity"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 5,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleSelect"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        },
+        "description": "Assigned role only; revise current-session authority, shared tabs, no union. Other device role unaffected."
+      }
+    },
+    "/public/catalogs": {
+      "get": {
+        "operationId": "publicCatalogs",
+        "summary": "Read public catalogs",
+        "tags": [
+          "Directory"
+        ],
+        "security": [],
+        "x-inventory-number": 6,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Catalogs"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        }
+      }
+    },
+    "/staff/catalogs": {
+      "get": {
+        "operationId": "staffCatalogs",
+        "summary": "Read authorized staff catalogs",
+        "tags": [
+          "Directory"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 7,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Catalogs"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        }
+      }
+    },
+    "/public/bookings": {
+      "post": {
+        "operationId": "publicCreateBooking",
+        "summary": "Submit standard booking",
+        "tags": [
+          "Visits"
+        ],
+        "security": [],
+        "x-inventory-number": 8,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Same-reference committed replay; no additional write/notification",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicBooking"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicBooking"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicCreate"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        },
+        "description": "Create Pending; retained idempotent outcome. Resolve committed reference before mutable privacy/version validation. Request limit30/min/IP; new commits30/hour/IP."
+      }
+    },
+    "/public/submissions/resolve": {
+      "post": {
+        "operationId": "resolveSubmission",
+        "summary": "Resolve and close submission reference",
+        "tags": [
+          "Visits"
+        ],
+        "security": [],
+        "x-inventory-number": 9,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Resolution"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmissionResolve"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        },
+        "description": "Serialize with create. not_committed closes key against delayed create; uncertainty/503 is never not_committed."
+      }
+    },
+    "/public/lookup": {
+      "post": {
+        "operationId": "publicLookup",
+        "summary": "Look up standard booking",
+        "tags": [
+          "Visits"
+        ],
+        "security": [],
+        "x-inventory-number": 10,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicBooking"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Pair"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        },
+        "description": "Code+email pair, standard only; generic failure. Shared30/min/IP lookup/cancel/admission."
+      }
+    },
+    "/public/bookings/{id}/cancel": {
+      "post": {
+        "operationId": "publicCancel",
+        "summary": "Cancel before start",
+        "tags": [
+          "Visits"
+        ],
+        "security": [],
+        "x-inventory-number": 11,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicBooking"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/BusinessId"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PairVersion"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        },
+        "description": "Pending/Approved, strictly before start and no prior check-in."
+      }
+    },
+    "/public/bookings/{id}/admission": {
+      "post": {
+        "operationId": "publicAdmission",
+        "summary": "Issue replaceable admission QR",
+        "tags": [
+          "Admission"
+        ],
+        "security": [],
+        "x-inventory-number": 12,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdmissionResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/BusinessId"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PairVersion"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        },
+        "description": "Eligible Approved standard visit. Expiry=min(now+5m,checkin end); revoke predecessor, never issue expired credential."
+      }
+    },
+    "/public/attachments": {
+      "post": {
+        "operationId": "publicUpload",
+        "summary": "Upload optional private attachment",
+        "tags": [
+          "Documents"
+        ],
+        "security": [],
+        "x-inventory-number": 13,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Same-reference committed replay; no additional write/notification",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResult"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Upload"
+              }
+            }
+          },
+          "x-max-body-bytes": 6291456,
+          "x-receive-deadline-seconds": 60,
+          "x-postreceive-deadline-seconds": 15
+        },
+        "description": "Draft capability only; safe reference/content replay; one file. Token1h; unlinked cleanup24h. New upload allowance60/hour/IP shared across audiences; stage/cleanup bounded."
+      }
+    },
+    "/staff/attachments": {
+      "post": {
+        "operationId": "staffUpload",
+        "summary": "Upload authorized staff attachment",
+        "tags": [
+          "Documents"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 14,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Same-reference committed replay; no additional write/notification",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResult"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Upload"
+              }
+            }
+          },
+          "x-max-body-bytes": 6291456,
+          "x-receive-deadline-seconds": 60,
+          "x-postreceive-deadline-seconds": 15
+        }
+      }
+    },
+    "/staff/bookings/{id}/attachment": {
+      "get": {
+        "operationId": "staffAttachment",
+        "summary": "View or download private attachment",
+        "tags": [
+          "Documents"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 15,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Authorized verified private bytes",
+            "headers": {
+              "Content-Disposition": {
+                "schema": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "const": "nosniff"
+                }
+              }
+            },
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/BusinessId"
+            }
+          },
+          {
+            "name": "disposition",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "inline",
+                "attachment"
+              ]
+            }
+          }
+        ],
+        "description": "Default inline. Same private field authority for view/download; audit access. No public path/token. Verified MIME, safe filename, no-store and nosniff."
+      }
+    },
+    "/staff/bookings": {
+      "get": {
+        "operationId": "staffBookings",
+        "summary": "Read typed authorized booking view",
+        "tags": [
+          "Visits"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 16,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadModel"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "view",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "list",
+                "reception",
+                "dashboard"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 255,
+              "x-length-unit": "unicode-code-points",
+              "x-normalization": "trim"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all",
+                "pending",
+                "approved",
+                "rejected",
+                "cancelled",
+                "checked_in",
+                "checked_out",
+                "missed"
+              ]
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "priority",
+                "name",
+                "organization",
+                "host",
+                "time",
+                "status"
+              ]
+            }
+          },
+          {
+            "name": "dir",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Date"
+            }
+          },
+          {
+            "name": "vip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "0",
+                "1"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "checkin",
+                "checkout"
+              ]
+            }
+          }
+        ],
+        "description": "Reject unknown/inapplicable query keys. Defaults page1; list7/reception25/dashboard50 items. vip0=no VIP filter, vip1=ordinary VIP only. Scope before search/counts. Checkout list includes earlier-day still-inside visits.",
+        "x-query-schema": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "view": {
+                  "const": "list"
+                },
+                "q": {
+                  "type": "string",
+                  "minLength": 0,
+                  "maxLength": 255,
+                  "x-length-unit": "unicode-code-points",
+                  "x-normalization": "trim"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "all",
+                    "pending",
+                    "approved",
+                    "rejected",
+                    "cancelled",
+                    "checked_in",
+                    "checked_out",
+                    "missed"
+                  ]
+                },
+                "sort": {
+                  "type": "string",
+                  "enum": [
+                    "priority",
+                    "name",
+                    "organization",
+                    "host",
+                    "time",
+                    "status"
+                  ]
+                },
+                "dir": {
+                  "type": "string",
+                  "enum": [
+                    "asc",
+                    "desc"
+                  ]
+                },
+                "date": {
+                  "$ref": "#/components/schemas/Date"
+                },
+                "vip": {
+                  "type": "string",
+                  "enum": [
+                    "0",
+                    "1"
+                  ]
+                },
+                "page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 2147483647
+                },
+                "pageSize": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              },
+              "required": [
+                "view"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "view": {
+                  "const": "reception"
+                },
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "checkin",
+                    "checkout"
+                  ]
+                },
+                "date": {
+                  "$ref": "#/components/schemas/Date"
+                },
+                "page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 2147483647
+                },
+                "pageSize": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              },
+              "required": [
+                "view",
+                "mode"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "view": {
+                  "const": "dashboard"
+                },
+                "date": {
+                  "$ref": "#/components/schemas/Date"
+                },
+                "page": {
+                  "const": 1
+                },
+                "pageSize": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              },
+              "required": [
+                "view",
+                "date"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "post": {
+        "operationId": "staffCreateBooking",
+        "summary": "Create approved staff booking",
+        "tags": [
+          "Visits"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 18,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Same-reference committed replay; no additional write/notification",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffBooking"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffBooking"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffCreate"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        }
+      }
+    },
+    "/staff/bookings/{id}": {
+      "get": {
+        "operationId": "staffBooking",
+        "summary": "Read one authorized booking",
+        "tags": [
+          "Visits"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 17,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffBooking"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/BusinessId"
+            }
+          }
+        ]
+      }
+    },
+    "/staff/bookings/{id}/approve": {
+      "post": {
+        "operationId": "staffApprove",
+        "summary": "Approve pending visit",
+        "tags": [
+          "Visits"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 19,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffBooking"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/BusinessId"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Approve"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        }
+      }
+    },
+    "/staff/bookings/{id}/reject": {
+      "post": {
+        "operationId": "staffReject",
+        "summary": "Reject pending visit",
+        "tags": [
+          "Visits"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 20,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffBooking"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/BusinessId"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Reject"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        }
+      }
+    },
+    "/staff/bookings/{id}/reschedule": {
+      "post": {
+        "operationId": "staffReschedule",
+        "summary": "Reschedule Pending or Approved visit, excluding Missed",
+        "tags": [
+          "Visits"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 21,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffBooking"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/BusinessId"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Reschedule"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        }
+      }
+    },
+    "/staff/bookings/{id}/update": {
+      "post": {
+        "operationId": "staffRestrictedUpdate",
+        "summary": "Update restricted visit",
+        "tags": [
+          "Visits"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 22,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestrictedFull"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/BusinessId"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestrictedUpdate"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        }
+      }
+    },
+    "/staff/bookings/{id}/cancel": {
+      "post": {
+        "operationId": "staffCancel",
+        "summary": "Cancel visit before check-in",
+        "tags": [
+          "Visits"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 23,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffBooking"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/BusinessId"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffCancel"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        },
+        "description": "Pending/Approved before any check-in; authorized PA/Protocol decision scope plus cancel; may be after start/end."
+      }
+    },
+    "/staff/bookings/{id}/checkin": {
+      "post": {
+        "operationId": "staffCheckin",
+        "summary": "Confirm check-in",
+        "tags": [
+          "Admission"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 24,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrivalBooking"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/BusinessId"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Attendance"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        },
+        "description": "Approved only; [start-30m,end] inclusive. Validate matching credential/version/current authority under locks; atomically consume admission QR when used. UI confirms identity."
+      }
+    },
+    "/staff/bookings/{id}/checkout": {
+      "post": {
+        "operationId": "staffCheckout",
+        "summary": "Confirm checkout",
+        "tags": [
+          "Admission"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 25,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrivalBooking"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/BusinessId"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Attendance"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        },
+        "description": "Checked-in only, late checkout supported. D96 allows successful-checkin consumed QR after admission expiry, unless revoked; manual code alternative. Atomically append one checkout."
+      }
+    },
+    "/staff/resolve": {
+      "post": {
+        "operationId": "staffResolve",
+        "summary": "Resolve arrival or checkout credential",
+        "tags": [
+          "Admission"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 26,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrivalBooking"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Resolve"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        },
+        "description": "No attendance side effect. Status-specific QR validation: D96 consumed/nonrevoked QR resolves its checked-in visit after admission expiry. Restricted arrival projection never enters ordinary reception cache."
+      }
+    },
+    "/staff/employees": {
+      "get": {
+        "operationId": "staffEmployees",
+        "summary": "Read employee page",
+        "tags": [
+          "Administration"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 27,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeePage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 255,
+              "x-length-unit": "unicode-code-points",
+              "x-normalization": "trim"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 250
+            }
+          }
+        ],
+        "description": "People permission; default page1/pageSize25; metadata present on empty pages."
+      },
+      "post": {
+        "operationId": "createEmployee",
+        "summary": "Create employee",
+        "tags": [
+          "Administration"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 29,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "201": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Employee"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployeeCreate"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        }
+      }
+    },
+    "/staff/employees/{id}": {
+      "get": {
+        "operationId": "staffEmployee",
+        "summary": "Read employee",
+        "tags": [
+          "Administration"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 28,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Employee"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/BusinessId"
+            }
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "patchEmployee",
+        "summary": "Replace employee editor state",
+        "tags": [
+          "Administration"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 30,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Employee"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/BusinessId"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployeePatch"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        }
+      }
+    },
+    "/staff/roles": {
+      "get": {
+        "operationId": "staffRoles",
+        "summary": "Read roles and assignable permissions",
+        "tags": [
+          "Administration"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 31,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleDefinition"
+                  },
+                  "minItems": 0,
+                  "maxItems": 4
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        }
+      }
+    },
+    "/staff/roles/{id}": {
+      "patch": {
+        "operationId": "patchRole",
+        "summary": "Replace role-owned permission set",
+        "tags": [
+          "Administration"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 32,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoleDefinition"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/BusinessId"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RolePatch"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        },
+        "description": "D85 isolated stable role-owned policy; validate assignable permissions, current actor, last-admin and escalation under lock/version; update authority revisions atomically."
+      }
+    },
+    "/staff/integrations": {
+      "get": {
+        "operationId": "staffIntegrations",
+        "summary": "Read safe integration metadata",
+        "tags": [
+          "Administration"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 33,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Integration"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        }
+      }
+    },
+    "/staff/integrations/{id}": {
+      "patch": {
+        "operationId": "patchIntegration",
+        "summary": "Update allowlisted provider settings",
+        "tags": [
+          "Administration"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 34,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Integration"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/BusinessId"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntegrationPatch"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        }
+      }
+    },
+    "/staff/reports/summary": {
+      "get": {
+        "operationId": "reportSummary",
+        "summary": "Read scoped summary",
+        "tags": [
+          "Reporting"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 35,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Summary"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Date"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all",
+                "pending",
+                "approved",
+                "rejected",
+                "cancelled",
+                "checked_in",
+                "checked_out",
+                "missed"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/staff/reports/export": {
+      "get": {
+        "operationId": "reportExport",
+        "summary": "Export revision-matched summary",
+        "tags": [
+          "Reporting"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 36,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Export"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Date"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all",
+                "pending",
+                "approved",
+                "rejected",
+                "cancelled",
+                "checked_in",
+                "checked_out",
+                "missed"
+              ]
+            }
+          },
+          {
+            "name": "revision",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Revision"
+            }
+          }
+        ],
+        "description": "Separate export permission. Recompute authorized scope/content revision; 409 if changed. JSON CSV summary rows only, no visitor details."
+      }
+    },
+    "/staff/session/renew": {
+      "post": {
+        "operationId": "renewSession",
+        "summary": "Renew on actual user activity",
+        "tags": [
+          "Identity"
+        ],
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "x-inventory-number": 37,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Session"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Empty"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        },
+        "description": "Actual activity only, coalesce<=once/min/session across tabs. Allowed through role/password gates without granting workspace access. Idle=min(now+8h,absolute); no roleRevision change for timing alone."
+      }
+    },
+    "/staff/session/refresh": {
+      "post": {
+        "operationId": "refreshSession",
+        "summary": "Rotate refresh and issue access token",
+        "tags": [
+          "Identity"
+        ],
+        "security": [
+          {
+            "RefreshCookie": [],
+            "SignedCSRF": [],
+            "CSRFCookie": []
+          }
+        ],
+        "x-inventory-number": 38,
+        "x-reject-unknown-query": true,
+        "x-reject-duplicate-query-keys": true,
+        "responses": {
+          "200": {
+            "description": "Complete authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResult"
+                }
+              }
+            },
+            "headers": {
+              "Set-Cookie": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Separate Set-Cookie header for each cookie; preserve Secure/HttpOnly/host-only/SameSite=Lax/path attributes. Never join with commas."
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "413": {
+            "$ref": "#/components/responses/Error413"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error500"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Refresh"
+              }
+            }
+          },
+          "x-max-body-bytes": 262144,
+          "x-execution-deadline-seconds": 15
+        },
+        "description": "10 requests/min/identified session +100/min/IP. Rotate opaque secret, never extend idle/absolute. Same-reference encrypted successor recovery10s only while successor current; other confirmed consumed-token reuse revokes that session.",
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uri"
+            },
+            "description": "Must exactly match configured staff origin; URI syntax alone grants no authority."
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BusinessId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 10,
+        "pattern": "^(?:[1-9][0-9]{0,8}|1[0-9]{9}|20[0-9]{8}|21[0-3][0-9]{7}|214[0-6][0-9]{6}|2147[0-3][0-9]{5}|21474[0-7][0-9]{4}|214748[0-2][0-9]{3}|2147483[0-5][0-9]{2}|21474836[0-3][0-9]|214748364[0-7])$",
+        "description": "D95: canonical decimal PostgreSQL INTEGER ID, 1 through 2147483647. Not a booking code or service ID."
+      },
+      "Version": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 2147483647,
+        "description": "D97: positive PostgreSQL INTEGER conflict version. Exhaustion rejects mutation; never wrap/reset."
+      },
+      "Role": {
+        "type": "string",
+        "enum": [
+          "PA",
+          "Protocol Officer",
+          "Receptionist",
+          "Super Admin"
+        ]
+      },
+      "Permission": {
+        "type": "string",
+        "enum": [
+          "bookings",
+          "create",
+          "approve",
+          "reject",
+          "reschedule",
+          "cancel",
+          "checkin",
+          "checkout",
+          "reports",
+          "reportExport",
+          "people",
+          "roles",
+          "integrations",
+          "audit"
+        ]
+      },
+      "Status": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "approved",
+          "rejected",
+          "cancelled",
+          "checked_in",
+          "checked_out"
+        ]
+      },
+      "DisplayStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "approved",
+          "rejected",
+          "cancelled",
+          "checked_in",
+          "checked_out",
+          "missed"
+        ]
+      },
+      "Date": {
+        "type": "string",
+        "minLength": 10,
+        "maxLength": 10,
+        "format": "date",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+      },
+      "StartTime": {
+        "type": "string",
+        "minLength": 5,
+        "maxLength": 5,
+        "pattern": "^(?:(?:08|09|1[0-5]):[0-5][0-9]|16:00)$",
+        "description": "Start only, Asia/Makassar. Must be in future on creation/schedule edits; end may exceed 16:00."
+      },
+      "Email": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 254,
+        "format": "email",
+        "pattern": "^[\\x21-\\x7e]+$",
+        "description": "One ASCII mailbox, no display-name/list/header input; trimmed, normalized per D82. Validate local/domain syntax and lengths.",
+        "x-max-utf8-bytes": 254
+      },
+      "Password": {
+        "type": "string",
+        "minLength": 15,
+        "maxLength": 72,
+        "x-max-utf8-bytes": 72,
+        "x-length-unit": "unicode-code-points",
+        "x-normalization": "none",
+        "writeOnly": true,
+        "description": "New password: >=15 code points AND <=72 UTF-8 bytes; bcrypt, no truncation/prehash."
+      },
+      "ExistingPassword": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 72,
+        "x-max-utf8-bytes": 72,
+        "x-normalization": "none",
+        "writeOnly": true,
+        "description": "Verify existing credential; new-password minimum is not imposed on current-password/login verification."
+      },
+      "Reference": {
+        "type": "string",
+        "minLength": 36,
+        "maxLength": 36,
+        "format": "uuid",
+        "description": "UUID request/submission/upload reference, distinct from a business ID."
+      },
+      "BookingCode": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 8,
+        "pattern": "^[0-9]{8}$"
+      },
+      "Credential": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 4096,
+        "writeOnly": true,
+        "description": "Manual eight-digit code or opaque QR. Admission and checkout have different eligibility; D96 permits the QR consumed on successful check-in for checkout after admission expiry, unless revoked.",
+        "x-accepted-formats": {
+          "manual": "8 ASCII decimal digits",
+          "qr": "Proposed vmsq1. prefix plus43 unpadded base64url characters from32 random bytes; no embedded person/booking data."
+        }
+      },
+      "ApiError": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "fieldErrors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1
+            }
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "requestId"
+        ],
+        "additionalProperties": false
+      },
+      "SessionTiming": {
+        "type": "object",
+        "properties": {
+          "serverTime": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "idleExpiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "absoluteExpiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "serverTime",
+          "idleExpiresAt",
+          "absoluteExpiresAt"
+        ],
+        "additionalProperties": false
+      },
+      "Session": {
+        "type": "object",
+        "properties": {
+          "active": {
+            "const": true
+          },
+          "id": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "PA",
+              "Protocol Officer",
+              "Receptionist",
+              "Super Admin",
+              ""
+            ]
+          },
+          "availableRoles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            },
+            "minItems": 1,
+            "maxItems": 4,
+            "uniqueItems": true
+          },
+          "roleSelectionRequired": {
+            "type": "boolean"
+          },
+          "roleRevision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483647
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Permission"
+            },
+            "minItems": 0,
+            "maxItems": 14,
+            "uniqueItems": true
+          },
+          "assignedOfficerIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessId"
+            },
+            "minItems": 0,
+            "maxItems": 100,
+            "uniqueItems": true
+          },
+          "mustChangePassword": {
+            "type": "boolean"
+          },
+          "passwordMinLength": {
+            "const": 15
+          },
+          "passwordMaxBytes": {
+            "const": 72
+          },
+          "timing": {
+            "$ref": "#/components/schemas/SessionTiming"
+          }
+        },
+        "required": [
+          "active",
+          "id",
+          "name",
+          "role",
+          "availableRoles",
+          "roleSelectionRequired",
+          "roleRevision",
+          "permissions",
+          "assignedOfficerIds",
+          "mustChangePassword",
+          "passwordMinLength",
+          "passwordMaxBytes",
+          "timing"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "roleSelectionRequired": {
+                  "const": true
+                }
+              },
+              "required": [
+                "roleSelectionRequired"
+              ]
+            },
+            "then": {
+              "properties": {
+                "role": {
+                  "const": ""
+                },
+                "permissions": {
+                  "maxItems": 0
+                },
+                "assignedOfficerIds": {
+                  "maxItems": 0
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "role": {
+                  "$ref": "#/components/schemas/Role"
+                }
+              }
+            }
+          }
+        ],
+        "x-server-invariants": [
+          "Selected role belongs to availableRoles; current PG authority on every request.",
+          "Idle 8h; absolute 24h; refresh/polling never renew inactivity."
+        ]
+      },
+      "TokenResult": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Sensitive response credential held only in memory; never a URL/log/persistent browser-store value."
+          },
+          "tokenType": {
+            "const": "Bearer"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "session": {
+            "$ref": "#/components/schemas/Session"
+          }
+        },
+        "required": [
+          "accessToken",
+          "tokenType",
+          "expiresAt",
+          "session"
+        ],
+        "additionalProperties": false,
+        "x-review-convention": "Concrete response field naming introduced for review; no extra operation. expiresAt <= min(now+5m, idle, absolute)."
+      },
+      "Room": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "active"
+        ],
+        "additionalProperties": false
+      },
+      "Officer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "vip": {
+            "type": "boolean"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "vip",
+          "active"
+        ],
+        "additionalProperties": false
+      },
+      "Catalogs": {
+        "type": "object",
+        "properties": {
+          "officers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Officer"
+            }
+          },
+          "rooms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Room"
+            }
+          },
+          "attachmentsEnabled": {
+            "type": "boolean"
+          },
+          "privacyNotice": {
+            "type": "object",
+            "properties": {
+              "version": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "en": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "version",
+              "id",
+              "en"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "officers",
+          "rooms"
+        ],
+        "additionalProperties": false,
+        "x-server-invariants": [
+          "Public active safe destinations only; no staff assignments.",
+          "Optional capability omitted/false disables new attachments; genuine collection needs approved notice."
+        ]
+      },
+      "VisitTiming": {
+        "type": "object",
+        "properties": {
+          "serverTime": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "opensAt": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "endsAt": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "displayStatus": {
+            "$ref": "#/components/schemas/DisplayStatus"
+          },
+          "canCheckIn": {
+            "type": "boolean"
+          },
+          "canCheckOut": {
+            "type": "boolean"
+          },
+          "canCancel": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "serverTime",
+          "opensAt",
+          "endsAt",
+          "displayStatus",
+          "canCheckIn",
+          "canCheckOut",
+          "canCancel"
+        ],
+        "additionalProperties": false
+      },
+      "PublicEvent": {
+        "type": "object",
+        "properties": {
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "received",
+              "approved",
+              "rejected",
+              "rescheduled",
+              "cancelled",
+              "checked_in",
+              "checked_out",
+              "updated"
+            ]
+          },
+          "publicMessage": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          }
+        },
+        "required": [
+          "at",
+          "action"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "not": {
+                    "const": "rescheduled"
+                  }
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "required": [
+                  "publicMessage"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "StaffEvent": {
+        "type": "object",
+        "properties": {
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "at",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "PublicBooking": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "visitKind": {
+            "const": "standard"
+          },
+          "date": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "time": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 5,
+            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+          },
+          "duration": {
+            "type": "integer",
+            "minimum": 15,
+            "maximum": 240
+          },
+          "roomId": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "room": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "rescheduled": {
+            "type": "boolean"
+          },
+          "timing": {
+            "$ref": "#/components/schemas/VisitTiming"
+          },
+          "code": {
+            "$ref": "#/components/schemas/BookingCode"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "organization": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "email": {
+            "$ref": "#/components/schemas/Email"
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 20,
+            "pattern": "^[0-9]{8,20}$"
+          },
+          "officerId": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "host": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "vip": {
+            "type": "boolean"
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "visitors": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 120,
+              "x-length-unit": "unicode-code-points",
+              "x-normalization": "trim"
+            },
+            "minItems": 1,
+            "maxItems": 20
+          },
+          "identityType": {
+            "type": "string",
+            "enum": [
+              "KTP",
+              "Paspor",
+              "SIM"
+            ]
+          },
+          "ndName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "visitorInstructions": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "rejectionReason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "cancellationReason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicEvent"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "visitKind",
+          "date",
+          "time",
+          "duration",
+          "room",
+          "status",
+          "version",
+          "timing",
+          "code",
+          "name",
+          "organization",
+          "email",
+          "phone",
+          "officerId",
+          "host",
+          "vip",
+          "purpose",
+          "visitors",
+          "identityType",
+          "history"
+        ],
+        "additionalProperties": false
+      },
+      "StandardStaffBooking": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "visitKind": {
+            "const": "standard"
+          },
+          "date": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "time": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 5,
+            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+          },
+          "duration": {
+            "type": "integer",
+            "minimum": 15,
+            "maximum": 240
+          },
+          "roomId": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "room": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "rescheduled": {
+            "type": "boolean"
+          },
+          "timing": {
+            "$ref": "#/components/schemas/VisitTiming"
+          },
+          "code": {
+            "$ref": "#/components/schemas/BookingCode"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "organization": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "email": {
+            "$ref": "#/components/schemas/Email"
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 20,
+            "pattern": "^[0-9]{8,20}$"
+          },
+          "officerId": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "host": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "vip": {
+            "type": "boolean"
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "visitors": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 120,
+              "x-length-unit": "unicode-code-points",
+              "x-normalization": "trim"
+            },
+            "minItems": 1,
+            "maxItems": 20
+          },
+          "identityType": {
+            "type": "string",
+            "enum": [
+              "KTP",
+              "Paspor",
+              "SIM"
+            ]
+          },
+          "ndName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "visitorInstructions": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "rejectionReason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "cancellationReason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "coordinationNote": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "internalRejectionNote": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "internalCancellationNote": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "createdBy": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 255,
+                "x-length-unit": "unicode-code-points",
+                "x-normalization": "trim"
+              },
+              "role": {
+                "$ref": "#/components/schemas/Role"
+              }
+            },
+            "required": [
+              "name",
+              "role"
+            ],
+            "additionalProperties": false
+          },
+          "attachmentAvailable": {
+            "type": "boolean"
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StaffEvent"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "visitKind",
+          "date",
+          "time",
+          "duration",
+          "room",
+          "status",
+          "version",
+          "timing",
+          "code",
+          "name",
+          "organization",
+          "email",
+          "phone",
+          "officerId",
+          "host",
+          "vip",
+          "purpose",
+          "visitors",
+          "identityType",
+          "history"
+        ],
+        "additionalProperties": false,
+        "x-field-policy": "Private notes only to permitted PA/Protocol. Reception never receives private notes."
+      },
+      "RestrictedReception": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "visitKind": {
+            "const": "restricted"
+          },
+          "date": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "time": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 5,
+            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+          },
+          "duration": {
+            "type": "integer",
+            "minimum": 15,
+            "maximum": 240
+          },
+          "roomId": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "room": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "rescheduled": {
+            "type": "boolean"
+          },
+          "timing": {
+            "$ref": "#/components/schemas/VisitTiming"
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1
+          },
+          "restrictedView": {
+            "const": "reception"
+          }
+        },
+        "required": [
+          "id",
+          "visitKind",
+          "date",
+          "time",
+          "duration",
+          "room",
+          "status",
+          "version",
+          "timing",
+          "reference",
+          "restrictedView"
+        ],
+        "additionalProperties": false,
+        "x-field-policy": "Omit absent identity fields. Scope before search/counts; full is not automatic coordination-note permission."
+      },
+      "RestrictedArrival": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "visitKind": {
+            "const": "restricted"
+          },
+          "date": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "time": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 5,
+            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+          },
+          "duration": {
+            "type": "integer",
+            "minimum": 15,
+            "maximum": 240
+          },
+          "roomId": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "room": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "rescheduled": {
+            "type": "boolean"
+          },
+          "timing": {
+            "$ref": "#/components/schemas/VisitTiming"
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1
+          },
+          "restrictedView": {
+            "const": "arrival"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "officerId": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "host": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "serviceIdLast4": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4
+          }
+        },
+        "required": [
+          "id",
+          "visitKind",
+          "date",
+          "time",
+          "duration",
+          "room",
+          "status",
+          "version",
+          "timing",
+          "reference",
+          "restrictedView"
+        ],
+        "additionalProperties": false,
+        "x-field-policy": "Omit absent identity fields. Scope before search/counts; full is not automatic coordination-note permission."
+      },
+      "RestrictedAssignedPA": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "visitKind": {
+            "const": "restricted"
+          },
+          "date": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "time": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 5,
+            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+          },
+          "duration": {
+            "type": "integer",
+            "minimum": 15,
+            "maximum": 240
+          },
+          "roomId": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "room": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "rescheduled": {
+            "type": "boolean"
+          },
+          "timing": {
+            "$ref": "#/components/schemas/VisitTiming"
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1
+          },
+          "restrictedView": {
+            "const": "assigned-pa"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "officerId": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "host": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "serviceIdLast4": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4
+          },
+          "organization": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          }
+        },
+        "required": [
+          "id",
+          "visitKind",
+          "date",
+          "time",
+          "duration",
+          "room",
+          "status",
+          "version",
+          "timing",
+          "reference",
+          "restrictedView"
+        ],
+        "additionalProperties": false,
+        "x-field-policy": "Omit absent identity fields. Scope before search/counts; full is not automatic coordination-note permission."
+      },
+      "RestrictedFull": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "visitKind": {
+            "const": "restricted"
+          },
+          "date": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "time": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 5,
+            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+          },
+          "duration": {
+            "type": "integer",
+            "minimum": 15,
+            "maximum": 240
+          },
+          "roomId": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "room": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "rescheduled": {
+            "type": "boolean"
+          },
+          "timing": {
+            "$ref": "#/components/schemas/VisitTiming"
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1
+          },
+          "restrictedView": {
+            "const": "full"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "officerId": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "host": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "serviceIdLast4": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4
+          },
+          "organization": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "code": {
+            "$ref": "#/components/schemas/BookingCode"
+          },
+          "serviceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "ndName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "visitorInstructions": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "rejectionReason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "cancellationReason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "coordinationNote": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "internalRejectionNote": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "internalCancellationNote": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "createdBy": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 255,
+                "x-length-unit": "unicode-code-points",
+                "x-normalization": "trim"
+              },
+              "role": {
+                "$ref": "#/components/schemas/Role"
+              }
+            },
+            "required": [
+              "name",
+              "role"
+            ],
+            "additionalProperties": false
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StaffEvent"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "visitKind",
+          "date",
+          "time",
+          "duration",
+          "room",
+          "status",
+          "version",
+          "timing",
+          "reference",
+          "restrictedView"
+        ],
+        "additionalProperties": false,
+        "x-field-policy": "Omit absent identity fields. Scope before search/counts; full is not automatic coordination-note permission."
+      },
+      "StaffBooking": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/StandardStaffBooking"
+          },
+          {
+            "$ref": "#/components/schemas/RestrictedReception"
+          },
+          {
+            "$ref": "#/components/schemas/RestrictedArrival"
+          },
+          {
+            "$ref": "#/components/schemas/RestrictedAssignedPA"
+          },
+          {
+            "$ref": "#/components/schemas/RestrictedFull"
+          }
+        ]
+      },
+      "ArrivalBooking": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/StandardStaffBooking"
+          },
+          {
+            "$ref": "#/components/schemas/RestrictedArrival"
+          }
+        ]
+      },
+      "PublicCreate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "organization": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "email": {
+            "$ref": "#/components/schemas/Email"
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 20,
+            "pattern": "^[0-9]{8,20}$"
+          },
+          "officerId": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "visitors": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 120,
+              "x-length-unit": "unicode-code-points",
+              "x-normalization": "trim"
+            },
+            "minItems": 1,
+            "maxItems": 20
+          },
+          "identityType": {
+            "type": "string",
+            "enum": [
+              "KTP",
+              "Paspor",
+              "SIM"
+            ]
+          },
+          "visitKind": {
+            "const": "standard"
+          },
+          "idempotencyKey": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "date": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "time": {
+            "$ref": "#/components/schemas/StartTime"
+          },
+          "ndName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "attachmentToken": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 4096,
+            "writeOnly": true
+          },
+          "ack": {
+            "const": true
+          },
+          "privacyVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "required": [
+          "name",
+          "organization",
+          "email",
+          "phone",
+          "officerId",
+          "purpose",
+          "visitors",
+          "identityType",
+          "visitKind",
+          "idempotencyKey",
+          "date",
+          "time",
+          "ack"
+        ],
+        "additionalProperties": false,
+        "x-server-invariants": [
+          "roster[0] equals representative name after normalization",
+          "Pending; duration=60; no room input/reservation",
+          "D90 omitted privacyVersion resolves current server version; D91 supplied stale/unknown fails before new write; committed retry preserves original association.",
+          "Attachment token and display name refer to same verified owned upload."
+        ]
+      },
+      "StandardStaffCreate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "organization": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "email": {
+            "$ref": "#/components/schemas/Email"
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 20,
+            "pattern": "^[0-9]{8,20}$"
+          },
+          "officerId": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "visitors": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 120,
+              "x-length-unit": "unicode-code-points",
+              "x-normalization": "trim"
+            },
+            "minItems": 1,
+            "maxItems": 20
+          },
+          "identityType": {
+            "type": "string",
+            "enum": [
+              "KTP",
+              "Paspor",
+              "SIM"
+            ]
+          },
+          "visitKind": {
+            "const": "standard"
+          },
+          "idempotencyKey": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "date": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "time": {
+            "$ref": "#/components/schemas/StartTime"
+          },
+          "ndName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "attachmentToken": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 4096,
+            "writeOnly": true
+          },
+          "visitorInstructions": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "coordinationNote": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          }
+        },
+        "required": [
+          "name",
+          "organization",
+          "email",
+          "phone",
+          "officerId",
+          "purpose",
+          "visitors",
+          "identityType",
+          "visitKind",
+          "idempotencyKey",
+          "date",
+          "time"
+        ],
+        "additionalProperties": false,
+        "x-server-invariants": [
+          "Approved; duration=60; no room input; reserve full interval under locks.",
+          "No consent requirement; actor from authenticated authority."
+        ]
+      },
+      "RestrictedCreate": {
+        "type": "object",
+        "properties": {
+          "visitKind": {
+            "const": "restricted"
+          },
+          "idempotencyKey": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "date": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "time": {
+            "$ref": "#/components/schemas/StartTime"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "organization": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "serviceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "officerId": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "visitorInstructions": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "coordinationNote": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          }
+        },
+        "required": [
+          "visitKind",
+          "idempotencyKey",
+          "date",
+          "time"
+        ],
+        "additionalProperties": false,
+        "x-server-invariants": [
+          "Protocol create authority; Approved; default duration60; identity/official optional; no public contact/roster/consent/upload."
+        ]
+      },
+      "StaffCreate": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/StandardStaffCreate"
+          },
+          {
+            "$ref": "#/components/schemas/RestrictedCreate"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "visitKind",
+          "mapping": {
+            "standard": "#/components/schemas/StandardStaffCreate",
+            "restricted": "#/components/schemas/RestrictedCreate"
+          }
+        }
+      },
+      "Approve": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "roomId": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "duration": {
+            "type": "integer",
+            "minimum": 15,
+            "maximum": 240
+          },
+          "visitorInstructions": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "coordinationNote": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "additionalProperties": false,
+        "x-server-invariants": [
+          "Pending only. Ordinary public approval requires valid room/duration; restricted may omit.",
+          "Omitted room preserves existing; omitted notes preserve, empty clears."
+        ]
+      },
+      "Reject": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "rejectionReason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "internalRejectionNote": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          }
+        },
+        "required": [
+          "version",
+          "rejectionReason"
+        ],
+        "additionalProperties": false
+      },
+      "Reschedule": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "date": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "time": {
+            "$ref": "#/components/schemas/StartTime"
+          },
+          "duration": {
+            "type": "integer",
+            "minimum": 15,
+            "maximum": 240
+          },
+          "roomId": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "visitorInstructions": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "coordinationNote": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          }
+        },
+        "required": [
+          "version",
+          "date",
+          "time",
+          "duration"
+        ],
+        "additionalProperties": false,
+        "x-server-invariants": [
+          "D100 Pending or Approved excluding derived Missed; new start future. Coordinate frontend can()/action visibility, which currently only allows Approved/non-Missed.",
+          "Ordinary requires room/reason, restricted may omit. Omitted room clears; omitted notes preserve and empty clears.",
+          "Preserve lifecycle; Pending does not reserve; Approved uses full interval conflict locks. Revoke incompatible admission credentials, audit and enqueue notification atomically."
+        ]
+      },
+      "RestrictedUpdate": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "visitKind": {
+            "const": "restricted"
+          },
+          "date": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "time": {
+            "$ref": "#/components/schemas/StartTime"
+          },
+          "name": {
+            "oneOf": [
+              {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 120,
+                "x-length-unit": "unicode-code-points",
+                "x-normalization": "trim"
+              },
+              {
+                "const": ""
+              }
+            ]
+          },
+          "organization": {
+            "oneOf": [
+              {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 255,
+                "x-length-unit": "unicode-code-points",
+                "x-normalization": "trim"
+              },
+              {
+                "const": ""
+              }
+            ]
+          },
+          "serviceId": {
+            "oneOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100,
+                "x-length-unit": "unicode-code-points",
+                "x-normalization": "trim"
+              },
+              {
+                "const": ""
+              }
+            ]
+          },
+          "officerId": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BusinessId"
+              },
+              {
+                "const": ""
+              }
+            ]
+          },
+          "visitorInstructions": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "coordinationNote": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          }
+        },
+        "required": [
+          "version",
+          "visitKind",
+          "date",
+          "time"
+        ],
+        "additionalProperties": false,
+        "x-server-invariants": [
+          "Protocol create authority; restricted Pending/Approved; recheck future submitted date/time, scope and conflicts. This remains separate from D100 Reschedule availability.",
+          "Omitted identity/target/notes preserve; empty clears. No ordinary personal data."
+        ]
+      },
+      "StaffCancel": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "internalCancellationNote": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          }
+        },
+        "required": [
+          "version",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "Attendance": {
+        "type": "object",
+        "properties": {
+          "credential": {
+            "$ref": "#/components/schemas/Credential"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          }
+        },
+        "required": [
+          "credential",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "Resolve": {
+        "type": "object",
+        "properties": {
+          "credential": {
+            "$ref": "#/components/schemas/Credential"
+          }
+        },
+        "required": [
+          "credential"
+        ],
+        "additionalProperties": false
+      },
+      "Pair": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/BookingCode"
+          },
+          "email": {
+            "$ref": "#/components/schemas/Email"
+          }
+        },
+        "required": [
+          "code",
+          "email"
+        ],
+        "additionalProperties": false
+      },
+      "PairVersion": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/BookingCode"
+          },
+          "email": {
+            "$ref": "#/components/schemas/Email"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          }
+        },
+        "required": [
+          "code",
+          "email",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "SubmissionResolve": {
+        "type": "object",
+        "properties": {
+          "idempotencyKey": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "email": {
+            "$ref": "#/components/schemas/Email"
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "email"
+        ],
+        "additionalProperties": false
+      },
+      "Resolution": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "outcome": {
+                "const": "committed"
+              },
+              "booking": {
+                "$ref": "#/components/schemas/PublicBooking"
+              }
+            },
+            "required": [
+              "outcome",
+              "booking"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "outcome": {
+                "const": "not_committed"
+              }
+            },
+            "required": [
+              "outcome"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "Upload": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "description": "One nonempty verified PDF/JPEG/PNG <=5242880 bytes.",
+            "x-max-bytes": 5242880
+          },
+          "reference": {
+            "$ref": "#/components/schemas/Reference"
+          }
+        },
+        "required": [
+          "file",
+          "reference"
+        ],
+        "additionalProperties": false,
+        "x-server-invariants": [
+          "Same reference plus same content/audience/owner replays only an eligible accepted upload. Changed content/reference binding conflicts.",
+          "One nonempty verified PDF/JPEG/PNG; unsupported extra multipart fields/parts rejected."
+        ]
+      },
+      "UploadResult": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 4096,
+            "x-derived-format": "Proposed vmsu1.<keyVersion>.<HMAC-SHA256-base64url>; keyVersion1..32 ASCII URL-safe characters. Dedicated key and immutable versioned derivation metadata (D99)."
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "serverTime": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "token",
+          "expiresAt",
+          "serverTime"
+        ],
+        "additionalProperties": false,
+        "x-server-invariants": [
+          "D99: same-reference accepted upload replay regenerates identical token using original dedicated key/version and immutable metadata, within original expiry.",
+          "No recoverable/plaintext upload token persisted; private lookup digest allowed. No new object quota or sliding expiry."
+        ]
+      },
+      "AdmissionResult": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "serverTime": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "payload",
+          "expiresAt",
+          "serverTime"
+        ],
+        "additionalProperties": false
+      },
+      "Employee": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "email": {
+            "$ref": "#/components/schemas/Email"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            },
+            "minItems": 1,
+            "maxItems": 4,
+            "uniqueItems": true
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "assignedOfficerIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessId"
+            },
+            "minItems": 0,
+            "maxItems": 100,
+            "uniqueItems": true
+          },
+          "jobTitle": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "deputy": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "directorate": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "nip": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "roles",
+          "active",
+          "assignedOfficerIds",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "EmployeeCreate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "email": {
+            "$ref": "#/components/schemas/Email"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            },
+            "minItems": 1,
+            "maxItems": 4,
+            "uniqueItems": true
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "assignedOfficerIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessId"
+            },
+            "minItems": 0,
+            "maxItems": 100,
+            "uniqueItems": true
+          },
+          "jobTitle": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "deputy": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "directorate": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "nip": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "initialPassword": {
+            "$ref": "#/components/schemas/Password"
+          },
+          "requirePasswordChange": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "roles",
+          "active",
+          "assignedOfficerIds",
+          "initialPassword",
+          "requirePasswordChange"
+        ],
+        "additionalProperties": false
+      },
+      "EmployeePatch": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "email": {
+            "$ref": "#/components/schemas/Email"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            },
+            "minItems": 1,
+            "maxItems": 4,
+            "uniqueItems": true
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "assignedOfficerIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessId"
+            },
+            "minItems": 0,
+            "maxItems": 100,
+            "uniqueItems": true
+          },
+          "jobTitle": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "deputy": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "directorate": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "nip": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "roles",
+          "active",
+          "assignedOfficerIds",
+          "version"
+        ],
+        "additionalProperties": false,
+        "x-server-invariants": [
+          "Complete editor replacement, not arbitrary partial merge; ordinary edit cannot set password/requirePasswordChange.",
+          "Preserve retained role metadata; official assignments toggle retained unique rows. Current authority, self-lockout/last-admin/anti-escalation checks."
+        ]
+      },
+      "EmployeePage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Employee"
+            },
+            "minItems": 0,
+            "maxItems": 250
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "totalAll": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 250
+          },
+          "passwordMinLength": {
+            "const": 15
+          },
+          "passwordMaxBytes": {
+            "const": 72
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "totalAll",
+          "page",
+          "pageSize",
+          "passwordMinLength",
+          "passwordMaxBytes"
+        ],
+        "additionalProperties": false
+      },
+      "RoleDefinition": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "name": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "description": {
+            "type": "string"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Permission"
+            },
+            "minItems": 0,
+            "maxItems": 14,
+            "uniqueItems": true
+          },
+          "assignablePermissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Permission"
+            },
+            "minItems": 0,
+            "maxItems": 14,
+            "uniqueItems": true
+          },
+          "editable": {
+            "type": "boolean"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "permissions",
+          "assignablePermissions",
+          "editable",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "RolePatch": {
+        "type": "object",
+        "properties": {
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Permission"
+            },
+            "minItems": 0,
+            "maxItems": 14,
+            "uniqueItems": true
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          }
+        },
+        "required": [
+          "permissions",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "IntegrationField": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "key": {
+                "const": "host"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 255
+              },
+              "kind": {
+                "const": "text"
+              },
+              "required": {
+                "const": true
+              },
+              "value": {
+                "type": "string",
+                "maxLength": 253
+              }
+            },
+            "required": [
+              "key",
+              "label",
+              "kind",
+              "required"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "key": {
+                "const": "port"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 255
+              },
+              "kind": {
+                "const": "number"
+              },
+              "required": {
+                "const": true
+              },
+              "value": {
+                "type": "string",
+                "maxLength": 5
+              }
+            },
+            "required": [
+              "key",
+              "label",
+              "kind",
+              "required"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "key": {
+                "const": "tlsMode"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 255
+              },
+              "kind": {
+                "const": "text"
+              },
+              "required": {
+                "const": true
+              },
+              "value": {
+                "type": "string",
+                "maxLength": 12
+              }
+            },
+            "required": [
+              "key",
+              "label",
+              "kind",
+              "required"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "key": {
+                "const": "username"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 255
+              },
+              "kind": {
+                "const": "text"
+              },
+              "required": {
+                "const": true
+              },
+              "value": {
+                "type": "string",
+                "maxLength": 255
+              }
+            },
+            "required": [
+              "key",
+              "label",
+              "kind",
+              "required"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "key": {
+                "const": "sender"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 255
+              },
+              "kind": {
+                "const": "email"
+              },
+              "required": {
+                "const": true
+              },
+              "value": {
+                "type": "string",
+                "maxLength": 254
+              }
+            },
+            "required": [
+              "key",
+              "label",
+              "kind",
+              "required"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "key": {
+                "const": "password"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 255
+              },
+              "kind": {
+                "const": "secret"
+              },
+              "required": {
+                "const": true
+              },
+              "configured": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "key",
+              "label",
+              "kind",
+              "required",
+              "configured"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "Integration": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/BusinessId"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-length-unit": "unicode-code-points",
+            "x-normalization": "trim"
+          },
+          "description": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "health": {
+            "type": "string",
+            "enum": [
+              "not_configured",
+              "ready",
+              "degraded"
+            ]
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IntegrationField"
+            },
+            "minItems": 0,
+            "maxItems": 6
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "enabled",
+          "health",
+          "version",
+          "fields"
+        ],
+        "additionalProperties": false,
+        "x-server-invariants": [
+          "SMTP field dictionary only for initial adapter; secret never has value.",
+          "Deferred storage metadata, if exposed, stays disabled with no writable provider fields.",
+          "SMTP fields unique by key; expose six known field descriptors, never duplicate keys or private paths."
+        ]
+      },
+      "IntegrationPatch": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "values": {
+            "$ref": "#/components/schemas/SmtpValues"
+          },
+          "clearSecrets": {
+            "type": "array",
+            "items": {
+              "const": "password"
+            },
+            "maxItems": 1,
+            "uniqueItems": true
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          }
+        },
+        "required": [
+          "enabled",
+          "values",
+          "clearSecrets",
+          "version"
+        ],
+        "additionalProperties": false,
+        "x-provider-validation": {
+          "provider": "smtp",
+          "requiredEffectiveFields": [
+            "host",
+            "port",
+            "tlsMode",
+            "username",
+            "password",
+            "sender"
+          ],
+          "tlsModes": [
+            "implicit_tls",
+            "starttls"
+          ],
+          "portRange": [
+            1,
+            65535
+          ],
+          "maxHostBytes": 253,
+          "maxUsernameCodePoints": 255,
+          "maxPasswordBytes": 4096,
+          "sender": "Email",
+          "tls": "Verified CA/hostname, no insecure fallback; AUTH only after TLS",
+          "storage": "Deferred settings not writable; no arbitrary preview endpoint/bucket keys."
+        },
+        "x-server-invariants": [
+          "Keys must belong to supported provider schema; no unsupported fields.",
+          "Omitted/blank configured secret keeps; explicit clear removes, reject required missing secret while enabled.",
+          "No secret echoes/logs; safe field-key errors."
+        ]
+      },
+      "ReportFilter": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "to": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "all",
+              "pending",
+              "approved",
+              "rejected",
+              "cancelled",
+              "checked_in",
+              "checked_out",
+              "missed"
+            ]
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "Revision": {
+        "type": "string",
+        "minLength": 64,
+        "maxLength": 64,
+        "pattern": "^[0-9a-f]{64}$"
+      },
+      "Summary": {
+        "type": "object",
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/ReportFilter"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "organization",
+              "assigned",
+              "authorized",
+              "attendance"
+            ]
+          },
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "canExport": {
+            "type": "boolean"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "counts": {
+            "type": "object",
+            "properties": {
+              "pending": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "approved": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "rejected": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "cancelled": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "checked_in": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "checked_out": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "missed": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "pending",
+              "approved",
+              "rejected",
+              "cancelled",
+              "checked_in",
+              "checked_out",
+              "missed"
+            ],
+            "additionalProperties": false
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "filter",
+          "scope",
+          "generatedAt",
+          "canExport",
+          "revision",
+          "counts",
+          "total"
+        ],
+        "additionalProperties": false,
+        "x-server-invariants": [
+          "Counts sum to total; other status counts zero for specific-status filter; exclude restricted before aggregation.",
+          "Inclusive dates, from<=to and elapsed range<=365 days; consistent authorized snapshot."
+        ]
+      },
+      "Export": {
+        "type": "object",
+        "properties": {
+          "filename": {
+            "type": "string",
+            "minLength": 1
+          },
+          "csv": {
+            "type": "string"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          }
+        },
+        "required": [
+          "filename",
+          "csv",
+          "revision"
+        ],
+        "additionalProperties": false
+      },
+      "ReadModel": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StaffBooking"
+            },
+            "minItems": 0,
+            "maxItems": 100
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "totalScoped": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "metrics": {
+            "type": "object",
+            "properties": {
+              "today": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "pending": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "arrivals": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "inside": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "completed": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "today",
+              "pending",
+              "arrivals",
+              "inside",
+              "completed"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "totalScoped",
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false,
+        "x-server-invariants": [
+          "Scope/projection before filtering/counts; one consistent authorized snapshot.",
+          "Dashboard metrics required; first5 agenda plus first4 attention covered in deduplicated bounded union."
+        ]
+      },
+      "Login": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "$ref": "#/components/schemas/Email"
+          },
+          "password": {
+            "$ref": "#/components/schemas/ExistingPassword"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "additionalProperties": false
+      },
+      "PasswordChange": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "$ref": "#/components/schemas/ExistingPassword"
+          },
+          "newPassword": {
+            "$ref": "#/components/schemas/Password"
+          }
+        },
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ],
+        "additionalProperties": false
+      },
+      "RoleSelect": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          }
+        },
+        "required": [
+          "role"
+        ],
+        "additionalProperties": false
+      },
+      "Refresh": {
+        "type": "object",
+        "properties": {
+          "refreshRequestId": {
+            "$ref": "#/components/schemas/Reference"
+          }
+        },
+        "required": [
+          "refreshRequestId"
+        ],
+        "additionalProperties": false
+      },
+      "Empty": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "SmtpValues": {
+        "type": "object",
+        "properties": {
+          "host": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 253,
+            "pattern": "^[A-Za-z0-9.-]*$",
+            "x-max-utf8-bytes": 253,
+            "description": "Optional while disabled. If effective enabled: valid nonempty ASCII DNS/punycode labels, no URL/port/userinfo; server-owned outbound allowlist and address validation."
+          },
+          "port": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "string",
+                "pattern": "^(?:[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
+              }
+            ],
+            "description": "Canonical decimal port 1-65535; blank only while disabled."
+          },
+          "tlsMode": {
+            "type": "string",
+            "enum": [
+              "",
+              "implicit_tls",
+              "starttls"
+            ]
+          },
+          "username": {
+            "type": "string",
+            "maxLength": 255,
+            "x-normalization": "trim",
+            "x-length-unit": "unicode-code-points"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 4096,
+            "x-max-utf8-bytes": 4096,
+            "x-normalization": "none",
+            "writeOnly": true
+          },
+          "sender": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "$ref": "#/components/schemas/Email"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "description": "SMTP-only patch values; omitted/blank configured password keeps existing. Validate merged effective configuration when enabled, not this partial object alone."
+      }
+    },
+    "securitySchemes": {
+      "BearerAccess": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "RefreshCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "vms_refresh",
+        "description": "Proposed concrete transport name; Secure HttpOnly host-only SameSite=Lax, persistent until absolute deadline."
+      },
+      "SignedCSRF": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-VMS-CSRF",
+        "description": "Proposed concrete header name; must equal signed readable cookie and validate session/anonymous binding; strict Origin checks also required."
+      },
+      "CSRFCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "vms_csrf",
+        "description": "Proposed concrete readable host-only Secure SameSite=Lax cookie; must match header and valid signed binding, not merely be present."
+      },
+      "AnonymousBinding": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "vms_login_binding",
+        "description": "Proposed concrete HttpOnly anonymous login binding from staff HTML delivery; fixed 30-minute lifetime."
+      }
+    },
+    "responses": {
+      "Error400": {
+        "description": "Malformed request/query or unknown fields",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "Error401": {
+        "description": "Unauthenticated or generic invalid credentials",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "Error403": {
+        "description": "Forbidden or invalid/expired CSRF",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "Error404": {
+        "description": "Unavailable without disclosing private record existence",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "Error409": {
+        "description": "Version/schedule/idempotency/authority/report conflict",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "Error413": {
+        "description": "Payload too large",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "Error415": {
+        "description": "Unsupported content type",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "Error422": {
+        "description": "Semantic validation/transition/privacy error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "Error429": {
+        "description": "Rate limited",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        },
+        "headers": {
+          "Retry-After": {
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2147483647
+            },
+            "description": "Seconds before retry."
+          }
+        }
+      },
+      "Error500": {
+        "description": "Safe internal error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "Error503": {
+        "description": "Dependency/limiter unavailable",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-status": "approved-frozen-planning-baseline",
+  "x-unresolved": [
+    "Reviewed physical/credential/SMTP/transport proposals are accepted planning specifications. Remaining implementation mechanics and final documentation generator/workflow are deferred to owning phases; reference-first policy remains.",
+    "Exact patch/dependency/image pins and runtime concurrency/streaming/SMTP/provider acceptance remain implementation gates, not completed tests.",
+    "Organization-owned domains, approved outbound targets, credentials, production retention/purge and document scanning/storage enablement remain separate release gates."
+  ],
+  "x-common-policy": {
+    "jsonMaxBytes": 262144,
+    "uploadMaxBytes": 6291456,
+    "fileMaxBytes": 5242880,
+    "unknownJSONFields": "400",
+    "unknownQueryFields": "400",
+    "invalidQuery": "400 invalid_query_parameter",
+    "semanticFields": "422",
+    "noStore": "All authenticated/private/pair-authorized responses",
+    "staffRate": "120/min/employee across sessions",
+    "publicRate": "120/min/trusted IP; additional operation limits in plan",
+    "byteConstraints": "x-max-utf8-bytes is server/frontend UTF-8 byte validation, not JSON Schema maxLength",
+    "queryConstraints": "x-query-schema validates parsed typed query object; reject repeated keys and keys from another view",
+    "security": "Cookie/header scheme names in this draft are review conventions; cookie binding/signature/Origin/PG authority cannot be established by OpenAPI alone."
+  },
+  "x-planning-policy": {
+    "referenceFirst": "Inspect sihp-be actual owning source before each new decision question.",
+    "defer": "If no applicable reference exists, queue nonurgent details for the owning BE development phase.",
+    "askNow": "Only a concrete urgent VMS correctness/privacy/authorization/recovery or essential contract blocker.",
+    "backlog": "BACKEND-DEVELOPMENT-DECISIONS-LATER.md",
+    "priorSelections": "D01-D100 retained; no application implementation authorization.",
+    "documentationWorkflow": "Reference generates Swagger2 from Go annotations. Approved VMS OpenAPI3.1 is the planning contract; final generator/tool/synchronization workflow remains a development-phase choice."
+  },
+  "x-approval": {
+    "date": "2026-11-12",
+    "timezone": "Asia/Makassar",
+    "threadId": "01a1ca52-c89c-7c22-9a07-88b31f9d5c86",
+    "scope": "Planning documents only, including reviewed schema/credential/SMTP/transport proposals.",
+    "implementationAuthorized": false,
+    "databaseContainerOperationsAuthorized": false,
+    "migrationDeploymentAuthorized": false
+  }
+}

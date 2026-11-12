@@ -1,0 +1,290 @@
+[
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Kembali ke beranda",
+    "name": null,
+    "outline": "oklch(0.524118 0.15788 254.785) solid 3px",
+    "boxShadow": "none",
+    "rect": {
+      "x": 270,
+      "y": 103,
+      "width": 137.875,
+      "height": 44,
+      "top": 103,
+      "right": 407.875,
+      "bottom": 147,
+      "left": 270
+    }
+  },
+  {
+    "tag": "INPUT",
+    "id": "status-code",
+    "text": "",
+    "name": "8 digit kode kunjungan",
+    "outline": "oklch(0.524118 0.15788 254.785) solid 3px",
+    "boxShadow": "none",
+    "rect": {
+      "x": 428,
+      "y": 536.71875,
+      "width": 424,
+      "height": 52,
+      "top": 536.71875,
+      "right": 852,
+      "bottom": 588.71875,
+      "left": 428
+    }
+  },
+  {
+    "tag": "INPUT",
+    "id": "status-email",
+    "text": "",
+    "name": "Nama email sebelum @",
+    "outline": "oklch(0.524118 0.15788 254.785) solid 3px",
+    "boxShadow": "none",
+    "rect": {
+      "x": 381,
+      "y": 644.640625,
+      "width": 231.03125,
+      "height": 46,
+      "top": 644.640625,
+      "right": 612.03125,
+      "bottom": 690.640625,
+      "left": 381
+    }
+  },
+  {
+    "tag": "SELECT",
+    "id": "status-email-domain",
+    "text": "Pilih domaingmail.comoutlook.comyahoo.comhotmail.comicloud.comikn.go.idDomain la",
+    "name": "Domain email",
+    "outline": "oklch(0.524118 0.15788 254.785) solid 3px",
+    "boxShadow": "none",
+    "rect": {
+      "x": 633.3125,
+      "y": 645.140625,
+      "width": 265.6875,
+      "height": 45,
+      "top": 645.140625,
+      "right": 899,
+      "bottom": 690.140625,
+      "left": 633.3125
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "id": "",
+    "text": "Lihat kunjungan",
+    "name": null,
+    "outline": "oklch(0.524118 0.15788 254.785) solid 3px",
+    "boxShadow": "rgba(255, 255, 255, 0.22) 0px 1px 0px 0px inset, rgba(10, 35, 66, 0.145) 0px 2px 6px 0px",
+    "rect": {
+      "x": 804.609375,
+      "y": 747.640625,
+      "width": 169.390625,
+      "height": 44,
+      "top": 747.640625,
+      "right": 974,
+      "bottom": 791.640625,
+      "left": 804.609375
+    }
+  },
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Visitor Management System(VMS) · Otorita IKN",
+    "name": "Visitor Management System (VMS) · Otorita IKN · Beranda",
+    "outline": "oklch(0.524118 0.15788 254.785) solid 3px",
+    "boxShadow": "none",
+    "rect": {
+      "x": 30,
+      "y": 677.328125,
+      "width": 290.96875,
+      "height": 47.828125,
+      "top": 677.328125,
+      "right": 320.96875,
+      "bottom": 725.15625,
+      "left": 30
+    }
+  },
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Akses pegawai",
+    "name": null,
+    "outline": "oklch(0.524118 0.15788 254.785) solid 3px",
+    "boxShadow": "none",
+    "rect": {
+      "x": 1147.96875,
+      "y": 769.390625,
+      "width": 102.03125,
+      "height": 44,
+      "top": 769.390625,
+      "right": 1250,
+      "bottom": 813.390625,
+      "left": 1147.96875
+    }
+  },
+  {
+    "tag": "BODY",
+    "id": "",
+    "text": "Lewati ke kontenVisitor Management System(VMS) · Otorita IKNDaftar kunjunganDaft",
+    "name": null,
+    "outline": "oklch(0.231576 0.00380518 286.099) none 3px",
+    "boxShadow": "none",
+    "rect": {
+      "x": 0,
+      "y": -393,
+      "width": 1280,
+      "height": 1292.703125,
+      "top": -393,
+      "right": 1280,
+      "bottom": 899.703125,
+      "left": 0
+    }
+  },
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Lewati ke konten",
+    "name": null,
+    "outline": "oklch(0.524118 0.15788 254.785) solid 3px",
+    "boxShadow": "none",
+    "rect": {
+      "x": 16,
+      "y": 12,
+      "width": 143.21875,
+      "height": 48,
+      "top": 12,
+      "right": 159.21875,
+      "bottom": 60,
+      "left": 16
+    }
+  },
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Visitor Management System(VMS) · Otorita IKN",
+    "name": "Visitor Management System (VMS) · Otorita IKN · Beranda",
+    "outline": "oklch(0.524118 0.15788 254.785) solid 3px",
+    "boxShadow": "none",
+    "rect": {
+      "x": 54,
+      "y": 15,
+      "width": 290.96875,
+      "height": 42,
+      "top": 15,
+      "right": 344.96875,
+      "bottom": 57,
+      "left": 54
+    }
+  },
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Daftar kunjunganDaftar",
+    "name": "Daftar kunjungan",
+    "outline": "oklch(0.524118 0.15788 254.785) solid 3px",
+    "boxShadow": "rgba(255, 255, 255, 0.22) 0px 1px 0px 0px inset, rgba(10, 35, 66, 0.145) 0px 2px 6px 0px",
+    "rect": {
+      "x": 993.390625,
+      "y": 14,
+      "width": 152.609375,
+      "height": 44,
+      "top": 14,
+      "right": 1146,
+      "bottom": 58,
+      "left": 993.390625
+    }
+  },
+  {
+    "tag": "SELECT",
+    "id": "",
+    "text": "Bahasa IndonesiaEnglish",
+    "name": "Bahasa halaman",
+    "outline": "oklch(0.524118 0.15788 254.785) solid 3px",
+    "boxShadow": "none",
+    "rect": {
+      "x": 1166,
+      "y": 14,
+      "width": 60,
+      "height": 44,
+      "top": 14,
+      "right": 1226,
+      "bottom": 58,
+      "left": 1166
+    }
+  },
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Kembali ke beranda",
+    "name": null,
+    "outline": "oklch(0.524118 0.15788 254.785) solid 3px",
+    "boxShadow": "none",
+    "rect": {
+      "x": 270,
+      "y": 103,
+      "width": 137.875,
+      "height": 44,
+      "top": 103,
+      "right": 407.875,
+      "bottom": 147,
+      "left": 270
+    }
+  },
+  {
+    "tag": "INPUT",
+    "id": "status-code",
+    "text": "",
+    "name": "8 digit kode kunjungan",
+    "outline": "oklch(0.524118 0.15788 254.785) solid 3px",
+    "boxShadow": "none",
+    "rect": {
+      "x": 428,
+      "y": 536.71875,
+      "width": 424,
+      "height": 52,
+      "top": 536.71875,
+      "right": 852,
+      "bottom": 588.71875,
+      "left": 428
+    }
+  },
+  {
+    "tag": "INPUT",
+    "id": "status-email",
+    "text": "",
+    "name": "Nama email sebelum @",
+    "outline": "oklch(0.524118 0.15788 254.785) solid 3px",
+    "boxShadow": "none",
+    "rect": {
+      "x": 381,
+      "y": 644.640625,
+      "width": 231.03125,
+      "height": 46,
+      "top": 644.640625,
+      "right": 612.03125,
+      "bottom": 690.640625,
+      "left": 381
+    }
+  },
+  {
+    "tag": "SELECT",
+    "id": "status-email-domain",
+    "text": "Pilih domaingmail.comoutlook.comyahoo.comhotmail.comicloud.comikn.go.idDomain la",
+    "name": "Domain email",
+    "outline": "oklch(0.524118 0.15788 254.785) solid 3px",
+    "boxShadow": "none",
+    "rect": {
+      "x": 633.3125,
+      "y": 645.140625,
+      "width": 265.6875,
+      "height": 45,
+      "top": 645.140625,
+      "right": 899,
+      "bottom": 690.140625,
+      "left": 633.3125
+    }
+  }
+]

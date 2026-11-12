@@ -1,0 +1,31 @@
+{
+  "environment": "isolated synthetic preview at http://127.0.0.1:3300/__preview",
+  "approvalOverlap": {
+    "firstStatus": 200,
+    "secondStatus": 200,
+    "sameHost": true,
+    "sameRoom": true,
+    "date": "2099-10-30",
+    "time": "10:00",
+    "durationMinutes": 60
+  },
+  "earlyCheckin": {
+    "status": 200,
+    "scheduledDate": "2099-10-30",
+    "resultingState": "checked_in",
+    "auditDate": "2026-10-29"
+  },
+  "changedIdempotentPayload": {
+    "status": 201,
+    "requestedName": "Changed Payload",
+    "returnedName": "Audit Conflict A"
+  },
+  "invalidPublicCreate": {
+    "status": 201,
+    "acceptedDate": "1900-01-01",
+    "acceptedTime": "99:99",
+    "acceptedName": "X",
+    "acceptedEmail": "bad",
+    "acceptedVisitors": []
+  }
+}

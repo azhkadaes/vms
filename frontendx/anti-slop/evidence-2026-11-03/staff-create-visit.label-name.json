@@ -1,0 +1,86 @@
+{
+  "testEngine": {
+    "name": "axe-core",
+    "version": "4.14.0"
+  },
+  "testRunner": {
+    "name": "axe"
+  },
+  "testEnvironment": {
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+    "windowWidth": 390,
+    "windowHeight": 900,
+    "orientationAngle": 0,
+    "orientationType": "landscape-primary"
+  },
+  "timestamp": "2026-11-03T04:37:03.437Z",
+  "url": "http://127.0.0.1:62472/admin/booking?new=1",
+  "toolOptions": {
+    "runOnly": {
+      "type": "rule",
+      "values": [
+        "label-content-name-mismatch"
+      ]
+    },
+    "reporter": "v1"
+  },
+  "inapplicable": [],
+  "passes": [
+    {
+      "id": "label-content-name-mismatch",
+      "impact": null,
+      "tags": [
+        "cat.semantics",
+        "wcag21a",
+        "wcag253",
+        "EN-301-549",
+        "EN-9.2.5.3",
+        "RGAAv4",
+        "RGAA-6.1.5"
+      ],
+      "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
+      "help": "Elements must have their visible text as part of their accessible name",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+      "nodes": [
+        {
+          "any": [
+            {
+              "id": "label-content-name-mismatch",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element contains visible text as part of its accessible name"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button type=\"button\" data-slot=\"button\" class=\"shadcn-button shadcn...\" id=\"appointment-date\" aria-label=\"Tanggal kunjungan, w...\" aria-invalid=\"false\" aria-describedby=\"appointment-date-hin...\" data-empty=\"true\" aria-haspopup=\"dialog\" aria-expanded=\"false\" aria-controls=\"radix-_r_b_\" ...>",
+          "target": [
+            "#appointment-date"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "label-content-name-mismatch",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element contains visible text as part of its accessible name"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button type=\"button\" data-slot=\"time-picker-trigger\" class=\"shadcn-button shadcn...\" aria-describedby=\"appointment-time-hin...\" aria-labelledby=\"appointment-time-lab...\" id=\"appointment-time\" data-placeholder=\"\" aria-haspopup=\"dialog\" aria-expanded=\"false\" aria-controls=\"radix-_r_a_\" ...>",
+          "target": [
+            "#appointment-time"
+          ]
+        }
+      ]
+    }
+  ],
+  "incomplete": [],
+  "violations": []
+}

@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-11-12T14:56:25.3577278+08:00",
+  "scope": "sihp-be structure/naming alignment; source checks only",
+  "ordinaryTestsPassed": 29,
+  "goVet": "passed",
+  "oversizedSocketRepeatedPasses": 20,
+  "integrationSuite": "compiled only after refactor",
+  "containerRebuild": false,
+  "databaseMutation": false,
+  "wireContractChanged": false,
+  "frozenPlanningHashesUnchanged": true,
+  "files": {
+    "cmd/vms-api/main.go": "1a42398cd6a32ed49bb64118dd6e0e58965629a9fcc2a9903a3eb98caccd0ad9",
+    "internal/repository/catalog/catalog_repository.go": "d382d9b8b2160557556334b4c65e3dc8cdadd4f56eefcf1a1cc0d18036c3f900",
+    "internal/repository/catalog/implementation/catalog_repository.go": "5d63516e3759731d8722028495129a77534ec16202c505d9e21d60a57fb24125",
+    "internal/usecase/catalog/catalog_usecase.go": "1a0feeabaafec7cfc51ba87855fd9d63842f5ca6d030c807f5c9ed24e25033cf",
+    "internal/usecase/catalog/implementation/catalog_usecase.go": "5ac2ad80cf3b3b638d3e6a63ed5957afef9e44b9387f1a36f8dd41cfda2885f0",
+    "internal/serializer/catalog/catalog_serializer.go": "5522f732189bb1c443f296b21f11ad63532613195ff39bc2a2b57c6775db7a6b",
+    "internal/serializer/catalog/implementation/catalog_serializer.go": "aacbc4551ffe5b3f0f7ae0d608760cc3272573c090a2e551af1775c9080e5551",
+    "internal/server/vms/router/catalog_router.go": "f3e70a307998ddd6b2ca312a582906fe90daa6982a2be730a49b852dc24b253b",
+    "internal/server/vms/server_test.go": "03ecde522a1f8aef34846c5e0f1210aad33264bad2127444fc0f15d13564483b"
+  }
+}

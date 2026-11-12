@@ -1,0 +1,93 @@
+- link "Lewati ke konten":
+  - /url: "#content"
+- complementary:
+  - link "Visitor Management System (VMS) · Otorita IKN · Beranda":
+    - /url: http://127.0.0.1:3000/
+    - strong: Visitor Management System
+    - text: (VMS) · Otorita IKN
+  - text: Ruang kerja
+  - navigation "Navigasi backoffice":
+    - link "Dashboard":
+      - /url: /admin/dashboard
+    - link "Kunjungan hari ini":
+      - /url: /admin/today
+    - link "Janji temu":
+      - /url: /admin/booking
+    - link "Analitik":
+      - /url: /admin/analytics
+    - link "Pegawai":
+      - /url: /admin/employees
+    - link "Peran & akses":
+      - /url: /admin/roles
+    - link "Integrasi":
+      - /url: /admin/integration
+    - link "Laporan kunjungan":
+      - /url: /admin/logs
+  - text: Terhubung untuk melayani. Otorita Ibu Kota Nusantara Pratinjau peran
+  - combobox "Pratinjau peran":
+    - option "PA"
+    - option "Protocol Officer"
+    - option "Receptionist"
+    - option "Super Admin" [selected]
+  - link "Portal pengunjung":
+    - /url: http://127.0.0.1:3000/
+  - button "Keluar"
+  - separator "Ukuran navigasi"
+- banner:
+  - text: Backoffice
+  - strong: Pegawai
+  - text: 4 November 2026 · WITA AN
+- region "Pratinjau lokal": Preview lokal · Data contoh, tanpa email atau unggahan nyata. Gunakan data fiktif.
+- main:
+  - heading "Pegawai" [level=1]
+  - paragraph: Direktori dan tanggung jawab pegawai.
+  - button "Tambah pegawai demo"
+  - status: Contoh pegawai disimpan.
+  - region "Pembaruan direktori pegawai":
+    - text: Terakhir diperbarui
+    - time: 14.05.59 WITA
+    - status
+    - button "Perbarui direktori pegawai": Perbarui
+  - region "Direktori pegawai":
+    - heading "Direktori pegawai" [level=2]
+    - status: Menampilkan 4 dari 4 pegawai.
+    - text: Cari nama, email, atau peran
+    - searchbox "Cari nama, email, atau peran"
+    - article:
+      - heading "NamaPegawaiTanpaSpasiNamaPegawaiTanpaSpasiNamaPegawaiTanpaSpasiNamaPegawaiTanpaSpasiNamaPegawaiTanpaSpasiNamaPegawaiTanpaSpasiNamaPegawaiTanpaSpasiNamaPegawaiTanpaSpasi" [level=3]
+      - term: Email
+      - definition: pegawaipegawaipegawaipegawaipegawaipegawaipegawaipegawai@organisasiorganisasiorganisasiorganisasiorganisasi.example.test
+      - term: Peran aktif
+      - definition: Super Admin
+      - term: Status akun
+      - definition: Aktif
+      - button "Edit pegawai NamaPegawaiTanpaSpasiNamaPegawaiTanpaSpasiNamaPegawaiTanpaSpasiNamaPegawaiTanpaSpasiNamaPegawaiTanpaSpasiNamaPegawaiTanpaSpasiNamaPegawaiTanpaSpasiNamaPegawaiTanpaSpasi": Edit
+    - article:
+      - heading "Aulia Rahma" [level=3]
+      - term: Email
+      - definition: aulia@example.test
+      - term: Peran aktif
+      - definition: PA
+      - term: Status akun
+      - definition: Aktif
+      - button "Edit pegawai Aulia Rahma": Edit
+    - article:
+      - heading "Nadia Putri" [level=3]
+      - term: Email
+      - definition: nadia@example.test
+      - term: Peran aktif
+      - definition: Protocol Officer
+      - term: Status akun
+      - definition: Aktif
+      - button "Edit pegawai Nadia Putri": Edit
+    - article:
+      - heading "Dimas Pratama" [level=3]
+      - term: Email
+      - definition: dimas@example.test
+      - term: Peran aktif
+      - definition: Receptionist
+      - term: Status akun
+      - definition: Aktif
+      - button "Edit pegawai Dimas Pratama": Edit
+    - paragraph: Data contoh lokal; tidak membuat akun backend atau menyimpan kata sandi.
+- contentinfo: © 2026 Otorita Ibu Kota Nusantara Visitor Management System (VMS)

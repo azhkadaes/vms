@@ -1,0 +1,105 @@
+- link "Lewati ke konten":
+  - /url: "#content"
+- banner:
+  - link "Visitor Management System (VMS) · Otorita IKN · Beranda":
+    - /url: /
+    - strong: Visitor Management System
+    - text: (VMS) · Otorita IKN
+  - navigation "Navigasi pengunjung":
+    - link "Cek status":
+      - /url: /status
+    - link "Daftar kunjungan":
+      - /url: /?view=registration#registration
+  - group "Bahasa halaman":
+    - button "ID · Bahasa Indonesia" [pressed]: ID
+    - button "EN · English": EN
+- region "Pratinjau lokal": Preview lokal · Data contoh, tanpa email atau unggahan nyata. Gunakan data fiktif.
+- main:
+  - region "Setiap pertemuan, awal sebuah kemajuan.":
+    - img "Gedung di kawasan Ibu Kota Nusantara dikelilingi lanskap hijau"
+    - heading "Setiap pertemuan, awal sebuah kemajuan." [level=1]:
+      - text: Setiap pertemuan, awal sebuah
+      - emphasis: kemajuan.
+    - paragraph: Rencanakan kunjungan Anda ke Otorita Ibu Kota Nusantara. Lebih mudah, tertata, dan nyaman.
+    - link "Daftar kunjungan":
+      - /url: /?view=registration#registration
+    - link "Cek status kunjungan":
+      - /url: /?view=status#booking-status
+    - strong: Menuju Nusantara
+    - text: Siapkan pertemuan Anda, mulai dari sini.
+  - link "Kembali":
+    - /url: /#visit-options
+  - heading "Kunjungan Anda. Semua ada di sini." [level=2]
+  - paragraph: Periksa status dan rincian kunjungan Anda di bawah ini.
+  - heading "Rincian kunjungan" [level=3]
+  - button "Perbarui"
+  - article "Detail kunjungan":
+    - text: Otorita IKN Kunjungan
+    - status: Permohonan ditolak
+    - text: Perwakilan pengunjung
+    - heading "Public History Example" [level=4]
+    - paragraph: History Example Organization
+    - text: Tanggal kunjungan
+    - strong: 19 Agustus 2099
+    - text: Waktu · WITA
+    - strong: 10:00 · 60 menit
+    - term: Bertemu
+    - definition: Direktorat Data dan Kecerdasan Buatan
+    - term: Tempat
+    - definition: Belum ditetapkan
+    - term: Jumlah pengunjung
+    - definition: "1"
+    - term: Keperluan
+    - definition: Public history verification
+    - text: Kode kunjungan
+    - strong: "88000112"
+    - paragraph: QR masuk tidak tersedia untuk status kunjungan ini.
+  - region "Alasan penolakan":
+    - heading "Alasan penolakan" [level=3]
+    - paragraph: Alasan publik asli.
+  - text: Lihat riwayat untuk informasi keputusan dan perubahan kunjungan.
+  - region "Riwayat kunjungan":
+    - heading "Riwayat kunjungan" [level=3]
+    - list:
+      - listitem:
+        - text: Permohonan diterima
+        - time: 19 Agu 2099, 09.00 WITA
+      - listitem:
+        - text: Permohonan ditolak
+        - time: 19 Agu 2099, 09.00 WITA
+  - button "Periksa kunjungan lain"
+  - text: "Contoh: 88000002 · visitor@example.test"
+  - heading "Privasi Anda, bagian dari pelayanan kami." [level=3]
+  - paragraph: "Nama rombongan dan kontak digunakan untuk penjadwalan, pemberitahuan dan verifikasi kunjungan. Bawa identitas asli ke resepsionis. Gunakan data fiktif pada pratinjau ini: dokumen dan email tidak dikirim, dan data contoh hilang saat layanan pengembangan dimulai ulang. Pemberitahuan privasi resmi harus diterbitkan organisasi sebelum layanan produksi digunakan."
+  - heading "Kunjungan yang baik. Dari langkah pertama." [level=2]
+  - paragraph: Tiga langkah untuk pertemuan yang lebih terencana.
+  - list:
+    - listitem:
+      - text: "01"
+      - heading "Rencanakan" [level=3]
+      - paragraph: Pilih tujuan, waktu, dan lengkapi data pengunjung.
+    - listitem:
+      - text: "02"
+      - heading "Terima konfirmasi" [level=3]
+      - paragraph: Terima email konfirmasi dan pantau status dengan email serta kode kunjungan.
+    - listitem:
+      - text: "03"
+      - heading "Datang dengan tenang" [level=3]
+      - paragraph: Bawa identitas asli dan kode kunjungan atau QR kunjungan.
+  - heading "Sedikit persiapan. Pengalaman yang lebih baik." [level=2]
+  - paragraph: Siapkan nama setiap anggota rombongan.
+  - paragraph: Bawa KTP, paspor, atau SIM asli saat kedatangan.
+  - paragraph: Seluruh jadwal menggunakan Waktu Indonesia Tengah.
+  - link "Mulai sekarang":
+    - /url: /?view=registration#registration
+- contentinfo:
+  - link "Visitor Management System (VMS) · Otorita IKN · Beranda":
+    - /url: /
+    - strong: Visitor Management System
+    - text: (VMS) · Otorita IKN
+  - paragraph: Terhubung untuk melayani. Selamat datang di Ibu Kota Nusantara.
+  - strong: Otorita Ibu Kota Nusantara
+  - paragraph: Kawasan Inti Pusat Pemerintahan Nusantara, Kalimantan Timur
+  - link "Akses pegawai":
+    - /url: /admin/
+  - text: © 2099 Otorita Ibu Kota Nusantara

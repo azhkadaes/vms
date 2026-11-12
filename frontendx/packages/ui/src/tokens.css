@@ -1,0 +1,31 @@
+:root {
+  --navy: oklch(0.25592260 0.06610870 255.485659);
+  --blue: oklch(0.42600465 0.10908810 252.076080);
+  --blue-pale: oklch(0.93922655 0.01662050 250.845310);
+  --gold: oklch(0.77936785 0.09923980 76.995836);
+  --page: oklch(0.97071377 0.00265048 286.350361);
+  --white: oklch(0.99999999 0 0.000000);
+  --ink: oklch(0.23157626 0.00380518 286.098854);
+  --muted: oklch(0.50282099 0.01413969 285.880285);
+  --line: oklch(0.92334308 0.00671753 286.267430);
+  --surface-subtle: oklch(0.95599002 0.00399248 286.324006);
+  --accent-soft: oklch(0.95908668 0.00967160 252.811406);
+  --focus: oklch(0.52411830 0.15787954 254.785480);
+  --action-primary: oklch(0.52411830 0.15787954 254.785480);
+  --action-primary-hover: oklch(0.48223341 0.14616866 255.093956);
+  --action-primary-pressed: oklch(0.43776090 0.13168964 254.840155);
+  --action-secondary: oklch(0.96163647 0.01137803 252.088071);
+  --action-secondary-hover: oklch(0.93534239 0.02009266 250.388412);
+  --action-secondary-pressed: oklch(0.90942103 0.02719030 249.860971);
+  --action-secondary-border: oklch(0.81995299 0.03378766 252.499248);
+  --action-danger: oklch(0.55311213 0.17520923 28.023646);
+  --action-danger-hover: oklch(0.50933367 0.16283266 28.026741);
+  --action-danger-pressed: oklch(0.46879990 0.14909035 27.916608);
+  --action-disabled: oklch(0.92334308 0.00671753 286.267430);
+  --action-disabled-text: oklch(0.50282099 0.01413969 285.880285);
+  --font:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui,
+    sans-serif;
+  --font-display: "Plus Jakarta Sans Variable", var(--font);
+  color-scheme: light;
+}

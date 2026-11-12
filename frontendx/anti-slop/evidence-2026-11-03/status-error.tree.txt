@@ -1,0 +1,42 @@
+- link "Lewati ke konten":
+  - /url: "#content"
+- banner:
+  - link "Visitor Management System (VMS) · Otorita IKN · Beranda":
+    - /url: /
+  - combobox "Bahasa halaman":
+    - option "Bahasa Indonesia" [selected]
+    - option "English"
+- main:
+  - link "Kembali ke beranda":
+    - /url: /
+  - heading "Sudah punya rencana? Mari periksa statusnya." [level=1]
+  - paragraph: Masukkan email pendaftaran dan kode kunjungan untuk melihat detail kunjungan.
+  - heading "Temukan kunjungan Anda" [level=2]
+  - paragraph: Masukkan kode kunjungan dan email saat pendaftaran.
+  - paragraph: Kolom bertanda bintang wajib diisi.
+  - text: Kode kunjungan
+  - textbox "8 digit kode kunjungan": "12345678"
+  - text: Email pendaftaran
+  - textbox "Nama email sebelum @":
+    - /placeholder: nama.anda
+    - text: test
+  - textbox "Domain email lain":
+    - /placeholder: instansi.go.id
+    - text: example.test
+  - button "Pilih domain dari daftar": Ubah
+  - text: Ketik nama sebelum @, lalu pilih domain. Untuk email instansi, pilih Domain lain.
+  - alert: No fixture for /v1/public/lookup
+  - button "Lihat kunjungan"
+  - heading "Privasi Anda, bagian dari pelayanan kami." [level=2]
+  - paragraph: Pemberitahuan privasi contoh.
+- contentinfo:
+  - link "Visitor Management System (VMS) · Otorita IKN · Beranda":
+    - /url: /
+    - strong: Visitor Management System
+    - text: (VMS) · Otorita IKN
+  - paragraph: Terhubung untuk melayani. Selamat datang di Ibu Kota Nusantara.
+  - strong: Otorita Ibu Kota Nusantara
+  - paragraph: Kawasan Inti Pusat Pemerintahan Nusantara, Kalimantan Timur
+  - link "Akses pegawai":
+    - /url: /admin/
+  - text: © 2026 Otorita Ibu Kota Nusantara
