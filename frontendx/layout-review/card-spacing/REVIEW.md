@@ -8,7 +8,7 @@ Implemented the approved option A on Peran & akses and Integrasi.
 
 Validation passed: TypeScript type check, admin production build, and 12 browser page/width combinations across the two pages at 1440, 1280, 1024, 768, 390 and 320px. Measurements checked paragraph/action gaps, heading/card clearance, matching card/notice insets, and no card or document horizontal overflow. Both role and integration editing dialogs opened. No settings were submitted. Desktop roles and phone roles/integrations were visually inspected using local demo data.
 
-[Desktop roles](./roles-1440.png) · [Phone roles](./roles-320.png) · [Phone integrations](./integration-320.png) · [Measurements](./measurements.json)
+[Desktop roles](roles-1440.png) · [Phone roles](roles-320.png) · [Phone integrations](integration-320.png) · [Measurements](measurements.json)
 
 Protected-role hints, error/empty states, production data, physical devices, and native 200% browser zoom were not exercised in this step. The protected-role hint spacing is source coverage only.
 

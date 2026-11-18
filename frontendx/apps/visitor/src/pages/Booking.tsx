@@ -2,12 +2,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ApiError,
   dateLabel,
+  notaDinasType,
   phoneDigits,
   preview,
   repository,
   today,
   useCatalogs,
   validateND,
+  validateVisitorPhoto,
+  visitorPhotoTypes,
   type PublicBooking,
 } from "@vms/data";
 import { uploadAttachment } from "@vms/data/attachments";
@@ -18,7 +21,17 @@ import {
   visitSchemaFor,
   type BookingDraft,
 } from "@vms/data/validation";
-import { Button, EmailInput, ErrorNotice, Modal, RequiredFieldsHint, RequiredMark } from "@vms/ui";
+import {
+  Select,
+  Button,
+  EmailInput,
+  FieldMessage,
+  ErrorNotice,
+  Modal,
+  RequiredFieldsHint,
+  RequiredMark,
+  UploadField,
+} from "@vms/ui";
 import { DatePicker } from "@vms/ui/date-picker";
 import { localizeMessage } from "@vms/ui/language";
 import { ReferenceDataNotice } from "@vms/ui/reference-data-notice";
@@ -33,7 +46,6 @@ import {
   Plus,
   ShieldCheck,
   Trash2,
-  Upload,
   Users,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -46,6 +58,7 @@ import { useLanguage } from "../i18n";
 const submissionStorageKey = "vms-pending-submission";
 const visitKeys = ["officerId", "date", "time", "purpose"] as const;
 const visitorKeys = ["name", "organization", "email", "phone", "identityType", "visitors"] as const;
+type BookingFocus = FieldPath<BookingDraft> | "nd" | "visitorPhoto";
 const submissionStore = {
   read() {
     try {
@@ -121,15 +134,18 @@ export default function BookingForm({
   const submitLock = useRef(false);
   const pending = uploading || ["sending", "retrying", "checking"].includes(phase);
   const unresolved = phase === "uncertain" || phase === "checking";
-  const focusAfterNavigation = useRef<FieldPath<BookingDraft> | null>(null);
+  const focusAfterNavigation = useRef<BookingFocus | null>(null);
   const [privacy, setPrivacy] = useState(false);
   const privacyTrigger = useRef<HTMLElement | null>(null);
   useEffect(() => {
     if (!active) setPrivacy(false);
   }, [active]);
   const [submitted, setSubmitted] = useState<PublicBooking | null>(null);
+  const [hasNotaDinas, setHasNotaDinas] = useState(false);
   const [nd, setND] = useState<File | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
+  const [visitorPhoto, setVisitorPhoto] = useState<File | null>(null);
+  const [photoError, setPhotoError] = useState<string | null>(null);
   const [error, setError] = useState<unknown>();
   const [copied, setCopied] = useState(false);
   const f = useForm<BookingDraft>({
@@ -163,8 +179,11 @@ export default function BookingForm({
   const resetBooking = useCallback(() => {
     f.reset();
     setSubmitted(null);
+    setHasNotaDinas(false);
     setND(null);
     setFileError(null);
+    setVisitorPhoto(null);
+    setPhotoError(null);
     setError(undefined);
     setCopied(false);
     setSubmissionNotice("");
@@ -177,7 +196,7 @@ export default function BookingForm({
     const field = focusAfterNavigation.current;
     if (field) {
       focusAfterNavigation.current = null;
-      requestAnimationFrame(() => f.setFocus(field));
+      requestAnimationFrame(() => focusField(field));
     }
   }, [step, navigate, f, submitted, location.pathname, resetBooking]);
   useEffect(() => {
@@ -201,6 +220,18 @@ export default function BookingForm({
     return () => window.removeEventListener("beforeunload", warn);
   }, [unresolved, pending]);
   const selectedOfficer = officers.find((o) => o.id === values.officerId);
+  function focusField(field: BookingFocus) {
+    if (field === "nd" || field === "visitorPhoto") document.getElementById(field)?.focus();
+    else f.setFocus(field);
+  }
+  function focusUpload(field: "nd" | "visitorPhoto") {
+    const owner = field === "nd" ? 0 : 1;
+    if (owner === step) focusField(field);
+    else {
+      focusAfterNavigation.current = field;
+      navigate(stepPaths[owner]);
+    }
+  }
   const fields = (
     key: keyof BookingDraft,
     label: string,
@@ -246,18 +277,31 @@ export default function BookingForm({
         f.setFocus(result.error.issues[0].path[0] as keyof BookingDraft);
         return;
       }
+      if (fileError) {
+        focusUpload("nd");
+        return;
+      }
       navigate("/booking/visitors");
     } else if (
       await f.trigger(["name", "organization", "email", "phone", "identityType", "visitors"], {
         shouldFocus: true,
       })
     ) {
-      if (fileError) return;
+      if (photoError || !visitorPhoto) {
+        setPhotoError(photoError || "Unggah foto wajah perwakilan.");
+        focusUpload("visitorPhoto");
+        return;
+      }
       navigate("/booking/review");
     }
   }
   async function submit(data: BookingDraft) {
     if (submitLock.current || pending || unresolved || !submission.canSubmit) return;
+    if (fileError || photoError || !visitorPhoto) {
+      if (!fileError) setPhotoError(photoError || "Unggah foto wajah perwakilan.");
+      focusUpload(fileError ? "nd" : "visitorPhoto");
+      return;
+    }
     if (!preview && !catalogs.data?.privacyNotice) {
       setError(
         new Error(
@@ -287,6 +331,8 @@ export default function BookingForm({
         visitors: [data.name, ...data.visitors.map((v) => v.name)],
         ndName: nd?.name,
         attachmentToken: await uploadAttachment(nd, "public"),
+        visitorPhotoName: visitorPhoto.name,
+        visitorPhotoToken: await uploadAttachment(visitorPhoto, "public", "visitorPhoto"),
         privacyVersion: catalogs.data?.privacyNotice?.version,
         ack: data.ack,
       });
@@ -328,17 +374,21 @@ export default function BookingForm({
         } else f.setError(key, { type: "server", message: errors[key]![0] });
       }
     }
+    if (errors.ndName?.[0] || errors.attachmentToken?.[0]) setHasNotaDinas(true);
     if (errors.ndName?.[0]) setFileError(errors.ndName[0]);
+    if (errors.attachmentToken?.[0]) setFileError(errors.attachmentToken[0]);
+    if (errors.visitorPhotoName?.[0]) setPhotoError(errors.visitorPhotoName[0]);
+    if (errors.visitorPhotoToken?.[0]) setPhotoError(errors.visitorPhotoToken[0]);
     const firstVisit = visitKeys.find((key) => errors[key]?.length);
     const firstVisitor = visitorKeys.find((key) => errors[key]?.length);
-    const owner = firstVisit ? 0 : firstVisitor || errors.ndName ? 1 : 2;
-    const first = firstVisit || firstVisitor || "ack";
-    if (errors.ndName) {
-      navigate("/booking/visitors");
-      requestAnimationFrame(() =>
-        document.querySelector<HTMLInputElement>('input[type="file"]')?.focus(),
-      );
-    } else {
+    const documentError = errors.ndName?.length || errors.attachmentToken?.length;
+    const visitorPhotoError = errors.visitorPhotoName?.length || errors.visitorPhotoToken?.length;
+    const owner = firstVisit || documentError ? 0 : firstVisitor || visitorPhotoError ? 1 : 2;
+    const first: BookingFocus =
+      firstVisit ||
+      (documentError ? "nd" : firstVisitor || (visitorPhotoError ? "visitorPhoto" : "ack"));
+    if (first === "nd" || first === "visitorPhoto") focusUpload(first);
+    else {
       const members = f.getValues("visitors");
       const member = Math.max(
         0,
@@ -595,7 +645,7 @@ export default function BookingForm({
                     <label htmlFor="officerId">
                       {t("Pejabat atau unit tujuan", "Official or unit to visit")} <RequiredMark />
                     </label>
-                    <select
+                    <Select
                       id="officerId"
                       required
                       {...f.register("officerId", {
@@ -616,7 +666,7 @@ export default function BookingForm({
                             {o.name}
                           </option>
                         ))}
-                    </select>
+                    </Select>
                     {f.formState.errors.officerId && (
                       <span id="officerId-error" role="alert" className="field-error">
                         {localizeMessage(f.formState.errors.officerId.message, language)}
@@ -661,7 +711,7 @@ export default function BookingForm({
                   />
                   <div className="field span-2">
                     <label htmlFor="purpose">
-                      {t("Keperluan kunjungan", "Purpose of visit")} <RequiredMark />
+                      {t("Tujuan kunjungan", "Purpose of visit")} <RequiredMark />
                     </label>
                     <textarea
                       id="purpose"
@@ -686,6 +736,52 @@ export default function BookingForm({
                     )}
                   </div>
                 </div>
+                <div className="section-gap">
+                  <p id="nota-dinas-question" className="field-label">
+                    {t("Apakah Anda memiliki Nota Dinas?", "Do you have an official memo?")}
+                  </p>
+                  <label className="check-label" htmlFor="hasNotaDinas">
+                    <input
+                      id="hasNotaDinas"
+                      type="checkbox"
+                      checked={hasNotaDinas}
+                      aria-describedby="nota-dinas-question"
+                      aria-controls={hasNotaDinas ? "nota-dinas-upload" : undefined}
+                      onChange={(event) => {
+                        setHasNotaDinas(event.target.checked);
+                        if (!event.target.checked) {
+                          setND(null);
+                          setFileError(null);
+                        }
+                      }}
+                    />
+                    <span>
+                      {t(
+                        "Ya, saya memiliki Nota Dinas atau Permohonan Kunjungan Resmi.",
+                        "Yes, I have an official memo or visit request.",
+                      )}
+                    </span>
+                  </label>
+                </div>
+                {hasNotaDinas && (
+                  <div id="nota-dinas-upload" className="section-gap">
+                    <UploadField
+                      id="nd"
+                      label={t("Nota Dinas atau Permohonan Kunjungan Resmi", "Official memo or visit request")}
+                      accept={notaDinasType}
+                      file={nd}
+                      error={fileError && localizeMessage(fileError, language)}
+                      hint={t("PDF · Maksimal 5 MB", "PDF · Up to 5 MB")}
+                      choose={t("Pilih dokumen", "Choose document")}
+                      remove={t("Hapus dokumen", "Remove document")}
+                      onFileChange={(file) => {
+                        const message = validateND(file);
+                        setFileError(message);
+                        setND(message ? null : file);
+                      }}
+                    />
+                  </div>
+                )}
                 <div className="hint section-gap">
                   <CalendarDays size={18} />
                   {t(
@@ -751,9 +847,9 @@ export default function BookingForm({
                           aria-describedby={fieldState.error ? "email-error" : undefined}
                         />
                         {fieldState.error && (
-                          <span id="email-error" className="field-error" role="alert">
+                          <FieldMessage id="email-error" tone="error">
                             {localizeMessage(fieldState.error.message, language)}
-                          </span>
+                          </FieldMessage>
                         )}
                       </div>
                     )}
@@ -770,126 +866,100 @@ export default function BookingForm({
                       {t("Identitas yang dibawa saat kedatangan", "ID to bring on arrival")}{" "}
                       <RequiredMark />
                     </label>
-                    <select id="identityType" {...f.register("identityType")} required>
+                    <Select id="identityType" {...f.register("identityType")} required aria-describedby="identityType-hint">
                       <option>KTP</option>
                       <option value="Paspor">{t("Paspor", "Passport")}</option>
                       <option>SIM</option>
-                    </select>
-                    <small>
+                    </Select>
+                    <FieldMessage id="identityType-hint">
                       {t(
                         "Bawa identitas asli untuk pemeriksaan di resepsionis. Nomor dan foto identitas tidak diminta.",
                         "Bring your original ID for reception verification. An ID number or photo is not requested.",
                       )}
-                    </small>
+                    </FieldMessage>
                   </div>
                 </div>
-                <div className="roster-heading">
-                  <div>
-                    <GroupHeading className="roster-title">
-                      {t("Rombongan pengunjung", "Visitor group")}
-                    </GroupHeading>
-                    <p>
-                      {array.fields.length + 1}{" "}
-                      {t(
-                        "orang, termasuk perwakilan. Maksimal 20 orang.",
-                        "people including the representative. Up to 20 people.",
-                      )}
-                    </p>
-                  </div>
-                  <Users size={21} />
-                </div>
-                {f.formState.errors.visitors?.message && (
-                  <p role="alert" className="field-error">
-                    {localizeMessage(f.formState.errors.visitors.message, language)}
-                  </p>
-                )}
-                {array.fields.map((item, i) => (
-                  <div className="roster-row" key={item.id}>
-                    <div className="field">
-                      <label htmlFor={`visitor-${i}`}>
-                        {t("Nama pengunjung", "Visitor name")} {i + 2} <RequiredMark />
-                      </label>
-                      <input
-                        id={`visitor-${i}`}
-                        required
-                        placeholder={t("Masukkan nama lengkap", "Enter full name")}
-                        {...f.register(`visitors.${i}.name`)}
-                        aria-invalid={!!f.formState.errors.visitors?.[i]?.name}
-                        aria-describedby={
-                          f.formState.errors.visitors?.[i]?.name ? `visitor-${i}-error` : undefined
-                        }
-                      />
-                      {f.formState.errors.visitors?.[i]?.name && (
-                        <span id={`visitor-${i}-error`} role="alert" className="field-error">
-                          {localizeMessage(f.formState.errors.visitors[i]?.name?.message, language)}
-                        </span>
-                      )}
+                <div className="form-stack form-group-gap">
+                  <div className="roster-heading">
+                    <div className="form-stack">
+                      <GroupHeading className="roster-title">
+                        {t("Rombongan pengunjung", "Visitor group")}
+                      </GroupHeading>
+                      <small className="form-help">
+                        {array.fields.length + 1}{" "}
+                        {t(
+                          "orang, termasuk perwakilan. Maksimal 20 orang.",
+                          "people including the representative. Up to 20 people.",
+                        )}
+                      </small>
                     </div>
-                    <Button
-                      type="button"
-                      kind="ghost"
-                      aria-label={`${t("Hapus pengunjung", "Remove visitor")} ${i + 2}`}
-                      onClick={() => array.remove(i)}
-                    >
-                      <Trash2 size={18} />
-                    </Button>
+                    <Users size={21} />
                   </div>
-                ))}
-                <Button
-                  type="button"
-                  kind="secondary"
-                  onClick={() => array.append({ name: "" })}
-                  disabled={array.fields.length >= 19}
-                >
-                  <Plus size={16} />
-                  {t("Tambah pengunjung", "Add visitor")}
-                </Button>
-                <div className="field section-gap">
-                  <label htmlFor="nd">
-                    {t(
-                      "Nota Dinas atau Permohonan Kunjungan Resmi",
-                      "Official memo or visit request",
-                    )}{" "}
-                  </label>
-                  <label className="upload-area" htmlFor="nd">
-                    <Upload size={25} />
-                    <strong>
-                      {nd ? nd.name : t("Pilih dokumen pendukung", "Choose a supporting document")}
-                    </strong>
-                    <small>
-                      {t("PDF, JPEG, PNG · Maksimal 5 MB", "PDF, JPEG, PNG · Up to 5 MB")}
-                    </small>
-                    <input
-                      id="nd"
-                      type="file"
-                      accept="application/pdf,image/jpeg,image/png"
-                      aria-invalid={!!fileError}
-                      aria-describedby={fileError ? "nd-error" : undefined}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0] || null;
-                        const msg = validateND(file);
-                        setFileError(msg);
-                        setND(msg ? null : file);
-                      }}
-                    />
-                  </label>
-                  {fileError && (
-                    <span id="nd-error" role="alert" className="field-error">
-                      {localizeMessage(fileError, language)}
-                    </span>
+                  {f.formState.errors.visitors?.message && (
+                    <p role="alert" className="field-error">
+                      {localizeMessage(f.formState.errors.visitors.message, language)}
+                    </p>
                   )}
-                  {nd && (
-                    <Button
-                      type="button"
-                      kind="ghost"
-                      onClick={() => {
-                        setND(null);
-                        setFileError(null);
-                      }}
-                    >
-                      {t("Hapus dokumen", "Remove document")}
-                    </Button>
-                  )}
+                  {array.fields.map((item, i) => (
+                    <div className="form-roster-row" key={item.id}>
+                      <div className="field">
+                        <label htmlFor={`visitor-${i}`}>
+                          {t("Nama pengunjung", "Visitor name")} {i + 2} <RequiredMark />
+                        </label>
+                        <input
+                          id={`visitor-${i}`}
+                          required
+                          placeholder={t("Masukkan nama lengkap", "Enter full name")}
+                          {...f.register(`visitors.${i}.name`)}
+                          aria-invalid={!!f.formState.errors.visitors?.[i]?.name}
+                          aria-describedby={
+                            f.formState.errors.visitors?.[i]?.name ? `visitor-${i}-error` : undefined
+                          }
+                        />
+                        {f.formState.errors.visitors?.[i]?.name && (
+                          <span id={`visitor-${i}-error`} role="alert" className="field-error">
+                            {localizeMessage(f.formState.errors.visitors[i]?.name?.message, language)}
+                          </span>
+                        )}
+                      </div>
+                      <Button
+                        type="button"
+                        kind="ghost"
+                        aria-label={`${t("Hapus pengunjung", "Remove visitor")} ${i + 2}`}
+                        onClick={() => array.remove(i)}
+                      >
+                        <Trash2 size={18} />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    kind="secondary"
+                    onClick={() => array.append({ name: "" })}
+                    disabled={array.fields.length >= 19}
+                  >
+                    <Plus size={16} />
+                    {t("Tambah pengunjung", "Add visitor")}
+                  </Button>
+                </div>
+                <div className="form-group-gap">
+                  <UploadField
+                    id="visitorPhoto"
+                    label={t("Foto wajah perwakilan", "Representative's face photo")}
+                    required
+                    accept={visitorPhotoTypes.join(",")}
+                    file={visitorPhoto}
+                    error={photoError && localizeMessage(photoError, language)}
+                    hint={t("JPEG, PNG · Maksimal 5 MB", "JPEG, PNG · Up to 5 MB")}
+                    choose={t("Pilih foto wajah", "Choose face photo")}
+                    remove={t("Hapus foto", "Remove photo")}
+                    photoPreviewLabel={t("Pratinjau foto pengunjung", "Visitor photo preview")}
+                    onFileChange={(file) => {
+                      const message = validateVisitorPhoto(file);
+                      setPhotoError(message);
+                      setVisitorPhoto(message ? null : file);
+                    }}
+                  />
                 </div>
               </>
             ) : (
@@ -921,6 +991,10 @@ export default function BookingForm({
                         : values.identityType,
                     ],
                     [t("Keperluan", "Purpose"), values.purpose],
+                    [
+                      t("Foto wajah perwakilan", "Representative's face photo"),
+                      visitorPhoto?.name || t("Tidak dilampirkan", "Not attached"),
+                    ],
                     [
                       t(
                         "Nota Dinas atau Permohonan Kunjungan Resmi",
@@ -974,12 +1048,9 @@ export default function BookingForm({
           <div className="form-actions">
             {step < 2 ? (
               <Button
-                type="button"
+                type="submit"
+                formNoValidate
                 disabled={pending}
-                onClick={(event) => {
-                  event.preventDefault();
-                  void next();
-                }}
               >
                 <span className="booking-mobile-copy">{t("Lanjutkan", "Continue")}</span>
                 <span className="booking-desktop-copy">
@@ -1016,8 +1087,12 @@ export default function BookingForm({
           </p>
           <dl>
             <div>
-              <dt>{t("Tujuan", "Destination")}</dt>
+              <dt>{t("Pejabat yang dituju", "Person to visit")}</dt>
               <dd>{selectedOfficer?.name || t("Belum dipilih", "Not selected")}</dd>
+            </div>
+            <div>
+              <dt>{t("Tujuan kunjungan", "Purpose of visit")}</dt>
+              <dd>{values.purpose.trim() || t("Belum diisi", "Not entered")}</dd>
             </div>
             <div>
               <dt>{t("Tanggal & waktu", "Date & time")}</dt>

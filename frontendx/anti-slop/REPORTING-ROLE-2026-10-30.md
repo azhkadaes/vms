@@ -1,6 +1,6 @@
 # Summary reporting and one active role
 
-> Historical phase record. Current implementation/contracts and final evidence are consolidated in [the 2 November readiness review](PRODUCTION-READINESS-2026-11-02.md), [PLAN](../PLAN.md) and [VERIFICATION](../VERIFICATION.md). Earlier pending-work statements describe that phase.
+> Historical phase record. Current implementation/contracts and final evidence are consolidated in [the 2 November readiness review](PRODUCTION-READINESS-2026-11-02.md), [PLAN](../../docs/frontend/PLAN.md) and [VERIFICATION](../../docs/frontend/VERIFICATION.md). Earlier pending-work statements describe that phase.
 
 User choices, 30 October: G08 adjusts the app; G09 adjusts the requirement to **one active role per account**. Scope is frontendx. D:/oikn/VMS/backend remains unbuilt.
 

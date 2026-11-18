@@ -251,7 +251,7 @@ async function open(path = "/admin/employees", options = {}) {
     if (path === "/public/lookup") return send(state.booking);
     if (path.endsWith("/admission"))
       return send({
-        payload: "OPAQUE-SERVER-ADMISSION-CREDENTIAL",
+        payload: `OPAQUE-SERVER-ADMISSION-${state.calls.filter((call) => call.path.endsWith("/admission")).length}`,
         expiresAt: "2099-08-19T09:00:02+08:00",
         serverTime: Date.parse("2099-08-19T09:00:00+08:00"),
       });
@@ -649,17 +649,26 @@ test("public production booking uploads bytes before submitting a token, then us
       .click();
     await page.locator(".date-picker > small").click();
     await page.locator("#purpose").fill("Production contract verification");
-    await page.locator('.booking-form .form-actions button[type="button"]').click();
-    await page.locator("#name").fill("Visitor Contract");
-    await page.locator("#organization").fill("Contract Organization");
-    await page.locator("#email").fill("visitor@example.test");
-    await page.locator("#phone").fill("00123456789");
+    await page.locator("#hasNotaDinas").check();
     await page.locator("#nd").setInputFiles({
       name: "official.pdf",
       mimeType: "application/pdf",
       buffer: Buffer.from("%PDF-1.7\nSynthetic document bytes"),
     });
-    await page.locator('.booking-form .form-actions button[type="button"]').click();
+    await page.locator('.booking-form .form-actions button[type="submit"]').click();
+    await page.locator("#name").fill("Visitor Contract");
+    await page.locator("#organization").fill("Contract Organization");
+    await page.locator("#email").fill("visitor@example.test");
+    await page.locator("#phone").fill("00123456789");
+    await page.locator("#visitorPhoto").setInputFiles({
+      name: "visitor.png",
+      mimeType: "image/png",
+      buffer: Buffer.from(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=",
+        "base64",
+      ),
+    });
+    await page.locator('.booking-form .form-actions button[type="submit"]').click();
     await page.locator('.booking-form input[type="checkbox"]').check();
     await page.locator('.booking-form button[type="submit"]').click();
     await page.locator(".booking-code-display strong").waitFor();
@@ -679,10 +688,22 @@ test("public production booking uploads bytes before submitting a token, then us
     await page.locator("#status-code").fill(state.booking.code);
     await page.locator("#status-email").fill(state.booking.email);
     await page.getByRole("button", { name: "Lihat kunjungan", exact: true }).click();
-    await page.getByRole("img", { name: "QR masuk untuk Visitor Contract" }).waitFor();
-    assert.ok(state.calls.find((call) => call.path.endsWith("/admission")));
+    const qr = page.getByRole("img", { name: "QR masuk untuk Visitor Contract" });
+    const initialImage = await qr.getAttribute("src");
+    assert.ok(initialImage);
+    assert.equal(state.calls.filter((call) => call.path.endsWith("/admission")).length, 1);
     await page.clock.runFor(2100);
-    await page.getByRole("status").filter({ hasText: "QR telah kedaluwarsa" }).waitFor();
+    await page.waitForFunction((initialImage) => {
+      const renewed = document.querySelector(".qr-display img")?.getAttribute("src");
+      return renewed && renewed !== initialImage;
+    }, initialImage);
+    assert.equal(state.calls.filter((call) => call.path.endsWith("/admission")).length, 2);
+    assert.equal(await page.getByRole("button", { name: "Perbarui QR" }).count(), 0);
+    for (const width of [320, 1280]) {
+      await page.setViewportSize({ width, height: 900 });
+      const box = await qr.boundingBox();
+      assert.ok(box && box.width === box.height && box.x >= 0 && box.x + box.width <= width);
+    }
     assert.equal(
       state.calls.some((call) => call.path.includes("__preview") || call.query.includes("role=")),
       false,

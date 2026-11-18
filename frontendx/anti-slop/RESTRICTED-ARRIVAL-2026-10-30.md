@@ -1,6 +1,6 @@
 # Restricted visits and arrival timing
 
-> Historical phase record. Current implementation/contracts and final evidence are consolidated in [the 2 November readiness review](PRODUCTION-READINESS-2026-11-02.md), [PLAN](../PLAN.md) and [VERIFICATION](../VERIFICATION.md). Earlier pending-work statements describe that phase.
+> Historical phase record. Current implementation/contracts and final evidence are consolidated in [the 2 November readiness review](PRODUCTION-READINESS-2026-11-02.md), [PLAN](../../docs/frontend/PLAN.md) and [VERIFICATION](../../docs/frontend/VERIFICATION.md). Earlier pending-work statements describe that phase.
 
 User choices, 30 October 2026: adjust the app for G03 and G05. Scope is frontendx and its synthetic service. The future D:/oikn/VMS/backend remains unbuilt. Preserve all other gap decisions.
 

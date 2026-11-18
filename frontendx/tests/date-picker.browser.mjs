@@ -209,7 +209,7 @@ test("rescheduling submits ISO date and minute-precision time through native For
   try {
     await page.goto(origin + "/admin/booking?status=approved");
     await page.locator('button[aria-label^="Lihat detail"]:visible').first().click();
-    await page.getByRole("button", { name: "Ubah jadwal", exact: true }).click();
+    await page.getByRole("button", { name: "Edit kunjungan", exact: true }).click();
     await page.locator(".date-picker-trigger").waitFor();
     const current = await page.locator(".date-picker-value").inputValue();
     assert.match(current, /^\d{4}-\d{2}-\d{2}$/);
@@ -218,8 +218,15 @@ test("rescheduling submits ISO date and minute-precision time through native For
       return e.checkValidity();
     });
     assert.equal(invalid, false);
+    const save = page.getByRole("button", { name: "Simpan perubahan", exact: true });
+    assert.equal(await save.count(), 0);
     await pickDate(page, "2096-02-29");
+    await save.waitFor();
+    await pickDate(page, current);
+    assert.equal(await save.count(), 0);
     await pickTime(page, "15:25");
+    await save.waitFor();
+    await pickDate(page, "2096-02-29");
     const data = await page
       .locator(".modal form")
       .evaluate((form) => Object.fromEntries(new FormData(form)));
@@ -236,15 +243,15 @@ test("restricted creation accepts date/time and editing keeps both controls read
   page.setDefaultTimeout(12000);
   try {
     await page.goto(origin + "/admin/booking");
-    await page.locator("#role").selectOption("Protocol Officer");
+    await page.locator("#active-role").selectOption("Protocol Officer");
     await page.waitForURL(/\/admin\/dashboard$/);
-    await page.getByRole("link", { name: "Janji temu", exact: true }).click();
+    await page.goto(origin + "/admin/booking");
     await page.locator(".appointment-type-menu summary").click();
     await page.getByRole("button", { name: /Kunjungan Terbatas/ }).click();
     await pickDate(page, "2096-02-29");
     await pickTime(page, "12:35");
     await page.getByRole("button", { name: "Buat kunjungan terbatas", exact: true }).click();
-    await page.getByRole("button", { name: "Edit detail", exact: true }).click();
+    await page.getByRole("button", { name: "Edit informasi pengunjung", exact: true }).click();
     await page.getByRole("heading", { name: "Edit kunjungan terbatas", exact: true }).waitFor();
     assert.equal(await page.locator(".date-picker-value").inputValue(), "2096-02-29");
     assert.equal(await page.locator(".date-picker-trigger").isDisabled(), true);
@@ -255,6 +262,13 @@ test("restricted creation accepts date/time and editing keeps both controls read
       "",
     );
     await page.screenshot({ path: `${evidence}/shadcn-date-time-readonly.png` });
+    const save = page.getByRole("button", { name: "Simpan perubahan", exact: true });
+    assert.equal(await save.count(), 0);
+    const name = page.locator("#restricted-name");
+    await name.fill("Nama pengunjung");
+    await save.waitFor();
+    await name.fill("");
+    assert.equal(await save.count(), 0);
   } finally {
     await page.close();
   }

@@ -218,6 +218,54 @@ test("multipart requests preserve file bytes, use browser-generated boundaries a
   );
 });
 
+test("photo uploads keep their tokens and validation errors separate from supporting documents", async (context) => {
+  const forms: FormData[] = [];
+  context.mock.method(globalThis, "fetch", async (_url: unknown, options: RequestInit) => {
+    forms.push(options.body as FormData);
+    if (forms.length === 3)
+      return response(
+        { message: "Invalid image", fieldErrors: { ndName: ["Invalid image"] } },
+        422,
+      );
+    return response({
+      token: `opaque-upload-token-${forms.length}`,
+      expiresAt: new Date(Date.now() + 60_000).toISOString(),
+      serverTime: Date.now(),
+    });
+  });
+  const { uploadAttachment } = await import("../packages/data/src/attachments.ts");
+  const memo = new File(["%PDF-1.7 memo"], "memo.pdf", { type: "application/pdf" });
+  const pngSignature = Uint8Array.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  const photo = new File([pngSignature], "visitor.png", { type: "image/png" });
+  await assert.rejects(
+    uploadAttachment(memo, "public", "visitorPhoto"),
+    (error: unknown) => error instanceof ApiError && !!error.fieldErrors?.visitorPhotoName,
+  );
+  await assert.rejects(
+    uploadAttachment(new File([pngSignature], "memo.pdf", { type: "application/pdf" }), "staff"),
+    (error: unknown) => error instanceof ApiError && !!error.fieldErrors?.ndName,
+  );
+  assert.equal(forms.length, 0);
+  assert.equal(await uploadAttachment(memo, "public"), "opaque-upload-token-1");
+  assert.equal(await uploadAttachment(photo, "public", "visitorPhoto"), "opaque-upload-token-2");
+  assert.equal(await uploadAttachment(photo, "public", "visitorPhoto"), "opaque-upload-token-2");
+  assert.equal(forms.length, 2, "retrying the same photo reuses its unexpired token");
+  assert.equal((forms[0].get("file") as File).name, "memo.pdf");
+  assert.equal((forms[1].get("file") as File).name, "visitor.png");
+  assert.notEqual(forms[0].get("reference"), forms[1].get("reference"));
+  await assert.rejects(
+    uploadAttachment(
+      new File([pngSignature, "rejected"], "rejected.png", { type: "image/png" }),
+      "public",
+      "visitorPhoto",
+    ),
+    (error: unknown) =>
+      error instanceof ApiError &&
+      error.fieldErrors?.visitorPhotoName?.[0] === "Invalid image" &&
+      !error.fieldErrors?.ndName,
+  );
+});
+
 test("management contracts strip returned passwords and secret values and retain optimistic versions", async () => {
   let submitted: unknown;
   const employee = {

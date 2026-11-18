@@ -8,7 +8,7 @@ export function RestrictedIdentity({ booking: b }: { booking: StaffBooking }) {
     <dl className="detail-grid section-gap">
       <div><dt>{t("Jadwal · WITA", "Schedule · WITA")}</dt><dd>{dateLabel(b.date, language)} · {b.time} ({b.duration} {t("menit", "min")})</dd></div>
       <div><dt>{t("Tempat", "Room")}</dt><dd>{b.room || t("Belum ditentukan", "Not assigned")}</dd></div>
-      {b.code && <div><dt>{t("Kode kunjungan", "Visit code")}</dt><dd className="tabular">{b.code}</dd></div>}
+      {b.code && <div><dt>{t("Kode booking", "Booking code")}</dt><dd className="tabular">{b.code}</dd></div>}
       {b.restrictedView !== "reception" && <>
         <div><dt>{t("Nama", "Name")}</dt><dd>{b.name || t("Tidak diisi", "Not supplied")}</dd></div>
         {b.restrictedView !== "arrival" && <div><dt>{t("Instansi", "Organization")}</dt><dd>{b.organization || t("Tidak diisi", "Not supplied")}</dd></div>}

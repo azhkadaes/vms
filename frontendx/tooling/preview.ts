@@ -1,4 +1,5 @@
 import type { Plugin } from "vite";
+import { readFilter } from "../packages/data/src/report-filter.ts";
 import { createHash } from "node:crypto";
 import {
   aggregateVisits,
@@ -10,9 +11,14 @@ import {
 } from "../packages/data/src/reports.ts";
 import { hasReservationConflict } from "../packages/data/src/scheduling.ts";
 import {
+  canReadVisitLog, projectVisitLog, selectVisitLog, summarizeVisitLog, visitLogFilterSchema,
+} from "../packages/data/src/visit-log.ts";
+import {
   can,
   canCreateAppointment,
   isRestricted,
+  matchesAttachmentSignature,
+  notaDinasType,
   officers,
   rooms,
   roles,
@@ -22,6 +28,7 @@ import {
   validateReschedule,
   toVisitorBooking as projectVisitor,
   toStaffBooking as projectStaff,
+  visitorPhotoTypes,
   getVisitTiming,
   canVisitorCancel,
   type PublicVisitAction,
@@ -45,6 +52,8 @@ export function previewApi({
   session = sessionFor,
 }: { now?: () => number; session?: (role: Role) => Session } = {}): Plugin {
   const reservationConflict = { message: "Ruangan atau pejabat memiliki jadwal yang bertabrakan." };
+  const visitorPhotos = new Map<string, { bytes: Buffer; type: string }>();
+  const documents = new Map<string, { bytes: Buffer; type: string }>();
   const attempts = new Map<
     string,
     { state: "committed"; payload: string; booking: StoredBooking } | { state: "closed" }
@@ -156,8 +165,43 @@ export function previewApi({
           const s = session(role);
           const requestTime = now();
           const toStaffBooking = (booking: StoredBooking, actor: Session, arrival = false) =>
-            projectStaff(booking, actor, { arrival, now: requestTime });
+            projectStaff(
+              {
+                ...booking,
+                attachmentAvailable: !!booking.attachmentToken && documents.has(booking.attachmentToken),
+              },
+              actor,
+              { arrival, now: requestTime },
+            );
           const toVisitorBooking = (booking: Booking) => projectVisitor(booking, requestTime);
+          if (["/visitor-photos", "/attachments"].includes(url.pathname) && req.method === "POST") {
+            const photo = url.pathname === "/visitor-photos";
+            const type = req.headers["content-type"] || "";
+            const invalidType = photo ? "Gunakan foto JPEG atau PNG." : "Gunakan berkas PDF.";
+            if (photo ? !visitorPhotoTypes.includes(type) : type !== notaDinasType) {
+              res.writeHead(422).end(JSON.stringify({ message: invalidType }));
+              return;
+            }
+            const chunks: Buffer[] = [];
+            let size = 0;
+            for await (const chunk of req) {
+              size += chunk.length;
+              if (size > 5 * 1024 * 1024) {
+                res.writeHead(413).end(JSON.stringify({ message: "Berkas maksimal 5 MB." }));
+                return;
+              }
+              chunks.push(Buffer.from(chunk));
+            }
+            const bytes = Buffer.concat(chunks);
+            if (!matchesAttachmentSignature(type, bytes)) {
+              res.writeHead(422).end(JSON.stringify({ message: invalidType }));
+              return;
+            }
+            const token = crypto.randomUUID();
+            (photo ? visitorPhotos : documents).set(token, { bytes, type });
+            res.end(JSON.stringify({ token }));
+            return;
+          }
           let body: any = {};
           if (req.method === "POST") {
             let raw = "";
@@ -175,8 +219,73 @@ export function previewApi({
             send({ message: "Peran tidak tersedia." }, 403);
             return;
           }
+          const fileMatch = url.pathname.match(/^\/bookings\/([^/]+)\/(visitor-photo|attachment)$/);
+          if (fileMatch && ["GET", "POST"].includes(req.method || "")) {
+            const [, id, kind] = fileMatch;
+            const credential =
+              typeof body.credential === "string" ? body.credential.replace(/^VMS-DEMO:/, "") : "";
+            const booking = scope(bookings, s).find((b) =>
+              b.id === id &&
+              !isRestricted(b) &&
+              (s.role === "Receptionist"
+                ? req.method === "POST" &&
+                  ((b.status === "approved" && s.permissions.includes("checkin")) ||
+                    (b.status === "checked_in" && s.permissions.includes("checkout"))) &&
+                  b.code === credential
+                : req.method === "GET"),
+            );
+            const token = kind === "visitor-photo" ? booking?.visitorPhotoToken : booking?.attachmentToken;
+            const file = token && (kind === "visitor-photo" ? visitorPhotos : documents).get(token);
+            if (!file) {
+              send({ message: "Berkas tidak tersedia." }, 404);
+              return;
+            }
+            res.setHeader("Content-Type", file.type);
+            res.setHeader("X-Content-Type-Options", "nosniff");
+            res.end(file.bytes);
+            return;
+          }
           if (url.pathname === "/session") {
             send(s);
+            return;
+          }
+          if (["/reports/visits", "/reports/visits/export"].includes(url.pathname) && req.method === "GET") {
+            const exporting = url.pathname.endsWith("/export");
+            if (!canReadVisitLog(s) || (exporting && !canExportSummary(s))) {
+              send({ message: "Akses log kunjungan tidak diizinkan." }, 403);
+              return;
+            }
+            const values = Object.fromEntries(
+              [...new Set(url.searchParams.keys())]
+                .filter((key) => !["role", "page", "pageSize", "revision"].includes(key))
+                .map((key) => [key, readFilter(url.searchParams, key, "")]),
+            );
+            const parsed = visitLogFilterSchema.safeParse(values);
+            const page = Number(url.searchParams.get("page") || 1);
+            const pageSize = Number(url.searchParams.get("pageSize") || 10);
+            if (!parsed.success || !Number.isInteger(page) || page < 1 || page > 100000 || ![10, 25, 50].includes(pageSize)) {
+              send({ message: "Periksa filter log kunjungan.", ...(!parsed.success ? { fieldErrors: parsed.error.flatten().fieldErrors } : {}) }, 422);
+              return;
+            }
+            const all = projectVisitLog(bookings, requestTime);
+            const items = selectVisitLog(all, parsed.data);
+            const summary = summarizeVisitLog(items);
+            const revision = createHash("sha256").update(JSON.stringify({ filter: parsed.data, items, permissions: [...s.permissions].sort() })).digest("hex");
+            const snapshot = { filter: parsed.data, items, summary, revision, generatedAt: new Date(requestTime).toISOString() };
+            if (exporting) {
+              if (url.searchParams.get("revision") !== revision) {
+                send({ message: "Log telah berubah. Perbarui sebelum mengekspor." }, 409);
+                return;
+              }
+              send(snapshot);
+            } else {
+              const activePage = Math.min(page, Math.max(1, Math.ceil(items.length / pageSize)));
+              send({ ...snapshot, items: items.slice((activePage - 1) * pageSize, activePage * pageSize),
+                page: activePage, pageSize, total: items.length, canExport: canExportSummary(s),
+                officers: [...new Map(all.filter((b) => b.officerId && b.host).map((b) => [b.officerId, { id: b.officerId, name: b.host }])).values()].sort((a, b) => a.name.localeCompare(b.name, "id")),
+                rooms: [...new Set(all.map((b) => b.room).filter(Boolean))].sort(),
+              });
+            }
             return;
           }
           if (
@@ -191,7 +300,7 @@ export function previewApi({
             const parsed = summaryFilterSchema.safeParse({
               from: url.searchParams.get("from"),
               to: url.searchParams.get("to"),
-              status: url.searchParams.get("status") || "all",
+              status: readFilter(url.searchParams, "status", "all") || "all",
             });
             if (!parsed.success) {
               send(
@@ -284,6 +393,16 @@ export function previewApi({
               else send(toStaffBooking(previous.booking, s), 201);
               return;
             }
+            if (input.room && !rooms.includes(input.room)) {
+              send(
+                {
+                  message: "Pilih ruangan yang tersedia.",
+                  fieldErrors: { room: ["Pilih ruangan yang tersedia."] },
+                },
+                422,
+              );
+              return;
+            }
             const officer = officers.find((o) => o.id === input.officerId);
             const booking: StoredBooking = {
               ...input,
@@ -300,8 +419,8 @@ export function previewApi({
               visitKind: kind,
               host: officer?.name || "",
               vip: officer?.vip || false,
-              duration: 60,
-              room: "",
+              duration: "duration" in input ? input.duration : 60,
+              room: input.room || "",
               status: "approved",
               version: 1,
               createdBy: { name: s.name, role: s.role },
@@ -470,7 +589,9 @@ export function previewApi({
           }
           const detail = url.pathname.match(/^\/bookings\/([^/]+)$/);
           if (detail && req.method === "GET") {
-            const b = scope(bookings, s).find((b) => b.id === detail[1]);
+            const b = s.role === "Receptionist"
+              ? undefined
+              : scope(bookings, s).find((b) => b.id === detail[1]);
             if (!b) send({ message: "Kunjungan tidak ditemukan." }, 404);
             else send(toStaffBooking(b, s));
             return;
@@ -507,12 +628,7 @@ export function previewApi({
               return;
             }
             if (action === "update") {
-              if (
-                !isRestricted(b) ||
-                s.role !== "Protocol Officer" ||
-                !s.permissions.includes("create") ||
-                !["pending", "approved"].includes(b.status)
-              ) {
+              if (!can(s, b, "update", requestTime)) {
                 send({ message: "Tindakan tidak tersedia." }, 403);
                 return;
               }
@@ -709,6 +825,8 @@ export function previewApi({
                 body.room,
                 body.reason,
                 isRestricted(b),
+                rooms,
+                requestTime,
               );
               if (error) throw Error(error);
               if (

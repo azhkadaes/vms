@@ -18,11 +18,8 @@ import {
   BookOpen,
   LogIn,
   LogOut,
-  BarChart3,
   Users,
   Shield,
-  Plug,
-  FileText,
   Menu,
   X,
   ChevronRight,
@@ -73,6 +70,7 @@ import {
 } from "./components/lightswind/sidebar";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Bookings = lazy(() => import("./pages/Bookings"));
+const VisitLog = lazy(() => import("./pages/VisitLog"));
 const Reception = lazy(() => import("./pages/Reception"));
 const Settings = lazy(() => import("./pages/Settings"));
 const PasswordChange = lazy(() => import("./features/PasswordChange"));
@@ -84,7 +82,7 @@ const items = [
     icon: CalendarDays,
     permission: "bookings",
   },
-  { title: "Janji temu", to: "/booking", icon: BookOpen, permission: "bookings" },
+  { title: "Kunjungan", to: "/booking", icon: BookOpen, permission: "bookings" },
   { title: "Check in", to: "/check-in", icon: LogIn, permission: "checkin" },
   {
     title: "Check out",
@@ -92,26 +90,8 @@ const items = [
     icon: LogOut,
     permission: "checkout",
   },
-  {
-    title: "Analitik",
-    to: "/analytics",
-    icon: BarChart3,
-    permission: "reports",
-  },
   { title: "Pegawai", to: "/employees", icon: Users, permission: "people" },
   { title: "Peran & akses", to: "/roles", icon: Shield, permission: "roles" },
-  {
-    title: "Integrasi",
-    to: "/integration",
-    icon: Plug,
-    permission: "integrations",
-  },
-  {
-    title: "Laporan kunjungan",
-    to: "/logs",
-    icon: FileText,
-    permission: "reports",
-  },
 ];
 function Shell() {
   const { session, pendingSession, loading, error, signOut, refreshSession } = useSession();
@@ -154,7 +134,11 @@ function Shell() {
         <PasswordChange />
       </Suspense>
     );
-  const visible = items.filter((i) => !i.permission || session.permissions.includes(i.permission));
+  const visible = items.filter(
+    (i) =>
+      (!i.permission || session.permissions.includes(i.permission)) &&
+      !(session.role === "Super Admin" && i.to === "/today"),
+  );
   const title = pageTitle;
   const changeSidebarExpanded = (expanded: boolean) => {
     setSidebarExpanded(expanded);
@@ -295,6 +279,32 @@ function Guard({ permission, children }: { permission: string; children: React.R
     </div>
   );
 }
+function VisitRoute({
+  children,
+  todayOnly = false,
+}: {
+  children: React.ReactNode;
+  todayOnly?: boolean;
+}) {
+  const { session } = useSession();
+  const loc = useLocation();
+  if (session?.role !== "Super Admin") return children;
+  if (!todayOnly)
+    return (
+      <Guard permission="reports">
+        <VisitLog />
+      </Guard>
+    );
+  const params = new URLSearchParams(loc.search);
+  if (params.get("sort") === "time" || params.get("sort") === "priority") params.delete("sort");
+  if (params.get("vip") === "1") params.set("kind", "vip");
+  if (todayOnly) {
+    params.set("from", today());
+    params.set("to", today());
+  }
+  for (const key of ["new", "selected", "vip", "page"]) params.delete(key);
+  return <Navigate to={`/booking${params.size ? `?${params}` : ""}`} replace />;
+}
 function Login() {
   const [error, setError] = useState<unknown>();
   const [pending, setPending] = useState(false);
@@ -375,7 +385,9 @@ createRoot(document.getElementById("root")!).render(
                   path="booking"
                   element={
                     <Guard permission="bookings">
-                      <Bookings />
+                      <VisitRoute>
+                        <Bookings />
+                      </VisitRoute>
                     </Guard>
                   }
                 />
@@ -383,7 +395,9 @@ createRoot(document.getElementById("root")!).render(
                   path="today"
                   element={
                     <Guard permission="bookings">
-                      <Bookings todayOnly />
+                      <VisitRoute todayOnly>
+                        <Bookings todayOnly />
+                      </VisitRoute>
                     </Guard>
                   }
                 />
@@ -403,7 +417,16 @@ createRoot(document.getElementById("root")!).render(
                     </Guard>
                   }
                 />
-                {["analytics", "employees", "roles", "integration", "logs"].map((page) => (
+                <Route path="integration" element={<Navigate to="/dashboard" replace />} />
+                <Route
+                  path="analytics"
+                  element={<Navigate to={`/dashboard${location.search}`} replace />}
+                />
+                <Route
+                  path="logs"
+                  element={<Navigate to={`/booking${location.search}`} replace />}
+                />
+                {["employees", "roles"].map((page) => (
                   <Route
                     key={page}
                     path={page}
@@ -411,11 +434,8 @@ createRoot(document.getElementById("root")!).render(
                       <Guard
                         permission={
                           {
-                            analytics: "reports",
                             employees: "people",
                             roles: "roles",
-                            integration: "integrations",
-                            logs: "reports",
                           }[page]!
                         }
                       >

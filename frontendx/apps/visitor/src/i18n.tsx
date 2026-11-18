@@ -1,3 +1,4 @@
+import { Select } from "@vms/ui";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { UiLanguageProvider } from "@vms/ui/language";
 
@@ -54,7 +55,7 @@ export function LanguageSwitch({
   const { language, setLanguage } = useLanguage();
   if (compact)
     return (
-      <select
+      <Select
         className={`language-select ${className}`}
         aria-label={language === "id" ? "Bahasa halaman" : "Page language"}
         value={language}
@@ -66,7 +67,7 @@ export function LanguageSwitch({
         <option value="en" lang="en" label="EN">
           English
         </option>
-      </select>
+      </Select>
     );
   return (
     <div

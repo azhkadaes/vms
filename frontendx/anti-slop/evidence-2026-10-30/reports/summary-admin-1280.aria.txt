@@ -15,20 +15,14 @@
       - /url: /admin/booking
     - link "Analitik":
       - /url: /admin/analytics
-    - link "Pegawai":
-      - /url: /admin/employees
-    - link "Peran & akses":
-      - /url: /admin/roles
-    - link "Integrasi":
-      - /url: /admin/integration
     - link "Laporan kunjungan":
       - /url: /admin/logs
   - text: Terhubung untuk melayani. Otorita Ibu Kota Nusantara Pratinjau peran
   - combobox "Pratinjau peran":
     - option "PA"
-    - option "Protocol Officer"
+    - option "Protocol Officer" [selected]
     - option "Receptionist"
-    - option "Super Admin" [selected]
+    - option "Super Admin"
   - link "Portal pengunjung":
     - /url: /
   - button "Keluar"
@@ -36,7 +30,7 @@
 - banner:
   - text: Backoffice
   - strong: Laporan kunjungan
-  - text: 19 Agustus 2099 · WITA AN
+  - text: 19 Agustus 2099 · WITA NP
 - region "Pratinjau lokal": Preview lokal · Data contoh, tanpa email atau unggahan nyata. Gunakan data fiktif.
 - main:
   - heading "Laporan kunjungan" [level=1]
@@ -64,7 +58,7 @@
   - status: CSV ringkasan berhasil dibuat sesuai angka yang ditampilkan.
   - region "Ringkasan kunjungan":
     - heading "1 Agustus 2099 – 31 Agustus 2099" [level=2]
-    - paragraph: Ringkasan organisasi
+    - paragraph: Lingkup kunjungan yang diizinkan
     - text: Diperbarui
     - time: 19/8/2099, 09.00.00
     - text: WITA

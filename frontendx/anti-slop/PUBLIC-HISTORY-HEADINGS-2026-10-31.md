@@ -1,6 +1,6 @@
 # Public history and visitor headings
 
-> Historical phase record. Current implementation/contracts and final evidence are consolidated in [the 2 November readiness review](PRODUCTION-READINESS-2026-11-02.md), [PLAN](../PLAN.md) and [VERIFICATION](../VERIFICATION.md). Earlier pending-work statements describe that phase.
+> Historical phase record. Current implementation/contracts and final evidence are consolidated in [the 2 November readiness review](PRODUCTION-READINESS-2026-11-02.md), [PLAN](../../docs/frontend/PLAN.md) and [VERIFICATION](../../docs/frontend/VERIFICATION.md). Earlier pending-work statements describe that phase.
 
 User decisions on 31 October: G12 and G13 adjust the app. Scope is frontendx. G11 choice-card/Back navigation and responsive language placement stay as they are; the new backend remains unbuilt.
 

@@ -2,6 +2,7 @@ import test, { before, after } from "node:test";
 import assert from "node:assert/strict";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
+import { jsPDF } from "jspdf";
 import { startPreview } from "./helpers/preview-server.mjs";
 
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || "playwright");
@@ -74,6 +75,120 @@ async function withApi(run) {
     await api.close();
   }
 }
+
+test("reception opens linked memo and photo only after resolving the visit", async () =>
+  withApi(async () => {
+    const memo = new jsPDF();
+    memo.text("Nota Dinas untuk pengujian", 20, 20);
+    const photo = Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=",
+      "base64",
+    );
+    async function upload(path, type, body) {
+      const response = await fetch(api.base + path, {
+        method: "POST",
+        headers: { "Content-Type": type },
+        body,
+      });
+      assert.equal(response.status, 200);
+      return (await response.json()).token;
+    }
+    const booking = await post("/staff/bookings?role=PA", {
+      officerId: "o2",
+      date: "2099-08-19",
+      time: "10:00",
+      name: "Visitor File Example",
+      organization: "Example Agency",
+      email: "visitor@example.test",
+      phone: "08123456789",
+      identityType: "KTP",
+      purpose: "Verify arrival file previews",
+      visitors: ["Visitor File Example", "Anggota Rombongan Contoh"],
+      idempotencyKey: crypto.randomUUID(),
+      ndName: "nota-dinas.pdf",
+      attachmentToken: await upload("/attachments", "application/pdf", memo.output("arraybuffer")),
+      visitorPhotoName: "pengunjung.png",
+      visitorPhotoToken: await upload("/visitor-photos", "image/png", photo),
+    });
+    const list = await fetch(api.base + "/bookings?role=Receptionist").then((r) => r.json());
+    const row = list.find((item) => item.id === booking.id);
+    assert.ok(row);
+    assert.equal(row.attachmentAvailable, undefined);
+    assert.equal(row.visitorPhotoAvailable, undefined);
+    for (const kind of ["attachment", "visitor-photo"]) {
+      const url = `${api.base}/bookings/${booking.id}/${kind}?role=Receptionist`;
+      assert.equal((await fetch(url)).status, 404);
+      assert.equal(
+        (await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ credential: "00000000" }),
+        })).status,
+        404,
+      );
+    }
+
+    const { page, context } = await open("Receptionist", "/admin/check-in");
+    try {
+      await page.getByRole("button", { name: /Kode kunjungan Masukkan/ }).click();
+      await page.locator("#booking-code").fill(booking.code);
+      await page.locator("#booking-code").press("Enter");
+      const validation = page.getByRole("dialog", { name: "Validasi pengunjung" });
+      const roster = validation.locator("summary").filter({ hasText: "2 orang" });
+      const member = validation.getByText("Anggota Rombongan Contoh", { exact: true });
+      await roster.waitFor();
+      assert.equal(await member.isVisible(), false);
+      await roster.click();
+      await member.waitFor();
+      await roster.press("Enter");
+      await member.waitFor({ state: "hidden" });
+      const earlyWarning = validation.getByRole("alert").filter({
+        hasText: "Check-in belum tersedia.",
+      });
+      await earlyWarning.waitFor();
+      assert.equal(await validation.getByRole("checkbox").count(), 0);
+      assert.equal(
+        await earlyWarning.evaluate((node) => node.classList.contains("error-notice")),
+        true,
+      );
+      const memoButton = validation.getByRole("button", { name: "Lihat Nota Dinas" });
+      await memoButton.click();
+      const memoViewer = page.getByRole("dialog", { name: "Nota Dinas", exact: true });
+      if (await page.evaluate(() => navigator.pdfViewerEnabled))
+        await memoViewer.locator('iframe[src^="blob:"]').waitFor();
+      else
+        await memoViewer.getByRole("link", { name: "Unduh Nota Dinas" }).waitFor();
+      await page.keyboard.press("Escape");
+      await memoViewer.waitFor({ state: "hidden" });
+      await memoButton.and(page.locator(":focus")).waitFor();
+      await validation.getByRole("button", { name: "Lihat foto pengunjung" }).press("Enter");
+      const photoViewer = page.getByRole("dialog", { name: "Foto pengunjung", exact: true });
+      const image = photoViewer.getByRole("img", { name: "Foto pengunjung" });
+      await image.waitFor();
+      assert.equal(await image.evaluate(async (node) => {
+        await node.decode();
+        return node.naturalWidth;
+      }), 1);
+      await page.keyboard.press("Escape");
+      await photoViewer.waitFor({ state: "hidden" });
+      api.setNow("2099-08-19T09:30:00+08:00");
+      await validation.getByRole("button", { name: "Periksa kode lain" }).press("Enter");
+      await page.locator("#booking-code").fill(booking.code);
+      await page.locator("#booking-code").press("Enter");
+      const verified = validation.getByRole("checkbox");
+      const confirm = validation.getByRole("button", { name: "Konfirmasi check in" });
+      await confirm.waitFor();
+      assert.equal(await earlyWarning.count(), 0);
+      assert.equal(await verified.isChecked(), false);
+      assert.equal(await confirm.isDisabled(), true);
+      await verified.press("Space");
+      await confirm.press("Enter");
+      await validation.waitFor({ state: "hidden" });
+      await page.getByText("Visitor File Example berhasil check in.").waitFor();
+    } finally {
+      await context.close();
+    }
+  }));
 
 test("Terbatas four-field form preserves leading zeroes, dirty draft and keyboard focus at 320px", async () =>
   withApi(async () => {
@@ -176,7 +291,7 @@ test("PA and Admin read permitted Terbatas details without write controls; gener
         assert.equal(
           await page
             .locator(".modal")
-            .getByRole("button", { name: /^(Setujui|Tolak|Ubah jadwal|Edit detail)$/ })
+            .getByRole("button", { name: /^(Setujui|Tolak|Edit kunjungan|Edit detail)$/ })
             .count(),
           0,
         );
@@ -223,8 +338,11 @@ test("reception gates identity by code, blocks early arrival, then permits check
     assert.equal(b.status, "approved");
     const { page, context } = await open("Receptionist", `/admin/booking?selected=${b.id}`, 390);
     try {
-      await page.getByRole("heading", { name: "Detail kunjungan", exact: true }).waitFor();
-      let text = await page.locator(".modal").innerText();
+      await page.waitForURL((url) => !url.searchParams.has("selected"));
+      await page.locator(".booking-mobile-list").getByText(b.reference, { exact: true }).first().waitFor();
+      assert.equal(await page.getByRole("dialog").count(), 0);
+      assert.equal(await page.getByRole("button", { name: /^Lihat detail/ }).count(), 0);
+      let text = await page.locator(".booking-mobile-list").innerText();
       for (const secret of [b.name, b.organization, b.serviceId, b.code, "5678"])
         assert.equal(text.includes(secret), false, secret);
       await save(page, "reception-redacted-390");
@@ -238,7 +356,7 @@ test("reception gates identity by code, blocks early arrival, then permits check
       assert.ok(text.includes("5678"));
       assert.equal(text.includes(b.organization), false);
       assert.equal(text.includes(b.serviceId), false);
-      await page.getByRole("checkbox").check();
+      assert.equal(await page.getByRole("checkbox").count(), 0);
       assert.equal(
         await page.getByRole("button", { name: "Konfirmasi check in", exact: true }).isDisabled(),
         true,
@@ -327,10 +445,7 @@ test("Missed appears in staff filtering and visitor ticket with no entry QR", as
     try {
       await staff.page.getByRole("heading", { name: "Detail kunjungan", exact: true }).waitFor();
       assert.ok((await staff.page.locator(".modal").innerText()).includes("Terlewat"));
-      assert.equal(
-        await staff.page.getByRole("button", { name: "Ubah jadwal", exact: true }).count(),
-        0,
-      );
+      await staff.page.getByRole("button", { name: "Edit kunjungan", exact: true }).waitFor();
       await save(staff.page, "missed-staff-390");
     } finally {
       await staff.context.close();

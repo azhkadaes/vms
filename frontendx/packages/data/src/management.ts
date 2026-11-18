@@ -1,6 +1,7 @@
 import { apiBase, preview } from "./config.ts";
-import { roles, sessionFor } from "./domain.ts";
+import { officers, roles, sessionFor } from "./domain.ts";
 import { ApiError } from "./errors.ts";
+import { officerOrganization } from "./organization.ts";
 import { createHttpClient } from "./http.ts";
 import type {
   Employee,
@@ -30,6 +31,13 @@ export interface ManagementRepository {
   integrations(): Promise<Integration[]>;
   saveIntegration(record: Integration, input: IntegrationInput): Promise<Integration>;
 }
+function validateAssignmentCount(input: EmployeeInput) {
+  if (input.assignedOfficerIds.length > 1)
+    throw new ApiError(422, "Periksa penugasan pejabat.", {
+      assignedOfficerIds: ["Pegawai hanya dapat ditugaskan ke satu pejabat."],
+    });
+}
+
 export function createManagementRepository(
   base = "/v1",
   fetcher: typeof fetch = fetch,
@@ -61,6 +69,7 @@ export function createManagementRepository(
       );
     },
     saveEmployee: async (id, input, version) => {
+      validateAssignmentCount(input);
       const { employeeSchema } = await import("./management-contract.ts");
       return parse(
         await request(`/staff/employees${id ? "/" + encodeURIComponent(id) : ""}`, {
@@ -216,6 +225,11 @@ function createPreviewManagement(): ManagementRepository {
       return structuredClone(record);
     },
     async saveEmployee(id, input, version) {
+      validateAssignmentCount(input);
+      const isPA = (input.roles || [input.role]).includes("PA");
+      const organization = officerOrganization(
+        officers.find((officer) => officer.id === input.assignedOfficerIds[0]),
+      );
       const current = employees.find((record) => record.id === id);
       if (id && !current) throw new ApiError(404, "Pegawai tidak ditemukan.");
       if (current) conflict(current.version, version);
@@ -226,8 +240,8 @@ function createPreviewManagement(): ManagementRepository {
         role: input.role,
         roles: input.roles || (input.role ? [input.role] : []),
         jobTitle: input.jobTitle,
-        deputy: input.deputy,
-        directorate: input.directorate,
+        deputy: isPA ? organization.deputy : input.deputy,
+        directorate: isPA ? organization.directorate : input.directorate,
         phone: input.phone,
         nip: input.nip,
         assignedOfficerIds: (input.roles || [input.role]).includes("PA")

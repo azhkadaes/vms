@@ -75,6 +75,9 @@ export const staffBookingResponse = z
     rejectionReason: z.string().optional(),
     createdBy: z.object({ name: z.string(), role: z.enum(roles) }).optional(),
     attachmentAvailable: z.boolean().optional(),
+    visitorPhotoAvailable: z.boolean().optional(),
+    visitorCount: z.number().int().min(0).max(20).optional(),
+    visitorPhotoName: z.string().max(255).optional(),
     history: z.array(z.object({ at: timestamp, message: z.string() })).optional(),
   })
   .superRefine((record, context) => {
@@ -128,6 +131,9 @@ export const catalogsResponse = z.object({
       name: z.string().min(1),
       vip: z.boolean(),
       active: z.boolean(),
+      jobTitle: z.string().max(255).optional(),
+      directorate: z.string().max(255).optional(),
+      deputy: z.string().max(255).optional(),
     }),
   ),
   rooms: z.array(z.string().min(1)),

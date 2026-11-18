@@ -16,6 +16,7 @@ import {
   type SortKey,
 } from "@vms/data";
 import {
+  Select,
   Button,
   Empty,
   ErrorNotice,
@@ -33,6 +34,7 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  Download,
   Plus,
   Search,
 } from "lucide-react";
@@ -41,11 +43,13 @@ import { useSearchParams } from "react-router";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
 const CreateAppointment = lazy(() => import("../features/CreateAppointment"));
 const RestrictedAppointment = lazy(() => import("../features/RestrictedAppointment"));
+const Reports = lazy(() => import("./Reports"));
 const BookingDetail = lazy(() => import("../features/BookingDetail"));
 export default function Bookings({ todayOnly = false }: { todayOnly?: boolean }) {
   const { session } = useSession();
   const [params, setParams] = useSearchParams();
   const [notice, setNotice] = useState("");
+  const [exportOpen, setExportOpen] = useState(false);
   const detailTrigger = useRef<HTMLElement | null>(null);
   const createTrigger = useRef<HTMLElement | null>(null);
   const mayCreate =
@@ -110,7 +114,18 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
       pageSize: 7,
     },
   });
-  const detail = useBookingDetail(params.get("selected"));
+  const selectedId = reception ? null : params.get("selected");
+  const detail = useBookingDetail(selectedId);
+  useEffect(() => {
+    if (!reception || !params.has("selected")) return;
+    setParams(
+      (current) => {
+        current.delete("selected");
+        return current;
+      },
+      { replace: true },
+    );
+  }, [reception, params, setParams]);
   const list = (q.data || []).filter(
     (b) => (!todayOnly || b.date === today()) && (!vipOnly || (b.vip && !isRestricted(b))),
   );
@@ -129,10 +144,10 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
   const pages = Math.max(1, Math.ceil(total / 7));
   const activePage = Math.min(page, pages);
   const accessLost = q.error instanceof ApiError && [401, 403].includes(q.error.status);
-  const selected = accessLost
+  const selected = !selectedId || accessLost
     ? undefined
     : preview
-      ? q.data?.find((b) => b.id === params.get("selected"))
+      ? q.data?.find((b) => b.id === selectedId)
       : detail.error instanceof ApiError && [401, 403, 404].includes(detail.error.status)
         ? undefined
         : detail.data;
@@ -175,7 +190,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
     <>
       <div className="page-intro booking-page-intro">
         <div>
-          <h1>{todayOnly ? "Kunjungan hari ini" : "Janji temu"}</h1>
+          <h1>{todayOnly ? "Kunjungan hari ini" : "Kunjungan"}</h1>
           <p>
             {todayOnly
               ? dateLabel(today())
@@ -190,6 +205,13 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
               ? "Memuat jumlah…"
               : `${preview ? list.length : q.totalScoped} booking dalam akses Anda`}
           </span>
+          {!todayOnly &&
+            session?.permissions.includes("reports") &&
+            session.permissions.includes("reportExport") && (
+              <Button kind="secondary" onClick={() => setExportOpen(true)}>
+                <Download size={16} /> Ekspor laporan kunjungan
+              </Button>
+            )}
           {mayCreate && session?.role === "Protocol Officer" ? (
             <details
               className="appointment-type-menu"
@@ -262,7 +284,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
       {creating && session && !mayCreate && (
         <ErrorNotice error="Peran ini tidak dapat membuat janji temu." />
       )}
-      {params.get("selected") && session && !q.isPending && !q.error && !selected && (
+      {selectedId && session && !q.isPending && !q.error && !selected && (
         <ErrorNotice error="Kunjungan tidak tersedia dalam akses Anda." />
       )}
       <section className="panel section-gap booking-panel">
@@ -281,7 +303,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
         </div>
         <div className="mobile-status-filter">
           <label htmlFor="booking-status">Status janji temu</label>
-          <select
+          <Select
             id="booking-status"
             className="control"
             value={status}
@@ -293,14 +315,14 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                 {s === "all" ? list.length : list.filter((b) => b.status === s).length}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
         <div className="booking-toolbar">
           <div className="search-field">
             <Search size={18} />
             <input
               className="control"
-              aria-label="Cari janji temu"
+              aria-label="Cari kunjungan"
               placeholder="Cari nama, instansi, atau tujuan…"
               value={search}
               onChange={(e) => update("q", e.target.value)}
@@ -308,10 +330,10 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
           </div>
           <div className="field booking-sort">
             <label htmlFor="booking-sort">Urutkan</label>
-            <select
+            <Select
               id="booking-sort"
               className="control"
-              aria-label="Urutan janji temu"
+              aria-label="Urutan kunjungan"
               value={sort === "priority" ? "" : sort}
               onChange={(e) => update("sort", e.target.value)}
             >
@@ -321,7 +343,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
               <option value="organization">Instansi</option>
               <option value="host">Tujuan</option>
               <option value="status">Status</option>
-            </select>
+            </Select>
           </div>
           {showVipFilter && (
             <label className="vip-filter">
@@ -374,16 +396,18 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                         </div>
                       )}
                     </dl>
-                    <Button
-                      kind="secondary"
-                      aria-label={`Lihat detail ${bookingName(b)}`}
-                      onClick={(event) => {
-                        detailTrigger.current = event.currentTarget;
-                        update("selected", b.id);
-                      }}
-                    >
-                      Lihat detail <ArrowUpRight size={16} />
-                    </Button>
+                    {!reception && (
+                      <Button
+                        kind="secondary"
+                        aria-label={`Lihat detail ${bookingName(b)}`}
+                        onClick={(event) => {
+                          detailTrigger.current = event.currentTarget;
+                          update("selected", b.id);
+                        }}
+                      >
+                        Lihat detail <ArrowUpRight size={16} />
+                      </Button>
+                    )}
                   </article>
                 ))}
               </div>
@@ -391,7 +415,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                 className="table-wrap booking-desktop-table"
                 tabIndex={0}
                 role="region"
-                aria-label="Daftar janji temu"
+                aria-label="Daftar kunjungan"
               >
                 <table>
                   <thead>
@@ -400,9 +424,11 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                       <th aria-sort={sortDirection("host")}>{col("host", "Tujuan kunjungan")}</th>
                       <th aria-sort={sortDirection("time")}>{col("time", "Jadwal · WITA")}</th>
                       <th aria-sort={sortDirection("status")}>{col("status", "Status")}</th>
-                      <th>
-                        <span className="sr-only">Detail</span>
-                      </th>
+                      {!reception && (
+                        <th>
+                          <span className="sr-only">Detail</span>
+                        </th>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
@@ -418,16 +444,22 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                                 .join("")}
                             </span>
                             <div>
-                              <button
-                                className="row-link"
-                                onClick={(event) => {
-                                  detailTrigger.current = event.currentTarget;
-                                  update("selected", b.id);
-                                }}
-                              >
-                                {bookingName(b)}
-                                <VisitKind booking={b} />
-                              </button>
+                              {reception ? (
+                                <strong>
+                                  {bookingName(b)} <VisitKind booking={b} />
+                                </strong>
+                              ) : (
+                                <button
+                                  className="row-link"
+                                  onClick={(event) => {
+                                    detailTrigger.current = event.currentTarget;
+                                    update("selected", b.id);
+                                  }}
+                                >
+                                  {bookingName(b)}
+                                  <VisitKind booking={b} />
+                                </button>
+                              )}
                               <small>
                                 {isRestricted(b)
                                   ? b.reference
@@ -453,18 +485,20 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                             rescheduled={b.rescheduled}
                           />
                         </td>
-                        <td>
-                          <Button
-                            kind="ghost"
-                            aria-label={`Lihat detail ${bookingName(b)}`}
-                            onClick={(event) => {
-                              detailTrigger.current = event.currentTarget;
-                              update("selected", b.id);
-                            }}
-                          >
-                            <ArrowUpRight size={18} />
-                          </Button>
-                        </td>
+                        {!reception && (
+                          <td>
+                            <Button
+                              kind="ghost"
+                              aria-label={`Lihat detail ${bookingName(b)}`}
+                              onClick={(event) => {
+                                detailTrigger.current = event.currentTarget;
+                                update("selected", b.id);
+                              }}
+                            >
+                              <ArrowUpRight size={18} />
+                            </Button>
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>
@@ -500,7 +534,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
           ) : (
             <>
               <Empty
-                title="Tidak ada janji temu yang sesuai"
+                title="Tidak ada kunjungan yang sesuai"
                 text="Coba ubah kata pencarian atau filter status."
               />
               <div className="reset-filter">
@@ -572,7 +606,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
           )}
         </Suspense>
       )}
-      {!creating && !preview && params.has("selected") && !selected && (
+      {!creating && !preview && selectedId && !selected && (
         <Modal
           open
           title="Rincian kunjungan"
@@ -590,6 +624,21 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
           )}
         </Modal>
       )}
+      {exportOpen &&
+        session?.permissions.includes("reports") &&
+        session.permissions.includes("reportExport") && (
+          <Modal
+            open
+            className="report-export-modal"
+            title="Ekspor laporan kunjungan"
+            description="Pilih periode dan status laporan sesuai lingkup akses Anda."
+            onClose={() => setExportOpen(false)}
+          >
+            <Suspense fallback={<Loading />}>
+              <Reports key={session.role} page="logs" />
+            </Suspense>
+          </Modal>
+        )}
       {!creating && selected && session && (
         <BookingDetail
           returnFocusTo={detailTrigger.current}

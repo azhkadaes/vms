@@ -1,3 +1,5 @@
+import { officerOrganization } from "./organization.ts";
+import type { Catalogs } from "./contracts.ts";
 import { getVisitTiming, visitTiming, type DisplayStatus, type VisitTiming } from "./attendance.ts";
 import { publicVisitHistory, type PublicVisitEvent, type StoredVisitEvent } from "./history.ts";
 export {
@@ -83,6 +85,9 @@ export interface PublicBooking extends Omit<Booking, "history"> {
   history: PublicVisitEvent[];
 }
 export interface StoredBooking extends Booking {
+  attachmentToken?: string;
+  visitorPhotoToken?: string;
+  visitorPhotoName?: string;
   coordinationNote?: string;
   internalCancellationNote?: string;
   serviceId?: string;
@@ -104,6 +109,9 @@ type PrivateFields =
   | "history";
 export interface StaffBooking
   extends Omit<Booking, PrivateFields>, Partial<Pick<Booking, PrivateFields>> {
+  visitorPhotoAvailable?: boolean;
+  visitorCount?: number;
+  visitorPhotoName?: string;
   internalCancellationNote?: string;
   coordinationNote?: string;
   reference?: string;
@@ -114,19 +122,20 @@ export interface StaffBooking
   createdBy?: { name: string; role: Role };
 }
 type ScopeRecord = Pick<StaffBooking, "visitKind" | "status" | "officerId" | "vip">;
-export const officers = [
+export const officers: Catalogs["officers"] = [
   { id: "o1", name: "Kepala Otorita IKN", vip: true, active: true },
   { id: "o2", name: "Direktorat Data dan Kecerdasan Buatan", vip: false, active: true },
   { id: "o3", name: "Direktorat Pelayanan Dasar", vip: false, active: true },
-];
+].map((officer) => ({ ...officer, ...officerOrganization(officer) }));
 export function isRestricted(b: Pick<Booking, "visitKind">) {
   return b.visitKind === "restricted";
 }
 export function bookingName(b: Pick<StaffBooking, "name" | "visitKind" | "reference">) {
   return b.name || (isRestricted(b) ? b.reference || "Kunjungan terbatas" : "Nama belum diisi");
 }
-export function partyLabel(b: Pick<StaffBooking, "visitors">) {
-  return b.visitors?.length ? `${b.visitors.length} orang` : "Rombongan belum diisi";
+export function partyLabel(b: Pick<StaffBooking, "visitors" | "visitorCount">) {
+  const count = b.visitorCount ?? b.visitors?.length;
+  return count ? `${count} orang` : "Rombongan belum diisi";
 }
 export const rooms = ["Ruang Rapat Nusantara", "Ruang Rapat Meranti", "Ruang Rapat Mahakam"];
 export function today() {
@@ -287,8 +296,30 @@ export function toStaffBooking(
         : {}),
     };
   }
+  if (s.role === "Receptionist" && !arrival)
+    return {
+      id: b.id,
+      visitKind: b.visitKind,
+      name: b.name,
+      organization: b.organization,
+      host: b.host,
+      vip: b.vip,
+      visitorCount: b.visitors.length,
+      date: b.date,
+      time: b.time,
+      duration: b.duration,
+      room: b.room,
+      status: b.status,
+      version: b.version,
+      rescheduled: b.rescheduled,
+      timing: getVisitTiming(b, now),
+    };
   const visible: StaffBooking = {
     ...bookingProjection(b),
+    ...(b.attachmentAvailable ? { attachmentAvailable: true } : {}),
+    ...(b.visitorPhotoToken
+      ? { visitorPhotoAvailable: true, visitorPhotoName: b.visitorPhotoName }
+      : {}),
     visitKind: b.visitKind,
     createdBy: b.createdBy,
     timing: getVisitTiming(b, now),
@@ -303,13 +334,20 @@ export function toStaffBooking(
     ? { ...visible, internalRejectionNote: b.internalRejectionNote }
     : visible;
 }
+const missedRescheduleWindowMs = 7 * 24 * 60 * 60 * 1000;
+
 export function can(
   s: Session,
   b: StaffBooking,
-  action: "approve" | "reject" | "reschedule" | "checkin" | "checkout" | "cancel",
+  action: "approve" | "reject" | "reschedule" | "checkin" | "checkout" | "cancel" | "update",
   now?: number,
 ) {
-  if (!s.permissions.includes(action) || !scope([b], s).length) return false;
+  const permission = action === "update" ? "create" : action;
+  if (!s.permissions.includes(permission) || !scope([b], s).length) return false;
+  if (action === "update")
+    return (
+      s.role === "Protocol Officer" && isRestricted(b) && ["pending", "approved"].includes(b.status)
+    );
   const timing = now === undefined ? visitTiming(b) : getVisitTiming(b, now);
   if (action === "checkin") return s.role === "Receptionist" && timing.canCheckIn;
   if (action === "checkout") return s.role === "Receptionist" && timing.canCheckOut;
@@ -325,7 +363,9 @@ export function can(
   return (
     owns &&
     (action === "reschedule"
-      ? b.status === "approved" && timing.displayStatus !== "missed"
+      ? b.status === "approved" &&
+        (timing.displayStatus !== "missed" ||
+          timing.serverTime <= timing.endsAt + missedRescheduleWindowMs)
       : b.status === "pending")
   );
 }
@@ -340,7 +380,7 @@ export function sessionFor(role: Role): Session {
             ? "Nadia Putri"
             : "Admin Nusantara",
     role,
-    assignedOfficerIds: role === "PA" ? ["o2", "o3"] : [],
+    assignedOfficerIds: role === "PA" ? ["o2"] : [],
     permissions:
       role === "PA" || role === "Protocol Officer"
         ? [
@@ -412,15 +452,36 @@ export function selectBookings<T extends StaffBooking>(
 export function generalReportRecords<T extends Pick<Booking, "visitKind">>(records: T[]): T[] {
   return records.filter((record) => !isRestricted(record));
 }
+export const notaDinasType = "application/pdf";
+export const visitorPhotoTypes: readonly string[] = ["image/jpeg", "image/png"];
+
 export function validateND(file: { type: string; size: number; name?: string } | null) {
   if (!file) return null;
   if (file.name !== undefined && (!file.name.trim() || file.name.trim().length > 255))
     return "Nama dokumen maksimal 255 karakter.";
-  if (!["application/pdf", "image/jpeg", "image/png"].includes(file.type))
-    return "Gunakan PDF, JPEG, atau PNG.";
+  if (file.type !== notaDinasType) return "Gunakan berkas PDF.";
   if (file.size > 5 * 1024 * 1024 || file.size === 0)
     return "Ukuran dokumen maksimal 5 MB dan tidak boleh kosong.";
   return null;
+}
+export function validateVisitorPhoto(file: { type: string; size: number; name?: string } | null) {
+  if (!file) return null;
+  if (file.name !== undefined && (!file.name.trim() || file.name.trim().length > 255))
+    return "Nama foto maksimal 255 karakter.";
+  if (!visitorPhotoTypes.includes(file.type)) return "Gunakan foto JPEG atau PNG.";
+  if (file.size > 5 * 1024 * 1024 || file.size === 0)
+    return "Ukuran foto maksimal 5 MB dan tidak boleh kosong.";
+  return null;
+}
+const attachmentSignatures: Readonly<Record<string, readonly number[]>> = {
+  [notaDinasType]: [0x25, 0x50, 0x44, 0x46, 0x2d],
+  "image/jpeg": [0xff, 0xd8, 0xff],
+  "image/png": [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
+};
+
+export function matchesAttachmentSignature(type: string, bytes: Uint8Array): boolean {
+  const signature = attachmentSignatures[type];
+  return Array.isArray(signature) && signature.every((byte, index) => bytes[index] === byte);
 }
 export function validateReschedule(
   date: string,
@@ -430,9 +491,10 @@ export function validateReschedule(
   reason: string,
   restricted = false,
   availableRooms = rooms,
+  now = Date.now(),
 ) {
   const stamp = new Date(`${date}T${time}:00+08:00`).getTime();
-  if (!date || !time || !Number.isFinite(stamp) || stamp <= Date.now())
+  if (!date || !time || !Number.isFinite(stamp) || stamp <= now)
     return "Pilih jadwal baru di masa depan (WITA).";
   if (!/^(?:08|09|1[0-5]):[0-5]\d$|^16:00$/.test(time))
     return "Pilih waktu mulai antara 08.00–16.00 WITA.";

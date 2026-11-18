@@ -6,4 +6,14 @@ dist/
 *.log
 .cache/
 .task-cache/
-.impeccable/review/
+
+# Local review material and optional development checks
+.impeccable/
+anti-slop/
+layout-review/
+design-system-review.html
+tests/
+tooling/
+.github/
+.prettierignore
+.prettierrc.json

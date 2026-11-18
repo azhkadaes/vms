@@ -102,6 +102,15 @@ const documentName = z
   .min(1, "Pilih nama dokumen yang valid.")
   .max(255, "Nama dokumen maksimal 255 karakter.")
   .optional();
+const visitorPhotoFields = {
+  visitorPhotoName: z
+    .string()
+    .trim()
+    .min(1, "Pilih nama foto yang valid.")
+    .max(255, "Nama foto maksimal 255 karakter.")
+    .optional(),
+  visitorPhotoToken: z.string().min(16).max(4096).optional(),
+};
 export const publicBookingInputSchema = z
   .object({
     ...bookingFields,
@@ -112,6 +121,7 @@ export const publicBookingInputSchema = z
     visitors: namedRoster,
     ndName: documentName,
     attachmentToken: z.string().min(16).max(4096).optional(),
+    ...visitorPhotoFields,
     privacyVersion: z.string().min(1).max(120).optional(),
     ack: privacyAck,
   })
@@ -148,8 +158,14 @@ export const visitNoteFields = {
   visitorInstructions: z.string().trim().max(2000, "Maksimal 2000 karakter.").optional(),
   coordinationNote: z.string().trim().max(2000, "Maksimal 2000 karakter.").optional(),
 };
+const appointmentDuration = z
+  .number({ error: "Isi durasi kunjungan dalam menit." })
+  .int("Durasi harus berupa menit bulat.")
+  .min(15, "Durasi harus 15-240 menit.")
+  .max(240, "Durasi harus 15-240 menit.");
+const appointmentRoom = z.string().trim().max(200, "Nama ruangan maksimal 200 karakter.").optional();
 export const staffAppointmentSchema = z
-  .object({ ...bookingFields, ...visitNoteFields })
+  .object({ ...bookingFields, ...visitNoteFields, room: appointmentRoom, duration: appointmentDuration })
   .refine(futureStart, scheduleError);
 export type StaffAppointmentDraft = z.input<typeof staffAppointmentSchema>;
 export const staffAppointmentSchemaFor = (available: Officer[]) =>
@@ -158,10 +174,13 @@ export const standardStaffAppointmentInputSchema = z
   .object({
     ...bookingFields,
     ...visitNoteFields,
+    room: appointmentRoom,
+    duration: appointmentDuration.default(60),
     visitKind: z.literal("standard").optional(),
     visitors: namedRoster,
     ndName: documentName,
     attachmentToken: z.string().min(16).max(4096).optional(),
+    ...visitorPhotoFields,
   })
   .refine(futureStart, scheduleError)
   .refine((data) => data.visitors[0] === data.name, {
@@ -177,6 +196,7 @@ export const restrictedAppointmentSchema = z
   .object({
     ...visitNoteFields,
     visitKind: z.literal("restricted"),
+    room: appointmentRoom,
     date: visitFields.date,
     time: visitFields.time,
     officerId: optionalText(z.string().trim().min(1)),

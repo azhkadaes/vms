@@ -12,6 +12,7 @@ export default function ManagementDialog({
   onClose,
   onReload,
   returnFocusTo,
+  className,
 }: {
   title: string;
   description: string;
@@ -22,6 +23,7 @@ export default function ManagementDialog({
   onClose: () => void;
   onReload?: () => Promise<void>;
   returnFocusTo?: HTMLElement | null;
+  className?: string;
 }) {
   const [confirm, setConfirm] = useState<"close" | "reload" | null>(null);
   useUnsavedChanges(dirty, busy);
@@ -45,6 +47,7 @@ export default function ManagementDialog({
         description={description}
         onClose={requestClose}
         returnFocusTo={returnFocusTo}
+        className={className}
       >
         <ErrorNotice error={error} />
         {error instanceof ApiError && error.status === 409 && onReload && (
@@ -65,14 +68,21 @@ export default function ManagementDialog({
       </Modal>
       <Modal
         open={!!confirm}
+        layer="confirmation"
+        className="management-confirm-modal"
         title={confirm === "reload" ? "Muat versi terbaru?" : "Buang perubahan?"}
         description="Perubahan yang belum disimpan akan dihapus."
         onClose={() => !reloading && setConfirm(null)}
         returnFocusTo={resume.current}
       >
         <ErrorNotice error={reloadError} />
-        <div className="form-actions">
-          <Button type="button" kind="secondary" onClick={() => setConfirm(null)}>
+        <div className="form-actions management-confirm-actions">
+          <Button
+            type="button"
+            kind="secondary"
+            disabled={reloading}
+            onClick={() => setConfirm(null)}
+          >
             Lanjutkan mengisi
           </Button>
           <Button

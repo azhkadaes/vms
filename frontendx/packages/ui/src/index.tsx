@@ -1,5 +1,8 @@
+import { Select } from "./select";
+import { FieldMessage } from "./field-message";
 import { Button, Loading } from "./shell";
 export { AppBoundary, Brand, Button, Loading, PreviewNotice, RouteFocus } from "./shell";
+export { SearchableMultiSelect } from "./multi-select";
 import {
   useEffect,
   useRef,
@@ -78,6 +81,7 @@ export const EmailInput = forwardRef<HTMLInputElement, EmailInputProps>(function
   const focusDomainAfterSwitch = useRef(false);
   const knownDomain = emailDomains.some((item) => item === domain.toLowerCase());
   const custom = customOpen || (!!domain && !knownDomain);
+  const filled = Boolean(username.trim() && domain.trim()) && !props["aria-invalid"];
   const hintId = `${id}-hint`;
   const describedBy = [hintId, props["aria-describedby"]].filter(Boolean).join(" ");
   useEffect(() => {
@@ -99,7 +103,7 @@ export const EmailInput = forwardRef<HTMLInputElement, EmailInputProps>(function
   }
   return (
     <div className="email-input">
-      <div className="email-address">
+      <div className="email-address" data-filled={filled}>
         <div className="email-username">
           <input
             {...props}
@@ -111,7 +115,7 @@ export const EmailInput = forwardRef<HTMLInputElement, EmailInputProps>(function
             autoCapitalize="none"
             autoCorrect="off"
             spellCheck={false}
-            placeholder={t("nama.anda", "your.name")}
+            placeholder={t("emailpengunjung", "youremail")}
             pattern="[^@\s]+"
             value={username}
             onChange={(event) => updateUsername(event.target.value)}
@@ -122,8 +126,8 @@ export const EmailInput = forwardRef<HTMLInputElement, EmailInputProps>(function
           @
         </span>
         <div className="email-suffix">
-          {custom ? (
-            <div className="email-custom-inline">
+          <div className={custom ? "email-custom-inline" : undefined}>
+            {custom && (
               <input
                 id={`${id}-custom-domain`}
                 ref={customDomainInput}
@@ -145,24 +149,8 @@ export const EmailInput = forwardRef<HTMLInputElement, EmailInputProps>(function
                 onChange={(event) => onValueChange(joinEmail(username, event.target.value))}
                 onBlur={() => onDomainPick?.()}
               />
-              <button
-                type="button"
-                aria-label={t(
-                  "Ubah domain email: pilih dari daftar",
-                  "Change email domain: choose from list",
-                )}
-                disabled={props.disabled || props.readOnly}
-                onClick={() => {
-                  focusDomainAfterSwitch.current = true;
-                  setCustomOpen(false);
-                  onValueChange(joinEmail(username, ""));
-                }}
-              >
-                {t("Ubah", "Change")}
-              </button>
-            </div>
-          ) : (
-            <select
+            )}
+            <Select
               id={`${id}-domain`}
               ref={domainSelect}
               required={props.required}
@@ -181,24 +169,24 @@ export const EmailInput = forwardRef<HTMLInputElement, EmailInputProps>(function
               onBlur={() => onDomainPick?.()}
             >
               <option value="" disabled>
-                {t("Pilih domain", "Choose domain")}
+                domain.com
               </option>
               {emailDomains.map((item) => (
                 <option key={item} value={item}>
                   {item}
                 </option>
               ))}
-              <option value="other">{t("Domain lain…", "Other domain…")}</option>
-            </select>
-          )}
+              <option value="other">{t("Lainnya", "Other")}</option>
+            </Select>
+          </div>
         </div>
       </div>
-      <small id={hintId}>
+      <FieldMessage id={hintId}>
         {t(
-          "Ketik nama sebelum @, lalu pilih domain. Untuk email instansi, pilih Domain lain.",
-          "Enter the name before @, then choose a domain. For an organization email, choose Other domain.",
+          "Isi bagian sebelum @, lalu pilih akhiran email. Pilih Lainnya jika tidak ada di daftar.",
+          "Enter the part before @, then choose your email ending. Choose Other if it is not listed.",
         )}
-      </small>
+      </FieldMessage>
     </div>
   );
 });
@@ -327,6 +315,7 @@ export function Modal({
   children,
   returnFocusTo,
   className,
+  layer = "base",
   dismissible = true,
 }: {
   open: boolean;
@@ -336,6 +325,7 @@ export function Modal({
   children: ReactNode;
   returnFocusTo?: HTMLElement | null;
   className?: string;
+  layer?: "base" | "confirmation";
   dismissible?: boolean;
 }) {
   const { t } = useUiLanguage();
@@ -343,13 +333,30 @@ export function Modal({
   return (
     <Dialog.Root open={open} onOpenChange={(v) => !v && dismissible && onClose()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="modal-overlay" />
+        <Dialog.Overlay
+          className={`modal-overlay${layer === "confirmation" ? " modal-overlay-raised" : ""}`}
+        />
         <Dialog.Content
-          className={className ? `modal ${className}` : "modal"}
+          className={`modal${layer === "confirmation" ? " modal-raised" : ""}${className ? ` ${className}` : ""}`}
           onInteractOutside={(event) => {
             if (!dismissible) event.preventDefault();
           }}
           onEscapeKeyDown={(event) => {
+            const picker = CSS.supports("selector(:open)")
+              ? document.querySelector<HTMLSelectElement>(".modal .select-control:open")
+              : null;
+            if (picker) {
+              event.preventDefault();
+              // Closing the browser picker keeps this Escape from dismissing the dialog.
+              picker.classList.add("select-dismiss-picker");
+              requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                  picker.classList.remove("select-dismiss-picker");
+                  picker.focus({ preventScroll: true });
+                });
+              });
+              return;
+            }
             if (!dismissible) event.preventDefault();
             if (
               event.target instanceof Element &&
@@ -399,9 +406,15 @@ export function Modal({
 export function VisitIdentity({
   booking: b,
   showDocument = false,
+  showBookingCode = false,
+  showVisitorContact = false,
+  collapseVisitorNames = false,
 }: {
   booking: Booking | StaffBooking;
   showDocument?: boolean;
+  showBookingCode?: boolean;
+  showVisitorContact?: boolean;
+  collapseVisitorNames?: boolean;
 }) {
   const { language, t } = useUiLanguage();
   if (isRestricted(b)) return <RestrictedIdentity booking={b} />;
@@ -423,11 +436,23 @@ export function VisitIdentity({
         </div>
       </div>
       <dl className="detail-grid">
-        {isRestricted(b) && (
+        {showBookingCode && b.code && (
           <div>
-            <dt>{t("Kode kunjungan", "Visit code")}</dt>
+            <dt>{t("Kode booking", "Booking code")}</dt>
             <dd className="tabular">{b.code}</dd>
           </div>
+        )}
+        {showVisitorContact && (
+          <>
+            <div>
+              <dt>{t("Email pengunjung", "Visitor email")}</dt>
+              <dd>{b.email || t("Tidak diisi", "Not provided")}</dd>
+            </div>
+            <div>
+              <dt>{t("Nomor telepon pengunjung", "Visitor phone number")}</dt>
+              <dd className="tabular">{b.phone || t("Tidak diisi", "Not provided")}</dd>
+            </div>
+          </>
         )}
         <div>
           <dt>{t("Tujuan", "Destination")}</dt>
@@ -456,7 +481,20 @@ export function VisitIdentity({
         </div>
         <div>
           <dt>{t("Rombongan", "Visitors")}</dt>
-          <dd>{b.visitors?.length ? b.visitors.join(", ") : partyLabel(b)}</dd>
+          <dd>
+            {collapseVisitorNames && b.visitors?.length ? (
+              <details className="visitor-roster">
+                <summary>{partyLabel(b)}</summary>
+                <ul aria-label={t("Nama anggota rombongan", "Visitor names")}>
+                  {b.visitors.map((name, index) => (
+                    <li key={index}>{name}</li>
+                  ))}
+                </ul>
+              </details>
+            ) : (
+              b.visitors?.join(", ") || partyLabel(b)
+            )}
+          </dd>
         </div>
         <div>
           <dt>{t("Keperluan", "Purpose")}</dt>
@@ -494,3 +532,7 @@ export function VisitIdentity({
     </>
   );
 }
+export { UploadField } from "./upload-field";
+export { FormSection } from "./form-section";
+export { Select } from "./select";
+export { FieldMessage } from "./field-message";

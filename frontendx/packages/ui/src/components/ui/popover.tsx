@@ -7,11 +7,13 @@ export const PopoverTrigger = Primitive.Trigger;
 export const PopoverClose = Primitive.Close;
 type PopoverContentProps = ComponentPropsWithoutRef<typeof Primitive.Content> & { container?: HTMLElement };
 export const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
-  function PopoverContent({ className = "", align = "start", sideOffset = 6, container, ...props }, ref) {
+  function PopoverContent({ className = "", align = "start", sideOffset = 6, container, children, ...props }, ref) {
     return <Primitive.Portal container={container}>
       <Primitive.Content ref={ref} data-slot="popover-content" align={align}
         sideOffset={sideOffset} collisionPadding={12}
-        className={`shadcn-popover ${className}`} {...props} />
+        className={`shadcn-popover ${className}`} {...props}>
+        <div className="popover-scroll">{children}</div>
+      </Primitive.Content>
     </Primitive.Portal>;
   },
 );

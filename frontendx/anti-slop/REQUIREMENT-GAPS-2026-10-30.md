@@ -1,6 +1,6 @@
 # App versus requirement decisions
 
-Scope: D:/oikn/VMS/frontendx only; future D:/oikn/VMS/backend is absent. Consolidated 2 November 2026, WITA. All 20 gaps have a user decision. The first 15 dated entries preserve the delivery stage recorded then; current client/integration status follows [PLAN](../PLAN.md), [coverage](../REQUIREMENTS-MATRIX.md) and [verification](../VERIFICATION.md). G14 is deliberately deferred. Proposed production client contracts are now documented in [API-CONTRACT](../API-CONTRACT.md); no real backend or implementation language is assumed.
+Scope: D:/oikn/VMS/frontendx only; future D:/oikn/VMS/backend is absent. Consolidated 2 November 2026, WITA. All 20 gaps have a user decision. The first 15 dated entries preserve the delivery stage recorded then; current client/integration status follows [PLAN](../../docs/frontend/PLAN.md), [coverage](../../docs/frontend/REQUIREMENTS-MATRIX.md) and [verification](../../docs/frontend/VERIFICATION.md). G14 is deliberately deferred. Proposed production client contracts are now documented in [API-CONTRACT](../../docs/frontend/API-CONTRACT.md); no real backend or implementation language is assumed.
 
 | ID | Requirement | Gap at detection | User decision / stage delivery |
 | --- | --- | --- | --- |

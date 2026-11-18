@@ -2,13 +2,13 @@
 
 Current scope: **D:/oikn/VMS/frontendx only**, rechecked 4 November 2026, WITA. Visitor and staff applications share UI primitives, business rules and typed data adapters. **D:/oikn/VMS/backend is an empty directory** on this review date. This frontend's API contract remains the baseline; another repository is not automatically its implementation.
 
-The production frontend has real API request paths and management/upload screens. A disposable contract fixture tests those paths; it is not a real backend. See [current readiness](PLAN.md), [requirements](BUSINESS-REQUIREMENTS.md), [coverage map](REQUIREMENTS-MATRIX.md), [API handoff](API-CONTRACT.md) and [verification](VERIFICATION.md).
+The production frontend has real API request paths and management/upload screens. A disposable contract fixture tests those paths; it is not a real backend. See [current readiness](../docs/frontend/PLAN.md), [requirements](../docs/frontend/BUSINESS-REQUIREMENTS.md), [coverage map](../docs/frontend/REQUIREMENTS-MATRIX.md), [API handoff](../docs/frontend/API-CONTRACT.md) and [verification](../docs/frontend/VERIFICATION.md).
 
-Start backend work with the [4 November handoff](BACKEND-HANDOFF-2026-11-04.md) and [fresh readiness review](FRONTEND-READINESS-2026-11-04.md). Two frontend response-validation follow-ups remain before live integration acceptance. The [separate Go backend compatibility review](BACKEND-COMPATIBILITY-2026-11-04.md) records workflow and wire differences; a prefix change alone does not connect it.
+Start backend work with the [4 November handoff](../docs/frontend/BACKEND-HANDOFF-2026-11-04.md) and [fresh readiness review](../docs/frontend/FRONTEND-READINESS-2026-11-04.md). Two frontend response-validation follow-ups remain before live integration acceptance. The [separate Go backend compatibility review](../docs/frontend/BACKEND-COMPATIBILITY-2026-11-04.md) records workflow and wire differences; a prefix change alone does not connect it.
 
 ## Run locally
 
-For actual backend requests, use the [real-backend local launcher](REAL-BACKEND-LOCAL.md) after reviewing the compatible backend/database version. It serves both built apps at one local address and requires an explicit API target. The development command below continues to use demo data on loopback.
+For actual backend requests, use the [real-backend local launcher](../docs/frontend/REAL-BACKEND-LOCAL.md) after reviewing the compatible backend/database version. It serves both built apps at one local address and requires an explicit API target. The development command below continues to use demo data on loopback.
 
 Use Node 22 and npm. From this directory:
 
@@ -29,7 +29,7 @@ This runs formatting, strict types, logic tests, isolated preview API tests, bot
 
 The preview browser runner starts and stops its own two servers when the ports are free. To test a server you already started, set VMS_TEST_URL=http://127.0.0.1:3000. It never kills a process occupying a port. Production browser tests serve the latest dist files on a temporary loopback port; run npm.cmd run build first when invoking test:production alone.
 
-Build outputs: apps/visitor/dist at / and apps/admin/dist at /admin/. Both use the same-origin API prefix /v1. Copy .env.example to .env.local only when changing that public prefix; both Vite apps read the workspace environment directory. VITE_* values are public and must contain no secrets. See [deployment gates](DEPLOYMENT.md).
+Build outputs: apps/visitor/dist at / and apps/admin/dist at /admin/. Both use the same-origin API prefix /v1. Copy .env.example to .env.local only when changing that public prefix; both Vite apps read the workspace environment directory. VITE_* values are public and must contain no secrets. See [deployment gates](../docs/frontend/DEPLOYMENT.md).
 
 ## Current behavior
 

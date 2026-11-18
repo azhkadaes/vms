@@ -256,6 +256,13 @@ test("Receptionist list and code/QR lookup exclude unapproved requests and retai
     duration: 60,
   });
   assert.equal(approved.status, 200);
+  const receptionList = await fetch(base + "/bookings?role=Receptionist");
+  const preview = (await receptionList.json()).find((booking) => booking.id === pending.id);
+  assert.equal(preview.name, pending.name);
+  assert.equal(preview.visitorCount, payload.visitors.length);
+  for (const field of ["code", "email", "phone", "purpose", "visitors", "history", "identityType"])
+    assert.equal(Object.hasOwn(preview, field), false, field);
+  assert.equal((await fetch(base + `/bookings/${pending.id}?role=Receptionist`)).status, 404);
   for (const credential of [pending.code, `VMS-DEMO:${pending.code}`]) {
     const resolved = await post("/resolve?role=Receptionist", { credential });
     assert.equal(resolved.status, 200);

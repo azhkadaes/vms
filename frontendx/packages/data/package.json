@@ -10,6 +10,8 @@
     "./validation": "./src/validation.ts",
     "./submission": "./src/submission.ts",
     "./reports": "./src/reports.ts",
+    "./report-filter": "./src/report-filter.ts",
+    "./visit-log": "./src/visit-log.ts",
     "./management": "./src/management.ts",
     "./management-contract": "./src/management-contract.ts",
     "./attachments": "./src/attachments.ts"

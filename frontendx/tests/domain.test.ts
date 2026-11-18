@@ -16,6 +16,7 @@ import {
   selectBookings,
   sessionFor,
   validateND,
+  validateVisitorPhoto,
   validateReschedule,
   today,
   canReadInternalRejection,
@@ -65,11 +66,74 @@ test("staff creation requires explicit permission and respects PA assignment and
     );
   }
 });
+
+test("Protocol reads every ordinary visit but cannot mutate non-VIP visits even with extra permissions", () => {
+  const protocol = {
+    ...sessionFor("Protocol Officer"),
+    assignedOfficerIds: ["o2"],
+    permissions: [...sessionFor("Protocol Officer").permissions, "checkin", "checkout", "update"],
+  };
+  const now = Date.parse("2099-10-20T09:30:00+08:00");
+  for (const status of statuses) {
+    const visit = { ...base, status };
+    assert.deepEqual(scope([visit], protocol), [visit]);
+    assert.equal(toStaffBooking(visit, protocol).name, base.name);
+    for (const action of [
+      "approve",
+      "reject",
+      "reschedule",
+      "cancel",
+      "update",
+      "checkin",
+      "checkout",
+    ] as const)
+      assert.equal(can(protocol, visit, action, now), false, `${status}/${action}`);
+  }
+  for (const visit of [
+    { ...base, officerId: "o1", vip: true },
+    { ...base, visitKind: "restricted" as const },
+  ]) {
+    assert.equal(can(protocol, { ...visit, status: "pending" }, "approve", now), true);
+    assert.equal(can(protocol, { ...visit, status: "pending" }, "reject", now), true);
+    assert.equal(can(protocol, visit, "reschedule", now), true);
+    assert.equal(can(protocol, visit, "cancel", now), true);
+    assert.equal(can(protocol, visit, "checkin", now), false);
+    assert.equal(can(protocol, { ...visit, status: "checked_in" }, "checkout", now), false);
+  }
+});
+
+test("restricted detail edits share the permission, scope and lifecycle checks used by other actions", () => {
+  const protocol = sessionFor("Protocol Officer");
+  const visit = { ...base, visitKind: "restricted" as const };
+  for (const status of statuses)
+    assert.equal(
+      can(protocol, { ...visit, status }, "update"),
+      status === "pending" || status === "approved",
+      status,
+    );
+  for (const permission of ["create", "bookings"])
+    assert.equal(
+      can(
+        { ...protocol, permissions: protocol.permissions.filter((p) => p !== permission) },
+        visit,
+        "update",
+      ),
+      false,
+      permission,
+    );
+  for (const role of ["PA", "Receptionist", "Super Admin"] as const)
+    assert.equal(
+      can({ ...sessionFor(role), permissions: protocol.permissions }, visit, "update"),
+      false,
+    );
+  assert.equal(can(protocol, { ...base, vip: true }, "update"), false);
+});
 test("staff drafts share contact and schedule rules without visitor consent impersonation", () => {
   const form = {
     officerId: "o2",
     date: "2099-12-01",
     time: "10:00",
+    duration: 60,
     purpose: "Koordinasi kunjungan",
     name: "Nama Contoh",
     organization: "Instansi Contoh",
@@ -432,9 +496,21 @@ test("named roster and required privacy acknowledgment validated without ID phot
 test("ND rejects unsupported types, empty documents and oversize uploads", () => {
   assert.equal(validateND(null), null);
   assert.equal(validateND({ type: "application/pdf", size: 1000 }), null);
+  assert.equal(validateND({ type: "image/png", size: 100 }), "Gunakan berkas PDF.");
   assert.ok(validateND({ type: "image/svg+xml", size: 100 }));
   assert.ok(validateND({ type: "application/pdf", size: 0 }));
   assert.ok(validateND({ type: "application/pdf", size: 6 * 1024 * 1024 }));
+});
+test("visitor photos accept only non-empty JPEG or PNG images up to 5 MB", () => {
+  assert.equal(validateVisitorPhoto(null), null);
+  for (const type of ["image/jpeg", "image/png"])
+    assert.equal(validateVisitorPhoto({ type, size: 5 * 1024 * 1024, name: "visitor.png" }), null);
+  for (const type of ["application/pdf", "image/svg+xml", "image/gif"])
+    assert.ok(validateVisitorPhoto({ type, size: 100 }));
+  for (const size of [0, 5 * 1024 * 1024 + 1])
+    assert.ok(validateVisitorPhoto({ type: "image/jpeg", size }));
+  for (const name of [" ", "a".repeat(256)])
+    assert.ok(validateVisitorPhoto({ type: "image/jpeg", size: 100, name }));
 });
 test("rescheduling requires future time, valid duration, place and reason", () => {
   assert.equal(

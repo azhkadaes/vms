@@ -122,30 +122,27 @@ test("minimal Terbatas creation, payload-bound retry, edits and read-only role p
   assert.equal((await post("/resolve?role=PA", { credential: b.code })).status, 404);
 });
 
-test("reception general details redact identity; valid code/QR yields only permitted arrival identity", async () => {
+test("reception list redacts identity and only code/QR lookup yields arrival details", async () => {
   const b = await create({
     name: "RECEPTION_SECRET_NAME",
     organization: "RECEPTION_SECRET_ORG",
     serviceId: "0099887766",
   });
-  for (const record of [
-    (await list("Receptionist")).find((r) => r.id === b.id),
-    (await read(`/bookings/${b.id}?role=Receptionist`)).data,
-  ]) {
-    assert.equal(record.reference, b.reference);
-    for (const key of [
-      "code",
-      "name",
-      "organization",
-      "serviceId",
-      "serviceIdLast4",
-      "host",
-      "officerId",
-      "history",
-      "createdBy",
-    ])
-      assert.equal(key in record, false, key);
-  }
+  const record = (await list("Receptionist")).find((r) => r.id === b.id);
+  assert.equal((await read(`/bookings/${b.id}?role=Receptionist`)).status, 404);
+  assert.equal(record.reference, b.reference);
+  for (const key of [
+    "code",
+    "name",
+    "organization",
+    "serviceId",
+    "serviceIdLast4",
+    "host",
+    "officerId",
+    "history",
+    "createdBy",
+  ])
+    assert.equal(key in record, false, key);
   const unknown = await post("/resolve?role=Receptionist", { credential: "00000000" });
   assert.deepEqual(
     (await post("/resolve?role=Receptionist", { credential: b.reference })).data,
@@ -259,16 +256,19 @@ for (const clock of ["09:29:59.999", "09:30:00.000", "11:00:00.000", "11:00:00.0
     assert.equal(stored.version, allowed ? b.version + 1 : b.version);
     if (clock === "11:00:00.001") {
       assert.equal(stored.timing.displayStatus, "missed");
-      assert.equal(
-        (
-          await post(`/bookings/${b.id}/reschedule?role=${protocol}`, {
-            version: b.version,
-            date: "2099-08-20",
-            time: "10:00",
-          })
-        ).status,
-        403,
-      );
+      const reschedule = () =>
+        post(`/bookings/${b.id}/reschedule?role=${protocol}`, {
+          version: b.version,
+          date: "2099-08-27",
+          time: "10:00",
+        });
+      api.setNow("2099-08-26T11:00:00.001+08:00");
+      assert.equal((await reschedule()).status, 403);
+      api.setNow("2099-08-26T11:00:00.000+08:00");
+      const updated = await reschedule();
+      assert.equal(updated.status, 200);
+      assert.equal(updated.data.date, "2099-08-27");
+      assert.equal(updated.data.timing.displayStatus, "approved");
     }
   });
 }

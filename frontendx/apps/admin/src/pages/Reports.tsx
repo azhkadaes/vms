@@ -1,4 +1,5 @@
 import { ApiError, dateLabel, repository, useSession, useVisitSummary } from "@vms/data";
+import { matchesFilter, readFilter, reportFilterParams } from "@vms/data/report-filter";
 import {
   canExportSummary,
   canReadSummary,
@@ -11,16 +12,16 @@ import {
 import { Button, Empty, ErrorNotice, Loading, RequiredFieldsHint, RequiredMark } from "@vms/ui";
 import { Download, RefreshCw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router";
+import ReportMultiSelect from "../features/ReportMultiSelect";
 
 export default function Reports({ page }: { page: "analytics" | "logs" }) {
   const { session, role } = useSession();
-  const [params, setParams] = useSearchParams();
+  const [params, setParams] = useState(() => new URLSearchParams());
   const defaults = defaultSummaryFilter();
   const values = {
     from: params.get("from") ?? defaults.from,
     to: params.get("to") ?? defaults.to,
-    status: params.get("status") ?? "all",
+    status: readFilter(params, "status", "all"),
   };
   const parsed = summaryFilterSchema.safeParse(values);
   const q = useVisitSummary(parsed.success ? parsed.data : null);
@@ -117,7 +118,7 @@ export default function Reports({ page }: { page: "analytics" | "logs" }) {
     <>
       <div className="page-intro report-intro">
         <div>
-          <h1>{page === "analytics" ? "Analitik kunjungan" : "Laporan kunjungan"}</h1>
+          <h2>{page === "analytics" ? "Analitik kunjungan" : "Laporan kunjungan"}</h2>
           <p>
             Ringkasan tanggal dan status sesuai akses Anda. Kunjungan Terbatas tidak disertakan.
           </p>
@@ -132,10 +133,12 @@ export default function Reports({ page }: { page: "analytics" | "logs" }) {
             <RefreshCw size={16} />
             {q.isFetching ? "Memperbarui…" : "Perbarui laporan"}
           </Button>
-          <Button type="button" disabled={!exportable} onClick={() => void download()}>
-            <Download size={16} />
-            {exporting ? "Membuat CSV…" : "Unduh ringkasan CSV"}
-          </Button>
+          {page === "logs" && (
+            <Button type="button" disabled={!exportable} onClick={() => void download()}>
+              <Download size={16} />
+              {exporting ? "Membuat CSV…" : "Unduh ringkasan CSV"}
+            </Button>
+          )}
         </div>
       </div>
       <form
@@ -150,7 +153,7 @@ export default function Reports({ page }: { page: "analytics" | "logs" }) {
           const result = summaryFilterSchema.safeParse({
             from: fields.get("from"),
             to: fields.get("to"),
-            status: fields.get("status"),
+            status: readFilter(fields, "status", "all"),
           });
           if (!result.success) {
             const fieldErrors = result.error.flatten().fieldErrors;
@@ -158,12 +161,12 @@ export default function Reports({ page }: { page: "analytics" | "logs" }) {
             const first = ["from", "to", "status"].find(
               (key) => fieldErrors[key as keyof typeof fieldErrors]?.length,
             );
-            if (first) form.current?.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
+            if (first) form.current?.querySelector<HTMLElement>(`#report-${first}`)?.focus();
             return;
           }
           setErrors({});
           setDirty(false);
-          setParams(result.data);
+          setParams(reportFilterParams(result.data));
         }}
       >
         <RequiredFieldsHint />
@@ -191,31 +194,17 @@ export default function Reports({ page }: { page: "analytics" | "logs" }) {
                 )}
               </div>
             ))}
-            <div className="field">
-              <label htmlFor="report-status">
-                Status <RequiredMark />
-              </label>
-              <select
-                id="report-status"
-                name="status"
-                defaultValue={values.status}
-                required
-                aria-invalid={!!issues.status?.length}
-                aria-describedby={issues.status?.length ? "report-status-error" : undefined}
-              >
-                <option value="all">Semua status</option>
-                {reportStatuses.map((status) => (
-                  <option key={status} value={status}>
-                    {reportLabels[status]}
-                  </option>
-                ))}
-              </select>
-              {issues.status?.[0] && (
-                <span role="alert" className="field-error" id="report-status-error">
-                  Pilih status laporan yang tersedia.
-                </span>
-              )}
-            </div>
+            <ReportMultiSelect
+              id="report-status"
+              name="status"
+              label="Status"
+              placeholder="Semua status"
+              options={reportStatuses.map((value) => ({ value, label: reportLabels[value] }))}
+              value={parsed.success ? parsed.data.status : defaults.status}
+              onChange={() => setDirty(true)}
+              disabled={exporting}
+              error={issues.status?.length ? "Pilih status laporan yang tersedia." : undefined}
+            />
             <Button type="submit">Terapkan filter</Button>
           </div>
         </fieldset>
@@ -320,7 +309,7 @@ export default function Reports({ page }: { page: "analytics" | "logs" }) {
                 <tbody>
                   {reportStatuses
                     .filter(
-                      (status) => data.filter.status === "all" || data.filter.status === status,
+                      (status) => matchesFilter(status, data.filter.status, "all"),
                     )
                     .map((status) => (
                       <tr key={status}>

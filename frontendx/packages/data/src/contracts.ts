@@ -1,10 +1,19 @@
 import type { PublicBooking, Role, StaffBooking } from "./domain.ts";
 import type { SummaryExport, SummaryFilter, VisitSummary } from "./reports.ts";
+import type { VisitLogFilter, VisitLogResponse, VisitLogSnapshot } from "./visit-log.ts";
 import type { SubmissionResolution } from "./submission.ts";
 import type { PublicBookingInput, StaffAppointmentInput } from "./validation.ts";
 
 export interface Catalogs {
-  officers: { id: string; name: string; vip: boolean; active: boolean }[];
+  officers: {
+    id: string;
+    name: string;
+    vip: boolean;
+    active: boolean;
+    jobTitle?: string;
+    directorate?: string;
+    deputy?: string;
+  }[];
   rooms: string[];
   privacyNotice?: { version: string; id: string; en: string };
 }
@@ -22,6 +31,14 @@ export interface Repository {
   resolveSubmission(key: string, email: string): Promise<SubmissionResolution>;
   summary(filter: SummaryFilter, role: Role, signal?: AbortSignal): Promise<VisitSummary>;
   exportSummary(filter: SummaryFilter, revision: string, role: Role): Promise<SummaryExport>;
+  visitLog(
+    filter: VisitLogFilter,
+    page: number,
+    pageSize: number,
+    role: Role,
+    signal?: AbortSignal,
+  ): Promise<VisitLogResponse>;
+  exportVisitLog(filter: VisitLogFilter, revision: string, role: Role): Promise<VisitLogSnapshot>;
   createStaff(
     input: StaffAppointmentInput,
     idempotencyKey: string,

@@ -1,6 +1,6 @@
 # Frontend audit follow-up and backend readiness
 
-> Historical audit snapshot. Current implementation, disposition and evidence are in [the 2 November readiness review](PRODUCTION-READINESS-2026-11-02.md) and [verification](../VERIFICATION.md). Older reproductions are not current open findings where the new review records a fix.
+> Historical audit snapshot. Current implementation, disposition and evidence are in [the 2 November readiness review](PRODUCTION-READINESS-2026-11-02.md) and [verification](../../docs/frontend/VERIFICATION.md). Older reproductions are not current open findings where the new review records a fix.
 
 Scope: only `D:/oikn/VMS/frontendx`. The future `D:/oikn/VMS/backend` was confirmed absent on 31 October. Other frontend/backend repositories supply no implementation or readiness evidence for this project.
 

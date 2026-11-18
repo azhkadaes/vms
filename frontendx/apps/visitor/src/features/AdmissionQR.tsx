@@ -12,7 +12,7 @@ export default function AdmissionQR({
 }) {
   const { t } = useLanguage();
   const key = `${booking.id}:${booking.version}`;
-  const [media, setMedia] = useState<{ key: string; url: string; expired?: boolean }>({
+  const [media, setMedia] = useState<{ key: string; url: string }>({
     key: "",
     url: "",
   });
@@ -20,46 +20,49 @@ export default function AdmissionQR({
   const [retry, setRetry] = useState(0);
   useEffect(() => {
     const controller = new AbortController();
-    let alive = true,
-      usable = true;
+    let expiresAt: number | undefined;
     let timer: ReturnType<typeof setTimeout>;
-    setMedia({ key, url: "" });
-    setError(undefined);
+
+    function renewIfDue() {
+      if (expiresAt === undefined || controller.signal.aborted) return;
+      clearTimeout(timer);
+      const remaining = expiresAt - performance.now();
+      if (remaining <= 0) void load();
+      else timer = setTimeout(renewIfDue, Math.min(Math.ceil(remaining), 2_147_483_647));
+    }
+
     async function load() {
+      expiresAt = undefined;
+      setMedia({ key, url: "" });
+      setError(undefined);
       try {
         const requestedAt = performance.now();
         const admission = await repository.admission(booking, controller.signal);
-        if (!alive) return;
-        const lifetime =
-          Date.parse(admission.expiresAt) -
-          admission.serverTime -
-          (performance.now() - requestedAt);
-        const received = performance.now();
-        function expire() {
-          const remaining = lifetime - (performance.now() - received);
-          if (remaining > 0) timer = setTimeout(expire, Math.min(remaining, 2_147_483_647));
-          else {
-            usable = false;
-            if (alive) setMedia({ key, url: "", expired: true });
-          }
-        }
-        expire();
+        if (controller.signal.aborted) return;
+        const deadline = requestedAt + Date.parse(admission.expiresAt) - admission.serverTime;
         const qrcode = await import("qrcode");
         const url = await qrcode.toDataURL(admission.payload, {
           width: 280,
           margin: 3,
           color: { dark: "#0a2342", light: "#fffdf8" },
         });
-        if (alive && usable) setMedia({ key, url });
+        if (controller.signal.aborted) return;
+        if (deadline <= performance.now())
+          throw new Error("QR tidak tersedia. Coba lagi.");
+        setMedia({ key, url });
+        expiresAt = deadline;
+        renewIfDue();
       } catch (error) {
-        if (alive && !controller.signal.aborted) setError(error);
+        if (!controller.signal.aborted) setError(error);
       }
     }
+
+    document.addEventListener("visibilitychange", renewIfDue);
     void load();
     return () => {
-      alive = false;
       controller.abort();
       clearTimeout(timer);
+      document.removeEventListener("visibilitychange", renewIfDue);
     };
   }, [
     booking.id,
@@ -80,16 +83,11 @@ export default function AdmissionQR({
           height={280}
           alt={`${preview ? t("QR demo untuk", "Demo QR code for") : t("QR masuk untuk", "Admission QR code for")} ${booking.name}`}
         />
-      ) : current?.expired ? (
-        <p role="status">
-          {t(
-            "QR telah kedaluwarsa. Perbarui status kunjungan untuk memeriksa izin masuk.",
-            "This QR code has expired. Update the visit status to check admission.",
-          )}
+      ) : !error ? (
+        <p className="qr-display__placeholder" role="status">
+          {t("Menyiapkan QR…", "Preparing QR code…")}
         </p>
-      ) : (
-        !error && <p role="status">{t("Menyiapkan QR…", "Preparing QR code…")}</p>
-      )}
+      ) : null}
       {!ticket && (
         <>
           <strong>{booking.name}</strong>
@@ -110,11 +108,6 @@ export default function AdmissionQR({
       {!!error && (
         <Button type="button" kind="secondary" onClick={() => setRetry((value) => value + 1)}>
           {t("Coba lagi", "Try again")}
-        </Button>
-      )}
-      {!error && (current?.url || current?.expired) && (
-        <Button type="button" kind="secondary" onClick={() => setRetry((value) => value + 1)}>
-          {t("Perbarui QR", "Renew QR code")}
         </Button>
       )}
     </div>

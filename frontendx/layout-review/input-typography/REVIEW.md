@@ -13,7 +13,7 @@ Validation passed: TypeScript and admin production build; 60 page/dialog/width b
 
 Measured narrow text-entry/select controls were at least 16px. Their rectangles stayed inside the viewport; documents and modal scroll containers had no horizontal overflow. Desktop booking search remains 13.12px and sorting 12.48px. Screenshots were inspected for the phone booking toolbar, the selected name sort option, and the calendar dropdowns. Checks used an isolated sample-data service.
 
-[Phone preview](./booking-320.png) · [Selected sort text](./sort-selected-320.png) · [Calendar](./calendar-320.png) · [Measurements](./measurements.json)
+[Phone preview](booking-320.png) · [Selected sort text](sort-selected-320.png) · [Calendar](calendar-320.png) · [Measurements](measurements.json)
 
 Physical iOS/Android, native browser zoom, sign-in/password-change rendered flows, later appointment form steps, and production data remain **Not verified**. Sign-in/password-change input coverage is from the shared CSS selectors, not a browser run.
 

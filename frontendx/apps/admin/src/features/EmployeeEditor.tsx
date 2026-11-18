@@ -1,18 +1,35 @@
-import { ApiError, preview, useCatalogs, useSession } from "@vms/data";
+import {
+  ApiError,
+  officerOrganization,
+  preview,
+  sessionKey,
+  useCatalogs,
+  useSession,
+} from "@vms/data";
 import { management } from "@vms/data/management";
 import {
   employeeInputSchema,
   type Employee,
   type EmployeeInput,
 } from "@vms/data/management-contract";
-import { Button, ErrorNotice, RequiredFieldsHint, RequiredMark } from "@vms/ui";
+import {
+  Button,
+  ErrorNotice,
+  Loading,
+  RequiredFieldsHint,
+  RequiredMark,
+  SearchableMultiSelect,
+} from "@vms/ui";
 import { ReferenceDataNotice } from "@vms/ui/reference-data-notice";
-import { useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { ChevronDown, Pencil } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import ManagementDialog, { focusServerField } from "./ManagementDialog";
 import RoleAssignments from "./RoleAssignments";
+import EmployeeDetails from "./EmployeeDetails";
 
 export default function EmployeeEditor({
-  employee,
+  employee: initialEmployee,
   minimumPassword,
   onClose,
   onSaved,
@@ -28,8 +45,31 @@ export default function EmployeeEditor({
 }) {
   const { session } = useSession();
   const catalogs = useCatalogs();
+  const [employee, setEmployee] = useState(initialEmployee);
+  const [editing, setEditing] = useState(!initialEmployee);
+  const detail = useQuery({
+    queryKey: ["employee-detail", sessionKey(session), initialEmployee?.id],
+    queryFn: () => management.employee(initialEmployee!.id),
+    enabled: !!initialEmployee && !editing,
+    retry: false,
+    refetchOnWindowFocus: false,
+    staleTime: 0,
+  });
+  useEffect(() => {
+    if (editing) document.getElementById("person-name")?.focus();
+  }, [editing]);
   const [selectedRoles, setSelectedRoles] = useState(employee?.roles || [employee?.role || "PA"]);
   const [assignments, setAssignments] = useState(employee?.assignedOfficerIds || []);
+  const [profileOrganization, setProfileOrganization] = useState({
+    directorate: employee?.directorate || "",
+    deputy: employee?.deputy || "",
+  });
+  const isPA = selectedRoles.includes("PA");
+  const assignedOfficer =
+    assignments.length === 1
+      ? catalogs.data?.officers.find((officer) => officer.id === assignments[0])
+      : undefined;
+  const assignedOrganization = officerOrganization(assignedOfficer);
   const unavailable = catalogs.data
     ? assignments.filter(
         (id) => !catalogs.data.officers.some((officer) => officer.id === id && !officer.vip),
@@ -41,7 +81,13 @@ export default function EmployeeEditor({
   const [error, setError] = useState<unknown>();
   const [fields, setFields] = useState<Record<string, string>>({});
   const own = !!employee && employee.id === session?.id;
-  const title = employee ? "Edit pegawai" : preview ? "Tambah pegawai demo" : "Tambah pegawai";
+  const title = employee
+    ? editing
+      ? "Edit pegawai"
+      : "Detail pegawai"
+    : preview
+      ? "Tambah pegawai demo"
+      : "Tambah pegawai";
   async function submit(form: HTMLFormElement) {
     if (lock.current) return;
     const values = new FormData(form);
@@ -50,8 +96,8 @@ export default function EmployeeEditor({
       email: String(values.get("email") || ""),
       roles: selectedRoles,
       jobTitle: String(values.get("jobTitle") || ""),
-      deputy: String(values.get("deputy") || ""),
-      directorate: String(values.get("directorate") || ""),
+      deputy: isPA ? assignedOrganization.deputy : profileOrganization.deputy,
+      directorate: isPA ? assignedOrganization.directorate : profileOrganization.directorate,
       phone: String(values.get("phone") || ""),
       nip: String(values.get("nip") || ""),
       active: own || values.get("active") === "on",
@@ -61,11 +107,6 @@ export default function EmployeeEditor({
     };
     const parsed = employeeInputSchema(minimumPassword, !!employee).safeParse(input);
     if (!parsed.success) {
-      if (parsed.error.issues[0].path[0] === "roles") {
-        const picker = form.querySelector<HTMLDetailsElement>("#person-roles-picker");
-        if (picker) picker.open = true;
-        form.querySelector<HTMLElement>("#person-role-search")?.focus();
-      }
       setFields(
         Object.fromEntries(
           parsed.error.issues.map((issue) => [String(issue.path[0]), issue.message]),
@@ -102,233 +143,361 @@ export default function EmployeeEditor({
   return (
     <ManagementDialog
       title={title}
+      className="employee-editor-modal form-density-compact"
       description={
-        preview
-          ? "Contoh lokal; tidak membuat akun atau menyimpan kata sandi nyata."
-          : "Pegawai dapat memiliki beberapa peran dan menggunakan satu peran pada satu waktu."
+        !editing
+          ? "Informasi profil dan akses akun pegawai."
+          : preview
+            ? "Kelola informasi dan akses pegawai pada data demo."
+            : "Kelola informasi pegawai dan akses akunnya."
       }
       dirty={dirty}
       busy={busy}
-      error={error}
+      error={editing ? error : detail.error}
       onClose={onClose}
       onReload={onReload}
       returnFocusTo={returnFocusTo}
     >
-      {(requestClose) => (
-        <form
-          onChange={() => setDirty(true)}
-          onSubmit={(event) => {
-            event.preventDefault();
-            void submit(event.currentTarget);
-          }}
-        >
-          <RequiredFieldsHint />
-          <div className="form-grid">
-            <div className="field">
-              <label htmlFor="person-name">
-                Nama lengkap <RequiredMark />
-              </label>
-              <input
-                id="person-name"
-                name="name"
-                required
-                minLength={2}
-                maxLength={255}
-                defaultValue={employee?.name}
-                autoComplete="name"
-                aria-invalid={!!fields.name}
-                aria-describedby={fields.name ? "person-name-error" : undefined}
-                onInput={(event) =>
-                  event.currentTarget.setCustomValidity(
-                    event.currentTarget.value.trim().length < 2
-                      ? "Masukkan nama minimal dua karakter."
-                      : "",
-                  )
-                }
+      {(requestClose) =>
+        !editing && employee ? (
+          <>
+            {detail.isPending ? (
+              <Loading />
+            ) : (
+              <EmployeeDetails
+                employee={detail.data || employee}
+                officers={catalogs.data?.officers}
               />
-              {fields.name && (
-                <span id="person-name-error" className="field-error" role="alert">
-                  {fields.name}
-                </span>
-              )}
-            </div>
-            <div className="field">
-              <label htmlFor="person-email">
-                Email <RequiredMark />
-              </label>
-              <input
-                id="person-email"
-                name="email"
-                type="email"
-                required
-                maxLength={254}
-                defaultValue={employee?.email}
-                autoComplete="email"
-                aria-invalid={!!fields.email}
-                aria-describedby={fields.email ? "person-email-error" : undefined}
+            )}
+            {detail.error && (
+              <Button type="button" kind="ghost" onClick={() => void detail.refetch()}>
+                Coba lagi
+              </Button>
+            )}
+            {!!(detail.data || employee).assignedOfficerIds.length && (
+              <ReferenceDataNotice
+                loading={catalogs.isPending}
+                error={catalogs.error}
+                onRetry={() => void catalogs.refetch()}
               />
-              {fields.email && (
-                <span id="person-email-error" className="field-error" role="alert">
-                  {fields.email}
-                </span>
-              )}
-            </div>
-            <div className="field span-2">
-              <RoleAssignments
-                selected={selectedRoles}
-                disabled={own}
-                error={fields.roles || fields.role}
-                onChange={(value) => {
-                  setSelectedRoles(value);
-                  setDirty(true);
+            )}
+            <div className="form-actions employee-editor-actions">
+              <Button type="button" kind="ghost" onClick={requestClose}>
+                Tutup
+              </Button>
+              <Button
+                type="button"
+                disabled={!detail.data || detail.isFetching || !!detail.error}
+                onClick={() => {
+                  if (!detail.data) return;
+                  setEmployee(detail.data);
+                  setSelectedRoles(detail.data.roles || [detail.data.role || "PA"]);
+                  setAssignments(detail.data.assignedOfficerIds);
+                  setProfileOrganization({
+                    directorate: detail.data.directorate || "",
+                    deputy: detail.data.deputy || "",
+                  });
+                  setEditing(true);
                 }}
-              />
+              >
+                <Pencil size={15} aria-hidden="true" /> Edit pegawai
+              </Button>
             </div>
-            {selectedRoles.includes("PA") && (
-              <fieldset className="management-fieldset span-2">
-                <legend>Penugasan pejabat</legend>
-                <ReferenceDataNotice
-                  loading={catalogs.isPending}
-                  error={catalogs.error}
-                  onRetry={() => void catalogs.refetch()}
-                />
-                {catalogs.data?.officers
-                  .filter(
-                    (officer) =>
-                      !officer.vip && (officer.active || assignments.includes(officer.id)),
-                  )
-                  .map((officer) => (
-                    <label className="check-label" key={officer.id}>
-                      <input
-                        type="checkbox"
-                        name="assignedOfficerIds"
-                        value={officer.id}
-                        checked={assignments.includes(officer.id)}
-                        disabled={!officer.active && !assignments.includes(officer.id)}
-                        onChange={(event) =>
-                          setAssignments((ids) =>
-                            event.target.checked
-                              ? [...ids, officer.id]
-                              : ids.filter((id) => id !== officer.id),
-                          )
-                        }
-                      />
-                      <span>
-                        {officer.name}
-                        {!officer.active && " (tidak aktif)"}
-                      </span>
-                    </label>
-                  ))}
-                {!!unavailable.length && (
-                  <div className="hint">
-                    <p>
-                      {unavailable.length} penugasan tidak tersedia dalam direktori saat ini.
-                      Nilainya dipertahankan sampai Anda menghapusnya.
-                    </p>
-                    <Button
-                      type="button"
-                      kind="secondary"
-                      onClick={() => {
-                        setAssignments((ids) => ids.filter((id) => !unavailable.includes(id)));
-                        setDirty(true);
-                      }}
-                    >
-                      Hapus penugasan yang tidak tersedia
-                    </Button>
-                  </div>
-                )}
-                <ErrorNotice error={fields.assignedOfficerIds} />
-              </fieldset>
-            )}
-            {!employee && (
-              <div className="field span-2">
-                <label htmlFor="person-password">
-                  Kata sandi awal <RequiredMark />
-                </label>
-                <input
-                  id="person-password"
-                  name="initialPassword"
-                  type="password"
-                  required
-                  minLength={minimumPassword}
-                  maxLength={256}
-                  autoComplete="new-password"
-                  aria-invalid={!!fields.initialPassword}
-                  aria-describedby="person-password-hint"
-                />
-                <small id="person-password-hint">
-                  Minimal {minimumPassword} karakter, sesuai aturan layanan. Bagikan melalui saluran
-                  yang disetujui organisasi.
-                </small>
-                <ErrorNotice error={fields.initialPassword} />
-                <label className="check-label">
-                  <input name="requirePasswordChange" type="checkbox" defaultChecked />
-                  <span>Minta penggantian kata sandi saat masuk pertama</span>
-                </label>
+          </>
+        ) : (
+          <form
+            className="employee-editor-form"
+            onChange={() => setDirty(true)}
+            onSubmit={(event) => {
+              event.preventDefault();
+              void submit(event.currentTarget);
+            }}
+          >
+            <section className="employee-editor-section" aria-labelledby="person-information-title">
+              <div className="employee-section-heading">
+                <h3 id="person-information-title">Informasi pegawai</h3>
+                <RequiredFieldsHint />
               </div>
-            )}
-            <label className="check-label span-2">
-              <input
-                type="checkbox"
-                name="active"
-                defaultChecked={employee?.active ?? true}
-                disabled={own}
-              />
-              <span>Akun aktif</span>
-            </label>
-          </div>
-          <details className="profile-details">
-            <summary>Detail profil tambahan</summary>
-            <div className="form-grid">
-              {(
-                [
-                  ["jobTitle", "Jabatan"],
-                  ["deputy", "Kedeputian"],
-                  ["directorate", "Direktorat"],
-                  ["phone", "Nomor telepon"],
-                  ["nip", "NIP"],
-                ] as const
-              ).map(([key, label]) => (
-                <div className="field" key={key}>
-                  <label htmlFor={`person-${key}`}>
-                    {label} <small>(opsional)</small>
+              <div className="form-grid">
+                <div className="field">
+                  <label htmlFor="person-name">
+                    Nama lengkap <RequiredMark />
                   </label>
                   <input
-                    id={`person-${key}`}
-                    name={key}
-                    defaultValue={employee?.[key] || ""}
-                    type={key === "phone" ? "tel" : "text"}
+                    id="person-name"
+                    name="name"
+                    required
+                    minLength={2}
                     maxLength={255}
-                    aria-invalid={!!fields[key]}
-                    aria-describedby={fields[key] ? `person-${key}-error` : undefined}
+                    defaultValue={employee?.name}
+                    autoComplete="name"
+                    aria-invalid={!!fields.name}
+                    aria-describedby={fields.name ? "person-name-error" : undefined}
+                    onInput={(event) =>
+                      event.currentTarget.setCustomValidity(
+                        event.currentTarget.value.trim().length < 2
+                          ? "Masukkan nama minimal dua karakter."
+                          : "",
+                      )
+                    }
                   />
-                  {fields[key] && (
-                    <span id={`person-${key}-error`} className="field-error" role="alert">
-                      {fields[key]}
+                  {fields.name && (
+                    <span id="person-name-error" className="field-error" role="alert">
+                      {fields.name}
                     </span>
                   )}
                 </div>
-              ))}
+                <div className="field">
+                  <label htmlFor="person-email">
+                    Email <RequiredMark />
+                  </label>
+                  <input
+                    id="person-email"
+                    name="email"
+                    type="email"
+                    required
+                    maxLength={254}
+                    defaultValue={employee?.email}
+                    autoComplete="email"
+                    aria-invalid={!!fields.email}
+                    aria-describedby={fields.email ? "person-email-error" : undefined}
+                  />
+                  {fields.email && (
+                    <span id="person-email-error" className="field-error" role="alert">
+                      {fields.email}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </section>
+            <details className="employee-profile-details employee-editor-section">
+              <summary>
+                <span>
+                  <strong>Profil & organisasi</strong>
+                </span>
+                <span className="employee-profile-toggle">
+                  <span>Opsional</span>
+                  <ChevronDown size={18} aria-hidden="true" />
+                </span>
+              </summary>
+              <div className="form-grid">
+                {(
+                  [
+                    ["jobTitle", "Jabatan"],
+                    ["deputy", "Kedeputian"],
+                    ["directorate", "Direktorat"],
+                    ["phone", "Nomor telepon"],
+                    ["nip", "NIP"],
+                  ] as const
+                )
+                  .filter(([key]) => !isPA || (key !== "deputy" && key !== "directorate"))
+                  .map(([key, label]) => (
+                    <div className="field" key={key}>
+                      <label htmlFor={`person-${key}`}>{label}</label>
+                      <input
+                        id={`person-${key}`}
+                        name={key}
+                        defaultValue={
+                          key === "deputy" || key === "directorate"
+                            ? undefined
+                            : employee?.[key] || ""
+                        }
+                        value={
+                          key === "deputy" || key === "directorate"
+                            ? profileOrganization[key]
+                            : undefined
+                        }
+                        onChange={(event) => {
+                          if (key === "deputy" || key === "directorate")
+                            setProfileOrganization((current) => ({
+                              ...current,
+                              [key]: event.target.value,
+                            }));
+                        }}
+                        type={key === "phone" ? "tel" : "text"}
+                        maxLength={255}
+                        aria-invalid={!!fields[key]}
+                        aria-describedby={fields[key] ? `person-${key}-error` : undefined}
+                      />
+                      {fields[key] && (
+                        <span id={`person-${key}-error`} className="field-error" role="alert">
+                          {fields[key]}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+              </div>
+            </details>
+
+            <section className="employee-editor-section" aria-labelledby="person-access-title">
+              <div className="employee-section-heading">
+                <h3 id="person-access-title">Akses akun</h3>
+              </div>
+              <div className="employee-access-fields">
+                <div className="field">
+                  <RoleAssignments
+                    selected={selectedRoles}
+                    disabled={own || busy}
+                    error={fields.roles || fields.role}
+                    onChange={(value) => {
+                      setSelectedRoles(value);
+                      setDirty(true);
+                    }}
+                  />
+                </div>
+                {selectedRoles.includes("PA") && (
+                  <div className="employee-officer-assignments">
+                    <ReferenceDataNotice
+                      loading={catalogs.isPending}
+                      error={catalogs.error}
+                      onRetry={() => void catalogs.refetch()}
+                    />
+                    <SearchableMultiSelect
+                      multiple={false}
+                      id="person-officers"
+                      name="assignedOfficerIds"
+                      label="Pejabat yang didampingi"
+                      itemLabel="pejabat"
+                      options={[
+                        ...(catalogs.data?.officers || [])
+                          .filter(
+                            (officer) =>
+                              !officer.vip && (officer.active || assignments.includes(officer.id)),
+                          )
+                          .map((officer) => ({
+                            value: officer.id,
+                            label: officer.name + (officer.active ? "" : " (tidak aktif)"),
+                          })),
+                        ...unavailable.map((id) => ({
+                          value: id,
+                          label: "Pejabat tidak tersedia",
+                        })),
+                      ]}
+                      selected={assignments.length === 1 ? assignments : []}
+                      onChange={(values) => {
+                        setAssignments(values);
+                        setDirty(true);
+                      }}
+                      placeholder="Cari dan pilih pejabat…"
+                      disabled={busy || !catalogs.data}
+                      error={
+                        fields.assignedOfficerIds ||
+                        (assignments.length > 1
+                          ? "Pilih satu pejabat untuk menggantikan penugasan lama."
+                          : undefined)
+                      }
+                    />
+                    {assignments.length === 1 && (
+                      <dl
+                        className="employee-assignment-organization"
+                        aria-label="Unit pejabat terpilih"
+                      >
+                        <div>
+                          <dt>Direktorat</dt>
+                          <dd>{assignedOrganization.directorate || "Belum tersedia"}</dd>
+                        </div>
+                        <div>
+                          <dt>Kedeputian</dt>
+                          <dd>{assignedOrganization.deputy || "Belum tersedia"}</dd>
+                        </div>
+                      </dl>
+                    )}
+                    {assignments.length > 1 && (
+                      <Button
+                        type="button"
+                        kind="ghost"
+                        onClick={() => {
+                          setAssignments([]);
+                          setDirty(true);
+                        }}
+                      >
+                        Hapus penugasan lama
+                      </Button>
+                    )}
+                    {!!unavailable.length && (
+                      <div className="hint">
+                        <p>
+                          {unavailable.length} penugasan tidak tersedia dalam direktori saat ini.
+                          Nilainya dipertahankan sampai Anda menghapusnya.
+                        </p>
+                        <Button
+                          type="button"
+                          kind="secondary"
+                          onClick={() => {
+                            setAssignments((ids) => ids.filter((id) => !unavailable.includes(id)));
+                            setDirty(true);
+                          }}
+                        >
+                          Hapus penugasan yang tidak tersedia
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              <label className="employee-account-status">
+                <span>
+                  <strong id="person-active-label">Akun aktif</strong>
+                  <small id="person-active-hint">Izinkan pegawai masuk dan menggunakan akun.</small>
+                </span>
+                <input
+                  type="checkbox"
+                  name="active"
+                  defaultChecked={employee?.active ?? true}
+                  disabled={own}
+                  aria-labelledby="person-active-label"
+                  aria-describedby="person-active-hint"
+                />
+              </label>
+              {own && (
+                <p className="hint">
+                  Peran dan status akun sendiri tidak dapat diubah dari formulir ini.
+                </p>
+              )}
+            </section>
+            {!employee && (
+              <section className="employee-editor-section" aria-labelledby="person-security-title">
+                <div className="employee-section-heading">
+                  <h3 id="person-security-title">Keamanan akun</h3>
+                </div>
+                <div className="field">
+                  <label htmlFor="person-password">
+                    Kata sandi awal <RequiredMark />
+                  </label>
+                  <input
+                    id="person-password"
+                    name="initialPassword"
+                    type="password"
+                    required
+                    minLength={minimumPassword}
+                    maxLength={256}
+                    autoComplete="new-password"
+                    aria-invalid={!!fields.initialPassword}
+                    aria-describedby="person-password-hint"
+                  />
+                  <small id="person-password-hint">Minimal {minimumPassword} karakter.</small>
+                  <ErrorNotice error={fields.initialPassword} />
+                  <label className="check-label">
+                    <input name="requirePasswordChange" type="checkbox" defaultChecked />
+                    <span>Minta penggantian kata sandi saat masuk pertama</span>
+                  </label>
+                </div>
+              </section>
+            )}
+            <div className="form-actions employee-editor-actions">
+              <Button type="button" kind="ghost" onClick={requestClose} disabled={busy}>
+                Batal
+              </Button>
+              <Button
+                type="submit"
+                disabled={busy || (selectedRoles.includes("PA") && !catalogs.data)}
+              >
+                {busy ? "Menyimpan…" : preview ? "Simpan contoh" : "Simpan pegawai"}
+              </Button>
             </div>
-          </details>
-          {own && (
-            <p className="hint">
-              Peran dan status akun sendiri tidak dapat diubah dari formulir ini.
-            </p>
-          )}
-          <div className="form-actions">
-            <Button type="button" kind="secondary" onClick={requestClose} disabled={busy}>
-              Batal
-            </Button>
-            <Button
-              type="submit"
-              disabled={busy || (selectedRoles.includes("PA") && !catalogs.data)}
-            >
-              {busy ? "Menyimpan…" : preview ? "Simpan contoh" : "Simpan pegawai"}
-            </Button>
-          </div>
-        </form>
-      )}
+          </form>
+        )
+      }
     </ManagementDialog>
   );
 }

@@ -42,7 +42,12 @@ test("manual visits show cancellation and rescheduling while public requests ret
     });
     browser = await chromium.launch({ channel: "chrome", headless: true });
     const context = await browser.newContext();
-    await context.addInitScript(() => sessionStorage.setItem("vms-preview-role", "PA"));
+    await context.addInitScript(() =>
+      sessionStorage.setItem(
+        "vms-preview-role",
+        location.hash === "#protocol" ? "Protocol Officer" : "PA",
+      ),
+    );
     await context.route("**/__preview/**", async (route) => {
       const url = new URL(route.request().url());
       await route.fulfill({
@@ -57,15 +62,30 @@ test("manual visits show cancellation and rescheduling while public requests ret
       await page.goto(origin + `/admin/booking?selected=${manual.id}`);
       const dialog = page.getByRole("dialog");
       await dialog.getByRole("button", { name: "Batalkan kunjungan", exact: true }).waitFor();
+      await dialog.getByText(input.email, { exact: true }).waitFor();
+      await dialog.getByText(input.phone, { exact: true }).waitFor();
       assert.equal(await dialog.getByRole("button", { name: "Setujui", exact: true }).count(), 0);
       assert.equal(await dialog.getByRole("button", { name: "Tolak", exact: true }).count(), 0);
-      await dialog.getByRole("button", { name: "Ubah jadwal", exact: true }).click();
-      await dialog.getByRole("button", { name: "Tetapkan jadwal baru", exact: true }).waitFor();
+      await dialog.getByRole("button", { name: "Edit kunjungan", exact: true }).click();
+      const save = dialog.getByRole("button", { name: "Simpan perubahan", exact: true });
+      assert.equal(await save.count(), 0);
+      await dialog.locator("#reason").fill("Alasan perubahan jadwal.");
+      assert.equal(await save.count(), 0);
+      const duration = dialog.locator("#duration");
+      const originalDuration = await duration.inputValue();
+      await duration.fill(originalDuration === "45" ? "60" : "45");
+      await save.waitFor();
+      await duration.fill(originalDuration);
+      assert.equal(await save.count(), 0);
     }
     await page.goto(origin + `/admin/booking?selected=${publicVisit.id}`);
     const dialog = page.getByRole("dialog");
     await dialog.getByRole("button", { name: "Setujui", exact: true }).waitFor();
     await dialog.getByRole("button", { name: "Tolak", exact: true }).waitFor();
+    await page.goto(origin + `/admin/booking?selected=${manual.id}#protocol`);
+    await dialog.getByText(/^Hanya lihat\./).waitFor();
+    await dialog.getByText(input.email, { exact: true }).waitFor();
+    await dialog.getByText(input.phone, { exact: true }).waitFor();
   } finally {
     await browser?.close();
     await api.close();

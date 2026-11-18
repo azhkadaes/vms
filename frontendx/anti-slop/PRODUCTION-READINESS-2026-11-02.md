@@ -6,7 +6,7 @@ Scope: **D:/oikn/VMS/frontendx only**. Consolidated 2 November 2026, WITA. The p
 
 The selected frontend work and all twenty app-versus-requirement decisions are implemented, reconciled or explicitly deferred. All 55 current business-requirement identifiers have a source/coverage mapping. G14 draft recovery remains deliberately deferred. The frontend is a candidate for integration with the new backend; it is **not an operationally accepted production system** without that service and deployment/device/policy acceptance.
 
-Current references: [plan](../PLAN.md), [business requirements](../BUSINESS-REQUIREMENTS.md), [coverage matrix](../REQUIREMENTS-MATRIX.md), [service contract](../API-CONTRACT.md), [verification](../VERIFICATION.md), [deployment gates](../DEPLOYMENT.md). Superseded working documents were preserved under history/2026-11-02; dated audits remain historical evidence.
+Current references: [plan](../../docs/frontend/PLAN.md), [business requirements](../../docs/frontend/BUSINESS-REQUIREMENTS.md), [coverage matrix](../../docs/frontend/REQUIREMENTS-MATRIX.md), [service contract](../../docs/frontend/API-CONTRACT.md), [verification](../../docs/frontend/VERIFICATION.md), [deployment gates](../../docs/frontend/DEPLOYMENT.md). Superseded working documents were preserved under history/2026-11-02; dated audits remain historical evidence.
 
 ## Findings addressed
 

@@ -8,7 +8,7 @@ Implemented the approved option A on Janji temu and Kunjungan hari ini.
 
 Validation: existing sort browser test updated and passed, including restoring default order and sort persistence on reload. TypeScript and admin production build passed. An additional browser inspection passed 36 combinations across PA, Protocol Officer and Receptionist, both list pages, and widths 1440, 1280, 1024, 768, 390 and 320px. Label placement, horizontal overflow, same-row lower-edge alignment, default text, and selecting/restoring sort were checked. Browser data was isolated sample data.
 
-[Desktop preview](./booking-1440.png) · [Tablet preview](./booking-768.png) · [Phone preview](./booking-320.png) · [Measurements](./measurements.json)
+[Desktop preview](booking-1440.png) · [Tablet preview](booking-768.png) · [Phone preview](booking-320.png) · [Measurements](measurements.json)
 
 Native browser zoom, physical devices, and the remaining input-typography, management-card spacing and RTL findings were not verified or changed in this step.
 

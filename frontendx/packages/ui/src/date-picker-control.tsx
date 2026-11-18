@@ -1,3 +1,4 @@
+import { FieldMessage } from "./field-message";
 import { forwardRef, lazy, Suspense, useImperativeHandle, useRef, useState } from "react";
 import { CalendarDays, X } from "lucide-react";
 import { TZDate } from "react-day-picker";
@@ -172,11 +173,11 @@ const DatePickerControl = forwardRef<DatePickerHandle, DatePickerProps>(function
           trigger.current?.focus();
         }}
       />
-      <small id={`${id}-hint`}>{t("Tanggal · WITA", "Date · WITA")}</small>
+      <FieldMessage id={`${id}-hint`}>{t("Tanggal · WITA", "Date · WITA")}</FieldMessage>
       {message && (
-        <span id={`${id}-error`} className="field-error" role="alert">
+        <FieldMessage id={`${id}-error`} tone="error">
           {message}
-        </span>
+        </FieldMessage>
       )}
     </div>
   );

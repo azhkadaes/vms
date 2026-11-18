@@ -5,34 +5,56 @@ import { ApiError, preview, sessionKey, useSession } from "@vms/data";
 import { management } from "@vms/data/management";
 import type { Employee } from "@vms/data/management-contract";
 import { Button, Empty, ErrorNotice, Loading } from "@vms/ui";
-import { Plus, Search } from "lucide-react";
-import { useRef, useState } from "react";
+import { Eye, Plus, Search } from "lucide-react";
+import { useRef, useState, type MouseEvent } from "react";
 import { useSearchParams } from "react-router";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
 import EmployeeEditor from "./EmployeeEditor";
 
 function DirectoryRecords({
   people,
-  onEdit,
+  onView,
 }: {
   people: Employee[];
-  onEdit: (person: Employee, trigger: HTMLElement) => void;
+  onView: (person: Employee, trigger: HTMLElement) => void;
 }) {
-  const edit = (person: Employee) => (
-    <Button
-      kind="secondary"
-      onClick={(event) => onEdit(person, event.currentTarget)}
-      aria-label={`Edit pegawai ${person.name}`}
+  function openRecord(person: Employee, event: MouseEvent<HTMLElement>) {
+    if (event.target instanceof Element && event.target.closest("button, a")) return;
+    const trigger = event.currentTarget.querySelector<HTMLButtonElement>(".employee-name");
+    if (trigger) onView(person, trigger);
+  }
+  const name = (person: Employee) => (
+    <button
+      type="button"
+      className="employee-name"
+      aria-label={`Lihat detail pegawai ${person.name}`}
+      onClick={(event) => onView(person, event.currentTarget)}
     >
-      Edit
+      {person.name}
+    </button>
+  );
+  const details = (person: Employee) => (
+    <Button
+      kind="ghost"
+      className="employee-detail-action"
+      onClick={(event) => onView(person, event.currentTarget)}
+      aria-label={`Detail pegawai ${person.name}`}
+      title={`Lihat detail pegawai ${person.name}`}
+    >
+      <Eye size={16} aria-hidden="true" />
+      <span className="employee-detail-label">Detail</span>
     </Button>
   );
   return (
     <>
       <div className="employee-cards" aria-label="Daftar pegawai">
         {people.map((person) => (
-          <article className="employee-card" key={person.id}>
-            <h3>{person.name}</h3>
+          <article
+            className="employee-card"
+            key={person.id}
+            onClick={(event) => openRecord(person, event)}
+          >
+            <h3>{name(person)}</h3>
             <dl>
               <div>
                 <dt>Email</dt>
@@ -47,32 +69,36 @@ function DirectoryRecords({
                 <dd>{person.active ? "Aktif" : "Nonaktif"}</dd>
               </div>
             </dl>
-            {edit(person)}
+            {details(person)}
           </article>
         ))}
       </div>
-      <div className="employee-table">
+      <div className="table-wrap employee-table">
         <table>
           <caption className="sr-only">Direktori pegawai sesuai pencarian</caption>
           <thead>
             <tr>
               <th scope="col">Nama</th>
               <th scope="col">Email</th>
-              <th scope="col">Peran aktif</th>
-              <th scope="col">Status dan tindakan</th>
+              <th scope="col">Peran pegawai</th>
+              <th scope="col">Status akun</th>
+              <th scope="col" className="employee-actions">
+                <span className="sr-only">Tindakan</span>
+              </th>
             </tr>
           </thead>
           <tbody>
             {people.map((person) => (
-              <tr key={person.id}>
-                <td>
-                  <strong>{person.name}</strong>
-                </td>
+              <tr
+                key={person.id}
+                className="employee-row"
+                onClick={(event) => openRecord(person, event)}
+              >
+                <td>{name(person)}</td>
                 <td>{person.email}</td>
                 <td>{(person.roles || [person.role]).join(", ")}</td>
-                <td>
-                  {person.active ? "Aktif" : "Nonaktif"} {edit(person)}
-                </td>
+                <td>{person.active ? "Aktif" : "Nonaktif"}</td>
+                <td className="employee-actions">{details(person)}</td>
               </tr>
             ))}
           </tbody>
@@ -196,7 +222,7 @@ export default function EmployeeDirectory() {
           (data.items.length ? (
             <DirectoryRecords
               people={data.items}
-              onEdit={(employee, element) => {
+              onView={(employee, element) => {
                 trigger.current = element;
                 setEditing({ employee, key: crypto.randomUUID() });
               }}
@@ -247,6 +273,7 @@ export default function EmployeeDirectory() {
               setEditing(null);
               setNotice(preview ? "Contoh pegawai disimpan." : "Pegawai disimpan.");
               void client.invalidateQueries({ queryKey: ["employees"] });
+              void client.invalidateQueries({ queryKey: ["employee-detail"] });
               void refreshSession();
             }}
             onReload={async () => {

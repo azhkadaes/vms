@@ -1,5 +1,5 @@
 import { preview, roles, useSession, type Role } from "@vms/data";
-import { Button, ErrorNotice, Modal } from "@vms/ui";
+import { Select, Button, ErrorNotice, Modal } from "@vms/ui";
 import { useState } from "react";
 
 export function RoleSelection() {
@@ -74,7 +74,7 @@ export function RoleSwitcher() {
   return (
     <div className="sidebar-role-preview">
       <label htmlFor="active-role">{preview ? "Pratinjau peran" : "Ganti peran"}</label>
-      <select
+      <Select
         id="active-role"
         value={session?.role || ""}
         disabled={busy}
@@ -96,7 +96,7 @@ export function RoleSwitcher() {
         {available.map((role) => (
           <option key={role}>{role}</option>
         ))}
-      </select>
+      </Select>
       <ErrorNotice error={error} />
     </div>
   );

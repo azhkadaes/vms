@@ -17,7 +17,7 @@ Validation passed:
 - Status filtering, name sorting, search and visit-detail opening work through cards for all three roles and both sidebar starting states. Pagination moves to the next page and back where sample data supplies multiple pages.
 - Populated browser checks use an isolated sample-data service. No production API or database verification is implied.
 
-Evidence: [tablet cards](./booking-768-expanded.png), [desktop table](./booking-1280-expanded.png), [phone](./booking-320-expanded.png), [measurements](./measurements.json).
+Evidence: [tablet cards](booking-768-expanded.png), [desktop table](booking-1280-expanded.png), [phone](booking-320-expanded.png), [measurements](measurements.json).
 
 Other review items await the user's choices: visible sort labels, mobile input typography, management-card grouping, and RTL alignment. Native 200% browser zoom and physical-device behavior remain **Not verified**.
 

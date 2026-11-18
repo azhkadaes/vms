@@ -1,0 +1,6 @@
+# Disposable contract-audit build cache.
+/tmp/go-build-cache/
+
+# Python bytecode produced by documentation tooling.
+__pycache__/
+*.pyc

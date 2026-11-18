@@ -18,7 +18,7 @@ before(async () => {
   });
 });
 after(async () => browser?.close());
-async function open({ role = "PA", width = 390, mode = "normal" } = {}) {
+async function open({ role = "PA", width = 390, mode = "normal", path = "/admin/logs" } = {}) {
   let summaryMode = mode,
     viewOnly = false;
   const api = await startPreview({
@@ -114,7 +114,7 @@ async function open({ role = "PA", width = 390, mode = "normal" } = {}) {
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("request", (request) => requests.push(new URL(request.url()).pathname));
   await page.clock.install({ time: new Date("2099-08-19T09:00:00+08:00") });
-  await page.goto(origin + "/admin/logs");
+  await page.goto(origin + path);
   return {
     api,
     context,
@@ -177,13 +177,41 @@ async function csv(page) {
   ]);
   return readFile(await download.path(), "utf8");
 }
-test("Admin gets organization aggregates without booking rows; summary CSV and controls reflow from 320px to desktop", async () => {
-  const env = await open({ role: "Super Admin", width: 320 });
+test("dashboard analytics applies two checked statuses and removes a filter tag on mobile", async () => {
+  const env = await open({ role: "Protocol Officer", width: 320, path: "/admin/dashboard" });
+  const { page } = env;
+  try {
+    const status = page.getByRole("combobox", { name: "Status", exact: true });
+    const filters = page.getByRole("button", { name: "Filter statistik", exact: true });
+    const analytics = page.locator(".dashboard-analytics");
+    await filters.click();
+    await status.click();
+    await page.getByRole("option", { name: "Pending", exact: true }).click();
+    await status.fill("Disetujui");
+    await status.press("Enter");
+    assert.equal(await page.getByRole("option", { name: "Disetujui", exact: true }).getAttribute("aria-selected"), "true");
+    await status.press("Escape");
+    await page.getByRole("button", { name: "Terapkan", exact: true }).click();
+    await analytics.getByText("Ditolak", { exact: true }).waitFor({ state: "hidden" });
+    await analytics.getByText("Pending", { exact: true }).waitFor();
+    await analytics.getByText("Disetujui", { exact: true }).waitFor();
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+    await filters.click();
+    await page.getByRole("button", { name: "Hapus status Disetujui", exact: true }).press("Enter");
+    await page.getByRole("button", { name: "Terapkan", exact: true }).click();
+    await analytics.getByText("Disetujui", { exact: true }).waitFor({ state: "hidden" });
+    await analytics.getByText("Pending", { exact: true }).waitFor();
+  } finally {
+    await env.close();
+  }
+});
+test("Protocol Officer keeps aggregate reports without booking rows; summary CSV and controls reflow from 320px to desktop", async () => {
+  const env = await open({ role: "Protocol Officer", width: 320 });
   try {
     await total(env.page, 3);
     assert.equal(env.requests.filter((path) => path === "/__preview/bookings").length, 0);
     assert.ok(
-      (await env.page.locator(".report-counts").innerText()).includes("Ringkasan organisasi"),
+      (await env.page.locator(".report-counts").innerText()).includes("Lingkup kunjungan yang diizinkan"),
     );
     for (const fixture of env.fixtures)
       assert.equal((await env.page.locator("body").innerText()).includes(fixture.name), false);

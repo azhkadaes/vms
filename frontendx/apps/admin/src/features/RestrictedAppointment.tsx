@@ -11,7 +11,7 @@ import {
   type StaffBooking,
 } from "@vms/data";
 import { restrictedAppointmentSchema, type RestrictedAppointmentDraft } from "@vms/data/validation";
-import { Button, ErrorNotice, Modal, RequiredFieldsHint } from "@vms/ui";
+import { Select, Button, ErrorNotice, FormSection, Modal, RequiredFieldsHint } from "@vms/ui";
 import { DatePicker } from "@vms/ui/date-picker";
 import { ReferenceDataNotice } from "@vms/ui/reference-data-notice";
 import { TimePicker } from "@vms/ui/time-picker";
@@ -19,6 +19,7 @@ import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import type { z } from "zod";
 import VisitNotesFields from "./VisitNotesFields";
+import { AppointmentRoomField } from "./AppointmentRoomField";
 
 type Values = z.output<typeof restrictedAppointmentSchema>;
 export default function RestrictedAppointment({
@@ -69,7 +70,7 @@ export default function RestrictedAppointment({
     } else onClose();
   }
   async function submit(values: Values) {
-    if (lock.current) return;
+    if (lock.current || (booking && !dirty)) return;
     if (
       !session ||
       !canCreateAppointment(session, values.officerId || "", "restricted", officers)
@@ -103,7 +104,7 @@ export default function RestrictedAppointment({
     } catch (err) {
       setError(err);
       if (err instanceof ApiError && err.fieldErrors) {
-        const fields = ["date", "time", "name", "organization", "serviceId", "officerId"] as const;
+        const fields = ["date", "time", "name", "organization", "serviceId", "officerId", "room"] as const;
         for (const key of fields)
           if (err.fieldErrors[key]?.[0]) f.setError(key, { message: err.fieldErrors[key][0] });
         const first = fields.find((key) => err.fieldErrors?.[key]?.[0]);
@@ -166,7 +167,7 @@ export default function RestrictedAppointment({
       ) : (
         <form noValidate onSubmit={f.handleSubmit(submit)}>
           <RequiredFieldsHint />
-          <fieldset disabled={busy} className="restricted-fields">
+          <FormSection disabled={busy} legend="Detail kunjungan">
             <div className="form-grid">
               <Controller
                 name="date"
@@ -215,7 +216,7 @@ export default function RestrictedAppointment({
                 <label htmlFor="restricted-host">
                   Pejabat yang dituju <span className="muted">(opsional)</span>
                 </label>
-                <select
+                <Select
                   {...f.register("officerId")}
                   id="restricted-host"
                   aria-invalid={!!f.formState.errors.officerId}
@@ -231,13 +232,21 @@ export default function RestrictedAppointment({
                         {officer.name}
                       </option>
                     ))}
-                </select>
+                </Select>
                 {f.formState.errors.officerId && (
                   <span className="field-error" role="alert" id="restricted-host-error">
                     {f.formState.errors.officerId.message}
                   </span>
                 )}
               </div>
+              {!booking && (
+                <AppointmentRoomField
+                  id="restricted-room"
+                  rooms={catalogs.data?.rooms ?? []}
+                  registration={f.register("room")}
+                  error={f.formState.errors.room?.message}
+                />
+              )}
             </div>
             <VisitNotesFields
               visitor={f.register("visitorInstructions")}
@@ -245,7 +254,7 @@ export default function RestrictedAppointment({
               visitorError={f.formState.errors.visitorInstructions?.message}
               coordinationError={f.formState.errors.coordinationNote?.message}
             />
-          </fieldset>
+          </FormSection>
           <ReferenceDataNotice
             loading={catalogs.isPending}
             error={catalogs.error}
@@ -256,9 +265,11 @@ export default function RestrictedAppointment({
             <Button type="button" kind="ghost" onClick={close} disabled={busy}>
               Batal
             </Button>
-            <Button type="submit" disabled={busy}>
-              {busy ? "Menyimpan…" : booking ? "Simpan perubahan" : "Buat kunjungan terbatas"}
-            </Button>
+            {(!booking || dirty) && (
+              <Button type="submit" disabled={busy}>
+                {busy ? "Menyimpan…" : booking ? "Simpan perubahan" : "Buat kunjungan terbatas"}
+              </Button>
+            )}
           </div>
         </form>
       )}

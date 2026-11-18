@@ -41,7 +41,9 @@ export function employeeInputSchema(minimum: number, editing: boolean) {
       phone: z.string().trim().max(255).optional(),
       nip: z.string().trim().max(255).optional(),
       active: z.boolean(),
-      assignedOfficerIds: z.array(z.string()),
+      assignedOfficerIds: z
+        .array(z.string())
+        .max(1, "Pegawai hanya dapat ditugaskan ke satu pejabat."),
       initialPassword: editing
         ? z.string().optional()
         : z.string().min(minimum, `Kata sandi minimal ${minimum} karakter.`).max(256),

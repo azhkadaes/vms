@@ -30,9 +30,10 @@ test("manual visits start approved and rescheduling conflicts preserve input", a
       (_, i) => `2097-07-${String(i + 1).padStart(2, "0")}`,
     ).find((date) => !existing.some((booking) => booking.date === date));
     assert.ok(date, "No unused synthetic test date");
-    const fixture = await context.request.post(origin + "/__preview/staff/bookings?role=PA", {
+    const fixture = await context.request.post(origin + "/__preview/staff/bookings?role=Protocol%20Officer", {
       data: {
-        officerId: "o2",
+        visitKind: "restricted",
+        officerId: "o3",
         date,
         time: "09:00",
         purpose: "Synthetic occupied-slot fixture",
@@ -48,7 +49,7 @@ test("manual visits start approved and rescheduling conflicts preserve input", a
     assert.equal(fixture.status(), 201);
     const committed = await fixture.json();
     const approval = await context.request.post(
-      origin + `/__preview/bookings/${committed.id}/reschedule?role=PA`,
+      origin + `/__preview/bookings/${committed.id}/reschedule?role=Protocol%20Officer`,
       {
         data: {
           version: committed.version,
@@ -75,7 +76,8 @@ test("manual visits start approved and rescheduling conflicts preserve input", a
         creations++;
     });
     await page.goto(origin + "/admin/booking?new=1&kind=standard");
-    await page.locator("#appointment-officerId").selectOption("o3");
+    assert.equal(await page.locator("#appointment-officerId").inputValue(), "Direktorat Data dan Kecerdasan Buatan");
+    assert.equal(await page.locator("#appointment-officerId").getAttribute("readonly"), "");
     await page.locator(".date-picker-trigger").click();
     await page.getByRole("combobox", { name: "Pilih tahun", exact: true }).selectOption("2097");
     await page.getByRole("combobox", { name: "Pilih bulan", exact: true }).selectOption("6");
@@ -99,6 +101,19 @@ test("manual visits start approved and rescheduling conflicts preserve input", a
     await page.locator("#appointment-email").fill("reservation@example.test");
     await page.locator("#appointment-phone").fill("081234567890");
     await page.getByRole("button", { name: "Lanjutkan", exact: true }).click();
+    assert.equal(
+      await page.locator("#appointment-photo-error").innerText(),
+      "Unggah foto wajah perwakilan.",
+    );
+    await page.locator("#appointment-photo").setInputFiles({
+      name: "visitor.png",
+      mimeType: "image/png",
+      buffer: Buffer.from(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=",
+        "base64",
+      ),
+    });
+    await page.getByRole("button", { name: "Lanjutkan", exact: true }).click();
     await page.getByRole("heading", { name: "Periksa janji temu", exact: true }).waitFor();
     await page.waitForLoadState("networkidle");
     assert.equal(creations, 0, "Moving to review must not create the request");
@@ -115,11 +130,11 @@ test("manual visits start approved and rescheduling conflicts preserve input", a
     const created = await createdResponse.json();
     assert.equal(created.status, "approved");
 
-    await page.getByRole("button", { name: "Ubah jadwal", exact: true }).click();
+    await page.getByRole("button", { name: "Edit kunjungan", exact: true }).click();
     await page.locator("#room").selectOption("Ruang Rapat Nusantara");
     await page.locator("#duration").fill("45");
     await page.locator("#reason").fill("Assign a meeting room to this visit.");
-    await page.getByRole("button", { name: "Tetapkan jadwal baru", exact: true }).focus();
+    await page.getByRole("button", { name: "Simpan perubahan", exact: true }).focus();
     await page.keyboard.press("Enter");
     await page
       .getByRole("alert")
@@ -137,7 +152,7 @@ test("manual visits start approved and rescheduling conflicts preserve input", a
       page.waitForResponse((response) =>
         new URL(response.url()).pathname.endsWith(`/__preview/bookings/${created.id}/reschedule`),
       ),
-      page.getByRole("button", { name: "Tetapkan jadwal baru", exact: true }).click(),
+      page.getByRole("button", { name: "Simpan perubahan", exact: true }).click(),
     ]);
     assert.equal(result.status(), 200);
     const approved = await result.json();

@@ -9,6 +9,19 @@ const origin = process.env.VMS_TEST_URL || "http://127.0.0.1:3000";
 assert.match(origin, /^http:\/\/(127\.0\.0\.1|localhost):\d+$/);
 const evidence = new URL("../anti-slop/evidence-2026-10-30/public-submission/", import.meta.url);
 const keyName = "vms-pending-submission";
+const memoFile = {
+  name: "memo.pdf",
+  mimeType: "application/pdf",
+  buffer: Buffer.from("%PDF-1.7 supporting memo"),
+};
+const visitorPhotoFile = {
+  name: "visitor.png",
+  mimeType: "image/png",
+  buffer: Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=",
+    "base64",
+  ),
+};
 let browser;
 before(async () => {
   await mkdir(evidence, { recursive: true });
@@ -39,13 +52,21 @@ async function open({ mode = "normal", width = 390, language = "id" } = {}) {
     const creation = url.pathname.endsWith("/__preview/bookings") && request.method() === "POST";
     if (creation) {
       posts.push(request.postDataJSON());
-      if (mode === "validation" && posts.length === 1) {
+      if (
+        ["validation", "document-validation", "photo-validation"].includes(mode) &&
+        posts.length === 1
+      ) {
         await route.fulfill({
           status: 422,
           contentType: "application/json",
           body: JSON.stringify({
             message: "Periksa data permohonan.",
-            fieldErrors: { email: ["Periksa nama email dan domain Anda."] },
+            fieldErrors:
+              mode === "document-validation"
+                ? { ndName: ["Gunakan berkas PDF."] }
+                : mode === "photo-validation"
+                  ? { visitorPhotoToken: ["Gunakan foto JPEG atau PNG."] }
+                  : { email: ["Periksa nama email dan domain Anda."] },
           }),
         });
         return;
@@ -100,7 +121,7 @@ async function open({ mode = "normal", width = 390, language = "id" } = {}) {
     },
   };
 }
-async function review(env) {
+async function review(env, { attachments = false } = {}) {
   const { page, posts } = env;
   await page.locator("#officerId").selectOption("o2");
   await page.locator(".date-picker-trigger").click();
@@ -122,12 +143,34 @@ async function review(env) {
     .click();
   await page.locator(".date-picker > small").click();
   await page.locator("#purpose").fill("Original Browser Purpose");
-  await page.locator('.booking-form .form-actions button[type="button"]').click();
+  assert.equal(await page.locator("#nd").count(), 0);
+  if (attachments) {
+    assert.equal(await page.locator("#visitorPhoto").count(), 0);
+    await page.locator("#hasNotaDinas").check();
+    await page.locator("#nd").setInputFiles(visitorPhotoFile);
+    assert.equal(await page.locator("#nd-error").innerText(), "Gunakan berkas PDF.");
+    await page.locator("#nd").setInputFiles(memoFile);
+  }
+  await page.locator('.booking-form .form-actions button[type="submit"]').press("Enter");
   await page.locator("#name").fill("Submission Browser Name");
   await page.locator("#organization").fill("Submission Browser Organization");
   await page.locator("#email").fill("original@example.test");
   await page.locator("#phone").fill("00123456789");
-  await page.locator('.booking-form .form-actions button[type="button"]').click();
+  if (attachments) {
+    assert.equal(await page.locator("#nd").count(), 0);
+    await page.locator('.booking-form .form-actions button[type="submit"]').click();
+    assert.equal(await page.locator("#visitorPhoto-error").innerText(), "Unggah foto wajah perwakilan.");
+    assert.equal(new URL(page.url()).pathname, "/booking/visitors");
+    await page.locator("#visitorPhoto").setInputFiles(memoFile);
+    await page.locator('.booking-form .form-actions button[type="submit"]').click();
+    await page.locator("#visitorPhoto-error").waitFor();
+    assert.equal(new URL(page.url()).pathname, "/booking/visitors");
+  }
+  await page.locator("#visitorPhoto").setInputFiles(visitorPhotoFile);
+  if (attachments) {
+    await page.getByRole("img", { name: "Pratinjau foto pengunjung", exact: true }).waitFor();
+  }
+  await page.locator("#phone").press("Enter");
   await page
     .getByRole("heading", { name: /Periksa sekali lagi|Review once more/, exact: false })
     .waitFor();
@@ -156,6 +199,61 @@ async function records(env) {
   return fetch(env.api.base + "/bookings?role=PA")
     .then((response) => response.json())
     .then((records) => records.filter((record) => record.name === "Submission Browser Name"));
+}
+
+test("visit and visitor uploads stay on their own steps and both appear in the submitted request", async () => {
+  const env = await open({ width: 390 });
+  try {
+    await review(env, { attachments: true });
+    const details = await env.page.locator(".review-list").innerText();
+    assert.ok(details.includes("memo.pdf"));
+    assert.ok(details.includes("visitor.png"));
+    await env.page.getByRole("link", { name: "Langkah sebelumnya", exact: true }).click();
+    await env.page.locator("#visitorPhoto").waitFor();
+    assert.equal(await env.page.locator(".upload-field-file").innerText(), "visitor.png");
+    await env.page.getByRole("button", { name: "Hapus foto", exact: true }).click();
+    await env.page.locator("#visitorPhoto-file").waitFor({ state: "detached" });
+    await env.page.getByRole("link", { name: "Langkah sebelumnya", exact: true }).click();
+    await env.page.locator("#nd").waitFor();
+    assert.equal(await env.page.locator(".upload-field-file").innerText(), "memo.pdf");
+    await env.page.locator("#hasNotaDinas").uncheck();
+    await env.page.locator("#nd").waitFor({ state: "detached" });
+    await env.page.locator("#hasNotaDinas").check();
+    await env.page.locator("#nd").waitFor();
+    assert.equal(await env.page.locator("#nd-file").count(), 0);
+    await env.page.locator("#nd").setInputFiles(memoFile);
+    await snapshot(env.page, "uploads-visit-390");
+    await env.page.locator('.booking-form .form-actions button[type="submit"]').click();
+    await env.page.locator("#visitorPhoto").setInputFiles(visitorPhotoFile);
+    await snapshot(env.page, "uploads-visitor-390");
+    await env.page.locator('.booking-form .form-actions button[type="submit"]').click();
+    await send(env.page);
+    await success(env);
+    assert.equal(env.posts[0].ndName, "memo.pdf");
+    assert.equal(env.posts[0].visitorPhotoName, "visitor.png");
+  } finally {
+    await env.close();
+  }
+});
+
+for (const [mode, path, field] of [
+  ["document-validation", "/booking", "nd"],
+  ["photo-validation", "/booking/visitors", "visitorPhoto"],
+]) {
+  test(`${mode} returns to the correct upload step and focuses the file input`, async () => {
+    const env = await open({ mode, width: 1280 });
+    try {
+      await review(env, { attachments: true });
+      await send(env.page);
+      await env.page.locator(`#${field}-error`).waitFor();
+      await env.page.waitForFunction((field) => document.activeElement?.id === field, field);
+      assert.equal(new URL(env.page.url()).pathname, path);
+      assert.equal(await env.page.evaluate(() => document.activeElement?.id), field);
+      assert.deepEqual(env.errors, []);
+    } finally {
+      await env.close();
+    }
+  });
 }
 
 test("a response lost after commit retries the same request once and shows one receipt", async () => {
@@ -245,7 +343,7 @@ test("conclusive missing recovery retains the draft and requires explicit send w
     await env.page.getByRole("link", { name: /Langkah sebelumnya|Previous step/ }).click();
     assert.equal(await env.page.locator("#phone").inputValue(), "00123456789");
     await env.page.locator("#organization").fill("Corrected Browser Organization");
-    await env.page.locator('.booking-form .form-actions button[type="button"]').click();
+    await env.page.locator('.booking-form .form-actions button[type="submit"]').click();
     await send(env.page);
     await success(env);
     assert.equal(env.posts.length, 3);
@@ -272,7 +370,7 @@ test("HTTP field rejection is not retried and returns focus to the preserved fie
     assert.equal(await env.page.evaluate((key) => sessionStorage.getItem(key), keyName), null);
     await snapshot(env.page, "server-field-error-1280");
     await env.page.locator("#email").fill("corrected@example.test");
-    await env.page.locator('.booking-form .form-actions button[type="button"]').click();
+    await env.page.locator('.booking-form .form-actions button[type="submit"]').click();
     await send(env.page);
     await success(env);
     assert.equal(env.posts.length, 2);

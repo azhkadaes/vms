@@ -28,6 +28,7 @@ import { InputOTP } from "@vms/ui/input-otp";
 import { ArrowRight, Check, KeyRound, ScanLine, ShieldCheck } from "lucide-react";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 const Scanner = lazy(() => import("../features/Scanner"));
+const ReceptionFiles = lazy(() => import("../features/ReceptionFiles"));
 export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
   const [page, setPage] = useState(1);
   const q = useBookings({
@@ -125,6 +126,22 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
     setCredential("");
     setError(null);
     setChecked(false);
+  }
+  async function confirmAttendance(booking: StaffBooking) {
+    if (action.isPending || !checked || !permitted) return;
+    setError(null);
+    try {
+      await action.mutateAsync({ booking, action: mode, values: { credential } });
+      setNotice(`${bookingName(booking)} berhasil ${incoming ? "check in" : "check out"}.`);
+      close();
+    } catch (err) {
+      if (err instanceof ApiError && [401, 403, 404, 409].includes(err.status)) {
+        setResolved(null);
+        setCredential("");
+        setChecked(false);
+      }
+      setError(err);
+    }
   }
   return (
     <>
@@ -283,33 +300,59 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
         }
       >
         {resolved ? (
-          <>
-            <VisitIdentity booking={resolved} />
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              void confirmAttendance(resolved);
+            }}
+          >
+            <VisitIdentity booking={resolved} collapseVisitorNames />
+            {role &&
+              !isRestricted(resolved) &&
+              (resolved.attachmentAvailable || resolved.visitorPhotoAvailable) && (
+                <Suspense fallback={<Loading />}>
+                  <ReceptionFiles
+                    key={`${role}:${resolved.id}`}
+                    booking={resolved}
+                    role={role}
+                    credential={credential}
+                  />
+                </Suspense>
+              )}
             {!permitted && (
-              <p role="status" className="hint section-gap">
-                {attendance?.displayStatus === "missed"
-                  ? "Kunjungan terlewat (Missed). Waktu kedatangan telah berakhir."
-                  : "Check-in dibuka 30 menit sebelum jadwal sampai waktu selesai kunjungan."}
-              </p>
-            )}
-            <RequiredFieldsHint />
-            <label className="check-label section-gap">
-              <input
-                type="checkbox"
-                required
-                checked={checked}
-                onChange={(e) => setChecked(e.target.checked)}
+              <ErrorNotice
+                error={
+                  attendance?.displayStatus === "missed"
+                    ? "Waktu check-in sudah berakhir. Kunjungan terlewat."
+                    : incoming
+                      ? "Check-in belum tersedia. Check-in dibuka 30 menit sebelum jadwal hingga kunjungan selesai."
+                      : "Check-out belum tersedia untuk kunjungan ini."
+                }
               />
-              <span>
-                {isRestricted(resolved)
-                  ? "Saya telah mencocokkan kode atau QR dan rincian kunjungan yang tersedia untuk verifikasi kehadiran."
-                  : "Saya telah mencocokkan identitas pengunjung dan detail kunjungan dengan dokumen asli."}{" "}
-                <RequiredMark />
-              </span>
-            </label>
+            )}
+            {(!incoming || permitted) && (
+              <>
+                <RequiredFieldsHint />
+                <label className="check-label section-gap">
+                  <input
+                    type="checkbox"
+                    required
+                    checked={checked}
+                    onChange={(e) => setChecked(e.target.checked)}
+                  />
+                  <span>
+                    {isRestricted(resolved)
+                      ? "Saya telah mencocokkan kode atau QR dan rincian kunjungan yang tersedia untuk verifikasi kehadiran."
+                      : "Saya telah mencocokkan identitas pengunjung dan detail kunjungan dengan dokumen asli."}{" "}
+                    <RequiredMark />
+                  </span>
+                </label>
+              </>
+            )}
             <ErrorNotice error={error} />
             <div className="form-actions">
               <Button
+                type="button"
                 kind="secondary"
                 onClick={() => {
                   setResolved(null);
@@ -320,35 +363,15 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
                 Periksa kode lain
               </Button>
               <Button
+                type="submit"
                 disabled={action.isPending || !checked || !permitted}
-                onClick={async () => {
-                  setError(null);
-                  try {
-                    await action.mutateAsync({
-                      booking: resolved,
-                      action: mode,
-                      values: { credential },
-                    });
-                    setNotice(
-                      `${bookingName(resolved)} berhasil ${incoming ? "check in" : "check out"}.`,
-                    );
-                    close();
-                  } catch (err) {
-                    if (err instanceof ApiError && [401, 403, 404, 409].includes(err.status)) {
-                      setResolved(null);
-                      setCredential("");
-                      setChecked(false);
-                    }
-                    setError(err);
-                  }
-                }}
               >
                 {action.isPending
                   ? "Menyimpan…"
                   : `Konfirmasi ${incoming ? "check in" : "check out"}`}
               </Button>
             </div>
-          </>
+          </form>
         ) : (
           <>
             {method === "qr" ? (
@@ -377,7 +400,7 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
                   />
                 </div>
                 <div className="form-actions">
-                  <Button disabled={busy}>
+                  <Button type="submit" disabled={busy}>
                     {busy ? "Memeriksa…" : "Periksa kunjungan"}
                     <ArrowRight size={16} />
                   </Button>

@@ -17,6 +17,7 @@ import {
 } from "@vms/data";
 import { rejectionSchema, staffCancellationSchema } from "@vms/data/validation";
 import {
+  Select,
   Button,
   ErrorNotice,
   Loading,
@@ -34,6 +35,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import VisitNotesFields from "./VisitNotesFields";
 const RestrictedAppointment = lazy(() => import("./RestrictedAppointment"));
 const AttachmentAccess = lazy(() => import("./AttachmentAccess"));
+const VisitorPhoto = lazy(() => import("./VisitorPhoto"));
 
 export default function BookingDetail({
   returnFocusTo,
@@ -54,7 +56,11 @@ export default function BookingDetail({
   const b = editSnapshot || currentBooking;
   const [mode, setMode] = useState<"approve" | "reject" | "reschedule" | "cancel" | null>(null);
   const [dirty, setDirty] = useState(false);
-  useUnsavedChanges(dirty, mutation.isPending);
+  const [schedule, setSchedule] = useState({ date: b.date, time: b.time });
+  const room = rooms.includes(b.room) ? b.room : "";
+  const hasChanges =
+    dirty || (mode === "reschedule" && (schedule.date !== b.date || schedule.time !== b.time));
+  useUnsavedChanges(hasChanges, mutation.isPending);
   const [cancellationReason, setCancellationReason] = useState("");
   const [cancellationError, setCancellationError] = useState<string>();
   const cancellationInput = useRef<HTMLTextAreaElement>(null);
@@ -64,6 +70,8 @@ export default function BookingDetail({
   const [error, setError] = useState<unknown>();
   const [editing, setEditing] = useState(false);
   const restricted = isRestricted(b);
+  const showContactAndCode = session?.role === "PA" || session?.role === "Protocol Officer";
+  const protocolReadOnly = session?.role === "Protocol Officer" && !restricted && !b.vip;
   const [rejection, setRejection] = useState({
     rejectionReason: "",
     internalRejectionNote: "",
@@ -91,7 +99,7 @@ export default function BookingDetail({
     setEditing(false);
     setEditSnapshot(null);
   }
-  if (editing)
+  if (editing && session && can(session, currentBooking, "update"))
     return (
       <Suspense
         fallback={
@@ -122,7 +130,7 @@ export default function BookingDetail({
         mode === "cancel"
           ? "Batalkan kunjungan"
           : mode === "reschedule"
-            ? "Tetapkan ulang jadwal"
+            ? "Edit kunjungan"
             : mode === "reject"
               ? "Tolak permohonan"
               : "Detail kunjungan"
@@ -131,7 +139,7 @@ export default function BookingDetail({
         mode === "cancel"
           ? "Pembatalan oleh petugas dicatat dalam audit dan menutup izin masuk serta reservasi. Tindakan ini juga dapat dilakukan sesudah waktu mulai jika Anda berwenang."
           : mode === "reschedule"
-            ? "Jadwal baru bersifat tetap. Pengunjung diberi tahu tanpa tahap negosiasi."
+            ? "Perbarui tanggal, waktu, ruangan, durasi, dan catatan. Kunjungan tetap disetujui; catatan internal hanya terlihat oleh petugas berwenang."
             : mode === "reject"
               ? "Pisahkan pesan untuk pengaju dan catatan internal staf."
               : "Identitas, jadwal, dan riwayat kunjungan."
@@ -147,7 +155,12 @@ export default function BookingDetail({
         </div>
       ) : (
         <>
-          <VisitIdentity booking={b} showDocument />
+          <VisitIdentity
+            booking={b}
+            showDocument
+            showBookingCode={showContactAndCode}
+            showVisitorContact={showContactAndCode}
+          />
           {b.visitorInstructions && (
             <section className="section-gap">
               <h3>Instruksi pengunjung</h3>
@@ -187,14 +200,43 @@ export default function BookingDetail({
       <div className="section-gap">
         <StatusBadge status={b.status} timing={b.timing} rescheduled={b.rescheduled} />
       </div>
+      {protocolReadOnly && (
+        <p className="hint section-gap" role="note">
+          Hanya lihat. Persetujuan dan perubahan kunjungan umum ini dikelola oleh PA pejabat tujuan.
+          Protokol mengelola kunjungan VIP dan terbatas.
+        </p>
+      )}
+      {!restricted && b.visitorPhotoAvailable && session && (
+        <Suspense fallback={<Loading />}>
+          <VisitorPhoto
+            key={`${b.id}:${session.role}`}
+            id={b.id}
+            role={session.role}
+            name={b.name}
+          />
+        </Suspense>
+      )}
       {mode ? (
         <form
           className="section-gap"
-          onChange={() => setDirty(true)}
+          onChange={(event) => {
+            if (mode !== "reschedule") {
+              setDirty(true);
+              return;
+            }
+            const fields = new FormData(event.currentTarget);
+            setDirty(
+              fields.get("room") !== room ||
+                fields.get("duration") !== String(b.duration ?? "") ||
+                String(fields.get("visitorInstructions")).trim() !==
+                  (b.visitorInstructions || "").trim() ||
+                String(fields.get("coordinationNote")).trim() !== (b.coordinationNote || "").trim(),
+            );
+          }}
           noValidate={mode === "reject"}
           onSubmit={async (e) => {
             e.preventDefault();
-            if (mutation.isPending) return;
+            if (mutation.isPending || (mode === "reschedule" && !hasChanges)) return;
             setError(null);
             const f = Object.fromEntries(new FormData(e.currentTarget));
             let values: Record<string, unknown> = {
@@ -256,7 +298,7 @@ export default function BookingDetail({
                 mode === "cancel"
                   ? "Kunjungan dibatalkan oleh petugas."
                   : mode === "reschedule"
-                    ? "Jadwal baru telah ditetapkan."
+                    ? "Perubahan kunjungan disimpan."
                     : mode === "approve"
                       ? "Kunjungan disetujui."
                       : "Janji temu ditolak.",
@@ -297,9 +339,10 @@ export default function BookingDetail({
                 <DatePicker
                   id="new-date"
                   name="date"
-                  label="Tanggal baru"
+                  label="Tanggal kunjungan"
                   min={today()}
-                  defaultValue={b.date}
+                  value={schedule.date}
+                  onChange={(date) => setSchedule((current) => ({ ...current, date }))}
                   required
                 />
                 <TimePicker
@@ -308,33 +351,30 @@ export default function BookingDetail({
                   id="new-time"
                   name="time"
                   label="Waktu mulai · WITA"
-                  defaultValue={b.time}
+                  value={schedule.time}
+                  onChange={(time) => setSchedule((current) => ({ ...current, time }))}
                   required
                 />
               </>
             )}
             {(mode === "approve" || mode === "reschedule") && (
               <>
-                <VisitNotesFields
-                  visitor={{ defaultValue: b.visitorInstructions || "" }}
-                  coordination={{ defaultValue: b.coordinationNote || "" }}
-                />
                 <div className="field">
                   <label htmlFor="room">
                     Ruangan{" "}
                     {restricted ? <span className="muted">(opsional)</span> : <RequiredMark />}
                   </label>
-                  <select
+                  <Select
                     name="room"
                     id="room"
-                    defaultValue={rooms.includes(b.room) ? b.room : ""}
+                    defaultValue={room}
                     required={!restricted}
                   >
                     <option value="">Pilih ruangan</option>
                     {rooms.map((r) => (
                       <option key={r}>{r}</option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
                 <div className="field">
                   <label htmlFor="duration">
@@ -351,6 +391,10 @@ export default function BookingDetail({
                     required={!restricted}
                   />
                 </div>
+                <VisitNotesFields
+                  visitor={{ defaultValue: b.visitorInstructions || "" }}
+                  coordination={{ defaultValue: b.coordinationNote || "" }}
+                />
               </>
             )}
             {mode === "reject" && (
@@ -517,6 +561,7 @@ export default function BookingDetail({
               kind="ghost"
               type="button"
               onClick={() => {
+                setDirty(false);
                 setMode(null);
                 setEditSnapshot(null);
               }}
@@ -524,21 +569,23 @@ export default function BookingDetail({
             >
               Kembali
             </Button>
-            <Button
-              type="submit"
-              kind={mode === "reject" || mode === "cancel" ? "danger" : "primary"}
-              disabled={mutation.isPending}
-            >
-              {mutation.isPending
-                ? "Menyimpan…"
-                : mode === "cancel"
-                  ? "Batalkan kunjungan"
-                  : mode === "reschedule"
-                    ? "Tetapkan jadwal baru"
-                    : mode === "reject"
-                      ? "Tolak permohonan"
-                      : "Setujui kunjungan"}
-            </Button>
+            {(mode !== "reschedule" || hasChanges) && (
+              <Button
+                type="submit"
+                kind={mode === "reject" || mode === "cancel" ? "danger" : "primary"}
+                disabled={mutation.isPending}
+              >
+                {mutation.isPending
+                  ? "Menyimpan…"
+                  : mode === "cancel"
+                    ? "Batalkan kunjungan"
+                    : mode === "reschedule"
+                      ? "Simpan perubahan"
+                      : mode === "reject"
+                        ? "Tolak permohonan"
+                        : "Setujui kunjungan"}
+              </Button>
+            )}
           </div>
         </form>
       ) : (
@@ -591,23 +638,21 @@ export default function BookingDetail({
             ))}
           </ul>
           <div className="form-actions">
-            {restricted &&
-              session?.role === "Protocol Officer" &&
-              session.permissions.includes("create") &&
-              ["pending", "approved"].includes(b.status) && (
-                <Button
-                  kind="secondary"
-                  onClick={() => {
-                    setEditSnapshot(currentBooking);
-                    setEditing(true);
-                  }}
-                >
-                  Edit detail
-                </Button>
-              )}
+            {session && can(session, b, "update") && (
+              <Button
+                kind="secondary"
+                onClick={() => {
+                  setEditSnapshot(currentBooking);
+                  setEditing(true);
+                }}
+              >
+                {b.status === "approved" ? "Edit informasi pengunjung" : "Edit detail"}
+              </Button>
+            )}
             {(["cancel", "reject", "reschedule", "approve"] as const)
+              .filter((a) => a !== "cancel" || b.status !== "pending")
               .filter((a) => !b.createdBy || (a !== "approve" && a !== "reject"))
-              .filter((a) => can(session!, b, a))
+              .filter((a) => session && can(session, b, a))
               .map((a) => (
                 <Button
                   key={a}
@@ -622,6 +667,8 @@ export default function BookingDetail({
                     setError(null);
                     setRejectionErrors({});
                     setEditSnapshot(currentBooking);
+                    setDirty(false);
+                    setSchedule({ date: currentBooking.date, time: currentBooking.time });
                     setMode(a);
                   }}
                 >
@@ -636,7 +683,7 @@ export default function BookingDetail({
                     {
                       approve: "Setujui",
                       reject: "Tolak",
-                      reschedule: "Ubah jadwal",
+                      reschedule: "Edit kunjungan",
                       cancel: "Batalkan kunjungan",
                     }[a]
                   }

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { matchesFilter, multipleFilter } from "./report-filter.ts";
 import {
   generalReportRecords,
   getVisitTiming,
@@ -12,7 +13,10 @@ import {
 } from "./domain.ts";
 
 export const reportStatuses = [...statuses, "missed"] as const;
-const statusSchema = z.enum(["all", ...reportStatuses]);
+export const reportStatusFilter = multipleFilter(
+  z.enum(["all", ...reportStatuses]),
+  z.enum(reportStatuses),
+);
 const dateSchema = z
   .string()
   .refine(
@@ -23,7 +27,7 @@ const dateSchema = z
     "Pilih tanggal yang valid.",
   );
 export const summaryFilterSchema = z
-  .object({ from: dateSchema, to: dateSchema, status: statusSchema })
+  .object({ from: dateSchema, to: dateSchema, status: reportStatusFilter })
   .strict()
   .refine((value) => value.from <= value.to, {
     path: ["to"],
@@ -115,7 +119,7 @@ export function aggregateVisits(
   for (const record of permitted) {
     if (record.date < filter.from || record.date > filter.to) continue;
     const status = getVisitTiming(record, now).displayStatus;
-    if (filter.status === "all" || filter.status === status) counts[status]++;
+    if (matchesFilter(status, filter.status, "all")) counts[status]++;
   }
   return {
     filter,
@@ -137,7 +141,7 @@ export function summaryCsv(summary: VisitSummary) {
   const rows = [
     ["Tanggal awal", "Tanggal akhir", "Cakupan", "Status", "Jumlah"],
     ...reportStatuses
-      .filter((status) => summary.filter.status === "all" || summary.filter.status === status)
+      .filter((status) => matchesFilter(status, summary.filter.status, "all"))
       .map((status) => [
         summary.filter.from,
         summary.filter.to,

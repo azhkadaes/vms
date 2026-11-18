@@ -23,6 +23,31 @@
   --action-danger-pressed: oklch(0.46879990 0.14909035 27.916608);
   --action-disabled: oklch(0.92334308 0.00671753 286.267430);
   --action-disabled-text: oklch(0.50282099 0.01413969 285.880285);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --field-gap: var(--space-2);
+  --form-grid-gap: var(--space-5);
+  --form-section-gap: var(--space-6);
+  --form-actions-gap: var(--space-3);
+  --field-height: 48px;
+  --field-padding-block: 11px;
+  --field-padding-inline: 14px;
+  --field-radius: 10px;
+  --field-text-size: 1rem;
+  --field-text-line: 1.5rem;
+  --field-label-size: 0.875rem;
+  --field-label-line: 1.25rem;
+  --field-message-size: 0.8125rem;
+  --field-message-line: 1.25rem;
+  --form-title-size: 1rem;
+  --form-title-line: 1.5rem;
+  --action-height: 44px;
+  --menu-option-height: var(--space-8);
   --font:
     -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui,
     sans-serif;

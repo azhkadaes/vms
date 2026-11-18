@@ -17,11 +17,13 @@ import {
   Check,
   Clock3,
   LogIn,
-  Settings2,
   ShieldCheck,
   Users,
 } from "lucide-react";
 import { Link } from "react-router";
+import { lazy, Suspense } from "react";
+import { Loading } from "@vms/ui";
+const DashboardAnalytics = lazy(() => import("../features/DashboardAnalytics"));
 export default function Dashboard() {
   const { session } = useSession();
   const q = useBookings({ filter: { view: "dashboard", date: today(), page: 1, pageSize: 50 } });
@@ -47,7 +49,7 @@ export default function Dashboard() {
   const agenda = reception ? arrivals : selectBookings(current, "", "all", "time");
   const attention = reception ? inside : selectBookings(pending, "", "all", "priority");
   return (
-    <>
+    <div className="dashboard-page">
       <div className="page-intro">
         <div>
           <h1>Selamat datang, {session?.name.split(" ")[0]}.</h1>
@@ -75,7 +77,7 @@ export default function Dashboard() {
           </h2>
           <p>
             {configOnly
-              ? "Dashboard administrasi tidak membuka data kunjungan tanpa peran operasional."
+              ? "Pantau kunjungan, unduh laporan, dan kelola akses pegawai."
               : reception
                 ? available
                   ? `${q.metrics?.arrivals ?? arrivals.length} kunjungan disetujui menunggu kedatangan · ${q.metrics?.inside ?? inside.length} pengunjung sedang berada di lokasi.`
@@ -92,9 +94,9 @@ export default function Dashboard() {
             )}
             <Link
               className={reception ? "link-button primary" : ""}
-              to={configOnly ? "/employees" : reception ? "/check-in" : "/booking?status=pending"}
+              to={configOnly ? "/booking" : reception ? "/check-in" : "/booking?status=pending"}
             >
-              {configOnly ? "Kelola pegawai" : reception ? "Mulai check in" : "Tinjau permohonan"}{" "}
+              {configOnly ? "Buka kunjungan" : reception ? "Mulai check in" : "Tinjau permohonan"}{" "}
               <ArrowRight size={16} />
             </Link>
             {reception && (
@@ -122,12 +124,6 @@ export default function Dashboard() {
               to: "/roles",
               icon: ShieldCheck,
               text: "Izin berdasarkan tanggung jawab",
-            },
-            {
-              name: "Integrasi",
-              to: "/integration",
-              icon: Settings2,
-              text: "Koneksi layanan dan sistem",
             },
           ].map((x) => (
             <Link className="panel quick-setting" key={x.to} to={x.to}>
@@ -182,12 +178,8 @@ export default function Dashboard() {
                 note: "Kunjungan sudah check out",
                 to: "/booking?status=checked_out",
               },
-            ].map((m, index) => (
-              <Link
-                to={m.to}
-                key={m.label}
-                className={`metric${index === 0 ? " metric--featured" : ""}${index === 3 ? " metric--wide" : ""}`}
-              >
+            ].map((m) => (
+              <Link to={m.to} key={m.label} className="metric">
                 <div>
                   <span>{m.label}</span>
                   <m.icon size={18} aria-hidden="true" />
@@ -252,10 +244,14 @@ export default function Dashboard() {
                               <small>{b.duration} menit</small>
                             </td>
                             <td>
-                              <Link to={`/booking?selected=${b.id}`} className="row-link">
-                                {bookingName(b)}
-                                <VisitKind booking={b} />
-                              </Link>
+                              {reception ? (
+                                <strong>{bookingName(b)} <VisitKind booking={b} /></strong>
+                              ) : (
+                                <Link to={`/booking?selected=${b.id}`} className="row-link">
+                                  {bookingName(b)}
+                                  <VisitKind booking={b} />
+                                </Link>
+                              )}
                               <small>{b.organization}</small>
                             </td>
                             <td>
@@ -271,17 +267,15 @@ export default function Dashboard() {
                     </table>
                   </div>
                   <ul className="dashboard-agenda-list">
-                    {agenda.slice(0, 5).map((b) => (
-                      <li key={b.id}>
-                        <Link to={`/booking?selected=${b.id}`}>
+                    {agenda.slice(0, 5).map((b) => {
+                      const content = (
+                        <>
                           <span className="agenda-time tabular">
                             <strong>{b.time}</strong>
                             <small>{b.duration} menit</small>
                           </span>
                           <span className="agenda-details">
-                            <strong>
-                              {bookingName(b)} <VisitKind booking={b} />
-                            </strong>
+                            <strong>{bookingName(b)} <VisitKind booking={b} /></strong>
                             <small>{b.organization}</small>
                             <StatusBadge
                               status={b.status}
@@ -289,10 +283,21 @@ export default function Dashboard() {
                               rescheduled={b.rescheduled}
                             />
                           </span>
-                          <ArrowUpRight size={16} aria-hidden="true" />
-                        </Link>
-                      </li>
-                    ))}
+                        </>
+                      );
+                      return (
+                        <li key={b.id}>
+                          {reception ? (
+                            <div className="agenda-entry">{content}</div>
+                          ) : (
+                            <Link to={`/booking?selected=${b.id}`} className="agenda-entry">
+                              {content}
+                              <ArrowUpRight size={16} aria-hidden="true" />
+                            </Link>
+                          )}
+                        </li>
+                      );
+                    })}
                   </ul>
                 </>
               )}
@@ -314,21 +319,30 @@ export default function Dashboard() {
                 </span>
               </div>
               {attention.length ? (
-                attention.slice(0, 4).map((b) => (
-                  <Link key={b.id} to={`/booking?selected=${b.id}`} className="attention-row">
-                    <span className="avatar">{bookingName(b)[0]}</span>
-                    <span>
-                      <strong>
-                        {bookingName(b)}
-                        <VisitKind booking={b} />
-                      </strong>
-                      <small>
-                        {dateLabel(b.date)} · {b.time} WITA · {b.organization}
-                      </small>
-                    </span>
-                    <ArrowUpRight size={16} />
-                  </Link>
-                ))
+                attention.slice(0, 4).map((b) => {
+                  const content = (
+                    <>
+                      <span className="avatar">{bookingName(b)[0]}</span>
+                      <span>
+                        <strong>
+                          {bookingName(b)}
+                          <VisitKind booking={b} />
+                        </strong>
+                        <small>
+                          {dateLabel(b.date)} · {b.time} WITA · {b.organization}
+                        </small>
+                      </span>
+                    </>
+                  );
+                  return reception ? (
+                    <div key={b.id} className="attention-row">{content}</div>
+                  ) : (
+                    <Link key={b.id} to={`/booking?selected=${b.id}`} className="attention-row">
+                      {content}
+                      <ArrowUpRight size={16} aria-hidden="true" />
+                    </Link>
+                  );
+                })
               ) : (
                 <Empty
                   title={reception ? "Belum ada pengunjung di dalam" : "Semua sudah ditinjau"}
@@ -349,6 +363,13 @@ export default function Dashboard() {
           </div>
         </QueryState>
       )}
-    </>
+      {session?.permissions.includes("reports") && (
+        <section className="section-gap" aria-label="Analitik kunjungan">
+          <Suspense fallback={<Loading />}>
+            <DashboardAnalytics key={session.role} />
+          </Suspense>
+        </section>
+      )}
+    </div>
   );
 }

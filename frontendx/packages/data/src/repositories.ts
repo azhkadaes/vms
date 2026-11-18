@@ -3,6 +3,7 @@ import type { Repository } from "./contracts.ts";
 import { officers, rooms } from "./domain.ts";
 import { ApiError } from "./errors.ts";
 import { createHttpClient } from "./http.ts";
+import { reportFilterParams } from "./report-filter.ts";
 
 export function createRepository({
   development = false,
@@ -24,6 +25,43 @@ export function createRepository({
     return parsed.data;
   }
   return {
+    visitLog: async (filter, page, pageSize, role, signal) => {
+      const { visitLogResponseSchema } = await import("./visit-log.ts");
+      const params = reportFilterParams({
+        ...filter,
+        page: String(page),
+        pageSize: String(pageSize),
+      });
+      const result = await parse(
+        await request(staff(`/reports/visits?${params}`, role), {
+          signal,
+          authenticated: true,
+        }),
+        visitLogResponseSchema,
+      );
+      if (JSON.stringify(result.filter) !== JSON.stringify(filter))
+        throw new ApiError(502, "Filter log tidak sesuai. Coba lagi.");
+      return result;
+    },
+    exportVisitLog: async (filter, revision, role) => {
+      const { visitLogSnapshotSchema } = await import("./visit-log.ts");
+      const result = await parse(
+        await request(
+          staff(`/reports/visits/export?${reportFilterParams({ ...filter, revision })}`, role),
+          {
+            authenticated: true,
+          },
+        ),
+        visitLogSnapshotSchema,
+      );
+      if (
+        result.revision !== revision ||
+        JSON.stringify(result.filter) !== JSON.stringify(filter) ||
+        result.items.length !== result.summary.total
+      )
+        throw new ApiError(409, "Log telah berubah. Perbarui sebelum mengekspor.");
+      return result;
+    },
     catalogs: async (role, signal) => {
       if (development) return { officers, rooms };
       const { catalogsResponse } = await import("./wire.ts");
@@ -121,7 +159,7 @@ export function createRepository({
     summary: async (filter, role, signal) => {
       const { summaryResponseSchema } = await import("./reports.ts");
       const result = await parse(
-        await request(staff(`/reports/summary?${new URLSearchParams(filter)}`, role), {
+        await request(staff(`/reports/summary?${reportFilterParams(filter)}`, role), {
           signal,
           authenticated: true,
         }),
@@ -130,7 +168,7 @@ export function createRepository({
       if (
         result.filter.from !== filter.from ||
         result.filter.to !== filter.to ||
-        result.filter.status !== filter.status
+        JSON.stringify(result.filter.status) !== JSON.stringify(filter.status)
       )
         throw new ApiError(502, "Filter ringkasan tidak sesuai. Coba lagi.");
       return result;
@@ -139,7 +177,7 @@ export function createRepository({
       const { summaryExportSchema } = await import("./reports.ts");
       return parse(
         await request(
-          staff(`/reports/export?${new URLSearchParams({ ...filter, revision })}`, role),
+          staff(`/reports/export?${reportFilterParams({ ...filter, revision })}`, role),
           { authenticated: true },
         ),
         summaryExportSchema,

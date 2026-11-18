@@ -1,3 +1,4 @@
+import { FieldMessage } from "./field-message";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { ChevronDown, Clock3 } from "lucide-react";
 import {
@@ -85,8 +86,8 @@ export const TimePicker = forwardRef<TimePickerHandle, TimePickerProps>(
           </TimePickerFooter>
         </TimePickerContent>
       </ReuiTimePicker>
-      <small id={`${id}-hint`}>{t("Jam kerja 08.00–16.00 · WITA", "Office hours 08:00–16:00 · WITA")}</small>
-      {message && <span id={`${id}-error`} className="field-error" role="alert">{message}</span>}
+      <FieldMessage id={`${id}-hint`}>{t("Jam kerja 08.00–16.00 · WITA", "Office hours 08:00–16:00 · WITA")}</FieldMessage>
+      {message && <FieldMessage id={`${id}-error`} tone="error">{message}</FieldMessage>}
     </div>;
   },
 );

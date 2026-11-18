@@ -1,6 +1,6 @@
 # Employee directory and retained visitor navigation
 
-> Historical phase record. Current implementation/contracts and final evidence are consolidated in [the 2 November readiness review](PRODUCTION-READINESS-2026-11-02.md), [PLAN](../PLAN.md) and [VERIFICATION](../VERIFICATION.md). Earlier pending-work statements describe that phase.
+> Historical phase record. Current implementation/contracts and final evidence are consolidated in [the 2 November readiness review](PRODUCTION-READINESS-2026-11-02.md), [PLAN](../../docs/frontend/PLAN.md) and [VERIFICATION](../../docs/frontend/VERIFICATION.md). Earlier pending-work statements describe that phase.
 
 30 October user decisions: G10 adjusts the app; G11 adjusts the requirement to retain the existing visitor choice-card/Back navigation. Scope is frontendx; the new backend remains unbuilt.
 

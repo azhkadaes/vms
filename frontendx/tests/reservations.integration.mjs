@@ -3,13 +3,46 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 
 import { startPreview } from "./helpers/preview-server.mjs";
+import { sessionFor } from "../packages/data/src/domain.ts";
 let api, base;
 before(async () => {
-  api = await startPreview({ time: "2098-01-01T08:00:00+08:00" });
+  api = await startPreview({
+    time: "2098-01-01T08:00:00+08:00",
+    // Exercise conflicts across two resources with an explicitly authorized test actor.
+    session: (role) => ({ ...sessionFor(role), assignedOfficerIds: role === "PA" ? ["o2", "o3"] : [] }),
+  });
   base = api.base;
 });
 after(async () => api?.close());
 const protocol = encodeURIComponent("Protocol Officer");
+test("default PA sees only the assigned officer in lists and direct detail access", async () => {
+  const scopedApi = await startPreview();
+  try {
+    const send = async (path, input) => fetch(scopedApi.base + path, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+    const ids = [];
+    for (const officerId of ["o2", "o3"]) {
+      const response = await send("/bookings", {
+        officerId, date: "2099-08-20", time: "09:00", purpose: "PA scope check",
+        name: "Scope QA", organization: "QA Example", email: "scope@example.test",
+        phone: "081234567890", identityType: "KTP", visitors: ["Scope QA"],
+        ack: true, idempotencyKey: randomUUID(),
+      });
+      assert.equal(response.status, 201);
+      ids.push((await response.json()).id);
+    }
+    const response = await fetch(scopedApi.base + "/bookings?role=PA&officerId=o3");
+    const items = await response.json();
+    assert.ok(items.length > 0);
+    assert.ok(items.every((item) => item.officerId === "o2"));
+    assert.ok(items.some((item) => item.id === ids[0]));
+    assert.equal((await fetch(scopedApi.base + `/bookings/${ids[1]}?role=PA`)).status, 404);
+  } finally {
+    await scopedApi.close();
+  }
+});
 async function post(path, input) {
   const response = await fetch(base + path, {
     method: "POST",
@@ -45,11 +78,84 @@ function approve(booking, room = "Ruang Rapat Nusantara") {
     duration: 60,
   });
 }
+test("PA creation saves the chosen room and reserves the full duration", async () => {
+  const input = {
+    officerId: "o2",
+    date: "2098-08-15",
+    time: "09:00",
+    duration: 120,
+    room: "Ruang Rapat Nusantara",
+    purpose: "Verify custom visit duration",
+    name: "Duration QA",
+    organization: "QA Example",
+    email: "duration@example.test",
+    phone: "081234567890",
+    identityType: "KTP",
+    visitors: ["Duration QA"],
+  };
+  const save = (changes = {}) => post("/staff/bookings?role=PA", {
+    ...input, ...changes, idempotencyKey: randomUUID(),
+  });
+  const created = await save();
+  assert.equal(created.status, 201, JSON.stringify(created.data));
+  assert.equal(created.data.duration, 120);
+  const saved = await read(created.data.id);
+  assert.equal(saved.duration, 120);
+  assert.equal(saved.room, input.room);
+  const invalidRoom = await save({ room: "Ruangan tidak terdaftar" });
+  assert.equal(invalidRoom.status, 422);
+  assert.ok(invalidRoom.data.fieldErrors.room);
+  const protocolBooking = (time) => post(`/staff/bookings?role=${protocol}`, {
+    visitKind: "restricted",
+    date: input.date,
+    time,
+    room: input.room,
+    idempotencyKey: randomUUID(),
+  });
+  assert.equal((await protocolBooking("10:30")).status, 409);
+  const restricted = await protocolBooking("12:00");
+  assert.equal(restricted.status, 201);
+  assert.equal((await read(restricted.data.id, "Protocol Officer")).room, input.room);
+  assert.equal((await save({ time: "10:30", duration: 30 })).status, 409);
+  assert.equal((await save({ time: "11:00", duration: 30 })).status, 201);
+  for (const duration of [14, 241, 30.5]) {
+    const invalid = await save({ duration });
+    assert.equal(invalid.status, 422);
+    assert.ok(invalid.data.fieldErrors.duration);
+  }
+});
 async function read(id, role = "PA") {
   const response = await fetch(`${base}/bookings/${id}?role=${encodeURIComponent(role)}`);
   assert.equal(response.status, 200);
   return response.json();
 }
+
+test("assigned PA can edit all approved visit fields and internal notes without reapproval", async () => {
+  const pending = await create("2098-08-16", "09:00");
+  const approved = await approve(pending);
+  assert.equal(approved.status, 200);
+  const changes = {
+    date: "2098-08-17",
+    time: "11:00",
+    duration: 90,
+    room: "Ruang Rapat Meranti",
+    visitorInstructions: "Datang melalui lobi utama.",
+    coordinationNote: "Siapkan ruang untuk koordinasi internal.",
+    reason: "Penyesuaian agenda pejabat tujuan.",
+  };
+  const saved = await post(`/bookings/${pending.id}/reschedule?role=PA`, {
+    version: approved.data.version,
+    ...changes,
+  });
+  assert.equal(saved.status, 200, JSON.stringify(saved.data));
+  const persisted = await read(pending.id);
+  assert.equal(persisted.status, "approved");
+  assert.equal(persisted.version, approved.data.version + 1);
+  for (const key of ["date", "time", "duration", "room", "visitorInstructions", "coordinationNote"])
+    assert.equal(persisted[key], changes[key]);
+  const reception = await fetch(`${base}/bookings/${pending.id}?role=Receptionist`);
+  assert.equal(reception.status, 404);
+});
 
 test("Pending requests coexist; approval reserves only matching officer or room and leaves conflicts unchanged", async () => {
   const date = "2098-06-11";

@@ -33,11 +33,15 @@ for (const [clock, allowed, display] of [
     assert.equal(timing.displayStatus, display);
     assert.equal(can(sessionFor("Receptionist"), visit, "checkin", time(clock)), allowed);
   });
-test("Missed is derived without changing stored status and cannot be rescheduled", () => {
+test("Missed visits can be rescheduled by authorized staff for seven days after the scheduled end", () => {
   const missed = { ...visit, timing: getVisitTiming(visit, time("11:00:00.001")) };
   assert.equal(visit.status, "approved");
   assert.equal(statuses.length, 6);
-  assert.equal(can(sessionFor("PA"), missed, "reschedule"), false);
+  assert.equal(can(sessionFor("PA"), missed, "reschedule"), true);
+  assert.equal(can(sessionFor("Receptionist"), missed, "reschedule"), false);
+  const deadline = Date.parse("2099-08-26T11:00:00.000+08:00");
+  assert.equal(can(sessionFor("PA"), visit, "reschedule", deadline), true);
+  assert.equal(can(sessionFor("PA"), visit, "reschedule", deadline + 1), false);
   assert.deepEqual(selectBookings([missed], "", "approved", "time"), []);
   assert.equal(selectBookings([missed], "", "missed", "time").length, 1);
 });

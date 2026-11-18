@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { preview } from "./config.ts";
 import type { BookingAction } from "./contracts.ts";
-import { officers, rooms, scope, type StaffBooking } from "./domain.ts";
+import { can, officers, rooms, scope, type StaffBooking } from "./domain.ts";
 import { ApiError } from "./errors.ts";
 import {
   readStaffBooking,
@@ -10,6 +10,7 @@ import {
   type StaffReadModel,
 } from "./read-model.ts";
 import type { SummaryFilter } from "./reports.ts";
+import { canReadVisitLog, type VisitLogFilter } from "./visit-log.ts";
 import { repository } from "./repositories.ts";
 import { sessionKey } from "./session-contract.ts";
 import { useSession } from "./session.tsx";
@@ -63,8 +64,13 @@ export function useBookingDetail(id: string | null) {
   const { session } = useSession();
   return useQuery({
     queryKey: ["bookings", sessionKey(session), "detail", id],
-    queryFn: ({ signal }) => readStaffBooking(id!, signal),
-    enabled: !preview && !!id && !!session,
+    queryFn: async ({ signal }) => {
+      const booking = await readStaffBooking(id!, signal);
+      if (!session || !scope([booking], session).length)
+        throw new ApiError(404, "Kunjungan tidak tersedia.");
+      return booking;
+    },
+    enabled: !preview && !!id && !!session && session.role !== "Receptionist",
     refetchOnWindowFocus: "always",
   });
 }
@@ -74,6 +80,17 @@ export function useVisitSummary(filter: SummaryFilter | null) {
     queryKey: ["visit-summary", sessionKey(session), filter],
     queryFn: ({ signal }) => repository.summary(filter!, session!.role, signal),
     enabled: !!filter && !!session?.permissions.includes("reports"),
+    refetchOnWindowFocus: "always",
+    retry: (failures, error) =>
+      failures < 1 && !(error instanceof ApiError && [401, 403, 422].includes(error.status)),
+  });
+}
+export function useVisitLog(filter: VisitLogFilter | null, page: number, pageSize: number) {
+  const { session } = useSession();
+  return useQuery({
+    queryKey: ["visit-log", sessionKey(session), filter, page, pageSize],
+    queryFn: ({ signal }) => repository.visitLog(filter!, page, pageSize, session!.role, signal),
+    enabled: !!filter && !!session && canReadVisitLog(session),
     refetchOnWindowFocus: "always",
     retry: (failures, error) =>
       failures < 1 && !(error instanceof ApiError && [401, 403, 422].includes(error.status)),
@@ -114,6 +131,8 @@ export function useBookingAction() {
       values?: Record<string, unknown>;
     }) => {
       if (!session) throw new ApiError(401, "Sesi berakhir. Silakan masuk kembali.");
+      if (!can(session, booking, action))
+        throw new ApiError(403, "Tindakan tidak diizinkan untuk kunjungan ini.");
       return repository.action(
         booking.id,
         action,

@@ -3,6 +3,7 @@ import {
   useUnsavedChanges,
   ApiError,
   canCreateAppointment,
+  notaDinasType,
   phoneDigits,
   preview,
   today,
@@ -10,26 +11,33 @@ import {
   useCreateAppointment,
   useSession,
   validateND,
+  validateVisitorPhoto,
+  visitorPhotoTypes,
   type StaffBooking,
 } from "@vms/data";
 import VisitNotesFields from "./VisitNotesFields";
+import { AppointmentRoomField } from "./AppointmentRoomField";
 import { uploadAttachment } from "@vms/data/attachments";
 import { staffAppointmentSchemaFor, type StaffAppointmentDraft } from "@vms/data/validation";
 import {
+  Select,
   Button,
   EmailInput,
+  FieldMessage,
   Empty,
   ErrorNotice,
   Modal,
   RequiredFieldsHint,
   RequiredMark,
+  UploadField,
+  FormSection,
 } from "@vms/ui";
 import { DatePicker } from "@vms/ui/date-picker";
 import { ReferenceDataNotice } from "@vms/ui/reference-data-notice";
 import { TimePicker } from "@vms/ui/time-picker";
 import { toast } from "@vms/ui/toast";
 import { Plus, Trash2 } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useFieldArray, useForm, type FieldPath } from "react-hook-form";
 
 export default function CreateAppointment({
@@ -51,6 +59,8 @@ export default function CreateAppointment({
   const mutation = useCreateAppointment();
   const [error, setError] = useState<unknown>();
   const [document, setDocument] = useState<File | null>(null);
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoError, setPhotoError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const busy = uploading || mutation.isPending;
   const [fileError, setFileError] = useState<string | null>(null);
@@ -69,6 +79,8 @@ export default function CreateAppointment({
       officerId: allowed.length === 1 ? allowed[0].id : "",
       date: "",
       time: "",
+      duration: 60,
+      room: "",
       purpose: "",
       name: "",
       organization: "",
@@ -80,9 +92,18 @@ export default function CreateAppointment({
       coordinationNote: "",
     },
   });
+  const assignedDestination =
+    session?.role === "PA" && allowed.length === 1 ? allowed[0] : undefined;
+  const soleDestinationId = allowed.length === 1 ? allowed[0].id : undefined;
+  const { getValues, setValue } = f;
+  useEffect(() => {
+    if (soleDestinationId && getValues("officerId") !== soleDestinationId) {
+      setValue("officerId", soleDestinationId, { shouldValidate: true });
+    }
+  }, [soleDestinationId, getValues, setValue]);
   const roster = useFieldArray({ control: f.control, name: "visitors" });
   const { isDirty } = f.formState;
-  useUnsavedChanges(isDirty || !!document, busy);
+  useUnsavedChanges(isDirty || !!document || !!photo, busy);
   const stepNames = ["Kunjungan", "Pengunjung", "Periksa"];
   const values = f.getValues();
   const reviewDate = values.date
@@ -113,16 +134,23 @@ export default function CreateAppointment({
             "officerId",
             "date",
             "time",
+            "duration",
+            "room",
             "purpose",
             "visitorInstructions",
             "coordinationNote",
           ] as const)
         : (["name", "organization", "email", "phone", "identityType", "visitors"] as const);
-    if (step === 1 && fileError) {
-      window.document.getElementById("appointment-document")?.focus();
-      return;
-    }
     if (await f.trigger([...fields], { shouldFocus: true })) {
+      if (step === 0 && fileError) {
+        window.document.getElementById("appointment-document")?.focus();
+        return;
+      }
+      if (step === 1 && (!photo || photoError)) {
+        setPhotoError(photoError || "Unggah foto wajah perwakilan.");
+        window.document.getElementById("appointment-photo")?.focus();
+        return;
+      }
       const next = editingReview.current ? 2 : step + 1;
       editingReview.current = false;
       goToStep(next);
@@ -130,15 +158,16 @@ export default function CreateAppointment({
   }
   function close() {
     if (submitLock.current) return;
-    if (isDirty || document) {
+    if (isDirty || document || photo) {
       setDiscard(true);
       requestAnimationFrame(() => resumeButton.current?.focus());
     } else onClose();
   }
   async function submit(values: StaffAppointmentDraft) {
     if (submitLock.current) return;
-    if (fileError) {
-      window.document.getElementById("appointment-document")?.focus();
+    if (fileError || photoError || !photo) {
+      if (!fileError) setPhotoError(photoError || "Unggah foto wajah perwakilan.");
+      goToStep(fileError ? 0 : 1, fileError ? "appointment-document" : "appointment-photo");
       return;
     }
     if (!session || !canCreateAppointment(session, values.officerId, "standard", officers)) {
@@ -158,6 +187,8 @@ export default function CreateAppointment({
         visitors: [values.name, ...values.visitors.map((v) => v.name)],
         ndName: document?.name,
         attachmentToken: await uploadAttachment(document, "staff"),
+        visitorPhotoName: photo.name,
+        visitorPhotoToken: await uploadAttachment(photo, "staff", "visitorPhoto"),
       };
       const payload = JSON.stringify(input);
       if (attempt.current?.payload !== payload)
@@ -169,20 +200,25 @@ export default function CreateAppointment({
       onCreated(created);
     } catch (err) {
       setError(err);
-      if (err instanceof ApiError && err.fieldErrors?.ndName?.[0]) {
-        setFileError(err.fieldErrors.ndName[0]);
-        setStep(1);
-        requestAnimationFrame(() =>
-          window.document.getElementById("appointment-document")?.focus(),
-        );
+      if (err instanceof ApiError) {
+        const documentIssue = err.fieldErrors?.ndName?.[0] || err.fieldErrors?.attachmentToken?.[0];
+        const photoIssue = err.fieldErrors?.visitorPhotoName?.[0] || err.fieldErrors?.visitorPhotoToken?.[0];
+        if (documentIssue) setFileError(documentIssue);
+        if (photoIssue) setPhotoError(photoIssue);
+        if (documentIssue || photoIssue) {
+          editingReview.current = true;
+          goToStep(documentIssue ? 0 : 1, documentIssue ? "appointment-document" : "appointment-photo");
+        }
       }
       if (err instanceof ApiError && err.status === 409)
-        toast("Waktu janji temu sudah terisi. Pilih waktu lain.", "error");
+        toast("Jadwal ruangan atau pejabat bertabrakan. Pilih ruangan atau waktu lain.", "error");
       if (err instanceof ApiError && err.fieldErrors) {
         const keys = [
           "officerId",
           "date",
           "time",
+          "duration",
+          "room",
           "purpose",
           "name",
           "organization",
@@ -198,7 +234,8 @@ export default function CreateAppointment({
               type: "server",
               message: err.fieldErrors[key][0],
             });
-        if (first && first !== "visitors") requestAnimationFrame(() => f.setFocus(first));
+        if (first === "room") editSection(0, "appointment-room");
+        else if (first && first !== "visitors") requestAnimationFrame(() => f.setFocus(first));
       }
     } finally {
       submitLock.current = false;
@@ -309,35 +346,53 @@ export default function CreateAppointment({
           </nav>
           {step < 2 && <RequiredFieldsHint />}
           <div hidden={step !== 0}>
-            <fieldset disabled={busy}>
-              <legend>Detail kunjungan</legend>
+            <FormSection disabled={busy} legend="Detail kunjungan">
               <div className="form-grid">
                 <div className="field span-2">
                   <label htmlFor="appointment-officerId">
                     Pejabat atau unit tujuan <RequiredMark />
                   </label>
-                  <select
-                    {...f.register("officerId")}
-                    id="appointment-officerId"
-                    required
-                    aria-invalid={!!f.formState.errors.officerId}
-                    aria-describedby={
-                      f.formState.errors.officerId
-                        ? "appointment-officerId-error"
-                        : "appointment-scope-hint"
-                    }
-                  >
-                    <option value="">Pilih tujuan kunjungan</option>
-                    {allowed.map((o) => (
-                      <option key={o.id} value={o.id}>
-                        {o.name}
-                        {o.vip ? " · VIP" : ""}
-                      </option>
-                    ))}
-                  </select>
+                  {assignedDestination ? (
+                    <>
+                      <input type="hidden" {...f.register("officerId")} />
+                      <input
+                        id="appointment-officerId"
+                        value={assignedDestination.name}
+                        readOnly
+                        aria-invalid={!!f.formState.errors.officerId}
+                        aria-describedby={
+                          f.formState.errors.officerId
+                            ? "appointment-officerId-error"
+                            : "appointment-scope-hint"
+                        }
+                      />
+                    </>
+                  ) : (
+                    <Select
+                      {...f.register("officerId")}
+                      id="appointment-officerId"
+                      required
+                      aria-invalid={!!f.formState.errors.officerId}
+                      aria-describedby={
+                        f.formState.errors.officerId
+                          ? "appointment-officerId-error"
+                          : "appointment-scope-hint"
+                      }
+                    >
+                      <option value="">Pilih tujuan kunjungan</option>
+                      {allowed.map((o) => (
+                        <option key={o.id} value={o.id}>
+                          {o.name}
+                          {o.vip ? " · VIP" : ""}
+                        </option>
+                      ))}
+                    </Select>
+                  )}
                   <small id="appointment-scope-hint">
                     {session?.role === "PA"
-                      ? "Tujuan sesuai penugasan PA Anda."
+                      ? assignedDestination
+                        ? "Tujuan otomatis sesuai pejabat yang ditugaskan kepada Anda."
+                        : "Tujuan sesuai penugasan PA Anda."
                       : "Kunjungan VIP dalam kewenangan Protokol."}
                   </small>
                   {f.formState.errors.officerId && (
@@ -377,6 +432,50 @@ export default function CreateAppointment({
                     />
                   )}
                 />
+                <UploadField
+                  id="appointment-document"
+                  label="Nota Dinas atau Permohonan Kunjungan Resmi (opsional)"
+                  accept={notaDinasType}
+                  file={document}
+                  error={fileError}
+                  hint={`PDF · Maksimal 5 MB.${preview ? " Pratinjau hanya menyimpan nama dokumen." : ""}`}
+                  choose="Pilih dokumen"
+                  remove="Hapus dokumen"
+                  onFileChange={(file) => {
+                    const message = validateND(file);
+                    setFileError(message);
+                    setDocument(message ? null : file);
+                  }}
+                />
+                <div className="field">
+                  <label htmlFor="appointment-duration">
+                    Durasi kunjungan (menit) <RequiredMark />
+                  </label>
+                  <input
+                    {...f.register("duration", { valueAsNumber: true })}
+                    id="appointment-duration"
+                    type="number"
+                    min={15}
+                    max={240}
+                    step={1}
+                    required
+                    aria-invalid={!!f.formState.errors.duration}
+                    aria-describedby={
+                      f.formState.errors.duration ? "appointment-duration-error" : undefined
+                    }
+                  />
+                  {f.formState.errors.duration && (
+                    <span id="appointment-duration-error" role="alert" className="field-error">
+                      {f.formState.errors.duration.message}
+                    </span>
+                  )}
+                </div>
+                <AppointmentRoomField
+                  id="appointment-room"
+                  rooms={catalogs.data?.rooms ?? []}
+                  registration={f.register("room")}
+                  error={f.formState.errors.room?.message}
+                />
                 <div className="field span-2">
                   <label htmlFor="appointment-purpose">
                     Keperluan kunjungan <RequiredMark />
@@ -405,14 +504,10 @@ export default function CreateAppointment({
                 visitorError={f.formState.errors.visitorInstructions?.message}
                 coordinationError={f.formState.errors.coordinationNote?.message}
               />
-              <p className="muted appointment-duration-hint">
-                Durasi dan ruangan ditetapkan saat persetujuan. Durasi awal 60 menit.
-              </p>
-            </fieldset>
+            </FormSection>
           </div>
           <div hidden={step !== 1}>
-            <fieldset disabled={busy} className="section-gap">
-              <legend>Data pengunjung</legend>
+            <FormSection disabled={busy} legend="Data pengunjung">
               <div className="form-grid">
                 {field("name", "Nama lengkap perwakilan")}
                 {field("organization", "Instansi atau asal")}
@@ -422,7 +517,7 @@ export default function CreateAppointment({
                   render={({ field: email, fieldState }) => (
                     <div className="field span-2">
                       <label htmlFor="appointment-email">
-                        Email pengaju <RequiredMark />
+                        Email pengunjung <RequiredMark />
                       </label>
                       <EmailInput
                         id="appointment-email"
@@ -439,9 +534,9 @@ export default function CreateAppointment({
                         aria-describedby={fieldState.error ? "appointment-email-error" : undefined}
                       />
                       {fieldState.error && (
-                        <span id="appointment-email-error" role="alert" className="field-error">
+                        <FieldMessage id="appointment-email-error" tone="error">
                           {fieldState.error.message}
-                        </span>
+                        </FieldMessage>
                       )}
                     </div>
                   )}
@@ -451,7 +546,7 @@ export default function CreateAppointment({
                   <label htmlFor="appointment-identityType">
                     Identitas yang dibawa <RequiredMark />
                   </label>
-                  <select
+                  <Select
                     id="appointment-identityType"
                     required
                     {...f.register("identityType")}
@@ -461,100 +556,93 @@ export default function CreateAppointment({
                     <option>KTP</option>
                     <option>Paspor</option>
                     <option>SIM</option>
-                  </select>
+                  </Select>
+                  <FieldMessage id="appointment-identity-hint">
+                    Identitas asli diperiksa saat kedatangan. Nomor dan foto identitas tidak diminta.
+                  </FieldMessage>
                 </div>
               </div>
-              <small id="appointment-identity-hint" className="muted">
-                Identitas asli diperiksa saat kedatangan. Nomor dan foto identitas tidak diminta.
-              </small>
-            </fieldset>
-            <fieldset disabled={busy} className="section-gap">
-              <legend>Rombongan pengunjung</legend>
-              <p className="muted">
-                {roster.fields.length + 1} orang termasuk perwakilan. Maksimal 20 orang.
-              </p>
-              {roster.fields.map((person, i) => {
-                const key = `visitors.${i}.name` as FieldPath<StaffAppointmentDraft>;
-                const issue = f.formState.errors.visitors?.[i]?.name;
-                return (
-                  <div className="appointment-roster-row" key={person.id}>
-                    <div className="field">
-                      <label htmlFor={`appointment-visitor-${i}`}>
-                        Nama pengunjung {i + 2} <RequiredMark />
-                      </label>
-                      <input
-                        {...f.register(key)}
-                        id={`appointment-visitor-${i}`}
-                        maxLength={120}
-                        required
-                        aria-invalid={!!issue}
-                        aria-describedby={issue ? `appointment-visitor-${i}-error` : undefined}
-                      />
-                      {issue && (
-                        <span
-                          id={`appointment-visitor-${i}-error`}
-                          className="field-error"
-                          role="alert"
-                        >
-                          {issue.message}
-                        </span>
-                      )}
+              <div className="form-group-gap">
+                <UploadField
+                  id="appointment-photo"
+                  label="Foto wajah perwakilan"
+                  required
+                  accept={visitorPhotoTypes.join(",")}
+                  file={photo}
+                  error={photoError}
+                  hint="JPEG, PNG · Maksimal 5 MB"
+                  choose="Pilih foto wajah"
+                  remove="Hapus foto"
+                  photoPreviewLabel="Pratinjau foto wajah perwakilan"
+                  onFileChange={(file) => {
+                    const message = validateVisitorPhoto(file);
+                    setPhotoError(message);
+                    setPhoto(message ? null : file);
+                  }}
+                />
+              </div>
+            </FormSection>
+            <FormSection disabled={busy} className="form-group-gap" legend="Rombongan pengunjung">
+              <div className="form-stack">
+                <small className="form-help">
+                  {roster.fields.length + 1} orang termasuk perwakilan. Maksimal 20 orang.
+                </small>
+                {roster.fields.map((person, i) => {
+                  const key = `visitors.${i}.name` as FieldPath<StaffAppointmentDraft>;
+                  const issue = f.formState.errors.visitors?.[i]?.name;
+                  return (
+                    <div className="form-roster-row" key={person.id}>
+                      <div className="field">
+                        <label htmlFor={`appointment-visitor-${i}`}>
+                          Nama pengunjung {i + 2} <RequiredMark />
+                        </label>
+                        <input
+                          {...f.register(key)}
+                          id={`appointment-visitor-${i}`}
+                          maxLength={120}
+                          required
+                          aria-invalid={!!issue}
+                          aria-describedby={issue ? `appointment-visitor-${i}-error` : undefined}
+                        />
+                        {issue && (
+                          <span
+                            id={`appointment-visitor-${i}-error`}
+                            className="field-error"
+                            role="alert"
+                          >
+                            {issue.message}
+                          </span>
+                        )}
+                      </div>
+                      <Button
+                        type="button"
+                        kind="ghost"
+                        aria-label={`Hapus pengunjung ${i + 2}`}
+                        onClick={() => roster.remove(i)}
+                      >
+                        <Trash2 size={18} />
+                      </Button>
                     </div>
-                    <Button
-                      type="button"
-                      kind="ghost"
-                      aria-label={`Hapus pengunjung ${i + 2}`}
-                      onClick={() => roster.remove(i)}
-                    >
-                      <Trash2 size={18} />
-                    </Button>
-                  </div>
-                );
-              })}
-              {f.formState.errors.visitors?.message && (
-                <span className="field-error" role="alert">
-                  {f.formState.errors.visitors.message}
-                </span>
-              )}
-              <Button
-                kind="secondary"
-                type="button"
-                onClick={() => {
-                  roster.append({ name: "" });
-                }}
-                disabled={roster.fields.length >= 19}
-              >
-                <Plus size={16} />
-                Tambah pengunjung
-              </Button>
-            </fieldset>
-            <div className="field section-gap">
-              <label htmlFor="appointment-document">
-                Nota Dinas atau Permohonan Kunjungan Resmi <span className="muted">(opsional)</span>
-              </label>
-              <input
-                id="appointment-document"
-                type="file"
-                accept="application/pdf,image/jpeg,image/png"
-                disabled={busy}
-                aria-invalid={!!fileError}
-                aria-describedby={`appointment-document-hint${fileError ? " appointment-document-error" : ""}`}
-                onChange={(event) => {
-                  const file = event.target.files?.[0] || null;
-                  const message = validateND(file);
-                  setFileError(message);
-                  setDocument(message ? null : file);
-                }}
-              />
-              <small id="appointment-document-hint">
-                PDF, JPEG, PNG · Maksimal 5 MB.{preview && " Preview hanya menyimpan nama berkas."}
-              </small>
-              {fileError && (
-                <span id="appointment-document-error" className="field-error" role="alert">
-                  {fileError}
-                </span>
-              )}
-            </div>
+                  );
+                })}
+                {f.formState.errors.visitors?.message && (
+                  <span className="field-error" role="alert">
+                    {f.formState.errors.visitors.message}
+                  </span>
+                )}
+                <Button
+                  kind="secondary"
+                  type="button"
+                  onClick={() => {
+                    roster.append({ name: "" });
+                  }}
+                  disabled={roster.fields.length >= 19}
+                >
+                  <Plus size={16} />
+                  Tambah pengunjung
+                </Button>
+              </div>
+            </FormSection>
           </div>
           {step === 2 && (
             <div className="appointment-review">
@@ -589,6 +677,14 @@ export default function CreateAppointment({
                   <div>
                     <dt>Waktu mulai</dt>
                     <dd>{values.time} WITA</dd>
+                  </div>
+                  <div>
+                    <dt>Durasi kunjungan</dt>
+                    <dd>{values.duration} menit</dd>
+                  </div>
+                  <div>
+                    <dt>Ruangan kunjungan</dt>
+                    <dd>{values.room || "Belum ditetapkan"}</dd>
                   </div>
                   <div className="appointment-review-wide">
                     <dt>Keperluan kunjungan</dt>
@@ -634,7 +730,7 @@ export default function CreateAppointment({
                     <dd>{values.organization}</dd>
                   </div>
                   <div className="appointment-review-wide">
-                    <dt>Email pengaju</dt>
+                    <dt>Email pengunjung</dt>
                     <dd>{values.email}</dd>
                   </div>
                   <div>
@@ -644,6 +740,10 @@ export default function CreateAppointment({
                   <div>
                     <dt>Identitas yang dibawa</dt>
                     <dd>{values.identityType}</dd>
+                  </div>
+                  <div className="appointment-review-wide">
+                    <dt>Foto wajah perwakilan</dt>
+                    <dd>{photo?.name || "Tidak dilampirkan."}</dd>
                   </div>
                 </dl>
               </section>
@@ -681,7 +781,7 @@ export default function CreateAppointment({
                     type="button"
                     kind="ghost"
                     disabled={busy}
-                    onClick={() => editSection(1, "appointment-document")}
+                    onClick={() => editSection(0, "appointment-document")}
                     aria-label="Ubah dokumen pendukung"
                   >
                     Ubah
@@ -716,15 +816,7 @@ export default function CreateAppointment({
               {step === 0 ? "Batal" : "Kembali"}
             </Button>
             <Button
-              type={step === 2 ? "submit" : "button"}
-              onClick={
-                step === 2
-                  ? undefined
-                  : (event) => {
-                      event.preventDefault();
-                      void nextStep();
-                    }
-              }
+              type="submit"
               disabled={busy}
             >
               {busy

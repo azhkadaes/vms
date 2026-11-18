@@ -1,6 +1,6 @@
 # Staff visit-data refresh
 
-> Historical phase record. Current implementation/contracts and final evidence are consolidated in [the 2 November readiness review](PRODUCTION-READINESS-2026-11-02.md), [PLAN](../PLAN.md) and [VERIFICATION](../VERIFICATION.md). Earlier pending-work statements describe that phase.
+> Historical phase record. Current implementation/contracts and final evidence are consolidated in [the 2 November readiness review](PRODUCTION-READINESS-2026-11-02.md), [PLAN](../../docs/frontend/PLAN.md) and [VERIFICATION](../../docs/frontend/VERIFICATION.md). Earlier pending-work statements describe that phase.
 
 User decision: 30 October 2026, Asia/Makassar. Adjust the app to BR-DAT-07: 30-second staff refresh, 15-second active Receptionist refresh, manual refresh and refresh on return/reconnection. Other audit gaps remain decision items.
 
