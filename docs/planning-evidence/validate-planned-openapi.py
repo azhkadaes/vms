@@ -4,6 +4,8 @@ import json
 import hashlib
 from pathlib import Path
 import re
+import subprocess
+import sys
 
 from jsonschema import Draft202012Validator, FormatChecker, ValidationError, validators
 
@@ -11,6 +13,9 @@ from jsonschema import Draft202012Validator, FormatChecker, ValidationError, val
 DOCS = Path(__file__).resolve().parents[1]
 SPEC_PATH = DOCS / "BACKEND-OPENAPI-2026-11-12.json"
 spec = json.loads(SPEC_PATH.read_text(encoding="utf-8"))
+if "x-phase1" in spec:
+    print("Phase 1 supersedes the historical 38-operation lifecycle validator; running the current contract gate.", flush=True)
+    raise SystemExit(subprocess.run([sys.executable, str(DOCS / "contracts/check.py"), *sys.argv[1:]], cwd=DOCS.parent).returncode)
 official = json.loads((DOCS / "planning-evidence/openapi-3.1-schema-2025-09-15.json").read_text(encoding="utf-8"))
 Draft202012Validator(official).validate(spec)
 schemas = spec["components"]["schemas"]

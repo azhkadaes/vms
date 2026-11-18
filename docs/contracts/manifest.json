@@ -1,0 +1,3813 @@
+{
+  "version": 3,
+  "reviewedAt": "2026-11-13",
+  "reference": "C:/Users/ASUS/go/src/github.com/thdoikn/sihp-be",
+  "operations": [
+    {
+      "id": "staffLogin",
+      "number": 1,
+      "method": "POST",
+      "path": "/staff/auth/login",
+      "implemented": false,
+      "module": "auth",
+      "handler": "Login",
+      "usecase": "AuthUsecase.Login",
+      "requestDto": "Login",
+      "responseDto": "AuthResult",
+      "repositories": [
+        "AuthRepository.FindCredentialByEmail",
+        "AuthRepository.GetCurrentAuthority"
+      ],
+      "features": [
+        "F11",
+        "F46"
+      ],
+      "gaps": [
+        "BE-PHASE1-AUTH",
+        "BE-AUTH-TESTS",
+        "FE-AUTH",
+        "BE-ERRORS"
+      ],
+      "authorization": "Anonymous JSON login; no staff token, authentication cookie, signed CSRF token or HTML initialization. Generic invalid/inactive-account credentials; basic selected login limits.",
+      "rules": "Normalize email and verify the existing encoded bcrypt hash; never require the new-password minimum on existing-password verification. Reject missing/multiple/unsupported role assignments rather than picking or unioning roles. Derive fixed role permissions and current PA assignments. Issue signed JWT with sub/iat/exp/iss/aud and configured finite lifetime; return AuthResult without Set-Cookie or a session row. Keep 5 failed attempts/account/15m and 100 requests/IP/15m admission; invalid credential errors are generic.",
+      "serializer": "AuthSerializer.ToAuthResult",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/main.tsx",
+          "frontendx/packages/data/src/http.ts"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Staff email/password login form"
+    },
+    {
+      "id": "staffMe",
+      "number": 2,
+      "method": "GET",
+      "path": "/staff/auth/me",
+      "implemented": false,
+      "module": "auth",
+      "handler": "Me",
+      "usecase": "AuthUsecase.GetCurrentUser",
+      "requestDto": null,
+      "responseDto": "CurrentUser",
+      "repositories": [
+        "AuthRepository.GetCurrentAuthority"
+      ],
+      "features": [
+        "F12",
+        "F44",
+        "F46"
+      ],
+      "gaps": [
+        "BE-PHASE1-AUTH",
+        "BE-AUTH-TESTS",
+        "FE-AUTH",
+        "BE-ERRORS"
+      ],
+      "authorization": "Bearer JWT plus current active employee, exactly one database-assigned role and active PA assignments. No stored session, role selection or password gate.",
+      "rules": "Validate JWT signature, configured algorithm/key/issuer/audience, iat/exp and canonical employee subject; load current active account and exactly one database role. Derive fixed permissions and current PA assignments; return CurrentUser. Database role/deactivation changes take effect on the next protected request. No token refresh, renewal, role revision, cookie or expiry extension; dependency failure is not an empty/successful user.",
+      "serializer": "AuthSerializer.ToCurrentUser",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/packages/data/src/session.tsx",
+          "frontendx/apps/admin/src/main.tsx",
+          "frontendx/packages/data/src/http.ts"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Current user, navigation and fixed-role access checks"
+    },
+    {
+      "id": "publicCatalogs",
+      "number": 3,
+      "method": "GET",
+      "path": "/public/catalogs",
+      "implemented": true,
+      "module": "catalog",
+      "handler": "PublicCatalogs",
+      "usecase": "CatalogUsecase.GetPublicCatalogs",
+      "requestDto": null,
+      "responseDto": "PublicCatalog",
+      "repositories": [
+        "CatalogRepository.GetPublicCatalogs"
+      ],
+      "features": [
+        "F01",
+        "F03",
+        "F48"
+      ],
+      "gaps": [
+        "FE-CATALOG",
+        "BE-ERRORS"
+      ],
+      "authorization": "Anonymous; active visitor-safe officials/rooms and published notice only; overall public120/min/trusted IP.",
+      "rules": "One active officials+rooms+notice snapshot; absent notice omitted. Attachments false until verified capability enabled. No staff permission/assignment fields.",
+      "serializer": "CatalogSerializer.ToPublicCatalog",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/visitor/src/pages/Booking.tsx",
+          "frontendx/apps/visitor/src/features/PrivacyNotice.tsx",
+          "frontendx/apps/visitor/src/main.tsx"
+        ],
+        "source": "backend/internal/handler/catalog_handler.go",
+        "status": "Phase 1 target; source registered with reviewed gaps"
+      },
+      "frontendSummary": "Registration destination dropdown and bilingual privacy dialog"
+    },
+    {
+      "id": "staffCatalogs",
+      "number": 4,
+      "method": "GET",
+      "path": "/staff/catalogs",
+      "implemented": false,
+      "module": "catalog",
+      "handler": "StaffCatalogs",
+      "usecase": "CatalogUsecase.GetStaffCatalogs",
+      "requestDto": null,
+      "responseDto": "PublicCatalog",
+      "repositories": [
+        "CatalogRepository.GetStaffCatalogs"
+      ],
+      "features": [
+        "F21",
+        "F22",
+        "F23",
+        "F24",
+        "F26"
+      ],
+      "gaps": [
+        "BE-ADMIN",
+        "BE-VISITS",
+        "FE-PENDING",
+        "FE-ROOM",
+        "FE-UPLOAD",
+        "BE-PHASE1-AUTH"
+      ],
+      "authorization": "Current Bearer identity and fixed role scope; safe official/room catalog only. Employee role/assignment editors are deferred; no credentials or private employee directory in catalogs.",
+      "rules": "Reuse one Catalogs request for staff official and room selectors. Preserve stable IDs and authorized retained selections needed by existing visits; no new role-policy or assignment-editor request. Consistent directory snapshot; no invented truncation.",
+      "serializer": "CatalogSerializer.ToStaffCatalog",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/features/CreateAppointment.tsx",
+          "frontendx/apps/admin/src/features/RestrictedAppointment.tsx",
+          "frontendx/apps/admin/src/features/BookingDetail.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Staff official/room selectors and PA assignment checkboxes"
+    },
+    {
+      "id": "publicCreateBooking",
+      "number": 5,
+      "method": "POST",
+      "path": "/public/bookings",
+      "implemented": false,
+      "module": "visit",
+      "handler": "PublicCreate",
+      "usecase": "VisitUsecase.CreatePublicBooking",
+      "requestDto": "PublicCreate",
+      "responseDto": "PublicBooking",
+      "repositories": [
+        "VisitRepository.Transaction",
+        "VisitTransaction.ResolveSubmission",
+        "VisitTransaction.CreateVisit",
+        "VisitTransaction.AppendAudit",
+        "VisitTransaction.EnqueueNotifications"
+      ],
+      "features": [
+        "F02",
+        "F08",
+        "F46"
+      ],
+      "gaps": [
+        "BE-VISITS",
+        "FE-AUTH",
+        "FE-BOUNDS",
+        "FE-UPLOAD"
+      ],
+      "authorization": "Anonymous standard-only creation; active official and published notice association checked at commit; shared request30/min and new committed30/hour/trusted IP plus public ceiling.",
+      "rules": "Require representative=visitors[0],1-20 names, ack=true. Resolve committed replay before current mutable privacy validation. Pending, duration60, no room/reservation. Persist visitor/detail/visit/roster, audit, submission outcome and logical notification together;201 new/200 replay. Upload optional.",
+      "serializer": "VisitSerializer.ToPublicBooking",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/visitor/src/pages/Booking.tsx",
+          "frontendx/apps/visitor/src/features/VisitTicket.tsx",
+          "frontendx/packages/data/src/http.ts"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Public three-step submission and receipt card"
+    },
+    {
+      "id": "resolveSubmission",
+      "number": 6,
+      "method": "POST",
+      "path": "/public/submissions/resolve",
+      "implemented": false,
+      "module": "visit",
+      "handler": "ResolveSubmission",
+      "usecase": "VisitUsecase.ResolveSubmission",
+      "requestDto": "SubmissionResolve",
+      "responseDto": "Resolution",
+      "repositories": [
+        "VisitRepository.Transaction",
+        "VisitTransaction.ResolveSubmission"
+      ],
+      "features": [
+        "F04"
+      ],
+      "gaps": [
+        "BE-VISITS"
+      ],
+      "authorization": "Anonymous UUID+normalized email bound to the original audience/reference. Reference alone grants no read authority; shared create/resolve30/min plus public ceiling.",
+      "rules": "Serialize against same scoped create reference. Return committed/current public projection or not_committed only after durable closure that prevents delayed creates.503/timeout remains uncertain.",
+      "serializer": "VisitSerializer.ToResolution",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/visitor/src/features/SubmissionRecovery.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Uncertain-submission recovery panel"
+    },
+    {
+      "id": "publicLookup",
+      "number": 7,
+      "method": "POST",
+      "path": "/public/lookup",
+      "implemented": false,
+      "module": "visit",
+      "handler": "PublicLookup",
+      "usecase": "VisitUsecase.GetPublicBooking",
+      "requestDto": "Pair",
+      "responseDto": "PublicBooking",
+      "repositories": [
+        "VisitRepository.GetPublicBooking"
+      ],
+      "features": [
+        "F05",
+        "F06",
+        "F08",
+        "F09",
+        "F10",
+        "F47",
+        "F48"
+      ],
+      "gaps": [
+        "BE-READS",
+        "BE-VISITS",
+        "FE-CATALOG"
+      ],
+      "authorization": "Matching eight-digit code+normalized email for standard visit only. Generic unavailable response for wrong pair/restricted/absent. Shared pair30/min/IP plus public ceiling.",
+      "rules": "Return full safe PublicBooking with allowlisted public history/timing; omit internal notes/actors/service IDs. Read-only, no state or expiry renewal.",
+      "serializer": "VisitSerializer.ToPublicBooking",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/visitor/src/pages/Status.tsx",
+          "frontendx/apps/visitor/src/features/VisitTicket.tsx",
+          "frontendx/apps/visitor/src/features/PublicVisitHistory.tsx",
+          "frontendx/apps/visitor/src/features/useCancellationWindow.ts",
+          "frontendx/packages/data/src/repositories.ts",
+          "frontendx/apps/visitor/src/main.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Code/email status form, visit card, ticket and history"
+    },
+    {
+      "id": "publicCancel",
+      "number": 8,
+      "method": "POST",
+      "path": "/public/bookings/{id}/cancel",
+      "implemented": false,
+      "module": "visit",
+      "handler": "PublicCancel",
+      "usecase": "VisitUsecase.CancelPublicBooking",
+      "requestDto": "PairVersion",
+      "responseDto": "PublicBooking",
+      "repositories": [
+        "VisitRepository.Transaction",
+        "VisitTransaction.LockVisit",
+        "VisitTransaction.SaveVisit",
+        "VisitTransaction.RevokeAdmission",
+        "VisitTransaction.AppendAudit",
+        "VisitTransaction.EnqueueNotifications"
+      ],
+      "features": [
+        "F06",
+        "F09",
+        "F10"
+      ],
+      "gaps": [
+        "BE-VISITS"
+      ],
+      "authorization": "Path ID must match standard visit authorized by code+email pair; version and strict before-start/no-checkin checks. Same pair-access budget.",
+      "rules": "Pending/Approved and now<start; no prior checkin. Atomically version/save/release commitments/revoke admission/audit/outbox; code/email remain private.",
+      "serializer": "VisitSerializer.ToPublicBooking",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/visitor/src/pages/Status.tsx",
+          "frontendx/apps/visitor/src/features/PublicVisitHistory.tsx",
+          "frontendx/apps/visitor/src/features/useCancellationWindow.ts"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Status-card cancellation confirmation"
+    },
+    {
+      "id": "publicAdmission",
+      "number": 9,
+      "method": "POST",
+      "path": "/public/bookings/{id}/admission",
+      "implemented": false,
+      "module": "reception",
+      "handler": "PublicAdmission",
+      "usecase": "ReceptionUsecase.IssueAdmission",
+      "requestDto": "PairVersion",
+      "responseDto": "AdmissionResult",
+      "repositories": [
+        "VisitRepository.Transaction",
+        "VisitTransaction.LockVisit",
+        "VisitTransaction.ReplaceAdmission"
+      ],
+      "features": [
+        "F07",
+        "F08"
+      ],
+      "gaps": [
+        "BE-ATTENDANCE",
+        "BE-VISITS"
+      ],
+      "authorization": "Matching standard visit ID/code/email/version and eligible Approved check-in window; same pair budget. No public authorization from code alone.",
+      "rules": "Replace/revoke predecessor; expiry=min(issue+5min,end), never issue expired payload. Opaque credential has no person data; QR issuance is not attendance.",
+      "serializer": "ReceptionSerializer.ToAdmissionResult",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/visitor/src/features/AdmissionQR.tsx",
+          "frontendx/apps/visitor/src/features/VisitTicket.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Admission QR image, countdown and renewal"
+    },
+    {
+      "id": "publicUpload",
+      "number": 10,
+      "method": "POST",
+      "path": "/public/attachments",
+      "implemented": false,
+      "module": "document",
+      "handler": "PublicUpload",
+      "usecase": "DocumentUsecase.UploadPublic",
+      "requestDto": "Upload",
+      "responseDto": "UploadResult",
+      "repositories": [
+        "DocumentRepository.StageUpload"
+      ],
+      "features": [
+        "F02",
+        "F45"
+      ],
+      "gaps": [
+        "BE-DOCUMENTS",
+        "BE-VISITS",
+        "FE-BOUNDS",
+        "FE-UPLOAD"
+      ],
+      "authorization": "Anonymous audience-owned upload reference/content, only when capability enabled; new files60/hour/trusted IP shared with staff plus overall public admission.",
+      "rules": "Multipart exactly file+reference, one nonempty PDF/JPEG/PNG <=5242880 bytes within6291456 total. Verify signature/content/ownership; no public URL. Token1h, unlinked cleanup24h; reference+same content eligible replay200, changed content409.",
+      "serializer": "DocumentSerializer.ToUploadResult",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/visitor/src/pages/Booking.tsx",
+          "frontendx/packages/data/src/attachments.ts"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Public optional supporting-document picker"
+    },
+    {
+      "id": "staffUpload",
+      "number": 11,
+      "method": "POST",
+      "path": "/staff/attachments",
+      "implemented": false,
+      "module": "document",
+      "handler": "StaffUpload",
+      "usecase": "DocumentUsecase.UploadStaff",
+      "requestDto": "Upload",
+      "responseDto": "UploadResult",
+      "repositories": [
+        "DocumentRepository.StageUpload"
+      ],
+      "features": [
+        "F21",
+        "F45"
+      ],
+      "gaps": [
+        "BE-DOCUMENTS",
+        "BE-VISITS",
+        "FE-UPLOAD",
+        "BE-PHASE1-AUTH"
+      ],
+      "authorization": "Bearer plus fixed create permission and current standard-visit creation scope. Upload ownership uses employee ID/audience, never a browser role or stored login session.",
+      "rules": "Same verified file/replay/expiry rules as public upload, distinct owner/audience scope. Disabled feature fails safely and optional booking continues without document.",
+      "serializer": "DocumentSerializer.ToUploadResult",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/features/CreateAppointment.tsx",
+          "frontendx/packages/data/src/attachments.ts"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Staff standard-appointment document picker"
+    },
+    {
+      "id": "staffAttachment",
+      "number": 12,
+      "method": "GET",
+      "path": "/staff/bookings/{id}/attachment",
+      "implemented": false,
+      "module": "document",
+      "handler": "StaffAttachment",
+      "usecase": "DocumentUsecase.GetAttachment",
+      "requestDto": "AttachmentQuery",
+      "responseDto": "PrivateFile",
+      "repositories": [
+        "DocumentRepository.GetAttachment",
+        "DocumentRepository.AuditAccess"
+      ],
+      "features": [
+        "F29"
+      ],
+      "gaps": [
+        "BE-DOCUMENTS",
+        "FE-FILEVIEW",
+        "BE-PHASE1-AUTH"
+      ],
+      "authorization": "Bearer + bookings permission + ordinary visit and attachment field scope. Authorized assigned PA or eligible Protocol; no public/restricted/reception or incidental Super Admin document access. View/download same authority.",
+      "rules": "Protected binary PDF/JPEG/PNG; disposition defaults inline, explicit attachment download. MIME verified; safe filename/no-store/nosniff; audit access. No public file/object path.",
+      "serializer": null,
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/features/AttachmentAccess.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Private document view/download in booking detail"
+    },
+    {
+      "id": "staffBookings",
+      "number": 13,
+      "method": "GET",
+      "path": "/staff/bookings",
+      "implemented": false,
+      "module": "visit",
+      "handler": "List",
+      "usecase": "VisitUsecase.GetBookings",
+      "requestDto": "BookingQuery",
+      "responseDto": "ReadModel",
+      "repositories": [
+        "VisitRepository.GetBookings"
+      ],
+      "features": [
+        "F16",
+        "F18",
+        "F19",
+        "F20",
+        "F30",
+        "F47"
+      ],
+      "gaps": [
+        "BE-READS",
+        "FE-CORRELATION",
+        "BE-PHASE1-AUTH"
+      ],
+      "authorization": "Bearer + bookings + role scope before filters/counts: PA assigned non-VIP ordinary and assigned restricted projection; Protocol all authorized records; Reception approved/checked-in/checked-out with minimal restricted projection; Super Admin restricted full reads only.",
+      "rules": "Three mutually exclusive query variants; max100; list default7, reception25, dashboard50; one-based page echoed even beyond end. q trimmed max255. vip0=no filter,1=ordinary VIP. approved excludes Missed. Scope/projection before search/sort/count; snapshot for rows/counts/metrics. Dashboard deduplicates first5 agenda+first4 attention. Reception checkout spans earlier dates.",
+      "serializer": "VisitSerializer.ToReadModel",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/pages/Bookings.tsx",
+          "frontendx/apps/admin/src/pages/Dashboard.tsx",
+          "frontendx/apps/admin/src/components/BookingRefresh.tsx",
+          "frontendx/apps/admin/src/components/DataRefresh.tsx",
+          "frontendx/apps/admin/src/pages/Reception.tsx",
+          "frontendx/packages/data/src/repositories.ts"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Booking search/table/cards, dashboard cards/agenda and reception table"
+    },
+    {
+      "id": "staffBooking",
+      "number": 14,
+      "method": "GET",
+      "path": "/staff/bookings/{id}",
+      "implemented": false,
+      "module": "visit",
+      "handler": "Detail",
+      "usecase": "VisitUsecase.GetBooking",
+      "requestDto": null,
+      "responseDto": "StaffBooking",
+      "repositories": [
+        "VisitRepository.GetBooking"
+      ],
+      "features": [
+        "F17",
+        "F19"
+      ],
+      "gaps": [
+        "BE-READS",
+        "FE-CORRELATION",
+        "BE-PHASE1-AUTH"
+      ],
+      "authorization": "Same resource and field scope as staffBookings; independently resolve ID beyond current list page. Restricted full read does not automatically authorize private notes.",
+      "rules": "ID must equal requested ID; current field projection and timing; no dependency on current page. Private history included only with field authority.",
+      "serializer": "VisitSerializer.ToStaffBooking",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/pages/Bookings.tsx",
+          "frontendx/apps/admin/src/components/BookingRefresh.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Selected booking-detail dialog"
+    },
+    {
+      "id": "staffCreateBooking",
+      "number": 15,
+      "method": "POST",
+      "path": "/staff/bookings",
+      "implemented": false,
+      "module": "visit",
+      "handler": "StaffCreate",
+      "usecase": "VisitUsecase.CreateStaffBooking",
+      "requestDto": "StaffCreate",
+      "responseDto": "StaffBooking",
+      "repositories": [
+        "VisitRepository.Transaction",
+        "VisitTransaction.ResolveSubmission",
+        "VisitTransaction.LockResources",
+        "VisitTransaction.CheckOverlap",
+        "VisitTransaction.CreateVisit",
+        "VisitTransaction.AppendAudit",
+        "VisitTransaction.EnqueueNotifications"
+      ],
+      "features": [
+        "F21",
+        "F22",
+        "F28"
+      ],
+      "gaps": [
+        "BE-VISITS",
+        "FE-BOUNDS",
+        "FE-UPLOAD",
+        "BE-PHASE1-AUTH"
+      ],
+      "authorization": "Bearer + create. Standard: PA assigned non-VIP official, Protocol VIP official. Restricted: Protocol, optional valid active official. No Super Admin/Reception creation.",
+      "rules": "Discriminated standard/restricted body, one route. Approved, duration60, optional room absent; lock assigned resources/check complete interval. Same scoped-key replay200, new201. Create/autoapprove audit and one logical notification atomically.",
+      "serializer": "VisitSerializer.ToStaffBooking",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/features/CreateAppointment.tsx",
+          "frontendx/apps/admin/src/features/RestrictedAppointment.tsx",
+          "frontendx/apps/admin/src/features/VisitNotesFields.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Standard and restricted staff create dialogs"
+    },
+    {
+      "id": "staffApprove",
+      "number": 16,
+      "method": "POST",
+      "path": "/staff/bookings/{id}/approve",
+      "implemented": false,
+      "module": "visit",
+      "handler": "Approve",
+      "usecase": "VisitUsecase.Approve",
+      "requestDto": "Approve",
+      "responseDto": "StaffBooking",
+      "repositories": [
+        "VisitRepository.Transaction",
+        "VisitTransaction.LockVisit",
+        "VisitTransaction.LockResources",
+        "VisitTransaction.CheckOverlap",
+        "VisitTransaction.SaveVisit",
+        "VisitTransaction.AppendAudit",
+        "VisitTransaction.EnqueueNotifications"
+      ],
+      "features": [
+        "F24",
+        "F28"
+      ],
+      "gaps": [
+        "BE-VISITS",
+        "FE-BOUNDS",
+        "FE-ROOM",
+        "BE-PHASE1-AUTH"
+      ],
+      "authorization": "Bearer + approve + decision owner: PA assigned ordinary non-VIP, Protocol VIP ordinary or restricted. Current assignments/classification and Pending state rechecked.",
+      "rules": "Pending->Approved; standard public request requires active roomId and duration15-240; absent required selection422. Notes omitted preserve/empty clears. Lock visit/resources then overlap check, version/audit/outbox atomically.",
+      "serializer": "VisitSerializer.ToStaffBooking",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/features/BookingDetail.tsx",
+          "frontendx/apps/admin/src/features/VisitNotesFields.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Approval room/duration/notes form"
+    },
+    {
+      "id": "staffReject",
+      "number": 17,
+      "method": "POST",
+      "path": "/staff/bookings/{id}/reject",
+      "implemented": false,
+      "module": "visit",
+      "handler": "Reject",
+      "usecase": "VisitUsecase.Reject",
+      "requestDto": "Reject",
+      "responseDto": "StaffBooking",
+      "repositories": [
+        "VisitRepository.Transaction",
+        "VisitTransaction.LockVisit",
+        "VisitTransaction.SaveVisit",
+        "VisitTransaction.AppendAudit",
+        "VisitTransaction.EnqueueNotifications"
+      ],
+      "features": [
+        "F25"
+      ],
+      "gaps": [
+        "BE-VISITS",
+        "BE-PHASE1-AUTH"
+      ],
+      "authorization": "Bearer + reject and same PA/Protocol decision-owner rules; Pending only. Public reason separate from private note.",
+      "rules": "Pending->Rejected; trimmed reason5-1000, private note<=2000. Version/audit/outbox atomic; never publish private note.",
+      "serializer": "VisitSerializer.ToStaffBooking",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/features/BookingDetail.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Public rejection reason and internal note form"
+    },
+    {
+      "id": "staffReschedule",
+      "number": 18,
+      "method": "POST",
+      "path": "/staff/bookings/{id}/reschedule",
+      "implemented": false,
+      "module": "visit",
+      "handler": "Reschedule",
+      "usecase": "VisitUsecase.Reschedule",
+      "requestDto": "Reschedule",
+      "responseDto": "StaffBooking",
+      "repositories": [
+        "VisitRepository.Transaction",
+        "VisitTransaction.LockVisit",
+        "VisitTransaction.LockResources",
+        "VisitTransaction.CheckOverlap",
+        "VisitTransaction.SaveVisit",
+        "VisitTransaction.RevokeAdmission",
+        "VisitTransaction.AppendAudit",
+        "VisitTransaction.EnqueueNotifications"
+      ],
+      "features": [
+        "F26",
+        "F28"
+      ],
+      "gaps": [
+        "BE-VISITS",
+        "FE-BOUNDS",
+        "FE-PENDING",
+        "FE-ROOM",
+        "BE-PHASE1-AUTH"
+      ],
+      "authorization": "Bearer + reschedule and same PA/Protocol decision-owner rules. Pending or Approved excluding derived Missed; restricted remains Protocol.",
+      "rules": "Preserve lifecycle state; full replacement future WITA schedule/duration15-240. Standard room/reason required; restricted optional, supplied reason5-1000. Omitted roomId clears on reschedule; omitted notes preserve. Lock old/new resources, overlap check, revoke prior admission, audit/outbox atomically.",
+      "serializer": "VisitSerializer.ToStaffBooking",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/features/BookingDetail.tsx",
+          "frontendx/apps/admin/src/features/VisitNotesFields.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "New schedule/room/duration/reason form"
+    },
+    {
+      "id": "staffRestrictedUpdate",
+      "number": 19,
+      "method": "POST",
+      "path": "/staff/bookings/{id}/update",
+      "implemented": false,
+      "module": "visit",
+      "handler": "UpdateRestricted",
+      "usecase": "VisitUsecase.UpdateRestricted",
+      "requestDto": "RestrictedUpdate",
+      "responseDto": "RestrictedFull",
+      "repositories": [
+        "VisitRepository.Transaction",
+        "VisitTransaction.LockVisit",
+        "VisitTransaction.LockResources",
+        "VisitTransaction.CheckOverlap",
+        "VisitTransaction.SaveVisit",
+        "VisitTransaction.AppendAudit"
+      ],
+      "features": [
+        "F23",
+        "F28"
+      ],
+      "gaps": [
+        "BE-VISITS",
+        "FE-BOUNDS",
+        "BE-PHASE1-AUTH"
+      ],
+      "authorization": "Bearer Protocol + create + restricted full editable record, Pending/Approved. No invented update permission. Other role full read grants no edit.",
+      "rules": "Date/time retained by current editor; changed schedules use reschedule. Omitted optional identity/target fields preserve, empty clears; notes omitted preserve/empty clears. Recompute scope and resource conflicts under locks; retain historical snapshot/audit without hard-deleting identity.",
+      "serializer": "VisitSerializer.ToRestrictedFull",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/features/RestrictedAppointment.tsx",
+          "frontendx/apps/admin/src/features/VisitNotesFields.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Restricted identity/target/notes edit dialog"
+    },
+    {
+      "id": "staffCancel",
+      "number": 20,
+      "method": "POST",
+      "path": "/staff/bookings/{id}/cancel",
+      "implemented": false,
+      "module": "visit",
+      "handler": "StaffCancel",
+      "usecase": "VisitUsecase.CancelStaffBooking",
+      "requestDto": "StaffCancel",
+      "responseDto": "StaffBooking",
+      "repositories": [
+        "VisitRepository.Transaction",
+        "VisitTransaction.LockVisit",
+        "VisitTransaction.SaveVisit",
+        "VisitTransaction.RevokeAdmission",
+        "VisitTransaction.AppendAudit",
+        "VisitTransaction.EnqueueNotifications"
+      ],
+      "features": [
+        "F27"
+      ],
+      "gaps": [
+        "BE-VISITS",
+        "BE-PHASE1-AUTH"
+      ],
+      "authorization": "Bearer + cancel + same PA/Protocol decision scope; Pending/Approved and never checked in. May be after schedule start/end.",
+      "rules": "Pending/Approved->Cancelled, reason5-1000/private note<=2000. Version/commitment release/revoke QR/audit/outbox atomically. No implicit authority from elapsed time.",
+      "serializer": "VisitSerializer.ToStaffBooking",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/features/BookingDetail.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Staff cancellation reason/internal-note dialog"
+    },
+    {
+      "id": "staffCheckin",
+      "number": 21,
+      "method": "POST",
+      "path": "/staff/bookings/{id}/checkin",
+      "implemented": false,
+      "module": "reception",
+      "handler": "Checkin",
+      "usecase": "ReceptionUsecase.Checkin",
+      "requestDto": "Attendance",
+      "responseDto": "ArrivalBooking",
+      "repositories": [
+        "VisitRepository.Transaction",
+        "VisitTransaction.LockVisit",
+        "VisitTransaction.ConfirmAttendance",
+        "VisitTransaction.AppendAudit"
+      ],
+      "features": [
+        "F33"
+      ],
+      "gaps": [
+        "BE-ATTENDANCE",
+        "BE-PHASE1-AUTH"
+      ],
+      "authorization": "Bearer Receptionist + checkin + matching manual/QR credential and record/version; Approved in server-time admission window; explicit identity confirmation in UI.",
+      "rules": "Approved->checked_in once in [start-30min,end] inclusive. Lock visit/credential, validate current version, consume QR if used, append attendance/audit atomically. Manual code alternative.",
+      "serializer": "ReceptionSerializer.ToArrivalBooking",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/pages/Reception.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Identity-confirmed check-in button"
+    },
+    {
+      "id": "staffCheckout",
+      "number": 22,
+      "method": "POST",
+      "path": "/staff/bookings/{id}/checkout",
+      "implemented": false,
+      "module": "reception",
+      "handler": "Checkout",
+      "usecase": "ReceptionUsecase.Checkout",
+      "requestDto": "Attendance",
+      "responseDto": "ArrivalBooking",
+      "repositories": [
+        "VisitRepository.Transaction",
+        "VisitTransaction.LockVisit",
+        "VisitTransaction.ConfirmAttendance",
+        "VisitTransaction.AppendAudit"
+      ],
+      "features": [
+        "F34"
+      ],
+      "gaps": [
+        "BE-ATTENDANCE",
+        "BE-PHASE1-AUTH"
+      ],
+      "authorization": "Bearer Receptionist + checkout + matching credential/version; Checked-in even on later dates. Consumed nonrevoked admission QR remains usable only for that checkout.",
+      "rules": "checked_in->checked_out once, including late/next-day checkout. Matching consumed nonrevoked QR or manual code; no duplicate attendance. Append event/audit and release commitment atomically.",
+      "serializer": "ReceptionSerializer.ToArrivalBooking",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/pages/Reception.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Identity-confirmed check-out button"
+    },
+    {
+      "id": "staffResolve",
+      "number": 23,
+      "method": "POST",
+      "path": "/staff/resolve",
+      "implemented": false,
+      "module": "reception",
+      "handler": "Resolve",
+      "usecase": "ReceptionUsecase.Resolve",
+      "requestDto": "Resolve",
+      "responseDto": "ArrivalBooking",
+      "repositories": [
+        "ReceptionRepository.ResolveCredential"
+      ],
+      "features": [
+        "F31",
+        "F32"
+      ],
+      "gaps": [
+        "BE-ATTENDANCE",
+        "BE-PHASE1-AUTH"
+      ],
+      "authorization": "Bearer Receptionist with attendance permission appropriate to current record eligibility; credential resolution returns only arrival projection; no attendance transition.",
+      "rules": "Read current credential/visit eligibility and restricted arrival projection; no consume/checkin/checkout. Do not put expanded restricted arrival data in ordinary reception cache.",
+      "serializer": "ReceptionSerializer.ToArrivalBooking",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/pages/Reception.tsx",
+          "frontendx/apps/admin/src/features/Scanner.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Manual code and camera-QR confirmation dialog"
+    },
+    {
+      "id": "staffEmployees",
+      "number": 24,
+      "method": "GET",
+      "path": "/staff/employees",
+      "implemented": false,
+      "module": "management",
+      "handler": "Employees",
+      "usecase": "ManagementUsecase.GetEmployees",
+      "requestDto": "EmployeeQuery",
+      "responseDto": "EmployeePage",
+      "repositories": [
+        "ManagementRepository.GetEmployees"
+      ],
+      "features": [
+        "F20",
+        "F35",
+        "F43"
+      ],
+      "gaps": [
+        "BE-ADMIN",
+        "BE-READS",
+        "BE-PHASE1-AUTH",
+        "FE-DIRECTORY"
+      ],
+      "authorization": "Bearer plus current Super Admin role and fixed people permission; read-only authorized directory. No role/password/workspace session gates.",
+      "rules": "Read-only directory: q trimmed max255, case-insensitive name/email/assigned role-label match; page1/pageSize25 max250; stable name then numericID tie subject to OPEN-READ-ORDER. total filtered; totalAll before search. No password metadata or create/edit/role/assignment controls in Phase 1.",
+      "serializer": "ManagementSerializer.ToEmployeePage",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/components/DataRefresh.tsx",
+          "frontendx/apps/admin/src/features/EmployeeDirectory.tsx",
+          "frontendx/apps/admin/src/pages/Settings.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Employee search, cards/table, counts and pagination"
+    },
+    {
+      "id": "staffEmployee",
+      "number": 25,
+      "method": "GET",
+      "path": "/staff/employees/{id}",
+      "implemented": false,
+      "module": "management",
+      "handler": "Employee",
+      "usecase": "ManagementUsecase.GetEmployee",
+      "requestDto": null,
+      "responseDto": "Employee",
+      "repositories": [
+        "ManagementRepository.GetEmployee"
+      ],
+      "features": [
+        "F35"
+      ],
+      "gaps": [
+        "BE-ADMIN",
+        "BE-PHASE1-AUTH",
+        "FE-DIRECTORY"
+      ],
+      "authorization": "Bearer Super Admin + people; current resource authority; no credential/hash response.",
+      "rules": "Return one authorized read-only Employee with exactly one roles entry, current profile/active flag/PA assignments and version. No password/hash or editable policy graph; no write operation is enabled by this read.",
+      "serializer": "ManagementSerializer.ToEmployee",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/features/EmployeeDirectory.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Employee edit-conflict reload"
+    },
+    {
+      "id": "staffIntegrations",
+      "number": 26,
+      "method": "GET",
+      "path": "/staff/integrations",
+      "implemented": false,
+      "module": "management",
+      "handler": "Integrations",
+      "usecase": "ManagementUsecase.GetIntegrations",
+      "requestDto": null,
+      "responseDto": "[]Integration",
+      "repositories": [
+        "ManagementRepository.GetIntegrations"
+      ],
+      "features": [
+        "F20",
+        "F40",
+        "F43"
+      ],
+      "gaps": [
+        "BE-ADMIN",
+        "BE-INTEGRATIONS",
+        "BE-READS",
+        "BE-PHASE1-AUTH"
+      ],
+      "authorization": "Bearer Super Admin + integrations; safe metadata/configured flags only, never secret values or private paths.",
+      "rules": "Bounded SMTP metadata fields; secret configured boolean only. health from stored worker/service state, not synchronous network probe each GET; deferred storage disabled.",
+      "serializer": "ManagementSerializer.ToIntegration",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/components/DataRefresh.tsx",
+          "frontendx/apps/admin/src/features/IntegrationManagement.tsx",
+          "frontendx/apps/admin/src/pages/Settings.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Integration cards and safe dynamic-field metadata"
+    },
+    {
+      "id": "patchIntegration",
+      "number": 27,
+      "method": "PATCH",
+      "path": "/staff/integrations/{id}",
+      "implemented": false,
+      "module": "management",
+      "handler": "UpdateIntegration",
+      "usecase": "ManagementUsecase.UpdateIntegration",
+      "requestDto": "IntegrationPatch",
+      "responseDto": "Integration",
+      "repositories": [
+        "ManagementRepository.Transaction",
+        "ManagementTransaction.UpdateIntegration",
+        "ManagementTransaction.AppendAudit"
+      ],
+      "features": [
+        "F40"
+      ],
+      "gaps": [
+        "BE-INTEGRATIONS",
+        "BE-PHASE1-AUTH"
+      ],
+      "authorization": "Bearer Super Admin + integrations; versioned allowlisted SMTP dictionary only; validate merged effective settings/TLS/outbound policy. Disabled storage metadata cannot acquire arbitrary writable fields.",
+      "rules": "Keys host/port/tlsMode/username/password/sender; blank/omitted existing password preserves, clearSecrets=[password] clears only if valid disabled/effective state. Enable requires all merged values. VerifiedTLS only, explicit port1-65535; secret<=4096 UTF-8 bytes encrypted, never echoed.",
+      "serializer": "ManagementSerializer.ToIntegration",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/features/IntegrationManagement.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Provider settings and secret keep/clear save form"
+    },
+    {
+      "id": "reportSummary",
+      "number": 28,
+      "method": "GET",
+      "path": "/staff/reports/summary",
+      "implemented": false,
+      "module": "report",
+      "handler": "Summary",
+      "usecase": "ReportUsecase.GetSummary",
+      "requestDto": "ReportQuery",
+      "responseDto": "Summary",
+      "repositories": [
+        "ReportRepository.GetSummary"
+      ],
+      "features": [
+        "F41",
+        "F42",
+        "F43"
+      ],
+      "gaps": [
+        "BE-ADMIN",
+        "BE-REPORTS",
+        "BE-PHASE1-AUTH"
+      ],
+      "authorization": "Bearer plus fixed reports permission: organization scope Super Admin, assigned non-VIP scope PA, authorized scope Protocol Officer. Receptionist has no reports permission in the Phase 1 mapping. Exclude restricted before aggregation regardless of detail rights.",
+      "rules": "Inclusive dates from<=to and <=365 elapsed days. All seven nonnegative counts sum to total; specific status zeros others. Read consistent authorized ordinary-only snapshot; revision64lowercasehex binds filter/scope/content, not generatedAt.",
+      "serializer": "ReportSerializer.ToSummary",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/pages/Reports.tsx",
+          "frontendx/apps/admin/src/pages/Settings.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Analytics/logs filters, summary cards and status table/meters"
+    },
+    {
+      "id": "reportExport",
+      "number": 29,
+      "method": "GET",
+      "path": "/staff/reports/export",
+      "implemented": false,
+      "module": "report",
+      "handler": "Export",
+      "usecase": "ReportUsecase.Export",
+      "requestDto": "ReportExportQuery",
+      "responseDto": "Export",
+      "repositories": [
+        "ReportRepository.GetSummary"
+      ],
+      "features": [
+        "F42"
+      ],
+      "gaps": [
+        "BE-REPORTS",
+        "BE-PHASE1-AUTH"
+      ],
+      "authorization": "Bearer plus fixed reports and reportExport permissions for PA, Protocol Officer or Super Admin; recompute the same current authorized ordinary-only scope/filter/revision. Receptionist has no Phase 1 report export.",
+      "rules": "Recompute same authorized filter/content revision;409 report_changed if stale. JSON filename/csv/revision; BOM+quotedCRLF summary rows only; never personal detail.",
+      "serializer": "ReportSerializer.ToExport",
+      "evidence": {
+        "requirement": "docs/contracts/API-CONTRACT.md",
+        "decisions": "docs/BACKEND-PLAN-2026-11-11.md",
+        "consumers": [
+          "frontendx/apps/admin/src/pages/Reports.tsx"
+        ],
+        "source": null,
+        "status": "Phase 1 target; backend implementation missing"
+      },
+      "frontendSummary": "Displayed-summary CSV download button"
+    }
+  ],
+  "features": [
+    {
+      "id": "F01",
+      "file": "frontendx/apps/visitor/src/pages/Booking.tsx",
+      "route": "/; /?view=registration; /booking",
+      "component": "BookingForm",
+      "action": "Open destination step",
+      "data": "Active officials, VIP classification, privacy notice",
+      "current": "useCatalogs -> repository.catalogs; preview uses domain fixtures",
+      "operations": [
+        "publicCatalogs"
+      ],
+      "gaps": [
+        "FE-CATALOG"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Registration destination/official dropdown in the first booking step",
+      "wireUsage": {
+        "publicCatalogs": "officers[].id/name populate officerId options; officers[].vip selects VIP presentation/requirements; privacyNotice supplies consent content."
+      },
+      "previousOperations": [
+        "publicCatalogs"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F02",
+      "file": "frontendx/apps/visitor/src/pages/Booking.tsx",
+      "route": "/; /booking",
+      "component": "BookingForm",
+      "action": "Submit three-step ordinary request",
+      "data": "Schedule, representative/contact, purpose, identity type, 0-19 companions converted to 1-20 names, ack, optional file token",
+      "current": "BookingSubmission; actual create adapter exists; no backend booking route",
+      "operations": [
+        "publicCreateBooking",
+        "publicUpload"
+      ],
+      "gaps": [
+        "BE-VISITS",
+        "FE-BOUNDS",
+        "FE-UPLOAD"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Three-step booking form, companion-name rows, optional supporting-document picker and submit/receipt panel",
+      "wireUsage": {
+        "publicCreateBooking": "Send normalized representative/contact/schedule/officerId/purpose/visitors/identityType/ack, UUID idempotencyKey and optional attachmentToken/ndName/privacyVersion; PublicBooking.code/status/schedule/history populate the receipt.",
+        "publicUpload": "Send the selected file and UUID reference; retain UploadResult.token as attachmentToken and check expiresAt/serverTime. New uploads require attachmentsEnabled=true."
+      },
+      "previousOperations": [
+        "publicCreateBooking",
+        "publicUpload"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F03",
+      "file": "frontendx/apps/visitor/src/features/PrivacyNotice.tsx",
+      "route": "/; /booking; /status",
+      "component": "PrivacyNotice",
+      "action": "Read bilingual notice / retry",
+      "data": "version and Indonesian/English notice text",
+      "current": "Shares cached useCatalogs; real form blocks without published notice",
+      "operations": [
+        "publicCatalogs"
+      ],
+      "gaps": [
+        "FE-CATALOG"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Bilingual privacy notice dialog, consent text and retry button",
+      "wireUsage": {
+        "publicCatalogs": "privacyNotice.version/id/en supply the notice and its language; the form uses the published version/ack for consent. Missing notice blocks genuine collection."
+      },
+      "previousOperations": [
+        "publicCatalogs"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F04",
+      "file": "frontendx/apps/visitor/src/features/SubmissionRecovery.tsx",
+      "route": "/; /booking",
+      "component": "SubmissionRecovery",
+      "action": "Resolve uncertain create by email",
+      "data": "Retained UUID reference; committed booking or closed not_committed",
+      "current": "BookingForm -> BookingSubmission.recover; only reference in sessionStorage",
+      "operations": [
+        "resolveSubmission"
+      ],
+      "gaps": [
+        "BE-VISITS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Uncertain-submission recovery panel and email recovery action",
+      "wireUsage": {
+        "resolveSubmission": "Send retained idempotencyKey plus email; outcome=committed restores booking/receipt, not_committed allows a new submission after durable closure."
+      },
+      "previousOperations": [
+        "resolveSubmission"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F05",
+      "file": "frontendx/apps/visitor/src/pages/Status.tsx",
+      "route": "/status; /?view=status",
+      "component": "Status",
+      "action": "Lookup / refresh",
+      "data": "Eight-digit code plus email -> complete public booking/history/timing",
+      "current": "repository.lookup; invalid pair errors preserve staff auth",
+      "operations": [
+        "publicLookup"
+      ],
+      "gaps": [
+        "BE-VISITS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Status lookup form: eight-digit code input, email input, View visit and Update buttons",
+      "wireUsage": {
+        "publicLookup": "Send code/email in POST body; returned status/timing, schedule, host, roster, instructions and public history populate the visit status card."
+      },
+      "previousOperations": [
+        "publicLookup"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F06",
+      "file": "frontendx/apps/visitor/src/pages/Status.tsx",
+      "route": "/status; /?view=status",
+      "component": "Status",
+      "action": "Confirm cancellation",
+      "data": "code, email, expected version; before-start eligibility",
+      "current": "repository.cancel; conflict attempts a fresh lookup",
+      "operations": [
+        "publicCancel",
+        "publicLookup"
+      ],
+      "gaps": [
+        "BE-VISITS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Cancel visit button and confirmation dialog on the status card",
+      "wireUsage": {
+        "publicCancel": "Send selected id plus code/email/version; returned cancelled PublicBooking replaces the card/history.",
+        "publicLookup": "After a version/state conflict, repeat code/email lookup and replace the displayed booking with current authority."
+      },
+      "previousOperations": [
+        "publicCancel",
+        "publicLookup"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F07",
+      "file": "frontendx/apps/visitor/src/features/AdmissionQR.tsx",
+      "route": "/status; booking receipt",
+      "component": "AdmissionQR",
+      "action": "Issue / replace / renew QR",
+      "data": "Opaque payload, expiry, serverTime; visit credentials/version",
+      "current": "repository.admission; preview constructs VMS-DEMO credential locally",
+      "operations": [
+        "publicAdmission"
+      ],
+      "gaps": [
+        "BE-ATTENDANCE"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Admission QR image, expiry/countdown and Renew QR code/Try again buttons",
+      "wireUsage": {
+        "publicAdmission": "Send id plus code/email/version; encode payload locally as QR, use expiresAt/serverTime for countdown and replacement."
+      },
+      "previousOperations": [
+        "publicAdmission"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F08",
+      "file": "frontendx/apps/visitor/src/features/VisitTicket.tsx",
+      "route": "/status; booking receipt",
+      "component": "VisitTicket",
+      "action": "View / print ticket",
+      "data": "Returned public schedule, code, roster and QR",
+      "current": "Local rendering/print; shares existing booking; no ticket endpoint",
+      "operations": [
+        "publicLookup",
+        "publicCreateBooking",
+        "publicAdmission"
+      ],
+      "gaps": [
+        "BE-VISITS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Booking receipt / printable VisitTicket card",
+      "wireUsage": {
+        "publicLookup": "Use existing PublicBooking.code/date/time/host/room/visitors; no separate ticket fetch.",
+        "publicCreateBooking": "Use the successful create response directly for the receipt and ticket.",
+        "publicAdmission": "Render the returned admission payload locally as QR; printing is a local browser action."
+      },
+      "previousOperations": [
+        "publicLookup",
+        "publicCreateBooking",
+        "publicAdmission"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F09",
+      "file": "frontendx/apps/visitor/src/features/PublicVisitHistory.tsx",
+      "route": "/status",
+      "component": "PublicVisitHistory",
+      "action": "Read public event history",
+      "data": "Allowlisted event/action/time/public reschedule message",
+      "current": "Renders history already in booking; no history endpoint",
+      "operations": [
+        "publicLookup",
+        "publicCancel"
+      ],
+      "gaps": [
+        "BE-VISITS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Public visit-history timeline within the status view",
+      "wireUsage": {
+        "publicLookup": "history[] and public reasons/instructions populate the timeline; no private actors/notes.",
+        "publicCancel": "Use the returned booking.history and cancellation state to refresh the same timeline."
+      },
+      "previousOperations": [
+        "publicLookup",
+        "publicCancel"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F10",
+      "file": "frontendx/apps/visitor/src/features/useCancellationWindow.ts",
+      "route": "/status",
+      "component": "useCancellationWindow",
+      "action": "Update cancel availability as time elapses",
+      "data": "Server timing and local monotonic elapsed time",
+      "current": "Local conservative boundary timer; mutation still authoritative",
+      "operations": [
+        "publicLookup",
+        "publicCancel"
+      ],
+      "gaps": [
+        "BE-VISITS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Time-based enabled/disabled state of the public cancellation button",
+      "wireUsage": {
+        "publicLookup": "timing.serverTime/canCancel and schedule establish the local conservative cancellation countdown.",
+        "publicCancel": "Send the current version and pair; the server rechecks the time boundary even if the button was enabled."
+      },
+      "previousOperations": [
+        "publicLookup",
+        "publicCancel"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F11",
+      "file": "frontendx/apps/admin/src/main.tsx",
+      "route": "/admin/login",
+      "component": "Login",
+      "action": "Sign in",
+      "data": "Email/password -> TokenResult and refresh/CSRF cookies",
+      "current": "Existing signIn still calls /staff/sessions and discards its response; new login/AuthResult consumer and Bearer transport are missing.",
+      "operations": [
+        "staffLogin"
+      ],
+      "gaps": [
+        "FE-AUTH",
+        "BE-AUTH-TESTS",
+        "BE-PHASE1-AUTH"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Staff login email/password form and sign-in button",
+      "wireUsage": {
+        "staffLogin": "POST email/password to /staff/auth/login; keep AuthResult.accessToken/accessExpiresAt/user in memory. No auth cookies, CSRF initialization or session/role/password gate."
+      },
+      "previousOperations": [
+        "createSession"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F12",
+      "file": "frontendx/packages/data/src/session.tsx",
+      "route": "/admin/*",
+      "component": "SessionProvider",
+      "action": "Load / recheck session / sign out",
+      "data": "Current Session; no private cache reuse after authority loss",
+      "current": "Existing provider uses GET/DELETE /staff/session with cookie assumptions; those calls are superseded by Phase 1 me plus local logout.",
+      "operations": [
+        "staffMe"
+      ],
+      "gaps": [
+        "FE-AUTH",
+        "BE-PHASE1-AUTH"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Workspace current-user load, fixed token expiry and local Sign out action",
+      "wireUsage": {
+        "staffMe": "GET /staff/auth/me with Bearer; CurrentUser drives authenticated state. Local logout clears token/user/private caches without HTTP. Reload/expiry requires login; no refresh or idle renewal."
+      },
+      "previousOperations": [
+        "getSession",
+        "deleteSession"
+      ],
+      "phase": "phase1",
+      "localActions": [
+        "Sign out: discard in-memory token/user, clear private caches and navigate to login; no API.",
+        "Token expiry or reload: sign in again; reject stale in-flight responses after logout."
+      ]
+    },
+    {
+      "id": "F13",
+      "file": "frontendx/apps/admin/src/features/RoleControls.tsx",
+      "route": "/admin/*",
+      "component": "RoleSelection / RoleSwitcher",
+      "action": "Select required role / switch",
+      "data": "Available assigned roles; confirmed role/revision",
+      "current": "switchRole parses TokenResult as bare Session; reload clears cache",
+      "operations": [],
+      "gaps": [],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Required-role selection screen and active-role switcher",
+      "wireUsage": {},
+      "previousOperations": [
+        "selectRole",
+        "getSession"
+      ],
+      "phase": "later",
+      "phaseNote": "Existing UI is deferred and must not be mounted/call legacy endpoints in Phase 1. Accounts, single roles and PA assignments are provisioned through controlled database setup; password/role/session lifecycle UI is deferred."
+    },
+    {
+      "id": "F14",
+      "file": "frontendx/apps/admin/src/features/PasswordChange.tsx",
+      "route": "/admin/* forced gate",
+      "component": "PasswordChange",
+      "action": "Replace initial password",
+      "data": "currentPassword, newPassword; policy min 15 code points / max 72 bytes",
+      "current": "changePassword discards TokenResult; input maxLength 256",
+      "operations": [],
+      "gaps": [],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Required password-change form: current password, new password and save button",
+      "wireUsage": {},
+      "previousOperations": [
+        "changePassword",
+        "getSession"
+      ],
+      "phase": "later",
+      "phaseNote": "Existing UI is deferred and must not be mounted/call legacy endpoints in Phase 1. Accounts, single roles and PA assignments are provisioned through controlled database setup; password/role/session lifecycle UI is deferred."
+    },
+    {
+      "id": "F15",
+      "file": "frontendx/packages/data/src/session.tsx",
+      "route": "/admin/*",
+      "component": "SessionProvider",
+      "action": "Continue actual activity / refresh access after reload",
+      "data": "Authoritative idle/absolute timing, memory token and rotating refresh",
+      "current": "No renewal, refresh, multi-tab rotation or expiry-warning consumer exists",
+      "operations": [],
+      "gaps": [],
+      "evidence": "confirmed earlier decisions D20-D25/D38-D54; missing implementation",
+      "uiElement": "Workspace activity/expiry handling and access-token restoration after reload; consumer still missing",
+      "wireUsage": {},
+      "previousOperations": [
+        "renewSession",
+        "refreshSession",
+        "getSession"
+      ],
+      "phase": "later",
+      "phaseNote": "Existing UI is deferred and must not be mounted/call legacy endpoints in Phase 1. Accounts, single roles and PA assignments are provisioned through controlled database setup; password/role/session lifecycle UI is deferred."
+    },
+    {
+      "id": "F16",
+      "file": "frontendx/apps/admin/src/pages/Bookings.tsx",
+      "route": "/admin/booking; /admin/today",
+      "component": "Bookings",
+      "action": "Search/filter/sort/page ordinary and restricted records",
+      "data": "view=list, q/status/sort/dir/date/vip/page/pageSize=7",
+      "current": "Production readStaffBookings; preview full list then local selectBookings",
+      "operations": [
+        "staffBookings"
+      ],
+      "gaps": [
+        "BE-READS",
+        "FE-CORRELATION"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Janji temu / Kunjungan hari ini search box, status tabs, VIP filter, sort selector, cards/table and pagination",
+      "wireUsage": {
+        "staffBookings": "Send view=list plus q/status/sort/dir/date/vip/page/pageSize=7; items populate cards/table, total/totalScoped/page/pageSize control counts and pagination."
+      },
+      "previousOperations": [
+        "staffBookings"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F17",
+      "file": "frontendx/apps/admin/src/pages/Bookings.tsx",
+      "route": "/admin/booking?selected={id}; /admin/today?selected={id}",
+      "component": "Bookings / BookingDetail",
+      "action": "Open detail independent of page",
+      "data": "Authorized record and field projection for selected ID",
+      "current": "useBookingDetail -> readStaffBooking; does not verify returned ID",
+      "operations": [
+        "staffBooking"
+      ],
+      "gaps": [
+        "BE-READS",
+        "FE-CORRELATION"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Selected booking-detail dialog opened from a row/card or selected URL parameter",
+      "wireUsage": {
+        "staffBooking": "Send path id; returned authorized StaffBooking variant populates the dialog even when the booking is outside the current list page."
+      },
+      "previousOperations": [
+        "staffBooking"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F18",
+      "file": "frontendx/apps/admin/src/pages/Dashboard.tsx",
+      "route": "/admin/dashboard",
+      "component": "Dashboard",
+      "action": "Read metrics, agenda and attention",
+      "data": "view=dashboard/date/page=1/pageSize=50; full-scope metrics plus bounded union",
+      "current": "Shares booking read; Super Admin skips operational query",
+      "operations": [
+        "staffBookings"
+      ],
+      "gaps": [
+        "BE-READS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Dashboard metric cards, Agenda hari ini / Menunggu kedatangan table and Perlu perhatian / Sedang berkunjung list",
+      "wireUsage": {
+        "staffBookings": "Send view=dashboard/date/page=1/pageSize=50; metrics.today/pending/arrivals/inside/completed supply cards, items supply the bounded agenda/attention union. Super Admin currently skips operational reads."
+      },
+      "previousOperations": [
+        "staffBookings"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F19",
+      "file": "frontendx/apps/admin/src/components/BookingRefresh.tsx",
+      "route": "/admin/dashboard; /admin/today; /admin/booking; /admin/check-in; /admin/check-out",
+      "component": "ProductionRefresh",
+      "action": "Visible-only timed/manual/focus refresh",
+      "data": "Active scoped booking queries; 30 sec staff / 15 sec reception",
+      "current": "Refetches active queries; no new endpoint; avoid auth renewal on polling",
+      "operations": [
+        "staffBookings",
+        "staffBooking"
+      ],
+      "gaps": [
+        "BE-READS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Visible-page refresh timer, focus refresh and manual refresh for lists/details/reception",
+      "wireUsage": {
+        "staffBookings": "Reissue the active typed list/dashboard/reception query; replace rows/counts/metrics together.",
+        "staffBooking": "Reissue the selected-id read; replace only with a currently authorized matching detail."
+      },
+      "previousOperations": [
+        "staffBookings",
+        "staffBooking"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F20",
+      "file": "frontendx/apps/admin/src/components/DataRefresh.tsx",
+      "route": "/admin/*",
+      "component": "DataRefresh",
+      "action": "Retry / show freshness and offline state",
+      "data": "Existing query fetch status/error/update time",
+      "current": "Pure query control; no persisted business data",
+      "operations": [
+        "staffBookings",
+        "staffEmployees",
+        "staffIntegrations"
+      ],
+      "gaps": [
+        "BE-READS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "DataRefresh freshness/offline/error notice and retry controls",
+      "wireUsage": {
+        "staffBookings": "Refetch existing booking view; use query fetch/error/update state for the freshness control.",
+        "staffEmployees": "Refetch employee page; no separate freshness endpoint.",
+        "staffIntegrations": "Refetch safe integration metadata; no separate freshness endpoint."
+      },
+      "previousOperations": [
+        "staffBookings",
+        "staffEmployees",
+        "staffRoles",
+        "staffIntegrations"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F21",
+      "file": "frontendx/apps/admin/src/features/CreateAppointment.tsx",
+      "route": "/admin/booking?new=1; /admin/today?new=1",
+      "component": "CreateAppointment",
+      "action": "Open staff standard form / submit",
+      "data": "Authorized active official catalog; ordinary fields, roster, notes, optional document",
+      "current": "useCreateAppointment; UUID retained while payload unchanged; room/duration not collected",
+      "operations": [
+        "staffCatalogs",
+        "staffCreateBooking",
+        "staffUpload"
+      ],
+      "gaps": [
+        "BE-VISITS",
+        "FE-UPLOAD"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Staff standard-appointment dialog: official dropdown, schedule, representative/roster, note fields, document picker and submit",
+      "wireUsage": {
+        "staffCatalogs": "officers[].id/name/vip populate and scope the official selector; attachmentsEnabled gates the optional file picker.",
+        "staffCreateBooking": "Send visitKind=standard and ordinary fields, UUID idempotencyKey and optional notes/upload token; returned approved booking is the save result.",
+        "staffUpload": "Upload file/reference and use token as attachmentToken on the create command; keep private bytes outside JSON."
+      },
+      "previousOperations": [
+        "staffCatalogs",
+        "staffCreateBooking",
+        "staffUpload"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F22",
+      "file": "frontendx/apps/admin/src/features/RestrictedAppointment.tsx",
+      "route": "/admin/booking?new=1&kind=restricted",
+      "component": "RestrictedAppointment",
+      "action": "Create restricted visit",
+      "data": "date/time required; optional name/organization/serviceId/officerId and notes",
+      "current": "Protocol create gate; no contact/identity number/roster/file required",
+      "operations": [
+        "staffCatalogs",
+        "staffCreateBooking"
+      ],
+      "gaps": [
+        "BE-VISITS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Kunjungan Terbatas creation dialog: date/time, optional identity/target fields, notes and create button",
+      "wireUsage": {
+        "staffCatalogs": "officers[].id/name populate optional officerId selector; no public contact/roster/file requirement is added.",
+        "staffCreateBooking": "Send visitKind=restricted, idempotencyKey/date/time and optional name/organization/serviceId/officerId/notes; render returned authorized restricted booking."
+      },
+      "previousOperations": [
+        "staffCatalogs",
+        "staffCreateBooking"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F23",
+      "file": "frontendx/apps/admin/src/features/RestrictedAppointment.tsx",
+      "route": "/admin/booking?selected={id}",
+      "component": "RestrictedAppointment",
+      "action": "Edit restricted identity/target/notes",
+      "data": "Version; date/time; empty strings clear optional identity/target",
+      "current": "useBookingAction(update); date/time inputs readOnly on existing record",
+      "operations": [
+        "staffRestrictedUpdate",
+        "staffCatalogs"
+      ],
+      "gaps": [
+        "BE-VISITS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Restricted visit edit dialog and Simpan perubahan button",
+      "wireUsage": {
+        "staffRestrictedUpdate": "Send version/visitKind/date/time with optional identity/target/notes; omission preserves and empty values clear. Current schedule controls are read-only; schedule changes use reschedule.",
+        "staffCatalogs": "Use authorized official IDs/names and retained choices for the optional target selector."
+      },
+      "previousOperations": [
+        "staffRestrictedUpdate",
+        "staffCatalogs"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F24",
+      "file": "frontendx/apps/admin/src/features/BookingDetail.tsx",
+      "route": "/admin/booking; /admin/today",
+      "component": "BookingDetail",
+      "action": "Approve pending visit",
+      "data": "Version, selected room, duration and public/private notes",
+      "current": "Form sends room label and duration; target requires roomId",
+      "operations": [
+        "staffApprove",
+        "staffCatalogs"
+      ],
+      "gaps": [
+        "BE-VISITS",
+        "FE-ROOM"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Approve dialog: room dropdown, duration input, note fields and confirmation",
+      "wireUsage": {
+        "staffApprove": "Send version/roomId/duration and optional notes; replace detail with returned approved StaffBooking. Current form sends room label and requires coordinated conversion.",
+        "staffCatalogs": "rooms[].id/name/active supply the approval room selector; selected value must become stable roomId."
+      },
+      "previousOperations": [
+        "staffApprove",
+        "staffCatalogs"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F25",
+      "file": "frontendx/apps/admin/src/features/BookingDetail.tsx",
+      "route": "/admin/booking; /admin/today",
+      "component": "BookingDetail",
+      "action": "Reject pending visit",
+      "data": "Version; public reason 5-1000; private note <=2000",
+      "current": "rejectionSchema -> useBookingAction; real backend absent",
+      "operations": [
+        "staffReject"
+      ],
+      "gaps": [
+        "BE-VISITS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Reject dialog: public rejection-reason textarea, private note textarea and reject button",
+      "wireUsage": {
+        "staffReject": "Send version/rejectionReason/optional internalRejectionNote; returned rejected booking refreshes visible public/private sections according to authority."
+      },
+      "previousOperations": [
+        "staffReject"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F26",
+      "file": "frontendx/apps/admin/src/features/BookingDetail.tsx",
+      "route": "/admin/booking; /admin/today",
+      "component": "BookingDetail",
+      "action": "Reschedule",
+      "data": "Version, future date/time, duration, room, reason, notes",
+      "current": "room label sent; domain.can permits Approved only while D100 also selects Pending",
+      "operations": [
+        "staffReschedule",
+        "staffCatalogs"
+      ],
+      "gaps": [
+        "BE-VISITS",
+        "FE-ROOM",
+        "FE-PENDING"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Reschedule dialog: new date/time, room dropdown, duration, reason and notes",
+      "wireUsage": {
+        "staffReschedule": "Send version/date/time/duration/optional roomId/reason/notes; returned schedule/version/timing refresh detail. Missing roomId clears the room under full schedule replacement.",
+        "staffCatalogs": "rooms[].id/name/active populate room options; current form still sends a room label."
+      },
+      "previousOperations": [
+        "staffReschedule",
+        "staffCatalogs"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F27",
+      "file": "frontendx/apps/admin/src/features/BookingDetail.tsx",
+      "route": "/admin/booking; /admin/today",
+      "component": "BookingDetail",
+      "action": "Staff cancel / read private notes",
+      "data": "Version, reason, internalCancellationNote; decision/field scope",
+      "current": "useBookingAction(cancel); separate from public pair authorization",
+      "operations": [
+        "staffCancel"
+      ],
+      "gaps": [
+        "BE-VISITS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Staff cancellation dialog: public reason, internal cancellation note and confirm button",
+      "wireUsage": {
+        "staffCancel": "Send version/reason/optional internalCancellationNote; use returned cancelled booking and only authorized private-note fields."
+      },
+      "previousOperations": [
+        "staffCancel"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F28",
+      "file": "frontendx/apps/admin/src/features/VisitNotesFields.tsx",
+      "route": "staff create / approve / reschedule / restricted edit dialogs",
+      "component": "VisitNotesFields",
+      "action": "Edit public instructions / private coordination",
+      "data": "Separate optional 2000-code-point values; omit preserves; empty clears",
+      "current": "Shared form fields; notes travel with existing command",
+      "operations": [
+        "staffCreateBooking",
+        "staffApprove",
+        "staffReschedule",
+        "staffRestrictedUpdate"
+      ],
+      "gaps": [
+        "BE-VISITS",
+        "FE-BOUNDS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Shared Instruksi pengunjung and Catatan koordinasi internal textareas",
+      "wireUsage": {
+        "staffCreateBooking": "Include visitorInstructions/coordinationNote in create; returned fields render only for the permitted projection.",
+        "staffApprove": "Include optional note fields in approve; omission preserves, empty clears.",
+        "staffReschedule": "Include optional note fields in reschedule; public/private projection remains distinct.",
+        "staffRestrictedUpdate": "Include optional note fields in restricted update; full read alone does not grant coordination-note authority."
+      },
+      "previousOperations": [
+        "staffCreateBooking",
+        "staffApprove",
+        "staffReschedule",
+        "staffRestrictedUpdate"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F29",
+      "file": "frontendx/apps/admin/src/features/AttachmentAccess.tsx",
+      "route": "/admin/booking?selected={id}",
+      "component": "AttachmentAccess",
+      "action": "Read attached private file",
+      "data": "Authorized bytes, MIME, safe filename; view and download",
+      "current": "downloadAttachment only; request lacks explicit disposition=attachment",
+      "operations": [
+        "staffAttachment"
+      ],
+      "gaps": [
+        "BE-DOCUMENTS",
+        "FE-FILEVIEW"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Private supporting-document action in BookingDetail; existing action downloads only",
+      "wireUsage": {
+        "staffAttachment": "Send path id and disposition=inline for view or attachment for download; MIME/Content-Disposition name the returned bytes. Current download helper omits explicit disposition=attachment."
+      },
+      "previousOperations": [
+        "staffAttachment"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F30",
+      "file": "frontendx/apps/admin/src/pages/Reception.tsx",
+      "route": "/admin/check-in; /admin/check-out",
+      "component": "Reception",
+      "action": "Read arrival / still-inside page",
+      "data": "view=reception/mode; check-in today; checkout all dates; pageSize=25",
+      "current": "useBookings typed view; one endpoint reused",
+      "operations": [
+        "staffBookings"
+      ],
+      "gaps": [
+        "BE-READS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Reception scheduled-arrivals / still-inside table and previous/next page controls",
+      "wireUsage": {
+        "staffBookings": "Send view=reception/mode/page/pageSize=25; check-in sends today date, checkout spans all dates. items and total/page/pageSize populate the table and pagination."
+      },
+      "previousOperations": [
+        "staffBookings"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F31",
+      "file": "frontendx/apps/admin/src/pages/Reception.tsx",
+      "route": "/admin/check-in; /admin/check-out",
+      "component": "Reception",
+      "action": "Resolve manual code or QR before confirmation",
+      "data": "credential -> current authorized standard/restricted arrival projection",
+      "current": "repository.resolve; no attendance side effect; restricted result kept local",
+      "operations": [
+        "staffResolve"
+      ],
+      "gaps": [
+        "BE-ATTENDANCE"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Manual visit-code form or QR resolve result before attendance confirmation",
+      "wireUsage": {
+        "staffResolve": "Send credential; authorized ArrivalBooking fields populate the identity/visit confirmation dialog. Resolve never changes attendance."
+      },
+      "previousOperations": [
+        "staffResolve"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F32",
+      "file": "frontendx/apps/admin/src/features/Scanner.tsx",
+      "route": "/admin/check-in; /admin/check-out",
+      "component": "Scanner",
+      "action": "Scan camera QR",
+      "data": "BarcodeDetector raw string passed to Reception.resolve",
+      "current": "Camera local only; no image upload/storage/API",
+      "operations": [
+        "staffResolve"
+      ],
+      "gaps": [
+        "BE-ATTENDANCE"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Camera scanner preview and decoded-QR handler",
+      "wireUsage": {
+        "staffResolve": "Send only BarcodeDetector raw string as credential to resolve; returned booking opens confirmation. Camera frames stay local."
+      },
+      "previousOperations": [
+        "staffResolve"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F33",
+      "file": "frontendx/apps/admin/src/pages/Reception.tsx",
+      "route": "/admin/check-in",
+      "component": "Reception",
+      "action": "Confirm identity then check in",
+      "data": "Matching credential and expected version, server timing eligibility",
+      "current": "useBookingAction(checkin); checkbox local; no identityVerified wire field",
+      "operations": [
+        "staffCheckin"
+      ],
+      "gaps": [
+        "BE-ATTENDANCE"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Reception identity-confirmation checkbox and check-in confirmation button",
+      "wireUsage": {
+        "staffCheckin": "Send resolved id, matching credential and version; returned checked_in ArrivalBooking refreshes attendance. Checkbox stays local; no identityVerified wire field."
+      },
+      "previousOperations": [
+        "staffCheckin"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F34",
+      "file": "frontendx/apps/admin/src/pages/Reception.tsx",
+      "route": "/admin/check-out",
+      "component": "Reception",
+      "action": "Confirm identity then check out",
+      "data": "Credential/version; checked_in may be from earlier date",
+      "current": "useBookingAction(checkout); consumed nonrevoked QR usable per D96",
+      "operations": [
+        "staffCheckout"
+      ],
+      "gaps": [
+        "BE-ATTENDANCE"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Reception identity-confirmation checkbox and check-out confirmation button",
+      "wireUsage": {
+        "staffCheckout": "Send resolved id/credential/version; returned checked_out ArrivalBooking removes the visit from still-inside results; late/prior-date checkout is supported."
+      },
+      "previousOperations": [
+        "staffCheckout"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F35",
+      "file": "frontendx/apps/admin/src/features/EmployeeDirectory.tsx",
+      "route": "/admin/employees",
+      "component": "EmployeeDirectory",
+      "action": "Search/page/reload employee directory",
+      "data": "q/page/pageSize=25, filtered/totalAll, password metadata",
+      "current": "management.employees; local preview array; no backend admin routes",
+      "operations": [
+        "staffEmployees",
+        "staffEmployee"
+      ],
+      "gaps": [
+        "BE-ADMIN",
+        "FE-DIRECTORY"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Read-only employee directory search, cards/table, pagination and detail; editing controls deferred",
+      "wireUsage": {
+        "staffEmployees": "Send q/page/pageSize=25; EmployeePage.items/total/totalAll/page/pageSize populate the read-only directory. Password policy metadata and create/edit actions are deferred.",
+        "staffEmployee": "Read the employee id/profile/single-role array/assignments/version for an authorized read-only detail. Existing edit-conflict reload is a deferred use; no account writes in Phase 1."
+      },
+      "previousOperations": [
+        "staffEmployees",
+        "staffEmployee"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F36",
+      "file": "frontendx/apps/admin/src/features/EmployeeEditor.tsx",
+      "route": "/admin/employees",
+      "component": "EmployeeEditor",
+      "action": "Create employee / edit / deactivate",
+      "data": "roles, profile strings, active, assignments, initial password only on create, version on edit",
+      "current": "management.saveEmployee; preserves unavailable assignments",
+      "operations": [],
+      "gaps": [],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Employee create/edit dialog: profile fields, active checkbox, roles, assignments and initial password on create",
+      "wireUsage": {},
+      "previousOperations": [
+        "createEmployee",
+        "patchEmployee",
+        "staffCatalogs"
+      ],
+      "phase": "later",
+      "phaseNote": "Existing UI is deferred and must not be mounted/call legacy endpoints in Phase 1. Accounts, single roles and PA assignments are provisioned through controlled database setup; password/role/session lifecycle UI is deferred."
+    },
+    {
+      "id": "F37",
+      "file": "frontendx/apps/admin/src/features/RoleAssignments.tsx",
+      "route": "/admin/employees editor",
+      "component": "RoleAssignments",
+      "action": "Select multiple employee roles",
+      "data": "Assigned role labels from fixed role enum; tag/search state",
+      "current": "Local selector; saved atomically with employee; no join-row endpoint",
+      "operations": [],
+      "gaps": [],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Multi-role tag/search selector within the employee editor",
+      "wireUsage": {},
+      "previousOperations": [
+        "createEmployee",
+        "patchEmployee"
+      ],
+      "phase": "later",
+      "phaseNote": "Existing UI is deferred and must not be mounted/call legacy endpoints in Phase 1. Accounts, single roles and PA assignments are provisioned through controlled database setup; password/role/session lifecycle UI is deferred."
+    },
+    {
+      "id": "F38",
+      "file": "frontendx/apps/admin/src/features/EmployeeEditor.tsx",
+      "route": "/admin/employees editor",
+      "component": "EmployeeEditor",
+      "action": "Choose assigned non-VIP official / retain inactive assignment",
+      "data": "Authorized catalog plus retained IDs on employee",
+      "current": "useCatalogs; no truncation; current validator lacks max100/unique IDs",
+      "operations": [],
+      "gaps": [],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "PA non-VIP official-assignment checkboxes and retained-unavailable-assignment notice",
+      "wireUsage": {},
+      "previousOperations": [
+        "staffCatalogs",
+        "patchEmployee",
+        "createEmployee"
+      ],
+      "phase": "later",
+      "phaseNote": "Existing UI is deferred and must not be mounted/call legacy endpoints in Phase 1. Accounts, single roles and PA assignments are provisioned through controlled database setup; password/role/session lifecycle UI is deferred."
+    },
+    {
+      "id": "F39",
+      "file": "frontendx/apps/admin/src/features/RoleManagement.tsx",
+      "route": "/admin/roles",
+      "component": "RoleManagement / RoleEditor",
+      "action": "List/reload/save role permissions",
+      "data": "Permission dictionary in each RoleDefinition; assignability/editable/version",
+      "current": "management.roles/saveRole; preview roles use names as IDs",
+      "operations": [],
+      "gaps": [],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Peran operasional cards, Edit akses dialog, permission checkboxes and Simpan akses button",
+      "wireUsage": {},
+      "previousOperations": [
+        "staffRoles",
+        "patchRole"
+      ],
+      "phase": "later",
+      "phaseNote": "Existing UI is deferred and must not be mounted/call legacy endpoints in Phase 1. Accounts, single roles and PA assignments are provisioned through controlled database setup; password/role/session lifecycle UI is deferred."
+    },
+    {
+      "id": "F40",
+      "file": "frontendx/apps/admin/src/features/IntegrationManagement.tsx",
+      "route": "/admin/integration",
+      "component": "IntegrationManagement / IntegrationEditor",
+      "action": "Read/configure provider; keep/clear secret; versioned save",
+      "data": "Safe field descriptors, configured secret flags, health; SMTP six-key schema",
+      "current": "Generic live form uses server metadata; preview endpoint/bucket/credential examples are not selected providers",
+      "operations": [
+        "staffIntegrations",
+        "patchIntegration"
+      ],
+      "gaps": [
+        "BE-INTEGRATIONS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Integration service cards, Konfigurasi dialog, enabled checkbox, dynamic settings fields and secret keep/clear controls",
+      "wireUsage": {
+        "staffIntegrations": "Integration.name/description/health/enabled/fields populate cards and editor; secret fields expose configured flags, never values.",
+        "patchIntegration": "Send enabled/values/clearSecrets/version for path id; returned safe Integration refreshes card/health/descriptors without echoing secrets."
+      },
+      "previousOperations": [
+        "staffIntegrations",
+        "patchIntegration"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F41",
+      "file": "frontendx/apps/admin/src/pages/Reports.tsx",
+      "route": "/admin/analytics; /admin/logs",
+      "component": "Reports",
+      "action": "Read filtered summary / refresh",
+      "data": "Inclusive from/to/status; seven counts, scope, revision, generatedAt, canExport",
+      "current": "useVisitSummary validates filter echo/sum; both tabs share operations",
+      "operations": [
+        "reportSummary"
+      ],
+      "gaps": [
+        "BE-REPORTS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Analytics/logs date range and status filters, total cards and per-status summary table/meters",
+      "wireUsage": {
+        "reportSummary": "Send inclusive from/to/status; filter echo/scope/generatedAt/counts/total/revision/canExport populate summary and export eligibility. Restricted records are excluded."
+      },
+      "previousOperations": [
+        "reportSummary"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F42",
+      "file": "frontendx/apps/admin/src/pages/Reports.tsx",
+      "route": "/admin/analytics; /admin/logs",
+      "component": "Reports",
+      "action": "Export displayed revision / recover conflict",
+      "data": "Same filter/revision -> filename,csv,revision JSON",
+      "current": "repository.exportSummary -> Blob download; conflict refetch; summary rows only",
+      "operations": [
+        "reportExport",
+        "reportSummary"
+      ],
+      "gaps": [
+        "BE-REPORTS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Unduh ringkasan CSV button and changed-summary conflict recovery",
+      "wireUsage": {
+        "reportExport": "Send the displayed from/to/status/revision; filename/csv/revision build the local CSV download, containing summary rows only.",
+        "reportSummary": "On export 409, reload the same summary filter and display its current counts/revision before another export."
+      },
+      "previousOperations": [
+        "reportExport",
+        "reportSummary"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F43",
+      "file": "frontendx/apps/admin/src/pages/Settings.tsx",
+      "route": "/admin/analytics; /admin/logs; /admin/employees; /admin/roles; /admin/integration",
+      "component": "Settings",
+      "action": "Route shared management modules",
+      "data": "No additional data beyond mounted module",
+      "current": "Lazy router; guard permissions in main.tsx",
+      "operations": [
+        "staffEmployees",
+        "staffIntegrations",
+        "reportSummary"
+      ],
+      "gaps": [
+        "BE-ADMIN"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Settings shell mounting read-only employees, integrations and reports; roles/editor routes deferred",
+      "wireUsage": {
+        "staffEmployees": "Delegate to employee directory; no additional shell response.",
+        "staffIntegrations": "Delegate to integration cards/editor; no additional shell response.",
+        "reportSummary": "Delegate to Reports summary UI; no separate logs/analytics data API."
+      },
+      "previousOperations": [
+        "staffEmployees",
+        "staffRoles",
+        "staffIntegrations",
+        "reportSummary"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F44",
+      "file": "frontendx/apps/admin/src/main.tsx",
+      "route": "/admin/*",
+      "component": "Shell / Guard",
+      "action": "Render permitted nav, user name, role gates",
+      "data": "Session permissions, assignments and required-password/role state",
+      "current": "UI guard is presentation; backend must independently enforce every route",
+      "operations": [
+        "staffMe"
+      ],
+      "gaps": [
+        "FE-AUTH",
+        "BE-PHASE1-AUTH"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Staff name/role display, fixed-permission navigation and route guards",
+      "wireUsage": {
+        "staffMe": "Use CurrentUser.name/role/permissions/assignedOfficerIds; there are no availableRoles, roleRevision, role-selection or required-password gates. Backend independently checks current authority."
+      },
+      "previousOperations": [
+        "getSession"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F45",
+      "file": "frontendx/packages/data/src/attachments.ts",
+      "route": "public/staff submission forms",
+      "component": "uploadAttachment",
+      "action": "Upload/replay selected file",
+      "data": "Multipart file+UUID reference; expiry and serverTime; token only returned",
+      "current": "WeakMap reuses reference for same File/audience; optional upload still attempted without capability check",
+      "operations": [
+        "publicUpload",
+        "staffUpload"
+      ],
+      "gaps": [
+        "FE-UPLOAD",
+        "BE-DOCUMENTS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Shared file-picker upload/retry transport for public and staff forms",
+      "wireUsage": {
+        "publicUpload": "Send one file and stable per-File/audience UUID reference; token/expiresAt/serverTime feed the public create attachmentToken field.",
+        "staffUpload": "Use the same multipart/result shape with Bearer/current create authority; token feeds staff standard creation."
+      },
+      "previousOperations": [
+        "publicUpload",
+        "staffUpload"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F46",
+      "file": "frontendx/packages/data/src/http.ts",
+      "route": "all API consumers",
+      "component": "createHttpClient",
+      "action": "Execute request / recover error",
+      "data": "JSON/multipart/blob, credentials, error fields, Retry-After",
+      "current": "Existing shared client sends no Bearer and still includes cookies; Phase 1 must not rely on them. Its field-error parser expects string[]; current backend string-valued errors are filtered out (BE-ERRORS).",
+      "operations": [
+        "staffLogin",
+        "staffMe",
+        "publicCreateBooking"
+      ],
+      "gaps": [
+        "FE-AUTH",
+        "BE-ERRORS",
+        "BE-PHASE1-AUTH"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Shared Bearer-only HTTP transport and field-error/rate-limit handling",
+      "wireUsage": {
+        "staffLogin": "POST JSON login with no auth-cookie/CSRF dependency; parse AuthResult and retain token/expiry/user in memory. Current signIn still calls the superseded session route and discards its result.",
+        "staffMe": "Attach the in-memory Bearer token; parse CurrentUser, clear auth/private state on expiry or unauthorized response. Current client still uses the old session endpoint/shape.",
+        "publicCreateBooking": "Parse PublicBooking or ApiError.fieldErrors arrays; retain uncertainty/recovery behavior and Retry-After handling."
+      },
+      "previousOperations": [
+        "createSession",
+        "getSession",
+        "publicCreateBooking"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F47",
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "route": "all booking consumers",
+      "component": "createRepository",
+      "action": "Share production and explicit development adapters",
+      "data": "Public/staff paths; strict response schemas; role only in __preview",
+      "current": "Production list() legacy array branch exists but useBookings uses readStaffBookings instead",
+      "operations": [
+        "staffBookings",
+        "publicLookup"
+      ],
+      "gaps": [
+        "BE-READS"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Shared production repository used by booking/status components; preview adapter is explicit",
+      "wireUsage": {
+        "staffBookings": "Use typed paged ReadModel for staff hooks; legacy array list() is not the target wire shape.",
+        "publicLookup": "Use pair-authorized PublicBooking for status/history; preview role hints never enter production authority."
+      },
+      "previousOperations": [
+        "staffBookings",
+        "publicLookup"
+      ],
+      "phase": "phase1"
+    },
+    {
+      "id": "F48",
+      "file": "frontendx/apps/visitor/src/main.tsx",
+      "route": "/; /booking; /status",
+      "component": "App",
+      "action": "Open landing/registration/status",
+      "data": "No separate landing statistics/content API",
+      "current": "Static hero/info; embedded Booking/Status supply dynamic data",
+      "operations": [
+        "publicCatalogs",
+        "publicLookup"
+      ],
+      "gaps": [
+        "FE-CATALOG"
+      ],
+      "evidence": "confirmed requirement; inspected source",
+      "uiElement": "Visitor landing shell with embedded registration/status views; hero/info content is static",
+      "wireUsage": {
+        "publicCatalogs": "Registration child consumes the shared catalogs snapshot for dropdown/notice; no landing statistics API.",
+        "publicLookup": "Status child consumes pair-authorized booking; the shell needs no extra landing endpoint."
+      },
+      "previousOperations": [
+        "publicCatalogs",
+        "publicLookup"
+      ],
+      "phase": "phase1"
+    }
+  ],
+  "gaps": [
+    {
+      "id": "BE-VISITS",
+      "status": "missing",
+      "finding": "Visits, scheduling, public lookup/recovery and commands have no handlers/interfaces/repositories/DTOs yet.",
+      "resolution": "Implement plan slices 4-5 with atomic audit/outbox/resource locks; no generic CRUD or parallel service.",
+      "blocksTarget": true
+    },
+    {
+      "id": "BE-READS",
+      "status": "missing",
+      "finding": "Staff catalogs, typed booking views and detail have consumer adapters but no backend routes.",
+      "resolution": "Add authorized catalog/read interfaces; scope before search/count/sample; preserve all three typed views.",
+      "blocksTarget": true
+    },
+    {
+      "id": "BE-ATTENDANCE",
+      "status": "missing",
+      "finding": "QR issuance/resolve/checkin/checkout do not exist in the live backend. AdmissionUsecase currently means HTTP request admission/rate limiting, not visit QR.",
+      "resolution": "Use separate reception module within existing layers; do not overload request-limiter interface.",
+      "blocksTarget": true
+    },
+    {
+      "id": "BE-DOCUMENTS",
+      "status": "missing",
+      "finding": "Upload/link/private download operations absent; development attachment capability is false.",
+      "resolution": "Keep disabled until token ownership, private bytes, content verification and cleanup implemented.",
+      "blocksTarget": true
+    },
+    {
+      "id": "BE-ADMIN",
+      "status": "missing",
+      "finding": "Read-only employee page/detail routes are absent. Employee/account/role writes are deferred.",
+      "resolution": "Implement only authorized directory reads for Super Admin; provision accounts/roles/PA assignments via controlled database setup.",
+      "blocksTarget": true
+    },
+    {
+      "id": "BE-INTEGRATIONS",
+      "status": "missing",
+      "finding": "Safe integration metadata/config endpoints and SMTP worker absent.",
+      "resolution": "Implement SMTP-only keys and write-only encrypted secret; storage remains disabled metadata.",
+      "blocksTarget": true
+    },
+    {
+      "id": "BE-REPORTS",
+      "status": "missing",
+      "finding": "Summary/export routes absent.",
+      "resolution": "Aggregate ordinary visits on demand; no report/dashboard tables.",
+      "blocksTarget": true
+    },
+    {
+      "id": "FE-CATALOG",
+      "status": "incompatible",
+      "finding": "wire.ts and Catalogs.rooms expect string[]; backend returns room objects. attachmentsEnabled is stripped by the current Zod object.",
+      "resolution": "Align Room objects and capability schema/forms together; retain room label in read records.",
+      "blocksTarget": true
+    },
+    {
+      "id": "FE-AUTH",
+      "status": "incompatible",
+      "finding": "Frontend still calls session routes, sends no Bearer and expects legacy Session/TokenResult/gates. New Phase 1 login/me consumers do not exist.",
+      "resolution": "Use /staff/auth/login and /staff/auth/me, AuthResult.user/CurrentUser, memory-only token and fixed expiry. Local logout; remove role/password/lifecycle UI from Phase 1 routes. No CSRF/cookie/refresh implementation required.",
+      "blocksTarget": true
+    },
+    {
+      "id": "FE-ROOM",
+      "status": "incompatible",
+      "finding": "BookingDetail sends room labels as room, not selected roomId.",
+      "resolution": "Bind options to stable IDs; omit unassigned; no silent name-to-ID coercion.",
+      "blocksTarget": true
+    },
+    {
+      "id": "FE-PENDING",
+      "status": "incompatible",
+      "finding": "domain.can reschedule gate allows Approved only, while selected D100 includes Pending.",
+      "resolution": "Enable Pending deliberately while preserving Missed exclusion and server state validation.",
+      "blocksTarget": true
+    },
+    {
+      "id": "FE-BOUNDS",
+      "status": "incompatible",
+      "finding": "Some frontend organization/email/reason/text checks are looser or count UTF-16; identifiers accept any nonempty string.",
+      "resolution": "Align canonical IDs, ASCII email max254, code-point text, reason max1000; fixtures remain explicit preview only.",
+      "blocksTarget": true
+    },
+    {
+      "id": "FE-UPLOAD",
+      "status": "incompatible",
+      "finding": "Forms expose/call upload without consuming attachmentsEnabled=false; backend capability is false.",
+      "resolution": "Disable/hide optional new uploads with explanation; continue booking without files.",
+      "blocksTarget": true
+    },
+    {
+      "id": "FE-FILEVIEW",
+      "status": "incompatible",
+      "finding": "AttachmentAccess only downloads; default request has no disposition while target defaults inline.",
+      "resolution": "Offer View plus Download via same authorized bytes route and explicit disposition; release object URLs.",
+      "blocksTarget": true
+    },
+    {
+      "id": "FE-CORRELATION",
+      "status": "incompatible",
+      "finding": "Detail and page metadata are not correlated with the request. Restricted validators strip unknown raw fields before checking their projection, so an extra private field can escape detection.",
+      "resolution": "Verify requested ID/page/pageSize and inspect restricted raw projection allowlists before normalization. Ordinary consumers continue tolerating compatible additive fields under D57; server serializers still emit only documented authorized fields.",
+      "blocksTarget": true
+    },
+    {
+      "id": "BE-AUTH-TESTS",
+      "status": "unverified",
+      "finding": "Existing HTTP fixtures cover superseded session handlers, not the Phase 1 login/me and database role checks.",
+      "resolution": "Verify bcrypt login, token claims/expiry, inactive/missing accounts, exactly-one-role checks, manual role/assignment changes, fixed permissions and protected resource denials on the owning implementation slice.",
+      "blocksTarget": true
+    },
+    {
+      "id": "DB-RELEASE",
+      "status": "unresolved",
+      "finding": "Production attachment content/scanner/provider, organizational retention/purge and deployment domains/secrets remain deferred.",
+      "resolution": "Keep capability disabled; these block production enablement, not the disabled v1 contract or this audit.",
+      "blocksTarget": false
+    },
+    {
+      "id": "BE-ERRORS",
+      "status": "incompatible",
+      "finding": "ApiError and frontend require fieldErrors arrays; current failure.Field/HTTP middleware emit string values. Unknown JSON/query keys use legacy codes without selected D57/D58 rejected paths. Source runtime fixtures reproduce these errors; their password/logout samples are deferred source evidence.",
+      "resolution": "Align transport decoding and safe failure mapping with D57/D58 and Record<string,string[]>; retain semantic 422 validation. Add precise code/field/schema assertions without changing the frontend to discard errors.",
+      "blocksTarget": true
+    },
+    {
+      "id": "BE-PHASE1-AUTH",
+      "status": "missing",
+      "finding": "Existing auth router/middleware/config require persisted sessions, refresh/CSRF/gateway keys, role gates and credential revisions. Neither new Phase 1 auth route is implemented.",
+      "resolution": "Replace the auth slice through the same interfaces/layers with login/me, AccessProof, current DB role/assignments and fixed permission mapping. Stop exposing legacy session/initialization routes in the Phase 1 build. Do not merely disable middleware.",
+      "blocksTarget": true
+    },
+    {
+      "id": "FE-DIRECTORY",
+      "status": "incompatible",
+      "finding": "Existing employee editor and role management expose writes; directory parser/form policy expects password metadata no longer in Phase 1 EmployeePage.",
+      "resolution": "Keep directory/detail read-only; hide/disable account/role/assignment/password editors and remove their requests. Adapt EmployeePage parser without password policy metadata.",
+      "blocksTarget": true
+    }
+  ],
+  "sourceInterfaces": {
+    "internal/repository/auth/auth_repository.go:AuthRepository": {
+      "GetSessionSnapshot": "func(ctx context.Context, sessionID string) (entity.SessionSnapshot, error)"
+    },
+    "internal/repository/auth/session_repository.go:SessionRepository": {
+      "@AuthRepository": "AuthRepository",
+      "FindRefresh": "func(ctx context.Context, hash string) (string, error)",
+      "FinishLogin": "func(ctx context.Context, reservation string, success bool) error",
+      "GetCredential": "func(ctx context.Context, email string) (entity.EmployeeCredential, error)",
+      "ReserveLogin": "func(ctx context.Context, ipKey, accountKey string) (string, int, error)",
+      "Transaction": "func(ctx context.Context, employeeID int32, operation func(tx SessionTransaction) error) error"
+    },
+    "internal/repository/auth/session_repository.go:SessionTransaction": {
+      "Audit": "func(employeeID int32, action string) error",
+      "ClearRecoveries": "func(sessionID string) error",
+      "Create": "func(session entity.StaffSession) error",
+      "Credential": "func(employeeID int32) (entity.EmployeeCredential, error)",
+      "Now": "func() time.Time",
+      "Recovery": "func(sessionID, requestID string) (entity.SessionRecovery, error)",
+      "RememberRefresh": "func(sessionID, hash string) error",
+      "Roles": "func(employeeID int32) (map[string]int32, error)",
+      "Save": "func(session entity.StaffSession) error",
+      "SaveRecovery": "func(recovery entity.SessionRecovery) error",
+      "Session": "func(id string) (entity.StaffSession, error)",
+      "SetPassword": "func(employeeID int32, encodedHash string, currentSessionID string) error"
+    },
+    "internal/repository/catalog/catalog_repository.go:CatalogRepository": {
+      "GetPublicCatalogs": "func(ctx context.Context) (entity.PublicCatalog, error)"
+    },
+    "internal/serializer/auth/auth_serializer.go:AuthSerializer": {
+      "ToSession": "func(snapshot entity.SessionSnapshot) dto.Session"
+    },
+    "internal/serializer/catalog/catalog_serializer.go:CatalogSerializer": {
+      "ToPublicCatalog": "func(in entity.PublicCatalog) dto.PublicCatalog"
+    },
+    "internal/usecase/auth/auth_usecase.go:AuthUsecase": {
+      "GetSession": "func(ctx context.Context, proof entity.SessionProof) (dto.Session, error)"
+    },
+    "internal/usecase/auth/credential.go:CredentialVerifier": {
+      "Hash": "func(ctx context.Context, password string) (string, error)",
+      "Verify": "func(ctx context.Context, encodedHash, password string) (bool, error)"
+    },
+    "internal/usecase/auth/session_usecase.go:SessionUsecase": {
+      "Binding": "func(ctx context.Context, secret string, allowConsumed bool) (string, time.Time, error)",
+      "ChangePassword": "func(ctx context.Context, proof entity.SessionProof, request dto.PasswordChange) (CredentialResult, error)",
+      "Login": "func(ctx context.Context, request dto.Login, ip string) (CredentialResult, error)",
+      "Logout": "func(ctx context.Context, secret string) error",
+      "Refresh": "func(ctx context.Context, secret, requestID string) (CredentialResult, error)",
+      "Renew": "func(ctx context.Context, proof entity.SessionProof) (dto.Session, error)",
+      "SwitchRole": "func(ctx context.Context, proof entity.SessionProof, role string) (CredentialResult, error)"
+    },
+    "internal/usecase/catalog/catalog_usecase.go:CatalogUsecase": {
+      "GetPublicCatalogs": "func(ctx context.Context) (dto.PublicCatalog, error)"
+    }
+  },
+  "sourceDTOs": {
+    "pkg/dto/auth.go:Login": [
+      {
+        "Name": "email",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "password",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/auth.go:PasswordChange": [
+      {
+        "Name": "currentPassword",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "newPassword",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/auth.go:Refresh": [
+      {
+        "Name": "refreshRequestId",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/auth.go:RoleSelect": [
+      {
+        "Name": "role",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/auth.go:TokenResult": [
+      {
+        "Name": "accessToken",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "tokenType",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "accessExpiresAt",
+        "Type": "time.Time",
+        "Optional": false
+      },
+      {
+        "Name": "session",
+        "Type": "Session",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/catalog.go:CatalogOfficer": [
+      {
+        "Name": "id",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "name",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "vip",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "active",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "jobTitle",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "directorate",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "deputy",
+        "Type": "string",
+        "Optional": true
+      }
+    ],
+    "pkg/dto/catalog.go:CatalogRoom": [
+      {
+        "Name": "id",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "name",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "active",
+        "Type": "bool",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/catalog.go:PublicCatalog": [
+      {
+        "Name": "officers",
+        "Type": "[]CatalogOfficer",
+        "Optional": false
+      },
+      {
+        "Name": "rooms",
+        "Type": "[]CatalogRoom",
+        "Optional": false
+      },
+      {
+        "Name": "attachmentsEnabled",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "privacyNotice",
+        "Type": "*PublishedNotice",
+        "Optional": true
+      }
+    ],
+    "pkg/dto/catalog.go:PublishedNotice": [
+      {
+        "Name": "version",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "id",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "en",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/session.go:Session": [
+      {
+        "Name": "active",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "id",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "name",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "role",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "availableRoles",
+        "Type": "[]string",
+        "Optional": false
+      },
+      {
+        "Name": "roleSelectionRequired",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "roleRevision",
+        "Type": "int64",
+        "Optional": false
+      },
+      {
+        "Name": "permissions",
+        "Type": "[]string",
+        "Optional": false
+      },
+      {
+        "Name": "assignedOfficerIds",
+        "Type": "[]string",
+        "Optional": false
+      },
+      {
+        "Name": "mustChangePassword",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "passwordMinLength",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "passwordMaxBytes",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "timing",
+        "Type": "SessionTiming",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/session.go:SessionTiming": [
+      {
+        "Name": "serverTime",
+        "Type": "int64",
+        "Optional": false
+      },
+      {
+        "Name": "idleExpiresAt",
+        "Type": "time.Time",
+        "Optional": false
+      },
+      {
+        "Name": "absoluteExpiresAt",
+        "Type": "time.Time",
+        "Optional": false
+      }
+    ]
+  },
+  "migrationTables": [
+    {
+      "table": "vms.jabatan",
+      "migration": "202611120001_catalog_and_public_limits.sql"
+    },
+    {
+      "table": "vms.pejabat",
+      "migration": "202611120001_catalog_and_public_limits.sql"
+    },
+    {
+      "table": "vms.ruangan",
+      "migration": "202611120001_catalog_and_public_limits.sql"
+    },
+    {
+      "table": "support.rate_limit_buckets",
+      "migration": "202611120001_catalog_and_public_limits.sql"
+    },
+    {
+      "table": "support.rate_limit_events",
+      "migration": "202611120001_catalog_and_public_limits.sql"
+    },
+    {
+      "table": "vms.pegawai",
+      "migration": "202611120002_identity_session_foundation.sql"
+    },
+    {
+      "table": "support.employee_credentials",
+      "migration": "202611120002_identity_session_foundation.sql"
+    },
+    {
+      "table": "vms.role",
+      "migration": "202611120002_identity_session_foundation.sql"
+    },
+    {
+      "table": "vms.role_pegawai",
+      "migration": "202611120002_identity_session_foundation.sql"
+    },
+    {
+      "table": "vms.pegawai_pejabat",
+      "migration": "202611120002_identity_session_foundation.sql"
+    },
+    {
+      "table": "vms.feature",
+      "migration": "202611120002_identity_session_foundation.sql"
+    },
+    {
+      "table": "vms.action",
+      "migration": "202611120002_identity_session_foundation.sql"
+    },
+    {
+      "table": "vms.permission",
+      "migration": "202611120002_identity_session_foundation.sql"
+    },
+    {
+      "table": "vms.policy",
+      "migration": "202611120002_identity_session_foundation.sql"
+    },
+    {
+      "table": "vms.role_policy",
+      "migration": "202611120002_identity_session_foundation.sql"
+    },
+    {
+      "table": "vms.policy_permission",
+      "migration": "202611120002_identity_session_foundation.sql"
+    },
+    {
+      "table": "support.staff_sessions",
+      "migration": "202611120002_identity_session_foundation.sql"
+    },
+    {
+      "table": "vms.audit_log",
+      "migration": "202611120003_session_lifecycle.sql"
+    },
+    {
+      "table": "support.refresh_lineage",
+      "migration": "202611120003_session_lifecycle.sql"
+    },
+    {
+      "table": "support.refresh_recovery",
+      "migration": "202611120003_session_lifecycle.sql"
+    },
+    {
+      "table": "vms.kedeputian",
+      "migration": "202611150001_employee_officer_organization.sql"
+    },
+    {
+      "table": "vms.direktorat",
+      "migration": "202611150001_employee_officer_organization.sql"
+    }
+  ],
+  "consumerKnownGaps": [
+    "attachments-capability-stripped",
+    "authenticated-request-missing-bearer",
+    "catalog-room-objects",
+    "phase1-auth-result-unconsumed",
+    "phase1-employee-page-parser",
+    "restricted-unknown-private-field-stripped"
+  ],
+  "runtimeKnownGaps": {},
+  "frontendFiles": [
+    {
+      "file": "frontendx/apps/admin/src/components/BookingRefresh.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/components/DataRefresh.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/components/lightswind/sidebar.tsx",
+      "kind": "presentation/local support",
+      "reason": "Local layout, input, language, navigation, focus or visual asset behavior; no direct request/persisted business operation."
+    },
+    {
+      "file": "frontendx/apps/admin/src/features/AttachmentAccess.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/features/BookingDetail.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/features/CreateAppointment.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/features/EmployeeDetails.tsx",
+      "kind": "presentation/local support",
+      "reason": "Read-only F35 employee detail projection using existing employee and catalog queries."
+    },
+    {
+      "file": "frontendx/apps/admin/src/features/EmployeeDirectory.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/features/EmployeeEditor.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/features/IntegrationManagement.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/features/ManagementDialog.tsx",
+      "kind": "presentation/local support",
+      "reason": "Local layout, input, language, navigation, focus or visual asset behavior; no direct request/persisted business operation."
+    },
+    {
+      "file": "frontendx/apps/admin/src/features/PasswordChange.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/features/RestrictedAppointment.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/features/RoleAssignments.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/features/RoleControls.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/features/RoleManagement.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/features/Scanner.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/features/visitLogExport.ts",
+      "kind": "presentation/local support",
+      "reason": "Client CSV/PDF rendering for the separately documented Super Admin visit-log extension."
+    },
+    {
+      "file": "frontendx/apps/admin/src/features/VisitNotesFields.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/hooks/managementFreshness.ts",
+      "kind": "presentation/local support",
+      "reason": "Shared query focus/reconnect/retry settings; uses existing management endpoints."
+    },
+    {
+      "file": "frontendx/apps/admin/src/hooks/useDebouncedValue.ts",
+      "kind": "presentation/local support",
+      "reason": "Local layout, input, language, navigation, focus or visual asset behavior; no direct request/persisted business operation."
+    },
+    {
+      "file": "frontendx/apps/admin/src/main.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/pages/Bookings.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/pages/Dashboard.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/pages/Reception.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/pages/Reports.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/pages/Settings.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/admin/src/pages/VisitLog.tsx",
+      "kind": "data consumer",
+      "reason": "Separately documented Super Admin visit-log extension; see SUPER-ADMIN-VISIT-LOG.md. Does not add Phase 1 operation promises."
+    },
+    {
+      "file": "frontendx/apps/visitor/src/features/AdmissionQR.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/visitor/src/features/hero-image.ts",
+      "kind": "presentation/local support",
+      "reason": "Local layout, input, language, navigation, focus or visual asset behavior; no direct request/persisted business operation."
+    },
+    {
+      "file": "frontendx/apps/visitor/src/features/landingMotion.ts",
+      "kind": "presentation/local support",
+      "reason": "Local layout, input, language, navigation, focus or visual asset behavior; no direct request/persisted business operation."
+    },
+    {
+      "file": "frontendx/apps/visitor/src/features/PrivacyNotice.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/visitor/src/features/PublicVisitHistory.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/visitor/src/features/SubmissionRecovery.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/visitor/src/features/useCancellationWindow.ts",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/visitor/src/features/VisitTicket.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/visitor/src/hero-image-settings.ts",
+      "kind": "presentation/local support",
+      "reason": "Local layout, input, language, navigation, focus or visual asset behavior; no direct request/persisted business operation."
+    },
+    {
+      "file": "frontendx/apps/visitor/src/i18n.tsx",
+      "kind": "presentation/local support",
+      "reason": "Local layout, input, language, navigation, focus or visual asset behavior; no direct request/persisted business operation."
+    },
+    {
+      "file": "frontendx/apps/visitor/src/main.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/visitor/src/pages/Booking.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/apps/visitor/src/pages/Status.tsx",
+      "kind": "data consumer",
+      "reason": "Mapped in feature matrix."
+    },
+    {
+      "file": "frontendx/packages/data/src/attachments.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Upload reference/Blob download adapter; F02/F21/F29/F45."
+    },
+    {
+      "file": "frontendx/packages/data/src/attendance.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Credential resolve and check-in/out request adapter; F07/F31-F34."
+    },
+    {
+      "file": "frontendx/packages/data/src/config.ts",
+      "kind": "local/shared support",
+      "reason": "Configured API base and explicit preview flag; no new operation."
+    },
+    {
+      "file": "frontendx/packages/data/src/contact.ts",
+      "kind": "local/shared support",
+      "reason": "Local phone/WhatsApp formatting; no backend persistence."
+    },
+    {
+      "file": "frontendx/packages/data/src/contracts.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Shared selected-role/session/booking type boundary; supports mapped consumers."
+    },
+    {
+      "file": "frontendx/packages/data/src/domain.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Role/resource projection, local preview/filter order and timing; evidence, not backend authority."
+    },
+    {
+      "file": "frontendx/packages/data/src/errors.ts",
+      "kind": "shared data/transport contract",
+      "reason": "ApiError field arrays and retry classification; shared transport contract."
+    },
+    {
+      "file": "frontendx/packages/data/src/history.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Public event allowlist; history is included in booking responses."
+    },
+    {
+      "file": "frontendx/packages/data/src/hooks.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Existing query and mutation adapters; no independent route."
+    },
+    {
+      "file": "frontendx/packages/data/src/http.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Shared credentials, field-error arrays, abort and authenticated-401 behavior."
+    },
+    {
+      "file": "frontendx/packages/data/src/index.tsx",
+      "kind": "local/shared support",
+      "reason": "Shared module exports; no independent data operation."
+    },
+    {
+      "file": "frontendx/packages/data/src/management-contract.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Employee/role/integration response and editor schemas; F35-F40."
+    },
+    {
+      "file": "frontendx/packages/data/src/management.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Directory/detail/save/roles/integrations adapters and explicit preview fixtures."
+    },
+    {
+      "file": "frontendx/packages/data/src/organization.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Verified deputy/directorate reference and exact-title compatibility mapping; organizational metadata is not assignment authority."
+    },
+    {
+      "file": "frontendx/packages/data/src/query.tsx",
+      "kind": "local/shared support",
+      "reason": "Query provider/cache configuration; local support."
+    },
+    {
+      "file": "frontendx/packages/data/src/read-model.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Typed booking-view/detail reads; F16-F19/F30."
+    },
+    {
+      "file": "frontendx/packages/data/src/reports.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Summary/export schemas, filter/revision checks and shared report adapters; F41-F42."
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Public/staff request adapters and explicit development repository boundary."
+    },
+    {
+      "file": "frontendx/packages/data/src/scheduling.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Local WITA interval/timing calculations; server remains authoritative."
+    },
+    {
+      "file": "frontendx/packages/data/src/session-contract.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Session parser/gate policy metadata; F11-F15/F44."
+    },
+    {
+      "file": "frontendx/packages/data/src/session.tsx",
+      "kind": "shared data/transport contract",
+      "reason": "Sign-in/session/role/password client and authority cache lifecycle; F11-F15."
+    },
+    {
+      "file": "frontendx/packages/data/src/submission.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Create/reference recovery coordinator; F02/F04."
+    },
+    {
+      "file": "frontendx/packages/data/src/unsaved.ts",
+      "kind": "local/shared support",
+      "reason": "Local unsaved-draft navigation state; no persistence endpoint."
+    },
+    {
+      "file": "frontendx/packages/data/src/validation.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Write schemas and form validation; bounds/variant mismatches remain documented."
+    },
+    {
+      "file": "frontendx/packages/data/src/visit-log.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Typed filter/read/export models for the separately documented Super Admin visit-log extension."
+    },
+    {
+      "file": "frontendx/packages/data/src/wire.ts",
+      "kind": "shared data/transport contract",
+      "reason": "Actual response schemas and restricted field checks; shared wire compatibility evidence."
+    }
+  ],
+  "frontendRequestCalls": [
+    {
+      "file": "frontendx/packages/data/src/attachments.ts",
+      "call": "request(`/${audience}/attachments`, { body: form, authenticated: audience === \"staff\", })"
+    },
+    {
+      "file": "frontendx/packages/data/src/attachments.ts",
+      "call": "request(`/staff/bookings/${encodeURIComponent(id)}/attachment`, { authenticated: true, responseType: \"blob\", })"
+    },
+    {
+      "file": "frontendx/packages/data/src/http.ts",
+      "call": "fetcher(base + path, { method, credentials: \"include\", signal: controller.signal, headers: { ...(body === undefined || body instanceof FormData ? {} : { \"Content-Type\": \"application/json\" }), ...([\"GET\", \"HEAD\"].includes(method) ? {} : { \"X-VMS-Request\": \"browser\" }), }, body: body === undefined ? undefined : body instanceof FormData ? body : JSON.stringify(body), })"
+    },
+    {
+      "file": "frontendx/packages/data/src/management.ts",
+      "call": "request( `/staff/employees?${new URLSearchParams({ q: filter.q, page: String(filter.page), pageSize: String(filter.pageSize) })}`, { authenticated: true, signal }, )"
+    },
+    {
+      "file": "frontendx/packages/data/src/management.ts",
+      "call": "request(`/staff/employees/${encodeURIComponent(id)}`, { authenticated: true })"
+    },
+    {
+      "file": "frontendx/packages/data/src/management.ts",
+      "call": "request(`/staff/employees${id ? \"/\" + encodeURIComponent(id) : \"\"}`, { body: { ...input, version }, method: id ? \"PATCH\" : \"POST\", authenticated: true, })"
+    },
+    {
+      "file": "frontendx/packages/data/src/management.ts",
+      "call": "request(\"/staff/roles\", { authenticated: true })"
+    },
+    {
+      "file": "frontendx/packages/data/src/management.ts",
+      "call": "request(`/staff/roles/${encodeURIComponent(record.id)}`, { body: { permissions, version: record.version }, method: \"PATCH\", authenticated: true, })"
+    },
+    {
+      "file": "frontendx/packages/data/src/management.ts",
+      "call": "request(\"/staff/integrations\", { authenticated: true })"
+    },
+    {
+      "file": "frontendx/packages/data/src/management.ts",
+      "call": "request(`/staff/integrations/${encodeURIComponent(record.id)}`, { body: input, method: \"PATCH\", authenticated: true, })"
+    },
+    {
+      "file": "frontendx/packages/data/src/read-model.ts",
+      "call": "request(`/staff/bookings?${params}`, { signal, authenticated: true })"
+    },
+    {
+      "file": "frontendx/packages/data/src/read-model.ts",
+      "call": "request(`/staff/bookings/${encodeURIComponent(id)}`, { signal, authenticated: true })"
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(staff(`/reports/visits?${params}`, role), { signal, authenticated: true, })"
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request( staff(`/reports/visits/export?${new URLSearchParams({ ...filter, revision })}`, role), { authenticated: true, }, )"
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(role ? \"/staff/catalogs\" : \"/public/catalogs\", { signal, authenticated: !!role, })"
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(staff(\"/bookings\", role), { signal, authenticated: true })"
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(publicPath(\"/bookings\"), { body: { ...body, idempotencyKey: key } })"
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(publicPath(\"/submissions/resolve\"), { body: { idempotencyKey, email } })"
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request( development ? `/staff/bookings?role=${encodeURIComponent(role)}` : \"/staff/bookings\", { body: { ...input, idempotencyKey: key }, authenticated: true }, )"
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request( development && action === \"cancel\" ? `/staff/bookings/${encodeURIComponent(id)}/cancel?role=${encodeURIComponent(role)}` : staff(`/bookings/${encodeURIComponent(id)}/${action}`, role), { body, authenticated: true, }, )"
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(staff(\"/resolve\", role), { body: { credential }, authenticated: true })"
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(publicPath(\"/lookup\"), { body: { code: code.trim(), email: email.trim() } })"
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(publicPath(`/bookings/${encodeURIComponent(id)}/cancel`), { body: input })"
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(publicPath(`/bookings/${encodeURIComponent(booking.id)}/admission`), { body: { code: booking.code, email: booking.email, version: booking.version }, signal, })"
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(staff(`/reports/summary?${new URLSearchParams(filter)}`, role), { signal, authenticated: true, })"
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request( staff(`/reports/export?${new URLSearchParams({ ...filter, revision })}`, role), { authenticated: true }, )"
+    },
+    {
+      "file": "frontendx/packages/data/src/session.tsx",
+      "call": "request(\"/staff/password\", { body: { currentPassword, newPassword }, authenticated: true })"
+    },
+    {
+      "file": "frontendx/packages/data/src/session.tsx",
+      "call": "request(\"/staff/sessions\", { body: credentials })"
+    },
+    {
+      "file": "frontendx/packages/data/src/session.tsx",
+      "call": "request(\"/staff/session\", { authenticated: true })"
+    },
+    {
+      "file": "frontendx/packages/data/src/session.tsx",
+      "call": "request(\"/staff/session/role\", { body: { role: next }, authenticated: true, })"
+    },
+    {
+      "file": "frontendx/packages/data/src/session.tsx",
+      "call": "request(\"/staff/session\", { method: \"DELETE\" })"
+    }
+  ],
+  "proposedInterfaces": {
+    "internal/usecase/catalog/catalog_usecase.go:CatalogUsecase": {
+      "GetStaffCatalogs": "func(ctx context.Context, proof entity.AccessProof) (dto.PublicCatalog, error)"
+    },
+    "internal/usecase/visit/visit_usecase.go:VisitUsecase": {
+      "CreatePublicBooking": "func(ctx context.Context, request dto.PublicCreate) (entity.CommandResult[dto.PublicBooking], error)",
+      "ResolveSubmission": "func(ctx context.Context, request dto.SubmissionResolve) (dto.Resolution, error)",
+      "GetPublicBooking": "func(ctx context.Context, request dto.Pair) (dto.PublicBooking, error)",
+      "CancelPublicBooking": "func(ctx context.Context, id int32, request dto.PairVersion) (dto.PublicBooking, error)",
+      "GetBookings": "func(ctx context.Context, proof entity.AccessProof, request dto.BookingQuery) (dto.ReadModel, error)",
+      "GetBooking": "func(ctx context.Context, proof entity.AccessProof, id int32) (dto.StaffBooking, error)",
+      "CreateStaffBooking": "func(ctx context.Context, proof entity.AccessProof, request dto.StaffCreate) (entity.CommandResult[dto.StaffBooking], error)",
+      "Approve": "func(ctx context.Context, proof entity.AccessProof, id int32, request dto.Approve) (dto.StaffBooking, error)",
+      "Reject": "func(ctx context.Context, proof entity.AccessProof, id int32, request dto.Reject) (dto.StaffBooking, error)",
+      "Reschedule": "func(ctx context.Context, proof entity.AccessProof, id int32, request dto.Reschedule) (dto.StaffBooking, error)",
+      "UpdateRestricted": "func(ctx context.Context, proof entity.AccessProof, id int32, request dto.RestrictedUpdate) (dto.RestrictedFull, error)",
+      "CancelStaffBooking": "func(ctx context.Context, proof entity.AccessProof, id int32, request dto.StaffCancel) (dto.StaffBooking, error)"
+    },
+    "internal/usecase/reception/reception_usecase.go:ReceptionUsecase": {
+      "IssueAdmission": "func(ctx context.Context, id int32, request dto.PairVersion) (dto.AdmissionResult, error)",
+      "Checkin": "func(ctx context.Context, proof entity.AccessProof, id int32, request dto.Attendance) (dto.ArrivalBooking, error)",
+      "Checkout": "func(ctx context.Context, proof entity.AccessProof, id int32, request dto.Attendance) (dto.ArrivalBooking, error)",
+      "Resolve": "func(ctx context.Context, proof entity.AccessProof, request dto.Resolve) (dto.ArrivalBooking, error)"
+    },
+    "internal/usecase/document/document_usecase.go:DocumentUsecase": {
+      "UploadPublic": "func(ctx context.Context, request dto.Upload) (entity.CommandResult[dto.UploadResult], error)",
+      "UploadStaff": "func(ctx context.Context, proof entity.AccessProof, request dto.Upload) (entity.CommandResult[dto.UploadResult], error)",
+      "GetAttachment": "func(ctx context.Context, proof entity.AccessProof, id int32, request dto.AttachmentQuery) (entity.PrivateFile, error)"
+    },
+    "internal/usecase/management/management_usecase.go:ManagementUsecase": {
+      "GetEmployees": "func(ctx context.Context, proof entity.AccessProof, request dto.EmployeeQuery) (dto.EmployeePage, error)",
+      "GetEmployee": "func(ctx context.Context, proof entity.AccessProof, id int32) (dto.Employee, error)",
+      "GetIntegrations": "func(ctx context.Context, proof entity.AccessProof) ([]dto.Integration, error)",
+      "UpdateIntegration": "func(ctx context.Context, proof entity.AccessProof, id int32, request dto.IntegrationPatch) (dto.Integration, error)"
+    },
+    "internal/usecase/report/report_usecase.go:ReportUsecase": {
+      "GetSummary": "func(ctx context.Context, proof entity.AccessProof, request dto.ReportQuery) (dto.Summary, error)",
+      "Export": "func(ctx context.Context, proof entity.AccessProof, request dto.ReportExportQuery) (dto.Export, error)"
+    },
+    "internal/repository/catalog/catalog_repository.go:CatalogRepository": {
+      "GetStaffCatalogs": "func(ctx context.Context, proof entity.AccessProof) (entity.PublicCatalog, error)"
+    },
+    "internal/repository/visit/visit_repository.go:VisitRepository": {
+      "GetPublicBooking": "func(ctx context.Context, pair entity.PublicPair) (entity.VisitAggregate, error)",
+      "GetBookings": "func(ctx context.Context, proof entity.AccessProof, filter entity.BookingFilter) (entity.VisitReadModel, error)",
+      "GetBooking": "func(ctx context.Context, proof entity.AccessProof, id int32) (entity.VisitAggregate, error)",
+      "Transaction": "func(ctx context.Context, actor entity.VisitActor, operation func(tx VisitTransaction) error) error"
+    },
+    "internal/repository/visit/visit_repository.go:VisitTransaction": {
+      "Now": "func() time.Time",
+      "ResolveSubmission": "func(reference entity.SubmissionReference) (entity.SubmissionOutcome, error)",
+      "CreateVisit": "func(input entity.VisitCreate) (entity.VisitAggregate, error)",
+      "LockVisit": "func(id int32, version int32) (entity.VisitAggregate, error)",
+      "LockResources": "func(resources []entity.ResourceKey) error",
+      "CheckOverlap": "func(schedule entity.ScheduleChange) error",
+      "SaveVisit": "func(visit entity.VisitAggregate) (entity.VisitAggregate, error)",
+      "RevokeAdmission": "func(visitID int32) error",
+      "ReplaceAdmission": "func(input entity.AdmissionIssue) (entity.AdmissionCredential, error)",
+      "ConfirmAttendance": "func(input entity.AttendanceCommand) (entity.VisitAggregate, error)",
+      "AppendAudit": "func(event entity.AuditEvent) error",
+      "EnqueueNotifications": "func(events []entity.NotificationIntent) error"
+    },
+    "internal/repository/reception/reception_repository.go:ReceptionRepository": {
+      "ResolveCredential": "func(ctx context.Context, proof entity.AccessProof, credential string) (entity.VisitAggregate, error)"
+    },
+    "internal/repository/document/document_repository.go:DocumentRepository": {
+      "StageUpload": "func(ctx context.Context, owner entity.UploadOwner, input entity.UploadInput) (entity.CommandResult[entity.StagedUpload], error)",
+      "GetAttachment": "func(ctx context.Context, proof entity.AccessProof, visitID int32) (entity.PrivateFile, error)",
+      "AuditAccess": "func(ctx context.Context, event entity.FileAccess) error"
+    },
+    "internal/repository/management/management_repository.go:ManagementRepository": {
+      "GetEmployees": "func(ctx context.Context, proof entity.AccessProof, filter entity.EmployeeFilter) (entity.EmployeePage, error)",
+      "GetEmployee": "func(ctx context.Context, proof entity.AccessProof, id int32) (entity.EmployeeAggregate, error)",
+      "GetIntegrations": "func(ctx context.Context, proof entity.AccessProof) ([]entity.Integration, error)",
+      "Transaction": "func(ctx context.Context, proof entity.AccessProof, operation func(tx ManagementTransaction) error) error"
+    },
+    "internal/repository/management/management_repository.go:ManagementTransaction": {
+      "UpdateIntegration": "func(id int32, input entity.IntegrationChange) (entity.Integration, error)",
+      "AppendAudit": "func(event entity.AuditEvent) error"
+    },
+    "internal/repository/report/report_repository.go:ReportRepository": {
+      "GetSummary": "func(ctx context.Context, proof entity.AccessProof, filter entity.ReportFilter) (entity.SummarySnapshot, error)"
+    },
+    "internal/serializer/catalog/catalog_serializer.go:CatalogSerializer": {
+      "ToStaffCatalog": "func(in entity.PublicCatalog) dto.PublicCatalog"
+    },
+    "internal/serializer/visit/visit_serializer.go:VisitSerializer": {
+      "ToPublicBooking": "func(in entity.VisitAggregate) dto.PublicBooking",
+      "ToStaffBooking": "func(in entity.VisitAggregate, authority entity.VisitAuthority) dto.StaffBooking",
+      "ToReadModel": "func(in entity.VisitReadModel, authority entity.VisitAuthority) dto.ReadModel",
+      "ToResolution": "func(in entity.SubmissionOutcome) dto.Resolution",
+      "ToRestrictedFull": "func(in entity.VisitAggregate, authority entity.VisitAuthority) dto.RestrictedFull"
+    },
+    "internal/serializer/reception/reception_serializer.go:ReceptionSerializer": {
+      "ToAdmissionResult": "func(in entity.AdmissionCredential) dto.AdmissionResult",
+      "ToArrivalBooking": "func(in entity.VisitAggregate, authority entity.VisitAuthority) dto.ArrivalBooking"
+    },
+    "internal/serializer/document/document_serializer.go:DocumentSerializer": {
+      "ToUploadResult": "func(in entity.StagedUpload) dto.UploadResult"
+    },
+    "internal/serializer/management/management_serializer.go:ManagementSerializer": {
+      "ToEmployee": "func(in entity.EmployeeAggregate) dto.Employee",
+      "ToEmployeePage": "func(in entity.EmployeePage) dto.EmployeePage",
+      "ToIntegration": "func(in entity.Integration) dto.Integration"
+    },
+    "internal/serializer/report/report_serializer.go:ReportSerializer": {
+      "ToSummary": "func(in entity.SummarySnapshot) dto.Summary",
+      "ToExport": "func(in entity.SummarySnapshot) dto.Export"
+    },
+    "internal/usecase/auth/auth_usecase.go:AuthUsecase": {
+      "Login": "func(ctx context.Context, request dto.Login, clientIP string) (dto.AuthResult, error)",
+      "GetCurrentUser": "func(ctx context.Context, proof entity.AccessProof) (dto.CurrentUser, error)"
+    },
+    "internal/repository/auth/auth_repository.go:AuthRepository": {
+      "FindCredentialByEmail": "func(ctx context.Context, email string) (entity.EmployeeCredential, error)",
+      "GetCurrentAuthority": "func(ctx context.Context, employeeID int32) (entity.CurrentAuthority, error)"
+    },
+    "internal/serializer/auth/auth_serializer.go:AuthSerializer": {
+      "ToCurrentUser": "func(in entity.CurrentAuthority) dto.CurrentUser",
+      "ToAuthResult": "func(user dto.CurrentUser, accessToken string, accessExpiresAt time.Time) dto.AuthResult"
+    }
+  },
+  "referenceDocument": {
+    "name": "apicontract revisi2.md",
+    "libraryFileId": "libfile_3b623fa2d0848191801ba49a4a74d9bb",
+    "lines": 2294,
+    "bytes": 57545,
+    "role": "API consolidation/reference structure; actual interface boundaries verified against SIHP-BE source. Not VMS business requirements."
+  },
+  "contractIssues": [
+    {
+      "id": "OPEN-READ-ORDER",
+      "operations": [
+        "staffBookings",
+        "staffEmployees"
+      ],
+      "finding": "Selected rules require stable sorting but do not freeze database text collation/normalization or ID tie comparison. Frontend preview uses Indonesian localeCompare and lexicographic ID ties; employee target says numeric ID ties. These are different with IDs 2 and 10 or accented names.",
+      "evidence": [
+        "frontendx/packages/data/src/domain.ts",
+        "docs/BACKEND-API-CONTRACT-2026-11-11.md"
+      ],
+      "decisionNeeded": "Confirm exact text comparison and tie rules for backend paging before freezing ordering fixtures. Query defaults and authorization scopes are already selected; do not silently inherit host database collation.",
+      "blocks": "Exact cross-client sort parity acceptance, not the operation inventory or query syntax."
+    }
+  ],
+  "deferredOperations": [
+    {
+      "id": "createSession",
+      "method": "POST",
+      "path": "/staff/sessions",
+      "sourceRegistered": true,
+      "disposition": "replaced",
+      "replacement": "staffLogin",
+      "reason": "Replaced by staffLogin with Bearer-only Phase 1 DTOs and no stored session."
+    },
+    {
+      "id": "getSession",
+      "method": "GET",
+      "path": "/staff/session",
+      "sourceRegistered": true,
+      "disposition": "replaced",
+      "replacement": "staffMe",
+      "reason": "Replaced by staffMe with Bearer-only Phase 1 DTOs and no stored session."
+    },
+    {
+      "id": "deleteSession",
+      "method": "DELETE",
+      "path": "/staff/session",
+      "sourceRegistered": true,
+      "disposition": "deferred",
+      "replacement": null,
+      "reason": "Persistent session lifecycle, role switching and self-service password workflow deferred."
+    },
+    {
+      "id": "changePassword",
+      "method": "POST",
+      "path": "/staff/password",
+      "sourceRegistered": true,
+      "disposition": "deferred",
+      "replacement": null,
+      "reason": "Persistent session lifecycle, role switching and self-service password workflow deferred."
+    },
+    {
+      "id": "selectRole",
+      "method": "POST",
+      "path": "/staff/session/role",
+      "sourceRegistered": true,
+      "disposition": "deferred",
+      "replacement": null,
+      "reason": "Persistent session lifecycle, role switching and self-service password workflow deferred."
+    },
+    {
+      "id": "createEmployee",
+      "method": "POST",
+      "path": "/staff/employees",
+      "sourceRegistered": false,
+      "disposition": "deferred",
+      "replacement": null,
+      "reason": "Account/role writes and editable permission policy deferred; provision accounts/roles/assignments through controlled database setup."
+    },
+    {
+      "id": "patchEmployee",
+      "method": "PATCH",
+      "path": "/staff/employees/{id}",
+      "sourceRegistered": false,
+      "disposition": "deferred",
+      "replacement": null,
+      "reason": "Account/role writes and editable permission policy deferred; provision accounts/roles/assignments through controlled database setup."
+    },
+    {
+      "id": "staffRoles",
+      "method": "GET",
+      "path": "/staff/roles",
+      "sourceRegistered": false,
+      "disposition": "deferred",
+      "replacement": null,
+      "reason": "Account/role writes and editable permission policy deferred; provision accounts/roles/assignments through controlled database setup."
+    },
+    {
+      "id": "patchRole",
+      "method": "PATCH",
+      "path": "/staff/roles/{id}",
+      "sourceRegistered": false,
+      "disposition": "deferred",
+      "replacement": null,
+      "reason": "Account/role writes and editable permission policy deferred; provision accounts/roles/assignments through controlled database setup."
+    },
+    {
+      "id": "renewSession",
+      "method": "POST",
+      "path": "/staff/session/renew",
+      "sourceRegistered": true,
+      "disposition": "deferred",
+      "replacement": null,
+      "reason": "Persistent session lifecycle, role switching and self-service password workflow deferred."
+    },
+    {
+      "id": "refreshSession",
+      "method": "POST",
+      "path": "/staff/session/refresh",
+      "sourceRegistered": true,
+      "disposition": "deferred",
+      "replacement": null,
+      "reason": "Persistent session lifecycle, role switching and self-service password workflow deferred."
+    }
+  ],
+  "phase1": {
+    "name": "Phase 1 — simple database-backed role authorization",
+    "approval": "User accepted the simplified first phase on 13 November 2026; this revision changes contract/docs/checks, not application behavior or deployed data.",
+    "precedence": "Overrides earlier session, role-policy editing and password-workflow decisions only for Phase 1; unrelated booking, privacy, concurrency and reporting rules remain.",
+    "authentication": "Bearer-only signed access JWT; no authentication cookies, CSRF bootstrap, refresh, stored login session, renewal or role/password gates.",
+    "tokenClaims": [
+      "sub",
+      "iat",
+      "exp",
+      "iss",
+      "aud"
+    ],
+    "tokenLifetime": "Required positive finite server configuration; fixed per issuance, no sliding renewal. No new numeric lifetime is selected here. accessExpiresAt is authoritative. The former five-minute-plus-refresh rule is deferred.",
+    "storage": "Browser memory only; reload/expiry requires login. No persistent browser storage or token URL.",
+    "logout": "Local token/user/private-cache clearing only; no logout HTTP endpoint and no per-token revocation claim. Copies remain usable until expiry while the account is active.",
+    "currentAuthority": "Read current active employee, exactly one assigned fixed role and active PA official assignments on every protected request; repeat resource/assignment checks in write transactions. JWT role/permission claims and browser hints are never authority.",
+    "manualAdministration": "Provision accounts with encoded bcrypt credentials and exactly one role_pegawai row; initial Super Admin is assigned the same way. PA assignments use pegawai_pejabat. Existing multiple-role accounts need deliberate manual selection before Phase 1 login; never pick/union silently.",
+    "employeeUI": "Employee directory/detail are read-only; account creation/editing, role tags, assignment editing and role-policy UI are deferred.",
+    "permissionSource": "Fixed backend mapping from the existing frontend role vocabulary, with roles/audit-only administration removed from Phase 1; database policy graph is not read or exposed.",
+    "rolePermissions": {
+      "PA": [
+        "bookings",
+        "create",
+        "approve",
+        "reject",
+        "reschedule",
+        "cancel",
+        "reports",
+        "reportExport"
+      ],
+      "Protocol Officer": [
+        "bookings",
+        "create",
+        "approve",
+        "reject",
+        "reschedule",
+        "cancel",
+        "reports",
+        "reportExport"
+      ],
+      "Receptionist": [
+        "bookings",
+        "checkin",
+        "checkout"
+      ],
+      "Super Admin": [
+        "bookings",
+        "people",
+        "integrations",
+        "reports",
+        "reportExport"
+      ]
+    },
+    "basicsRetained": [
+      "Password hashing and generic credential failures",
+      "Token signature/algorithm/issuer/audience/expiry validation",
+      "Current account/role/assignment and field-level checks",
+      "Input validation, basic login throttling and existing public/staff request budgets",
+      "HTTPS for non-loopback deployment; explicit browser-origin policy",
+      "Ordinary/restricted privacy boundaries and public code/email proof"
+    ]
+  },
+  "sourceBaseline": "source-baseline.json",
+  "deferredGaps": [
+    {
+      "id": "FE-SESSION",
+      "status": "missing",
+      "finding": "No access refresh, user-activity renewal or idle warning. parseSession discards timing/passwordMaxBytes.",
+      "resolution": "Implement D20-D25/D38-D54 lifecycle; polling must never renew; 8h idle/24h absolute.",
+      "blocksTarget": true,
+      "phase1Disposition": "deferred with its owning feature; not a Phase 1 conformance requirement"
+    },
+    {
+      "id": "FE-PASSWORD",
+      "status": "incompatible",
+      "finding": "Employee/password inputs permit 256 UTF-16 units; selected rule is 15 Unicode code points and 72 UTF-8 bytes.",
+      "resolution": "Use policy metadata and shared byte/code-point validation; do not truncate bcrypt inputs.",
+      "blocksTarget": true,
+      "phase1Disposition": "deferred with its owning feature; not a Phase 1 conformance requirement"
+    },
+    {
+      "id": "FE-ASSIGNMENTS",
+      "status": "incompatible",
+      "finding": "Current assignment schemas lack 100-item maximum, uniqueness and canonical ID syntax.",
+      "resolution": "Reject whole invalid set with assignedOfficerIds errors; preserve inactive historical pair rows.",
+      "blocksTarget": true,
+      "phase1Disposition": "deferred with its owning feature; not a Phase 1 conformance requirement"
+    },
+    {
+      "id": "BE-LOGOUT",
+      "status": "incompatible",
+      "finding": "Auth handler lifecycle calls Binding before Logout, so absent/expired refresh produces 401 before idempotent logout reaches its usecase.",
+      "resolution": "Preserve origin/CSRF guarantees while making expired/absent session sign-out behavior match the target 204 contract; add handler tests.",
+      "blocksTarget": true,
+      "phase1Disposition": "deferred with its owning feature; not a Phase 1 conformance requirement"
+    },
+    {
+      "id": "BE-LIMITS",
+      "status": "incompatible",
+      "finding": "Refresh has no selected 10/session/min and100/IP/min admissions; ChangePassword has no5/employee/15min admission. Generic staff ceiling does not replace them.",
+      "resolution": "Add operation-specific admission using existing PostgreSQL limiter; no new limit tables.",
+      "blocksTarget": true,
+      "phase1Disposition": "deferred with its owning feature; not a Phase 1 conformance requirement"
+    },
+    {
+      "id": "BE-REVISION",
+      "status": "incompatible",
+      "finding": "Session roleRevision wire schema max2147483647, while implementation maxRevision and support columns permit9007199254740991.",
+      "resolution": "Keep reviewed wire bound; align counter exhaustion handling/storage bounds in the identity slice without silent widening.",
+      "blocksTarget": true,
+      "phase1Disposition": "deferred with its owning feature; not a Phase 1 conformance requirement"
+    },
+    {
+      "id": "DB-PROFILE",
+      "status": "missing",
+      "finding": "Pegawai migration implements name/email/active/version only; selected optional profile fields not yet present.",
+      "resolution": "Add nullable columns to Pegawai when employee slice lands, not a new profile table.",
+      "blocksTarget": true,
+      "phase1Disposition": "Superseded by inspected SQL source; see sourceCorrections. Not a missing migration."
+    }
+  ],
+  "deferredContractIssues": [
+    {
+      "blocks": "Completion of the expired/absent logout branch, not unrelated contract work.",
+      "decisionNeeded": "Specify which still-verifiable protection permits terminal cookie clearing when the session/CSRF binding is expired or absent. No unconditional 204 or CSRF bypass is authorized by this review.",
+      "evidence": [
+        "docs/BACKEND-OPENAPI-2026-11-12.json",
+        "docs/BACKEND-PLAN-2026-11-11.md",
+        "backend/internal/handler/auth_handler.go"
+      ],
+      "finding": "The frozen target promises safe 204 for absent/expired refresh, while D45 forbids missing/expired CSRF. Current Binding rejects an expired session before Logout; valid proof for that boundary is not specified.",
+      "id": "OPEN-LOGOUT-PROOF",
+      "operations": [
+        "deleteSession"
+      ],
+      "phase1Disposition": "Not applicable to local-only Phase 1 logout; deferred cookie/session flow still needs a future explicit decision."
+    }
+  ],
+  "sourceCorrections": [
+    {
+      "id": "DB-PROFILE",
+      "finding": "202611120002_identity_session_foundation.sql already defines jabatan/kedeputian/direktorat/nomor_hp/nip. Prior missing-column finding is superseded; no profile migration is required merely for the Phase 1 directory."
+    },
+    {
+      "id": "DB-EMPLOYEE-ORGANIZATION",
+      "finding": "User requirement 2026-11-15: one current official per employee, with automatic organizational affiliation. The additive migration normalizes Kedeputian and Direktorat, links existing Jabatan, and adds one-active-assignment uniqueness. It seeds verified unit names only. See EMPLOYEE-ORGANIZATION.md; no employee-write endpoints are added to Phase 1."
+    }
+  ]
+}

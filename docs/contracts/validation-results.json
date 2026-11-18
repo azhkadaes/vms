@@ -1,0 +1,184 @@
+{
+  "status": "baseline-passed-with-known-gaps",
+  "strictConformance": "failed",
+  "strictModeRequested": false,
+  "date": "2026-11-13",
+  "canonicalSpecSha256": "8e3e98fcac7c967d40a5979621818fb52ff4bf501ebfa87e0126d149ac458829",
+  "operations": 29,
+  "sourceRegistered": 1,
+  "currentSourceRoutes": 8,
+  "sourceOnlyRoutes": 7,
+  "sourceOnlyOperations": [
+    "DELETE /v1/staff/session",
+    "GET /v1/staff/session",
+    "POST /v1/staff/password",
+    "POST /v1/staff/session/refresh",
+    "POST /v1/staff/session/renew",
+    "POST /v1/staff/session/role",
+    "POST /v1/staff/sessions"
+  ],
+  "missingOperations": [
+    "staffLogin",
+    "staffMe",
+    "staffCatalogs",
+    "publicCreateBooking",
+    "resolveSubmission",
+    "publicLookup",
+    "publicCancel",
+    "publicAdmission",
+    "publicUpload",
+    "staffUpload",
+    "staffAttachment",
+    "staffBookings",
+    "staffBooking",
+    "staffCreateBooking",
+    "staffApprove",
+    "staffReject",
+    "staffReschedule",
+    "staffRestrictedUpdate",
+    "staffCancel",
+    "staffCheckin",
+    "staffCheckout",
+    "staffResolve",
+    "staffEmployees",
+    "staffEmployee",
+    "staffIntegrations",
+    "patchIntegration",
+    "reportSummary",
+    "reportExport"
+  ],
+  "knownGapIds": [
+    "BE-ADMIN",
+    "BE-ATTENDANCE",
+    "BE-AUTH-TESTS",
+    "BE-DOCUMENTS",
+    "BE-ERRORS",
+    "BE-INTEGRATIONS",
+    "BE-PHASE1-AUTH",
+    "BE-READS",
+    "BE-REPORTS",
+    "BE-VISITS",
+    "DB-RELEASE",
+    "FE-AUTH",
+    "FE-BOUNDS",
+    "FE-CATALOG",
+    "FE-CORRELATION",
+    "FE-DIRECTORY",
+    "FE-FILEVIEW",
+    "FE-PENDING",
+    "FE-ROOM",
+    "FE-UPLOAD"
+  ],
+  "targetBlockingGapIds": [
+    "BE-VISITS",
+    "BE-READS",
+    "BE-ATTENDANCE",
+    "BE-DOCUMENTS",
+    "BE-ADMIN",
+    "BE-INTEGRATIONS",
+    "BE-REPORTS",
+    "FE-CATALOG",
+    "FE-AUTH",
+    "FE-ROOM",
+    "FE-PENDING",
+    "FE-BOUNDS",
+    "FE-UPLOAD",
+    "FE-FILEVIEW",
+    "FE-CORRELATION",
+    "BE-AUTH-TESTS",
+    "BE-ERRORS",
+    "BE-PHASE1-AUTH",
+    "FE-DIRECTORY"
+  ],
+  "unresolvedContractIssueIds": [
+    "OPEN-READ-ORDER"
+  ],
+  "checks": [
+    "OpenAPI meta-schema, component schemas and all local refs",
+    "29 Phase 1 operations, authorization/rules, auth-cookie/session exclusion and all request/response/schema examples",
+    "All Phase 1 usecase, repository and serializer mappings resolve; DTO/schema cardinality and evidence agree",
+    "12 query variants and 4 response-correlation fixtures",
+    "1153 local documentation file links and control-character checks",
+    "48 trace rows, 67 classified frontend files and generated documents",
+    "Go AST routes/handlers/delegation, interface signatures, DTO shapes/types, served OpenAPI",
+    "22 SQL-source tables and Up/Down migration conventions; no DDL executed",
+    "Seven deliberate source/schema drift mutations rejected",
+    "Additional interface/table/fixed-role/deferred-state drift mutations rejected",
+    "Current-source Fiber regression against frozen source evidence; Phase 1 coverage reported separately",
+    "Actual frontend schemas/HTTP headers and 31 TypeScript request AST callsites"
+  ],
+  "negativeDriftChecks": [
+    "unknown route",
+    "changed interface",
+    "renamed DTO field",
+    "mass assignment",
+    "missing ack",
+    "restricted identity leak",
+    "password UTF8 overflow",
+    "unknown proposed serializer",
+    "missing proposed usecase method",
+    "wrong response array cardinality",
+    "unreviewed IF NOT EXISTS table",
+    "editable policy grants leaked into fixed role",
+    "deferred role picker in current user"
+  ],
+  "runtime": {
+    "executed": true,
+    "realFiberResponses": 13,
+    "sourceBaselineAccepted": 9,
+    "legacyKnownMismatches": {
+      "unknown-query": {
+        "gap": "BE-ERRORS",
+        "issues": [
+          "code",
+          "fieldErrors"
+        ]
+      },
+      "unknown-json": {
+        "gap": "BE-ERRORS",
+        "issues": [
+          "code",
+          "fieldErrors"
+        ]
+      },
+      "expired-logout": {
+        "gap": "BE-LOGOUT",
+        "issues": [
+          "status"
+        ]
+      },
+      "field-validation": {
+        "gap": "BE-ERRORS",
+        "issues": [
+          "schema"
+        ]
+      }
+    },
+    "phase1OperationsExercised": [
+      "publicCatalogs"
+    ],
+    "boundary": "Current-source HTTP regression only. Superseded session samples do not establish Phase 1 login/me or database authorization conformance."
+  },
+  "consumers": {
+    "executed": true,
+    "positiveNegativeChecks": 9,
+    "knownMismatches": [
+      "attachments-capability-stripped",
+      "authenticated-request-missing-bearer",
+      "catalog-room-objects",
+      "phase1-auth-result-unconsumed",
+      "phase1-employee-page-parser",
+      "restricted-unknown-private-field-stripped"
+    ],
+    "reviewedRequestCallsites": 31
+  },
+  "limitations": [
+    "No live database, migrations, containers, server startup or deployed API tested.",
+    "Legacy session-handler samples are source regression evidence only; Phase 1 login/me and database authority remain unimplemented.",
+    "Proposed interface mappings resolve in documentation; no claim that future DTO/entity types compile or that absent modules are implemented.",
+    "Query fixtures validate normalized values, not a future HTTP parser, database collation, filtering or pagination execution.",
+    "AST and examples do not establish scheduling locks, secret encryption, MIME verification, rate-limit correctness, SMTP delivery or all authorization branches.",
+    "Unimplemented routes/interfaces remain design requirements; strict completion also requires unresolved contract issues and source-only identity routes to be removed. Production-only gates do not block the disabled-capability contract.",
+    "CI must invoke this check; no enabled root CI workflow was present."
+  ]
+}
