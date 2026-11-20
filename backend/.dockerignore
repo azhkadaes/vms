@@ -1,5 +1,6 @@
 .git
 .runtime
+bin
 .env
 .env.*
 *.exe
