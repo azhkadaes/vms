@@ -1,6 +1,6 @@
 {
-  "status": "passed-with-known-gaps",
-  "strictConformance": "failed",
+  "status": "conformance-passed",
+  "strictConformance": "passed",
   "strictModeRequested": true,
   "reviewedAt": "2026-11-19",
   "backend": "backend",
@@ -9,21 +9,16 @@
   "implemented": 40,
   "sourceRoutes": 40,
   "missingOperations": [],
-  "knownGaps": [
-    "authenticated-request-missing-bearer",
-    "catalog-room-objects",
-    "login-token-result-unconsumed",
-    "role-token-result-parsed-as-session"
-  ],
+  "knownGaps": [],
   "checks": [
     "40 manifest operations match the numbered operation reference; 40 implemented",
     "Source baseline: OpenAPI 3.1 meta-schema, local refs, 40 implemented operations, examples and 24-code error catalogue",
     "Go AST: 40 routes, handlers and delegation, 55 interfaces, 53 DTOs against schemas, error catalogue, served OpenAPI",
     "29 migration tables and Up/Down conventions; no DDL executed",
-    "1237 local documentation links in docs/contracts",
+    "1239 local documentation links in docs/contracts",
     "10 deliberate drift mutations rejected",
     "115 real Fiber responses validated against the baseline; every implemented operation has a successful capture",
-    "14 frontend parser checks and 34 mapped request call sites"
+    "18 frontend parser checks and 35 mapped request call sites"
   ],
   "negativeDriftChecks": [
     "unregistered route",
@@ -87,14 +82,9 @@
   },
   "consumers": {
     "executed": true,
-    "checks": 14,
-    "knownGaps": [
-      "authenticated-request-missing-bearer",
-      "catalog-room-objects",
-      "login-token-result-unconsumed",
-      "role-token-result-parsed-as-session"
-    ],
-    "requestCalls": 34
+    "checks": 18,
+    "knownGaps": [],
+    "requestCalls": 35
   },
   "limitations": [
     "No live database, migrations, containers, server startup or deployed API tested.",

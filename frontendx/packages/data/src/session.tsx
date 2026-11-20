@@ -6,8 +6,42 @@ import { ApiError } from "./errors.ts";
 import { createHttpClient, onAuthenticationLoss } from "./http.ts";
 import { parseSession, sessionKey } from "./session-contract.ts";
 import { canSwitchRole } from "./unsaved.ts";
+import { csrfToken, setStaffAccessToken, staffAccessToken } from "./access-token.ts";
 
 const request = createHttpClient(apiBase);
+function adoptSession(value: unknown) {
+  const result = value as { accessToken?: unknown; session?: unknown } | null;
+  if (typeof result?.accessToken !== "string" || !result.accessToken)
+    throw new ApiError(502, "Sesi masuk tidak valid. Coba lagi.");
+  const session = parseSession(result.session);
+  setStaffAccessToken(result.accessToken);
+  return session;
+}
+
+let refreshRequestId: string | undefined;
+let refreshInFlight: Promise<Session | PendingSession> | undefined;
+async function readSession() {
+  if (staffAccessToken())
+    return parseSession(await request("/staff/session", { authenticated: true }));
+  if (!csrfToken()) throw new ApiError(401, "Silakan masuk.");
+  if (!refreshInFlight) {
+    refreshRequestId ||= crypto.randomUUID();
+    refreshInFlight = request("/staff/session/refresh", { body: { refreshRequestId } })
+      .then((value) => {
+        const session = adoptSession(value);
+        refreshRequestId = undefined;
+        return session;
+      })
+      .catch((error: unknown) => {
+        if (error instanceof ApiError && error.status < 500) refreshRequestId = undefined;
+        throw error;
+      })
+      .finally(() => {
+        refreshInFlight = undefined;
+      });
+  }
+  return refreshInFlight;
+}
 function isPendingSession(value: Session | PendingSession): value is PendingSession {
   return value.role === "";
 }
@@ -16,7 +50,12 @@ function isActiveSession(value: Session | PendingSession): value is Session {
 }
 export async function changePassword(currentPassword: string, newPassword: string) {
   if (preview) throw new ApiError(400, "Penggantian kata sandi tidak tersedia pada pratinjau.");
-  await request("/staff/password", { body: { currentPassword, newPassword }, authenticated: true });
+  adoptSession(
+    await request("/staff/password", {
+      body: { currentPassword, newPassword },
+      authenticated: true,
+    }),
+  );
 }
 const SessionContext = createContext<{
   session: Session | null;
@@ -43,7 +82,7 @@ const SessionContext = createContext<{
 export async function signIn(credentials: { email: string; password: string }) {
   if (preview) return;
   try {
-    await request("/staff/sessions", { body: credentials });
+    adoptSession(await request("/staff/sessions", { body: credentials }));
   } catch (error) {
     if (error instanceof ApiError && error.status === 401)
       throw new ApiError(401, "Email atau kata sandi tidak sesuai.");
@@ -64,10 +103,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const key = ["session", preview ? previewRole : "current"];
   const query = useQuery({
     queryKey: key,
-    queryFn: async () =>
-      preview
-        ? sessionFor(previewRole)
-        : parseSession(await request("/staff/session", { authenticated: true })),
+    queryFn: async () => (preview ? sessionFor(previewRole) : readSession()),
     enabled: !expired,
     refetchOnWindowFocus: "always",
     refetchOnReconnect: "always",
@@ -116,7 +152,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       if (preview) {
         setRole(next);
       } else {
-        const selected = parseSession(
+        const selected = adoptSession(
           await request("/staff/session/role", {
             body: { role: next },
             authenticated: true,
@@ -140,6 +176,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         if (!(error instanceof ApiError && error.status === 401)) throw error;
       }
     }
+    setStaffAccessToken();
     client.clear();
     location.assign("/admin/login");
   }

@@ -10,13 +10,36 @@ services:
     profiles: !reset []
     restart: unless-stopped
     environment:
+      STAFF_ORIGIN: http://localhost:58101
       SWAGGER_USERNAME: local
       SWAGGER_PASSWORD_FILE: /run/secrets/swagger_password
+    ports:
+      - "127.0.0.1:58101:8180"
     secrets:
       - swagger_password
     depends_on:
       migrate:
         condition: service_completed_successfully
+  frontend:
+    build:
+      context: ../frontendx
+    image: vms-frontend:local-compose
+    restart: unless-stopped
+    # The private staff handshake reaches the API from loopback.
+    network_mode: service:api
+    environment:
+      VMS_DOCKER_SITE: "1"
+    secrets:
+      - gateway_init_key
+    depends_on:
+      api:
+        condition: service_started
+        restart: true
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('node:http').get({host:'127.0.0.1',port:8180,headers:{host:'localhost:58101'}},r=>{r.resume();if(r.statusCode!==200)process.exitCode=1}).on('error',()=>process.exitCode=1)"]
+      interval: 3s
+      timeout: 3s
+      retries: 15
 secrets:
   swagger_password:
     file: ./.runtime/local/swagger_password

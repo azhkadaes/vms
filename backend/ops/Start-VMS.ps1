@@ -41,6 +41,8 @@ try {
     }
     $image = Invoke-VmsDocker image list --quiet --filter "reference=$env:VMS_STAGE1_IMAGE"
     if ($Rebuild -or -not $image) { Invoke-VmsDocker @composeFiles build api }
+    $siteImage = Invoke-VmsDocker image list --quiet --filter 'reference=vms-frontend:local-compose'
+    if ($Rebuild -or -not $siteImage) { Invoke-VmsDocker @composeFiles build frontend }
     Invoke-VmsDocker @composeFiles up -d --no-build --wait --wait-timeout 120
 
     if ($SeedTestCatalog -and -not $catalogSeeded) {
@@ -61,8 +63,10 @@ try {
         throw 'VMS did not pass the readiness check.'
     }
     Write-Host "VMS ready: $api/health/ready"
+    Write-Host 'Visitor app: http://localhost:58101/'
+    Write-Host 'Staff app:   http://localhost:58101/admin/'
     Write-Host "API docs:  $api/swagger/index.html"
     Write-Host 'Swagger username: local'
     Write-Host "Swagger password file: $(Join-Path $privateDir 'swagger_password')"
-    if (-not $NoBrowser) { Start-Process "$api/swagger/index.html" }
+    if (-not $NoBrowser) { Start-Process 'http://localhost:58101/' }
 } finally { Pop-Location }

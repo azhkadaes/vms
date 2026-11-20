@@ -68,17 +68,20 @@ Compose builds the API and migrator into the same non-root image. Its default `p
 
 ## Persistent Docker on Windows
 
-1. Open Docker Desktop and wait for its engine. Double-click `Start VMS.cmd` in the VMS checkout. The first run builds the API image, starts PostgreSQL, and applies the migrations before the API starts. Later runs reuse the image and database.
-2. Open [Swagger](http://127.0.0.1:58100/swagger/index.html). Use the username `local` and the value in the private file `backend/.runtime/local/swagger_password`. You can also check [API readiness](http://127.0.0.1:58100/health/ready) without signing in.
-3. Double-click `Stop VMS.cmd` to stop the stack. Start it again with the same file. The database and uploads stay in Docker volumes `vms-postgres` and `vms-uploads`.
+1. Open Docker Desktop and wait for its engine. Double-click `Start VMS.cmd` in the VMS checkout. The first run builds the frontend and API images, starts PostgreSQL, and applies the migrations before the API starts. Later runs reuse the images and database.
+2. Open the [visitor app](http://localhost:58101/) or the [staff app](http://localhost:58101/admin/). Both apps make requests to the real API through the same address. Use `localhost` as shown for staff sign-in.
+3. For direct API testing, open [Swagger](http://127.0.0.1:58100/swagger/index.html). Use the username `local` and the value in the private file `backend/.runtime/local/swagger_password`. You can also check [API readiness](http://127.0.0.1:58100/health/ready) without signing in.
+4. Double-click `Stop VMS.cmd` to stop the stack. Start it again with the same file. The database and uploads stay in Docker volumes `vms-postgres` and `vms-uploads`.
 
-The Compose project is named `vms`. The API listens only on the local machine at port `58100`. PostgreSQL uses the private Compose network. The start and stop launchers operate on this project alone.
+The Compose project is named `vms`. Ports `58100` and `58101` listen only on the local machine. PostgreSQL uses the private Compose network. The start and stop launchers operate on this project alone.
 
 For a new empty catalog, run `".\Start VMS.cmd" -SeedTestCatalog` from Command Prompt, or `& '.\Start VMS.cmd' -SeedTestCatalog` from PowerShell. This inserts fictional officials and rooms once and turns on a clearly labeled testing notice if no operator notice is configured. The test data stays in the local database on restart. In Swagger, try `GET /v1/public/catalogs`, `POST /v1/public/attachments`, and `POST /v1/public/bookings`.
 
-This launcher serves the backend and its API tester. The separate browser apps still need their frontend adapter work to connect to this API. Staff sign-in for real users requires employee accounts and an HTTPS staff gateway. Do not enter real visitor details under the test notice. Use `-Rebuild` after pulling backend code changes.
+The bundled gateway is for local testing. Production staff sign-in requires employee accounts and a separate HTTPS gateway. Do not enter real visitor details under the test notice. Use `-Rebuild` after pulling changes to either app or the backend.
 
 Verified on Windows on 20 November 2026. The launcher applied all 30 migrations on the first start and zero on the second. Swagger authentication, a visitor photo upload and a test booking passed. The same booking was found after using the stop and start launchers.
+
+The production frontend builds were tested in Chrome against the Docker API. The visitor form loaded the live catalog. A local test operator could sign in, open the staff dashboard, and keep their session after reloading.
 
 ## Start a fresh local Docker project
 

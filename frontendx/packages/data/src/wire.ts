@@ -30,33 +30,43 @@ const details = {
   email: z.string(),
   phone: z.string(),
   officerId: z.string(),
-  host: z.string(),
+  host: z.string().optional(),
+  pejabat: z.object({ nama: z.string() }).optional(),
   vip: z.boolean(),
   purpose: z.string(),
   visitors: z.array(z.string()).max(20),
   identityType: z.string(),
 };
 const optionalDetails = z.object(details).partial().shape;
-export const publicBookingResponse = z.object({
-  ...schedule,
-  ...details,
-  visitKind: z.literal("standard").optional(),
-  ndName: z.string().optional(),
-  visitorInstructions: z.string().max(2000).optional(),
-  rejectionReason: z.string().optional(),
-  cancellationReason: z.string().optional(),
-  history: z.array(
-    z
-      .object({ at: z.string(), action: z.string(), publicMessage: z.string().optional() })
-      .transform((event) => ({
-        at: event.at,
-        action: publicVisitActions.find((action) => action === event.action) || "updated",
-        ...(event.action === "rescheduled" && event.publicMessage
-          ? { publicMessage: event.publicMessage }
-          : {}),
-      })),
-  ),
-});
+export const publicBookingResponse = z
+  .object({
+    ...schedule,
+    ...details,
+    visitKind: z.literal("standard").optional(),
+    ndName: z.string().optional(),
+    visitorInstructions: z.string().max(2000).optional(),
+    rejectionReason: z.string().optional(),
+    cancellationReason: z.string().optional(),
+    history: z.array(
+      z
+        .object({ at: z.string(), action: z.string(), publicMessage: z.string().optional() })
+        .transform((event) => ({
+          at: event.at,
+          action: publicVisitActions.find((action) => action === event.action) || "updated",
+          ...(event.action === "rescheduled" && event.publicMessage
+            ? { publicMessage: event.publicMessage }
+            : {}),
+        })),
+    ),
+  })
+  .transform(({ pejabat, ...booking }, context) => {
+    const host = pejabat?.nama ?? booking.host;
+    if (host === undefined) {
+      context.addIssue({ code: "custom", path: ["pejabat"], message: "Pejabat tidak tersedia." });
+      return z.NEVER;
+    }
+    return { ...booking, host };
+  });
 export const staffBookingResponse = z
   .object({
     ...schedule,
@@ -97,7 +107,7 @@ export const staffBookingResponse = z
       "restrictedView",
       ...(record.restrictedView === "reception"
         ? []
-        : ["name", "officerId", "host", "serviceIdLast4"]),
+        : ["name", "officerId", "host", "pejabat", "serviceIdLast4"]),
       ...(record.restrictedView === "assigned-pa" || record.restrictedView === "full"
         ? ["organization"]
         : []),
@@ -123,7 +133,11 @@ export const staffBookingResponse = z
           path: [key],
           message: "Proyeksi data tidak sesuai kewenangan.",
         });
-  });
+  })
+  .transform(({ pejabat, ...booking }) => ({
+    ...booking,
+    ...(pejabat ? { host: pejabat.nama } : {}),
+  }));
 export const catalogsResponse = z.object({
   officers: z.array(
     z.object({
@@ -136,7 +150,16 @@ export const catalogsResponse = z.object({
       deputy: z.string().max(255).optional(),
     }),
   ),
-  rooms: z.array(z.string().min(1)),
+  rooms: z
+    .array(
+      z.union([
+        z.string().min(1),
+        z.object({ id: z.string().min(1), name: z.string().min(1), active: z.boolean() }),
+      ]),
+    )
+    .transform((rooms) =>
+      rooms.flatMap((room) => (typeof room === "string" ? [room] : room.active ? [room.name] : [])),
+    ),
   privacyNotice: z
     .object({ version: z.string().min(1), id: z.string().min(1), en: z.string().min(1) })
     .optional(),

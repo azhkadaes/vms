@@ -11,6 +11,7 @@ import * as wire from '../../frontendx/packages/data/src/wire.ts';
 import { parseSession } from '../../frontendx/packages/data/src/session-contract.ts';
 import { roleDefinitionSchema } from '../../frontendx/packages/data/src/management-contract.ts';
 import { createHttpClient, onAuthenticationLoss } from '../../frontendx/packages/data/src/http.ts';
+import { setStaffAccessToken } from '../../frontendx/packages/data/src/access-token.ts';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const require = createRequire(path.join(root, 'frontendx/package.json'));
@@ -24,9 +25,6 @@ function check(name, accepted, expected = true) {
   if (accepted !== expected) throw new Error(`Consumer regression: ${name}`);
   cases.push(name);
 }
-function knownGap(name, mismatch) {
-  if (mismatch) gaps.push(name);
-}
 function success(route, method) {
   const responses = spec.paths[route][method].responses;
   const status = Object.keys(responses).find((code) => code.startsWith('2'));
@@ -35,9 +33,6 @@ function success(route, method) {
 function failure(code) {
   const status = spec['x-error-catalogue'][code].status;
   return spec.components.responses[`Error${status}`].content['application/json'].examples[code].value;
-}
-function throws(fn) {
-  try { fn(); return false; } catch { return true; }
 }
 function respond(status, body) {
   return createHttpClient('/v1', async () => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } }));
@@ -52,7 +47,7 @@ const catalogs = success('/public/catalogs', 'get');
 const staffCatalogs = success('/staff/catalogs', 'get');
 check('catalog officers and privacy notice accepted', wire.catalogsResponse.safeParse({ ...catalogs, rooms: [] }).success);
 check('staff catalog officers with organization and inactive assignments accepted', wire.catalogsResponse.safeParse({ ...staffCatalogs, rooms: [] }).success);
-knownGap('catalog-room-objects', !wire.catalogsResponse.safeParse(catalogs).success || !wire.catalogsResponse.safeParse(staffCatalogs).success);
+check('public and staff room objects accepted', wire.catalogsResponse.safeParse(catalogs).success && wire.catalogsResponse.safeParse(staffCatalogs).success);
 
 // Ops 32-34, 36, 39, 40: Session and TokenResult.
 const session = success('/staff/session', 'get');
@@ -61,12 +56,13 @@ const token = success('/staff/sessions', 'post');
 check('token result session accepted by the session parser', parseSession(token.session).id === token.session.id);
 const renewed = success('/staff/session/renew', 'post');
 check('renewed session accepted by the session parser', parseSession(renewed).id === renewed.id);
-knownGap('role-token-result-parsed-as-session', throws(() => parseSession(success('/staff/session/role', 'post'))));
+const switched = success('/staff/session/role', 'post');
+check('role switch contains a valid token and session', !!switched.accessToken && parseSession(switched.session).id === switched.session.id);
 const sessionText = readFileSync(path.join(root, 'frontendx/packages/data/src/session.tsx'), 'utf8');
 const sessionSource = ts.createSourceFile('session.tsx', sessionText, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 const signIn = sessionSource.statements.find((node) => ts.isFunctionDeclaration(node) && node.name?.text === 'signIn');
 if (!signIn?.body) throw new Error('Review the changed signIn boundary before updating its gap.');
-knownGap('login-token-result-unconsumed', !signIn.body.getText(sessionSource).includes('accessToken'));
+check('login consumes the token result', signIn.body.getText(sessionSource).includes('adoptSession('));
 
 check('role definitions accepted by the role parser', roleDefinitionSchema.array().safeParse(success('/staff/roles', 'get')).success);
 check('updated role definition accepted by the role parser', roleDefinitionSchema.safeParse(success('/staff/roles/{id}', 'patch')).success);
@@ -90,8 +86,10 @@ const recording = createHttpClient('/v1', async (url, init) => {
   sent.push(init.headers);
   return new Response(JSON.stringify(session), { status: 200, headers: { 'Content-Type': 'application/json' } });
 });
+setStaffAccessToken(token.accessToken);
 await recording('/staff/session', { authenticated: true });
-knownGap('authenticated-request-missing-bearer', !Object.keys(sent[0]).some((key) => key.toLowerCase() === 'authorization'));
+setStaffAccessToken();
+check('staff requests carry the adopted bearer token', sent[0].Authorization === 'Bearer ' + token.accessToken);
 
 if (spec.paths['/staff/reports/summary']) {
   check('summary report passes strict parser', summaryResponseSchema.safeParse(success('/staff/reports/summary', 'get')).success);

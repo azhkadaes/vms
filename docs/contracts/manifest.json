@@ -2925,12 +2925,7 @@
       "migration": "202611180030_create_vms_qr_kunjungan.sql"
     }
   ],
-  "consumerKnownGaps": [
-    "authenticated-request-missing-bearer",
-    "catalog-room-objects",
-    "login-token-result-unconsumed",
-    "role-token-result-parsed-as-session"
-  ],
+  "consumerKnownGaps": [],
   "frontendRequestCalls": [
     {
       "file": "frontendx/packages/data/src/attachments.ts",
@@ -2972,7 +2967,7 @@
     },
     {
       "file": "frontendx/packages/data/src/http.ts",
-      "call": "fetcher(base + path, { method, credentials: \"include\", signal: controller.signal, headers: { ...(body === undefined || body instanceof FormData ? {} : { \"Content-Type\": \"application/json\" }), ...([\"GET\", \"HEAD\"].includes(method) ? {} : { \"X-VMS-Request\": \"browser\" }), }, body: body === undefined ? undefined : body instanceof FormData ? body : JSON.stringify(body), })",
+      "call": "fetcher(base + path, { method, credentials: \"include\", signal: controller.signal, headers: { ...(body === undefined || body instanceof FormData ? {} : { \"Content-Type\": \"application/json\" }), ...([\"GET\", \"HEAD\"].includes(method) ? {} : { \"X-VMS-Request\": \"browser\" }), ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(csrf ? { \"X-CSRF-Token\": csrf } : {}), }, body: body === undefined ? undefined : body instanceof FormData ? body : JSON.stringify(body), })",
       "operations": []
     },
     {
@@ -3141,7 +3136,21 @@
     },
     {
       "file": "frontendx/packages/data/src/session.tsx",
-      "call": "request(\"/staff/password\", { body: { currentPassword, newPassword }, authenticated: true })",
+      "call": "request(\"/staff/session\", { authenticated: true })",
+      "operations": [
+        33
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/session.tsx",
+      "call": "request(\"/staff/session/refresh\", { body: { refreshRequestId } })",
+      "operations": [
+        39
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/session.tsx",
+      "call": "request(\"/staff/password\", { body: { currentPassword, newPassword }, authenticated: true, })",
       "operations": [
         36
       ]
@@ -3151,13 +3160,6 @@
       "call": "request(\"/staff/sessions\", { body: credentials })",
       "operations": [
         32
-      ]
-    },
-    {
-      "file": "frontendx/packages/data/src/session.tsx",
-      "call": "request(\"/staff/session\", { authenticated: true })",
-      "operations": [
-        33
       ]
     },
     {

@@ -8,7 +8,7 @@ The [4 November readiness review](../docs/frontend/FRONTEND-READINESS-2026-11-04
 
 ## Run locally
 
-For actual backend requests, use the [real-backend local launcher](../docs/frontend/REAL-BACKEND-LOCAL.md) after reviewing the compatible backend/database version. It serves both built apps at one local address and requires an explicit API target. The development command below continues to use demo data on loopback.
+For actual backend requests on Windows, use [Start VMS.cmd](../Start%20VMS.cmd). Docker serves both apps at `http://localhost:58101` and proxies requests to the Go API. The development command below continues to use demo data on loopback.
 
 Use Node 22 and npm. From this directory:
 

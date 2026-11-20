@@ -17,11 +17,11 @@ VMS manages appointments and visitor access for the Nusantara Capital Authority 
 | [VMS API](backend/README.md) | Go and Fiber service that enforces permissions, booking rules, admission, and file access. It serves 40 operations under `/v1`. |
 | [Database](docs/contracts/PHYSICAL-SCHEMA-2026-11-18.md) | PostgreSQL 18 stores visits, staff access, audit events, and operational records. Attachments are kept in private storage and read through the API. |
 
-The backend implements the [40-operation REST contract](docs/contracts/FRONTEND-DRIVEN-REST-API-2026-11-16.md). [Validation](docs/contracts/VALIDATION.md) records the Go, PostgreSQL, and API checks. The frontend preview is available now. Connecting the apps to this backend still requires the client changes listed in the [UI contract review](docs/contracts/UI-CONTRACT-VALIDATION-2026-11-18.md#6-frontend-work-not-backend).
+The backend implements the [40-operation REST contract](docs/contracts/FRONTEND-DRIVEN-REST-API-2026-11-16.md). [Validation](docs/contracts/VALIDATION.md) records the Go, PostgreSQL, and API checks. The local Docker launcher serves both browser apps through the real API. The [frontend adapter tickets](.scratch/frontend-adapter-2026-11-19/map.md) track remaining workflow changes, including room selection, reception and report filters.
 
 ## Local development
 
 - Start the [frontend preview](frontendx/README.md#run-locally) to try the visitor and staff flows with demo data.
-- On Windows, open [Start VMS.cmd](Start%20VMS.cmd) to run the local API and open its Swagger page. See the [Docker launcher guide](backend/docs/LOCAL-DEVELOPMENT.md#persistent-docker-on-windows) for testing and stopping it.
+- On Windows, open [Start VMS.cmd](Start%20VMS.cmd) to start PostgreSQL, the API and both browser apps. See the [Docker launcher guide](backend/docs/LOCAL-DEVELOPMENT.md#persistent-docker-on-windows) for testing and stopping them.
 - Follow the [backend setup](backend/README.md#manual-setup) to configure PostgreSQL, run the migrations and start the API.
 - See the [documentation index](docs/README.md) for requirements, the API contract and verification.

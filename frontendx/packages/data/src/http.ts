@@ -1,4 +1,5 @@
 import { ApiError } from "./errors.ts";
+import { csrfToken, setStaffAccessToken, staffAccessToken } from "./access-token.ts";
 
 const authenticationLoss = new Set<() => void>();
 export function onAuthenticationLoss(listener: () => void) {
@@ -46,6 +47,12 @@ export function createHttpClient(base = "/v1", fetcher: typeof fetch = fetch) {
       15000,
     );
     try {
+      const token = authenticated ? staffAccessToken() : undefined;
+      const lifecycle =
+        path === "/staff/sessions" ||
+        path === "/staff/session/refresh" ||
+        (path === "/staff/session" && method === "DELETE");
+      const csrf = lifecycle ? csrfToken() : undefined;
       const response = await fetcher(base + path, {
         method,
         credentials: "include",
@@ -55,12 +62,16 @@ export function createHttpClient(base = "/v1", fetcher: typeof fetch = fetch) {
             ? {}
             : { "Content-Type": "application/json" }),
           ...(["GET", "HEAD"].includes(method) ? {} : { "X-VMS-Request": "browser" }),
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...(csrf ? { "X-CSRF-Token": csrf } : {}),
         },
         body:
           body === undefined ? undefined : body instanceof FormData ? body : JSON.stringify(body),
       });
-      if (authenticated && response.status === 401)
+      if (authenticated && response.status === 401) {
+        setStaffAccessToken();
         authenticationLoss.forEach((listener) => listener());
+      }
       if (response.status === 204 && response.ok) return null;
       if (response.ok && responseType === "blob") return await response.blob();
       const value: unknown = await response.json().catch(() => null);

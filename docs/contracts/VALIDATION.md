@@ -36,7 +36,7 @@ Ten deliberate drift mutations run on every check and must be rejected: unregist
 
 The backend implements all 40 operations. The contract check validated 115 HTTP responses and 14 frontend parser checks, with no missing backend operations. The Go test suite, static checks, and integration suite passed against a disposable PostgreSQL 18 instance. The integration suite exercised the migration cycle separately from the runtime database.
 
-Strict conformance still reports four known frontend adapter gaps: staff requests missing Bearer credentials, room catalog objects, login token adoption, and role-switch token adoption. See [the standard result](validation-results.json) and [the strict result](strict-validation-results.json) for the captured counts and exact gap names.
+The initial backend release reported four adapter gaps. The Docker frontend update resolved the measured Bearer, catalog parsing, login token and role token gaps. See [the strict result](strict-validation-results.json) for the latest checks. These checks do not cover every remaining workflow in the [frontend adapter tickets](../../.scratch/frontend-adapter-2026-11-19/map.md).
 
 ## Ticket 03 result, 19 November 2026
 

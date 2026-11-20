@@ -1,5 +1,10 @@
 import { apiBase, preview } from "./config.ts";
-import { matchesAttachmentSignature, validateND, validateVisitorPhoto, type Role } from "./domain.ts";
+import {
+  matchesAttachmentSignature,
+  validateND,
+  validateVisitorPhoto,
+  type Role,
+} from "./domain.ts";
 import { ApiError } from "./errors.ts";
 import { createHttpClient } from "./http.ts";
 
@@ -19,7 +24,9 @@ export async function uploadAttachment(
   const field = kind === "visitorPhoto" ? "visitorPhotoName" : "ndName";
   const invalid = kind === "visitorPhoto" ? validateVisitorPhoto(file) : validateND(file);
   if (invalid) throw new ApiError(422, invalid, { [field]: [invalid] });
-  if (!matchesAttachmentSignature(file.type, new Uint8Array(await file.slice(0, 8).arrayBuffer()))) {
+  if (
+    !matchesAttachmentSignature(file.type, new Uint8Array(await file.slice(0, 8).arrayBuffer()))
+  ) {
     const message = kind === "visitorPhoto" ? "Gunakan foto JPEG atau PNG." : "Gunakan berkas PDF.";
     throw new ApiError(422, message, { [field]: [message] });
   }
@@ -32,7 +39,8 @@ export async function uploadAttachment(
       headers: { "Content-Type": file.type },
       body: file,
     });
-    if (!response.ok) throw new ApiError(response.status, "Berkas belum dapat diunggah. Coba lagi.");
+    if (!response.ok)
+      throw new ApiError(response.status, "Berkas belum dapat diunggah. Coba lagi.");
     const result = await response.json();
     if (typeof result.token !== "string") throw new ApiError(502, "Unggahan berkas tidak valid.");
     previewUploads.set(file, result.token);
@@ -49,6 +57,7 @@ export async function uploadAttachment(
   const form = new FormData();
   form.set("file", file);
   form.set("reference", entry.reference);
+  form.set("purpose", kind);
   const started = performance.now();
   let result: unknown;
   try {

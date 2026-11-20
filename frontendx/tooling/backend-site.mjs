@@ -48,7 +48,32 @@ function unavailable(response) {
   response.end(JSON.stringify({ message: "Layanan VMS tidak dapat dihubungi. Coba lagi." }));
 }
 
-export async function startBackendSite({ apiOrigin, port = 3000, root = workspace }) {
+async function initializeStaff(api, req, path, gatewayKey) {
+  return new Promise((accept, reject) => {
+    const upstream = request(
+      api,
+      {
+        path: "/internal/staff/initialize",
+        headers: {
+          Cookie: req.headers.cookie || "",
+          "X-VMS-Gateway-Key": gatewayKey,
+          "X-VMS-Original-Method": "GET",
+          "X-VMS-Original-URI": path,
+        },
+      },
+      (reply) => {
+        reply.resume();
+        if (reply.statusCode !== 204) return reject(new Error("Staff initialization failed."));
+        accept(reply.headers["set-cookie"] || []);
+      },
+    );
+    upstream.setTimeout(5_000, () => upstream.destroy());
+    upstream.on("error", reject);
+    upstream.end();
+  });
+}
+
+export async function startBackendSite({ apiOrigin, port = 3000, root = workspace, dockerGateway } ) {
   const api = new URL(apiOrigin);
   if (
     api.protocol !== "http:" ||
@@ -69,22 +94,27 @@ export async function startBackendSite({ apiOrigin, port = 3000, root = workspac
   }
 
   const server = createServer(async (req, res) => {
-    const host = `127.0.0.1:${server.address().port}`;
+    const host = dockerGateway ? "localhost:58101" : `127.0.0.1:${server.address().port}`;
     if (req.headers.host !== host) return res.writeHead(403).end();
     if (!req.url.startsWith("/") || req.url.startsWith("//")) return res.writeHead(400).end();
 
     const url = new URL(req.url, `http://${host}`);
     if (url.pathname === "/v1" || url.pathname.startsWith("/v1/")) {
+      const headers = forwardedHeaders(req.headers);
+      for (const name of Object.keys(headers)) {
+        if (name === "forwarded" || name.startsWith("x-forwarded-") || name.startsWith("x-vms-gateway-"))
+          delete headers[name];
+      }
       const upstream = request(
         api,
-        { path: req.url, method: req.method, headers: forwardedHeaders(req.headers) },
+        { path: req.url, method: req.method, headers },
         (reply) => {
           res.writeHead(reply.statusCode || 502, forwardedHeaders(reply.headers));
           reply.on("error", () => res.destroy());
           reply.pipe(res);
         },
       );
-      upstream.setTimeout(20_000, () => upstream.destroy());
+      upstream.setTimeout(80_000, () => upstream.destroy());
       upstream.on("error", () => unavailable(res));
       req.on("aborted", () => upstream.destroy());
       res.on("close", () => {
@@ -115,11 +145,16 @@ export async function startBackendSite({ apiOrigin, port = 3000, root = workspac
       const file = await realpath(resolve(folder, route ? "index.html" : relative));
       if (!file.startsWith(folder + sep)) return res.writeHead(404).end();
       const data = await readFile(file);
+      const cookies = dockerGateway && admin && route && req.method === "GET"
+        ? await initializeStaff(api, req, pathname, dockerGateway).catch(() => null)
+        : [];
+      if (cookies === null) return unavailable(res);
       res.writeHead(200, {
         "Content-Type": types[extname(file)] || "application/octet-stream",
         "Content-Length": data.length,
         "Cache-Control": "no-store",
         "X-Content-Type-Options": "nosniff",
+        ...(cookies.length ? { "Set-Cookie": cookies } : {}),
       });
       res.end(req.method === "HEAD" ? undefined : data);
     } catch {
@@ -128,10 +163,10 @@ export async function startBackendSite({ apiOrigin, port = 3000, root = workspac
   });
   await new Promise((accept, reject) => {
     server.once("error", reject);
-    server.listen(port, "127.0.0.1", accept);
+    server.listen(port, dockerGateway ? "0.0.0.0" : "127.0.0.1", accept);
   });
   return {
-    origin: `http://127.0.0.1:${server.address().port}`,
+    origin: dockerGateway ? "http://localhost:58101" : `http://127.0.0.1:${server.address().port}`,
     async close() {
       server.closeAllConnections();
       await new Promise((accept, reject) =>
@@ -146,13 +181,18 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     const { values } = parseArgs({
       options: { api: { type: "string" }, port: { type: "string", default: "3000" } },
     });
-    const port = Number(values.port);
-    if (!values.api || !Number.isInteger(port) || port < 1024 || port > 65535)
+    const dockerGateway = process.env.VMS_DOCKER_SITE === "1"
+      ? (await readFile("/run/secrets/gateway_init_key", "utf8")).trim()
+      : undefined;
+    if (process.env.VMS_DOCKER_SITE === "1" && !dockerGateway)
+      throw new Error("The Docker staff gateway key is missing.");
+    const port = dockerGateway ? 8180 : Number(values.port);
+    const apiOrigin = dockerGateway ? "http://127.0.0.1:8080" : values.api;
+    if (!apiOrigin || !Number.isInteger(port) || port < 1024 || port > 65535)
       throw new Error("Use npm run serve:backend -- --api http://127.0.0.1:PORT [--port 3000].");
-    const site = await startBackendSite({ apiOrigin: values.api, port });
+    const site = await startBackendSite({ apiOrigin, port, dockerGateway });
     console.log(`Real backend site: ${site.origin}/ (staff: ${site.origin}/admin/)`);
-    console.log(`API: ${new URL(values.api).origin}; configure its VMS_ORIGIN as ${site.origin}.`);
-    console.log("Actions use the selected backend. This launcher does not start or migrate it.");
+    console.log(`API: ${new URL(apiOrigin).origin}`);
     let stopping = false;
     for (const signal of ["SIGINT", "SIGTERM"])
       process.on(signal, async () => {
