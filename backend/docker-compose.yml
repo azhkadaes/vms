@@ -1,4 +1,10 @@
 name: vms-backend-stage1
+x-vms-build: &vms-build
+  context: .
+  dockerfile: Dockerfile
+  target: ${VMS_STAGE1_BUILD_TARGET:-prod}
+  additional_contexts:
+    vms_binaries: ${VMS_STAGE1_BINARY_CONTEXT:-.}
 services:
   db:
     image: postgres:18.6
@@ -23,13 +29,8 @@ services:
       retries: 20
   api:
     profiles: ["api"]
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: local
-      additional_contexts:
-        vms_binaries: ./.runtime/linux
-    image: vms-backend:stage1
+    build: *vms-build
+    image: ${VMS_STAGE1_IMAGE:-vms-backend:stage1}
     restart: "no"
     environment:
       APP_ENVIRONMENT: development
@@ -42,23 +43,38 @@ services:
       DB_NAME: vms_stage1
       DB_SSL_MODE: disable
       RATE_LIMIT_KEY_FILE: /run/secrets/rate_key
+      STAFF_ORIGIN: ${VMS_STAGE1_STAFF_ORIGIN:-http://127.0.0.1:${VMS_STAGE1_API_PORT:-58050}}
+      JWT_SECRET_KEY_FILE: /run/secrets/jwt_key
+      CSRF_KEY_FILE: /run/secrets/csrf_key
+      REFRESH_RECOVERY_KEY_FILE: /run/secrets/refresh_recovery_key
+      GATEWAY_INIT_KEY_FILE: /run/secrets/gateway_init_key
+      GATEWAY_INIT_NETWORKS: ${VMS_STAGE1_GATEWAY_NETWORKS:-127.0.0.1/32,::1/128}
+      UPLOAD_DIR: /var/lib/vms/uploads
+      UPLOAD_TOKEN_KEY_FILE: /run/secrets/upload_token_key
+      VMS_ADMISSION_QR_KEY_FILE: /run/secrets/admission_qr_key
+      VMS_NOTICE_VERSION: ${VMS_NOTICE_VERSION:-}
+      VMS_NOTICE_ID: ${VMS_NOTICE_ID:-}
+      VMS_NOTICE_EN: ${VMS_NOTICE_EN:-}
     ports:
       - "127.0.0.1:${VMS_STAGE1_API_PORT:-58050}:8080"
     secrets:
       - db_api_password
       - rate_key
+      - jwt_key
+      - csrf_key
+      - refresh_recovery_key
+      - gateway_init_key
+      - upload_token_key
+      - admission_qr_key
+    volumes:
+      - upload_data:/var/lib/vms/uploads
     depends_on:
       db:
         condition: service_healthy
   migrate:
     profiles: ["tools"]
-    image: vms-backend:stage1
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: local
-      additional_contexts:
-        vms_binaries: ./.runtime/linux
+    image: ${VMS_STAGE1_IMAGE:-vms-backend:stage1}
+    build: *vms-build
     entrypoint: ["/vms-migrate"]
     command: ["-mode", "plan"]
     environment:
@@ -76,6 +92,7 @@ services:
         condition: service_healthy
 volumes:
   pg18_data:
+  upload_data:
 secrets:
   db_owner_password:
     file: ./.runtime/stage1/db_owner_password
@@ -85,3 +102,15 @@ secrets:
     file: ./.runtime/stage1/db_api_password
   rate_key:
     file: ./.runtime/stage1/rate_key
+  jwt_key:
+    file: ./.runtime/stage1/jwt_key
+  csrf_key:
+    file: ./.runtime/stage1/csrf_key
+  refresh_recovery_key:
+    file: ./.runtime/stage1/refresh_recovery_key
+  gateway_init_key:
+    file: ./.runtime/stage1/gateway_init_key
+  upload_token_key:
+    file: ./.runtime/stage1/upload_token_key
+  admission_qr_key:
+    file: ./.runtime/stage1/admission_qr_key

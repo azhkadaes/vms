@@ -64,27 +64,44 @@ Use the original example names: `APP_ENVIRONMENT`, `APP_HOST` (host/IP only), `A
 
 docker-compose.yml defines project vms-backend-stage1, a new pg18_data volume, PostgreSQL18.6, local-only default ports55450(DB)/58050(API), separate owner/migration/runtime accounts and file-based private credentials. PostgreSQL18 uses /var/lib/postgresql as its volume mount. The original isolated VMS project and volume identifiers are preserved; no unrelated database directory or volume is referenced.
 
-The single Dockerfile contains builder, dev, prod and local targets, following the reference multi-stage approach. The prod target is the default source build with Go1.27.4 and a non-root runtime. Compose selects the local target with build-linux.ps1: the same pinned toolchain compiles CGO-free Linux/amd64 binaries using D: scratch, and a named Docker context sends only the two binaries into the small non-root image. This avoids pulling a large compiler image onto the nearly full C: Docker disk. Verify engine architecture before running. Image build/runtime acceptance is recorded separately. This is local disposable configuration, not the production Nginx/TLS/worker topology. No default service starts the API or runs migrations: the API/tool profiles are explicit.
+Compose builds the API and migrator into the same non-root image. Its default `prod` build compiles the Go source in Docker. The prebuilt Linux option below uses the same pinned toolchain and saves Docker disk space. The default ports bind to loopback. The API and migration tool use separate profiles. This Compose file is for local development.
 
-## Execution sequence, only after isolated-operation approval
+## Start a fresh local Docker project
 
 First inventory current Docker projects/containers/volumes and listening ports. Confirm the named project/volume are new and the two loopback ports are available. If they already exist, inspect them and preserve their contents rather than reuse/delete silently. Use only the VMS Compose file below; legacy make migrate-up does not apply.
 
-From D:/oikn/VMS/backend:
+Run from the backend directory. Set `VMS_NOTICE_VERSION`, `VMS_NOTICE_ID` and `VMS_NOTICE_EN` to the approved privacy notice before enabling public registration. Leaving them unset keeps registration unavailable. Set `VMS_STAGE1_STAFF_ORIGIN` to the exact staff site origin if you serve it through a separate gateway.
 
 ```powershell
 pwsh -File ops/stage1/prepare.ps1
-pwsh -File ops/stage1/build-linux.ps1
-docker compose -f docker-compose.yml config --quiet
-docker compose -f docker-compose.yml build api
-docker compose -f docker-compose.yml up -d db
-docker compose -f docker-compose.yml --profile tools run --rm migrate -mode up -expect-database vms_stage1
-docker compose -f docker-compose.yml --profile api up -d api
+docker compose --profile api --profile tools config --quiet
+docker compose build api
+docker compose up -d --wait db
+docker compose --profile tools run --rm migrate -mode up -expect-database vms_stage1
+docker compose --profile api up -d api
+Invoke-RestMethod http://127.0.0.1:58050/health/ready
 ```
 
-prepare.ps1 generates private files under ignored .runtime/stage1; it refuses to overwrite existing credentials. In a restricted tool context, supply -HostUserSid only after verifying the real host execution identity; this grants only the caller and that host account access, not a broad user group. It does not start containers. Never print file values, expanded connection URIs or expanded secret configuration. The named build context is .runtime/linux only, never the credential directory. Database initialization provisions roles/schemas only within the new container; migrations run explicitly as vms_migrator. The API has no DDL privileges or migration credentials. Migration status can initialize its ledger, so status is also a database operation, not an offline check.
+The migration command applies the current 30 migrations on a fresh database. It can be run again on the same database. If the database is from the original four-migration stage-1 setup, follow the separate [legacy reset procedure](#schema-rebuild-and-stage-1-reset-18-november-2026) only for that disposable database.
+
+`prepare.ps1` generates private files under the ignored `.runtime/stage1` directory. For an existing directory, run `pwsh -File ops/stage1/prepare.ps1 -AddMissingFeatureKeys` to add the staff, upload and QR keys while preserving existing credentials. The API writes uploads to a separate named volume. Only the migrator gets the migration password and has permission to change the schema.
+
+Staff sign-in requires existing employee accounts and a same-origin staff gateway. The browser lifecycle uses secure cookies. If you add a gateway, set `VMS_STAGE1_STAFF_ORIGIN` to its HTTPS origin and `VMS_STAGE1_GATEWAY_NETWORKS` to the exact private gateway peer CIDRs. Keep the gateway initialization key private and the initialization route behind the gateway. The fresh database seeds roles and permissions only.
+
+If Docker cannot download the build dependencies or disk space is tight, build the two Linux/amd64 binaries using the pinned Go toolchain and select the smaller local image before running the same Compose commands:
+
+```powershell
+pwsh -File ops/stage1/build-linux.ps1
+$env:VMS_STAGE1_BUILD_TARGET = 'local'
+$env:VMS_STAGE1_BINARY_CONTEXT = './.runtime/linux'
+docker compose build api
+```
 
 Verify actual DDL/roles, process startup/readiness, direct catalog responses, real rate-limit concurrency/restart behavior and denied runtime DDL. Synthetic catalog seeds may be used in this disposable database; no real-person data is required. The opt-in Go integration test requires -tags integration and an explicit VMS_INTEGRATION_DATABASE_URL for vms_api on vms_stage1. Ordinary go test ./... never runs it.
+
+For a disposable database populated with `ops/stage1/seed-test-catalog.sql`, `pwsh -File ops/stage1/verify.ps1` checks the catalog, upload capability, staff session protection, and repository behavior. Pass `-NoticeVersion` if you started the API with a published notice. The integration suites insert test records.
+
+On 20 November 2026, the source image ran against a fresh PostgreSQL 18.6 container. The first migration run applied 30 migrations and a second applied zero. A synthetic visit completed photo upload, registration and recovery, staff login and approval, private photo download, QR issuance, check-in and checkout. The prebuilt image also built successfully and listed all 30 migrations.
 
 Stop only this reviewed project when its run is finished; retain its named volume for inspection. Removing volumes or resetting data needs a separately identified target/review. No down migration is exposed by the VMS command. Existing-data migration and production deployment remain separate later scopes.
 

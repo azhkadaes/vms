@@ -150,6 +150,6 @@ Required differences from the reference are Fiber 3, integer business IDs serial
 
 ## Docker and documentation layout
 
-There is one `Dockerfile` and one `docker-compose.yml`, matching sihp-be's root layout. The Dockerfile has `builder`, `dev`, `prod` and optional `local` targets. `prod` is the default source build; the isolated Compose setup selects `local` with prebuilt Linux binaries to conserve Docker disk space. Existing VMS project, database, volume, port and service names are preserved.
+The [Docker setup](docs/LOCAL-DEVELOPMENT.md#start-a-fresh-local-docker-project) builds the API and migration tool, starts PostgreSQL, and checks that the API is ready. Compose uses the source build by default. The guide also shows how to use prebuilt Linux binaries when the Docker disk is tight.
 
 Supporting backend documentation lives under `docs/`, including [local setup and container operations](docs/LOCAL-DEVELOPMENT.md) and the embedded Swagger document under `docs/`. This root README is the entry point. Workspace-wide planning and evidence remain in the parent project's existing `../docs/` folder.
