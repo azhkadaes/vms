@@ -1,6 +1,13 @@
 .git
 .env
 .env.*
+.task-cache
+.cache
+.impeccable
+.review
+anti-slop
+.runtime
+tmp
 **/node_modules
 **/dist
 **/coverage
