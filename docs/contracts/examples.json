@@ -1,0 +1,1931 @@
+{
+  "schemas": {
+    "BusinessId": "1",
+    "Version": 1,
+    "Role": "PA",
+    "Permission": "bookings",
+    "Status": "pending",
+    "DisplayStatus": "pending",
+    "Date": "2030-01-02",
+    "StartTime": "09:00",
+    "Email": "visitor@example.test",
+    "Password": "synthetic-passphrase",
+    "ExistingPassword": "synthetic-passphrase",
+    "Reference": "550e8400-e29b-41d4-a716-446655440000",
+    "BookingCode": "01234567",
+    "Credential": "01234567",
+    "ApiError": {
+      "code": "validation_failed",
+      "message": "Periksa isian yang ditandai.",
+      "requestId": "550e8400-e29b-41d4-a716-446655440000"
+    },
+    "Room": {
+      "id": "1",
+      "name": "Visitor Example",
+      "active": true
+    },
+    "Officer": {
+      "id": "1",
+      "name": "Visitor Example",
+      "vip": false,
+      "active": true
+    },
+    "Catalogs": {
+      "officers": [
+        {
+          "id": "1",
+          "name": "Official Example",
+          "vip": false,
+          "active": true
+        }
+      ],
+      "rooms": [
+        {
+          "id": "1",
+          "name": "Meeting room",
+          "active": true
+        }
+      ],
+      "attachmentsEnabled": false,
+      "privacyNotice": {
+        "version": "2026-11-12",
+        "id": "Pemberitahuan organisasi (contoh).",
+        "en": "Organization notice (example)."
+      }
+    },
+    "VisitTiming": {
+      "serverTime": 1893542400000,
+      "opensAt": 1893544200000,
+      "endsAt": 1893549600000,
+      "displayStatus": "pending",
+      "canCheckIn": false,
+      "canCheckOut": false,
+      "canCancel": false
+    },
+    "PublicEvent": {
+      "at": "2030-01-02T00:00:00Z",
+      "action": "received"
+    },
+    "StaffEvent": {
+      "at": "2030-01-02T00:00:00Z",
+      "message": "Periksa isian yang ditandai."
+    },
+    "PublicBooking": {
+      "id": "1",
+      "visitKind": "standard",
+      "date": "2030-01-02",
+      "time": "09:00",
+      "duration": 60,
+      "room": "",
+      "status": "pending",
+      "version": 1,
+      "timing": {
+        "serverTime": 1893542400000,
+        "opensAt": 1893544200000,
+        "endsAt": 1893549600000,
+        "displayStatus": "pending",
+        "canCheckIn": false,
+        "canCheckOut": false,
+        "canCancel": false
+      },
+      "code": "01234567",
+      "name": "Visitor Example",
+      "organization": "Example Office",
+      "email": "visitor@example.test",
+      "phone": "081234567890",
+      "officerId": "1",
+      "host": "Official Example",
+      "vip": false,
+      "purpose": "Discuss visitor services",
+      "visitors": [
+        "Visitor Example"
+      ],
+      "identityType": "KTP",
+      "history": []
+    },
+    "StandardStaffBooking": {
+      "id": "1",
+      "visitKind": "standard",
+      "date": "2030-01-02",
+      "time": "09:00",
+      "duration": 60,
+      "room": "",
+      "status": "pending",
+      "version": 1,
+      "timing": {
+        "serverTime": 1893542400000,
+        "opensAt": 1893544200000,
+        "endsAt": 1893549600000,
+        "displayStatus": "pending",
+        "canCheckIn": false,
+        "canCheckOut": false,
+        "canCancel": false
+      },
+      "code": "01234567",
+      "name": "Visitor Example",
+      "organization": "Example Office",
+      "email": "visitor@example.test",
+      "phone": "081234567890",
+      "officerId": "1",
+      "host": "Official Example",
+      "vip": false,
+      "purpose": "Discuss visitor services",
+      "visitors": [
+        "Visitor Example"
+      ],
+      "identityType": "KTP",
+      "history": []
+    },
+    "RestrictedReception": {
+      "id": "1",
+      "visitKind": "restricted",
+      "date": "2030-01-02",
+      "time": "09:00",
+      "duration": 60,
+      "room": "",
+      "status": "pending",
+      "version": 1,
+      "timing": {
+        "serverTime": 1893542400000,
+        "opensAt": 1893544200000,
+        "endsAt": 1893549600000,
+        "displayStatus": "pending",
+        "canCheckIn": false,
+        "canCheckOut": false,
+        "canCancel": false
+      },
+      "reference": "TRB-1",
+      "restrictedView": "reception"
+    },
+    "RestrictedArrival": {
+      "id": "1",
+      "visitKind": "restricted",
+      "date": "2030-01-02",
+      "time": "09:00",
+      "duration": 60,
+      "room": "",
+      "status": "pending",
+      "version": 1,
+      "timing": {
+        "serverTime": 1893542400000,
+        "opensAt": 1893544200000,
+        "endsAt": 1893549600000,
+        "displayStatus": "pending",
+        "canCheckIn": false,
+        "canCheckOut": false,
+        "canCancel": false
+      },
+      "reference": "TRB-1",
+      "restrictedView": "arrival"
+    },
+    "RestrictedAssignedPA": {
+      "id": "1",
+      "visitKind": "restricted",
+      "date": "2030-01-02",
+      "time": "09:00",
+      "duration": 60,
+      "room": "",
+      "status": "pending",
+      "version": 1,
+      "timing": {
+        "serverTime": 1893542400000,
+        "opensAt": 1893544200000,
+        "endsAt": 1893549600000,
+        "displayStatus": "pending",
+        "canCheckIn": false,
+        "canCheckOut": false,
+        "canCancel": false
+      },
+      "reference": "TRB-1",
+      "restrictedView": "assigned-pa"
+    },
+    "RestrictedFull": {
+      "id": "1",
+      "visitKind": "restricted",
+      "date": "2030-01-02",
+      "time": "09:00",
+      "duration": 60,
+      "room": "",
+      "status": "pending",
+      "version": 1,
+      "timing": {
+        "serverTime": 1893542400000,
+        "opensAt": 1893544200000,
+        "endsAt": 1893549600000,
+        "displayStatus": "pending",
+        "canCheckIn": false,
+        "canCheckOut": false,
+        "canCancel": false
+      },
+      "reference": "TRB-1",
+      "restrictedView": "full"
+    },
+    "StaffBooking": {
+      "id": "1",
+      "visitKind": "standard",
+      "date": "2030-01-02",
+      "time": "09:00",
+      "duration": 60,
+      "room": "",
+      "status": "pending",
+      "version": 1,
+      "timing": {
+        "serverTime": 1893542400000,
+        "opensAt": 1893544200000,
+        "endsAt": 1893549600000,
+        "displayStatus": "pending",
+        "canCheckIn": false,
+        "canCheckOut": false,
+        "canCancel": false
+      },
+      "code": "01234567",
+      "name": "Visitor Example",
+      "organization": "Example Office",
+      "email": "visitor@example.test",
+      "phone": "081234567890",
+      "officerId": "1",
+      "host": "Official Example",
+      "vip": false,
+      "purpose": "Discuss visitor services",
+      "visitors": [
+        "Visitor Example"
+      ],
+      "identityType": "KTP",
+      "history": []
+    },
+    "ArrivalBooking": {
+      "id": "1",
+      "visitKind": "standard",
+      "date": "2030-01-02",
+      "time": "09:00",
+      "duration": 60,
+      "room": "",
+      "status": "pending",
+      "version": 1,
+      "timing": {
+        "serverTime": 1893542400000,
+        "opensAt": 1893544200000,
+        "endsAt": 1893549600000,
+        "displayStatus": "pending",
+        "canCheckIn": false,
+        "canCheckOut": false,
+        "canCancel": false
+      },
+      "code": "01234567",
+      "name": "Visitor Example",
+      "organization": "Example Office",
+      "email": "visitor@example.test",
+      "phone": "081234567890",
+      "officerId": "1",
+      "host": "Official Example",
+      "vip": false,
+      "purpose": "Discuss visitor services",
+      "visitors": [
+        "Visitor Example"
+      ],
+      "identityType": "KTP",
+      "history": []
+    },
+    "PublicCreate": {
+      "name": "Visitor Example",
+      "organization": "Example Office",
+      "email": "visitor@example.test",
+      "phone": "081234567890",
+      "officerId": "1",
+      "purpose": "Discuss visitor services",
+      "visitors": [
+        "Visitor Example"
+      ],
+      "identityType": "KTP",
+      "visitKind": "standard",
+      "idempotencyKey": "550e8400-e29b-41d4-a716-446655440000",
+      "date": "2030-01-02",
+      "time": "09:00",
+      "ack": true
+    },
+    "StandardStaffCreate": {
+      "name": "Visitor Example",
+      "organization": "Example Office",
+      "email": "visitor@example.test",
+      "phone": "081234567890",
+      "officerId": "1",
+      "purpose": "Discuss visitor services",
+      "visitors": [
+        "Visitor Example"
+      ],
+      "identityType": "KTP",
+      "visitKind": "standard",
+      "idempotencyKey": "550e8400-e29b-41d4-a716-446655440000",
+      "date": "2030-01-02",
+      "time": "09:00"
+    },
+    "RestrictedCreate": {
+      "visitKind": "restricted",
+      "idempotencyKey": "550e8400-e29b-41d4-a716-446655440000",
+      "date": "2030-01-02",
+      "time": "09:00"
+    },
+    "StaffCreate": {
+      "name": "Visitor Example",
+      "organization": "Example Office",
+      "email": "visitor@example.test",
+      "phone": "081234567890",
+      "officerId": "1",
+      "purpose": "Discuss visitor services",
+      "visitors": [
+        "Visitor Example"
+      ],
+      "identityType": "KTP",
+      "visitKind": "standard",
+      "idempotencyKey": "550e8400-e29b-41d4-a716-446655440000",
+      "date": "2030-01-02",
+      "time": "09:00"
+    },
+    "Approve": {
+      "version": 1
+    },
+    "Reject": {
+      "version": 1,
+      "rejectionReason": "Requested appointment unavailable"
+    },
+    "Reschedule": {
+      "version": 1,
+      "date": "2030-01-02",
+      "time": "09:00",
+      "duration": 60
+    },
+    "RestrictedUpdate": {
+      "version": 1,
+      "visitKind": "restricted",
+      "date": "2030-01-02",
+      "time": "09:00"
+    },
+    "StaffCancel": {
+      "version": 1,
+      "reason": "Schedule changed"
+    },
+    "Attendance": {
+      "credential": "01234567",
+      "version": 1
+    },
+    "Resolve": {
+      "credential": "01234567"
+    },
+    "Pair": {
+      "code": "01234567",
+      "email": "visitor@example.test"
+    },
+    "PairVersion": {
+      "code": "01234567",
+      "email": "visitor@example.test",
+      "version": 1
+    },
+    "SubmissionResolve": {
+      "idempotencyKey": "550e8400-e29b-41d4-a716-446655440000",
+      "email": "visitor@example.test"
+    },
+    "Resolution": {
+      "outcome": "committed",
+      "booking": {
+        "id": "1",
+        "visitKind": "standard",
+        "date": "2030-01-02",
+        "time": "09:00",
+        "duration": 60,
+        "room": "",
+        "status": "pending",
+        "version": 1,
+        "timing": {
+          "serverTime": 1893542400000,
+          "opensAt": 1893544200000,
+          "endsAt": 1893549600000,
+          "displayStatus": "pending",
+          "canCheckIn": false,
+          "canCheckOut": false,
+          "canCancel": false
+        },
+        "code": "01234567",
+        "name": "Visitor Example",
+        "organization": "Example Office",
+        "email": "visitor@example.test",
+        "phone": "081234567890",
+        "officerId": "1",
+        "host": "Official Example",
+        "vip": false,
+        "purpose": "Discuss visitor services",
+        "visitors": [
+          "Visitor Example"
+        ],
+        "identityType": "KTP",
+        "history": []
+      }
+    },
+    "Upload": {
+      "file": "x",
+      "reference": "550e8400-e29b-41d4-a716-446655440000"
+    },
+    "UploadResult": {
+      "token": "vmsu1.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "expiresAt": "2030-01-02T01:00:00Z",
+      "serverTime": 1893542400000
+    },
+    "AdmissionResult": {
+      "payload": "vmsq1.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "expiresAt": "2030-01-02T01:00:00Z",
+      "serverTime": 1893542400000
+    },
+    "Employee": {
+      "id": "1",
+      "name": "Visitor Example",
+      "email": "visitor@example.test",
+      "roles": [
+        "PA"
+      ],
+      "active": true,
+      "assignedOfficerIds": [],
+      "version": 1
+    },
+    "EmployeePage": {
+      "items": [],
+      "total": 0,
+      "totalAll": 0,
+      "page": 1,
+      "pageSize": 25
+    },
+    "IntegrationField": {
+      "key": "host",
+      "label": "x",
+      "kind": "text",
+      "required": true
+    },
+    "Integration": {
+      "id": "1",
+      "name": "Visitor Example",
+      "description": "x",
+      "enabled": false,
+      "health": "not_configured",
+      "version": 1,
+      "fields": []
+    },
+    "IntegrationPatch": {
+      "enabled": false,
+      "values": {},
+      "clearSecrets": [],
+      "version": 1
+    },
+    "ReportFilter": {
+      "from": "2030-01-02",
+      "to": "2030-01-02",
+      "status": "all"
+    },
+    "Revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "Summary": {
+      "filter": {
+        "from": "2030-01-02",
+        "to": "2030-01-02",
+        "status": "all"
+      },
+      "scope": "organization",
+      "generatedAt": "2030-01-02T00:00:00Z",
+      "canExport": false,
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "counts": {
+        "pending": 1,
+        "approved": 0,
+        "rejected": 0,
+        "cancelled": 0,
+        "checked_in": 0,
+        "checked_out": 0,
+        "missed": 0
+      },
+      "total": 1
+    },
+    "Export": {
+      "filename": "kunjungan-ringkasan-2030-01-02-2030-01-02.csv",
+      "csv": "Status,Jumlah\r\npending,1\r\n",
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "ReadModel": {
+      "items": [
+        {
+          "id": "1",
+          "visitKind": "standard",
+          "date": "2030-01-02",
+          "time": "09:00",
+          "duration": 60,
+          "room": "",
+          "status": "pending",
+          "version": 1,
+          "timing": {
+            "serverTime": 1893542400000,
+            "opensAt": 1893544200000,
+            "endsAt": 1893549600000,
+            "displayStatus": "pending",
+            "canCheckIn": false,
+            "canCheckOut": false,
+            "canCancel": false
+          },
+          "code": "01234567",
+          "name": "Visitor Example",
+          "organization": "Example Office",
+          "email": "visitor@example.test",
+          "phone": "081234567890",
+          "officerId": "1",
+          "host": "Official Example",
+          "vip": false,
+          "purpose": "Discuss visitor services",
+          "visitors": [
+            "Visitor Example"
+          ],
+          "identityType": "KTP",
+          "history": []
+        }
+      ],
+      "total": 1,
+      "totalScoped": 1,
+      "page": 1,
+      "pageSize": 7
+    },
+    "Login": {
+      "email": "visitor@example.test",
+      "password": "synthetic-passphrase"
+    },
+    "SmtpValues": {},
+    "CurrentUser": {
+      "active": true,
+      "id": "1",
+      "name": "Staff Example",
+      "role": "PA",
+      "permissions": [
+        "bookings",
+        "create",
+        "approve",
+        "reject",
+        "reschedule",
+        "cancel",
+        "reports",
+        "reportExport"
+      ],
+      "assignedOfficerIds": [
+        "1"
+      ]
+    },
+    "AuthResult": {
+      "accessToken": "synthetic-access-token-not-a-credential",
+      "tokenType": "Bearer",
+      "accessExpiresAt": "2030-01-02T01:00:00Z",
+      "user": {
+        "active": true,
+        "id": "1",
+        "name": "Staff Example",
+        "role": "PA",
+        "permissions": [
+          "bookings",
+          "create",
+          "approve",
+          "reject",
+          "reschedule",
+          "cancel",
+          "reports",
+          "reportExport"
+        ],
+        "assignedOfficerIds": [
+          "1"
+        ]
+      }
+    }
+  },
+  "errors": {
+    "400": {
+      "code": "invalid_request",
+      "message": "Permintaan belum dapat diproses.",
+      "requestId": "550e8400-e29b-41d4-a716-446655440000"
+    },
+    "401": {
+      "code": "unauthenticated",
+      "message": "Permintaan belum dapat diproses.",
+      "requestId": "550e8400-e29b-41d4-a716-446655440000"
+    },
+    "403": {
+      "code": "forbidden",
+      "message": "Permintaan belum dapat diproses.",
+      "requestId": "550e8400-e29b-41d4-a716-446655440000"
+    },
+    "404": {
+      "code": "not_found",
+      "message": "Permintaan belum dapat diproses.",
+      "requestId": "550e8400-e29b-41d4-a716-446655440000"
+    },
+    "409": {
+      "code": "version_conflict",
+      "message": "Permintaan belum dapat diproses.",
+      "requestId": "550e8400-e29b-41d4-a716-446655440000"
+    },
+    "413": {
+      "code": "payload_too_large",
+      "message": "Permintaan belum dapat diproses.",
+      "requestId": "550e8400-e29b-41d4-a716-446655440000"
+    },
+    "415": {
+      "code": "unsupported_media_type",
+      "message": "Permintaan belum dapat diproses.",
+      "requestId": "550e8400-e29b-41d4-a716-446655440000"
+    },
+    "422": {
+      "code": "validation_failed",
+      "message": "Permintaan belum dapat diproses.",
+      "requestId": "550e8400-e29b-41d4-a716-446655440000",
+      "fieldErrors": {
+        "name": [
+          "Periksa nama pengunjung."
+        ]
+      }
+    },
+    "429": {
+      "code": "rate_limited",
+      "message": "Permintaan belum dapat diproses.",
+      "requestId": "550e8400-e29b-41d4-a716-446655440000"
+    },
+    "500": {
+      "code": "internal_error",
+      "message": "Permintaan belum dapat diproses.",
+      "requestId": "550e8400-e29b-41d4-a716-446655440000"
+    },
+    "503": {
+      "code": "service_unavailable",
+      "message": "Permintaan belum dapat diproses.",
+      "requestId": "550e8400-e29b-41d4-a716-446655440000"
+    }
+  },
+  "operations": {
+    "publicCatalogs": {
+      "success": {
+        "200": {
+          "officers": [
+            {
+              "id": "1",
+              "name": "Official Example",
+              "vip": false,
+              "active": true
+            }
+          ],
+          "rooms": [
+            {
+              "id": "1",
+              "name": "Meeting room",
+              "active": true
+            }
+          ],
+          "attachmentsEnabled": false,
+          "privacyNotice": {
+            "version": "2026-11-12",
+            "id": "Pemberitahuan organisasi (contoh).",
+            "en": "Organization notice (example)."
+          }
+        }
+      }
+    },
+    "staffCatalogs": {
+      "success": {
+        "200": {
+          "officers": [
+            {
+              "id": "1",
+              "name": "Official Example",
+              "vip": false,
+              "active": true
+            }
+          ],
+          "rooms": [
+            {
+              "id": "1",
+              "name": "Meeting room",
+              "active": true
+            }
+          ],
+          "attachmentsEnabled": false,
+          "privacyNotice": {
+            "version": "2026-11-12",
+            "id": "Pemberitahuan organisasi (contoh).",
+            "en": "Organization notice (example)."
+          }
+        }
+      }
+    },
+    "publicCreateBooking": {
+      "success": {
+        "200": {
+          "id": "1",
+          "visitKind": "standard",
+          "date": "2030-01-02",
+          "time": "09:00",
+          "duration": 60,
+          "room": "",
+          "status": "pending",
+          "version": 1,
+          "timing": {
+            "serverTime": 1893542400000,
+            "opensAt": 1893544200000,
+            "endsAt": 1893549600000,
+            "displayStatus": "pending",
+            "canCheckIn": false,
+            "canCheckOut": false,
+            "canCancel": false
+          },
+          "code": "01234567",
+          "name": "Visitor Example",
+          "organization": "Example Office",
+          "email": "visitor@example.test",
+          "phone": "081234567890",
+          "officerId": "1",
+          "host": "Official Example",
+          "vip": false,
+          "purpose": "Discuss visitor services",
+          "visitors": [
+            "Visitor Example"
+          ],
+          "identityType": "KTP",
+          "history": []
+        },
+        "201": {
+          "id": "1",
+          "visitKind": "standard",
+          "date": "2030-01-02",
+          "time": "09:00",
+          "duration": 60,
+          "room": "",
+          "status": "pending",
+          "version": 1,
+          "timing": {
+            "serverTime": 1893542400000,
+            "opensAt": 1893544200000,
+            "endsAt": 1893549600000,
+            "displayStatus": "pending",
+            "canCheckIn": false,
+            "canCheckOut": false,
+            "canCancel": false
+          },
+          "code": "01234567",
+          "name": "Visitor Example",
+          "organization": "Example Office",
+          "email": "visitor@example.test",
+          "phone": "081234567890",
+          "officerId": "1",
+          "host": "Official Example",
+          "vip": false,
+          "purpose": "Discuss visitor services",
+          "visitors": [
+            "Visitor Example"
+          ],
+          "identityType": "KTP",
+          "history": []
+        }
+      },
+      "request": {
+        "name": "Visitor Example",
+        "organization": "Example Office",
+        "email": "visitor@example.test",
+        "phone": "081234567890",
+        "officerId": "1",
+        "purpose": "Discuss visitor services",
+        "visitors": [
+          "Visitor Example"
+        ],
+        "identityType": "KTP",
+        "visitKind": "standard",
+        "idempotencyKey": "550e8400-e29b-41d4-a716-446655440000",
+        "date": "2030-01-02",
+        "time": "09:00",
+        "ack": true
+      }
+    },
+    "resolveSubmission": {
+      "success": {
+        "200": {
+          "outcome": "committed",
+          "booking": {
+            "id": "1",
+            "visitKind": "standard",
+            "date": "2030-01-02",
+            "time": "09:00",
+            "duration": 60,
+            "room": "",
+            "status": "pending",
+            "version": 1,
+            "timing": {
+              "serverTime": 1893542400000,
+              "opensAt": 1893544200000,
+              "endsAt": 1893549600000,
+              "displayStatus": "pending",
+              "canCheckIn": false,
+              "canCheckOut": false,
+              "canCancel": false
+            },
+            "code": "01234567",
+            "name": "Visitor Example",
+            "organization": "Example Office",
+            "email": "visitor@example.test",
+            "phone": "081234567890",
+            "officerId": "1",
+            "host": "Official Example",
+            "vip": false,
+            "purpose": "Discuss visitor services",
+            "visitors": [
+              "Visitor Example"
+            ],
+            "identityType": "KTP",
+            "history": []
+          }
+        }
+      },
+      "request": {
+        "idempotencyKey": "550e8400-e29b-41d4-a716-446655440000",
+        "email": "visitor@example.test"
+      }
+    },
+    "publicLookup": {
+      "success": {
+        "200": {
+          "id": "1",
+          "visitKind": "standard",
+          "date": "2030-01-02",
+          "time": "09:00",
+          "duration": 60,
+          "room": "",
+          "status": "pending",
+          "version": 1,
+          "timing": {
+            "serverTime": 1893542400000,
+            "opensAt": 1893544200000,
+            "endsAt": 1893549600000,
+            "displayStatus": "pending",
+            "canCheckIn": false,
+            "canCheckOut": false,
+            "canCancel": false
+          },
+          "code": "01234567",
+          "name": "Visitor Example",
+          "organization": "Example Office",
+          "email": "visitor@example.test",
+          "phone": "081234567890",
+          "officerId": "1",
+          "host": "Official Example",
+          "vip": false,
+          "purpose": "Discuss visitor services",
+          "visitors": [
+            "Visitor Example"
+          ],
+          "identityType": "KTP",
+          "history": []
+        }
+      },
+      "request": {
+        "code": "01234567",
+        "email": "visitor@example.test"
+      }
+    },
+    "publicCancel": {
+      "success": {
+        "200": {
+          "id": "1",
+          "visitKind": "standard",
+          "date": "2030-01-02",
+          "time": "09:00",
+          "duration": 60,
+          "room": "",
+          "status": "cancelled",
+          "version": 1,
+          "timing": {
+            "serverTime": 1893542400000,
+            "opensAt": 1893544200000,
+            "endsAt": 1893549600000,
+            "displayStatus": "cancelled",
+            "canCheckIn": false,
+            "canCheckOut": false,
+            "canCancel": false
+          },
+          "code": "01234567",
+          "name": "Visitor Example",
+          "organization": "Example Office",
+          "email": "visitor@example.test",
+          "phone": "081234567890",
+          "officerId": "1",
+          "host": "Official Example",
+          "vip": false,
+          "purpose": "Discuss visitor services",
+          "visitors": [
+            "Visitor Example"
+          ],
+          "identityType": "KTP",
+          "history": []
+        }
+      },
+      "request": {
+        "code": "01234567",
+        "email": "visitor@example.test",
+        "version": 1
+      }
+    },
+    "publicAdmission": {
+      "success": {
+        "200": {
+          "payload": "vmsq1.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "expiresAt": "2030-01-02T01:00:00Z",
+          "serverTime": 1893542400000
+        }
+      },
+      "request": {
+        "code": "01234567",
+        "email": "visitor@example.test",
+        "version": 1
+      }
+    },
+    "publicUpload": {
+      "success": {
+        "200": {
+          "token": "vmsu1.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "expiresAt": "2030-01-02T01:00:00Z",
+          "serverTime": 1893542400000
+        },
+        "201": {
+          "token": "vmsu1.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "expiresAt": "2030-01-02T01:00:00Z",
+          "serverTime": 1893542400000
+        }
+      },
+      "request": {
+        "file": "x",
+        "reference": "550e8400-e29b-41d4-a716-446655440000"
+      }
+    },
+    "staffUpload": {
+      "success": {
+        "200": {
+          "token": "vmsu1.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "expiresAt": "2030-01-02T01:00:00Z",
+          "serverTime": 1893542400000
+        },
+        "201": {
+          "token": "vmsu1.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "expiresAt": "2030-01-02T01:00:00Z",
+          "serverTime": 1893542400000
+        }
+      },
+      "request": {
+        "file": "x",
+        "reference": "550e8400-e29b-41d4-a716-446655440000"
+      }
+    },
+    "staffAttachment": {
+      "success": {
+        "200": "(verified private binary bytes)"
+      }
+    },
+    "staffBookings": {
+      "success": {
+        "200": {
+          "items": [
+            {
+              "id": "1",
+              "visitKind": "standard",
+              "date": "2030-01-02",
+              "time": "09:00",
+              "duration": 60,
+              "room": "",
+              "status": "pending",
+              "version": 1,
+              "timing": {
+                "serverTime": 1893542400000,
+                "opensAt": 1893544200000,
+                "endsAt": 1893549600000,
+                "displayStatus": "pending",
+                "canCheckIn": false,
+                "canCheckOut": false,
+                "canCancel": false
+              },
+              "code": "01234567",
+              "name": "Visitor Example",
+              "organization": "Example Office",
+              "email": "visitor@example.test",
+              "phone": "081234567890",
+              "officerId": "1",
+              "host": "Official Example",
+              "vip": false,
+              "purpose": "Discuss visitor services",
+              "visitors": [
+                "Visitor Example"
+              ],
+              "identityType": "KTP",
+              "history": []
+            }
+          ],
+          "total": 1,
+          "totalScoped": 1,
+          "page": 1,
+          "pageSize": 7
+        }
+      }
+    },
+    "staffBooking": {
+      "success": {
+        "200": {
+          "id": "1",
+          "visitKind": "standard",
+          "date": "2030-01-02",
+          "time": "09:00",
+          "duration": 60,
+          "room": "",
+          "status": "pending",
+          "version": 1,
+          "timing": {
+            "serverTime": 1893542400000,
+            "opensAt": 1893544200000,
+            "endsAt": 1893549600000,
+            "displayStatus": "pending",
+            "canCheckIn": false,
+            "canCheckOut": false,
+            "canCancel": false
+          },
+          "code": "01234567",
+          "name": "Visitor Example",
+          "organization": "Example Office",
+          "email": "visitor@example.test",
+          "phone": "081234567890",
+          "officerId": "1",
+          "host": "Official Example",
+          "vip": false,
+          "purpose": "Discuss visitor services",
+          "visitors": [
+            "Visitor Example"
+          ],
+          "identityType": "KTP",
+          "history": []
+        }
+      }
+    },
+    "staffCreateBooking": {
+      "success": {
+        "200": {
+          "id": "1",
+          "visitKind": "standard",
+          "date": "2030-01-02",
+          "time": "09:00",
+          "duration": 60,
+          "room": "",
+          "status": "approved",
+          "version": 1,
+          "timing": {
+            "serverTime": 1893542400000,
+            "opensAt": 1893544200000,
+            "endsAt": 1893549600000,
+            "displayStatus": "approved",
+            "canCheckIn": false,
+            "canCheckOut": false,
+            "canCancel": false
+          },
+          "code": "01234567",
+          "name": "Visitor Example",
+          "organization": "Example Office",
+          "email": "visitor@example.test",
+          "phone": "081234567890",
+          "officerId": "1",
+          "host": "Official Example",
+          "vip": false,
+          "purpose": "Discuss visitor services",
+          "visitors": [
+            "Visitor Example"
+          ],
+          "identityType": "KTP",
+          "history": []
+        },
+        "201": {
+          "id": "1",
+          "visitKind": "standard",
+          "date": "2030-01-02",
+          "time": "09:00",
+          "duration": 60,
+          "room": "",
+          "status": "approved",
+          "version": 1,
+          "timing": {
+            "serverTime": 1893542400000,
+            "opensAt": 1893544200000,
+            "endsAt": 1893549600000,
+            "displayStatus": "approved",
+            "canCheckIn": false,
+            "canCheckOut": false,
+            "canCancel": false
+          },
+          "code": "01234567",
+          "name": "Visitor Example",
+          "organization": "Example Office",
+          "email": "visitor@example.test",
+          "phone": "081234567890",
+          "officerId": "1",
+          "host": "Official Example",
+          "vip": false,
+          "purpose": "Discuss visitor services",
+          "visitors": [
+            "Visitor Example"
+          ],
+          "identityType": "KTP",
+          "history": []
+        }
+      },
+      "request": {
+        "name": "Visitor Example",
+        "organization": "Example Office",
+        "email": "visitor@example.test",
+        "phone": "081234567890",
+        "officerId": "1",
+        "purpose": "Discuss visitor services",
+        "visitors": [
+          "Visitor Example"
+        ],
+        "identityType": "KTP",
+        "visitKind": "standard",
+        "idempotencyKey": "550e8400-e29b-41d4-a716-446655440000",
+        "date": "2030-01-02",
+        "time": "09:00"
+      }
+    },
+    "staffApprove": {
+      "success": {
+        "200": {
+          "id": "1",
+          "visitKind": "standard",
+          "date": "2030-01-02",
+          "time": "09:00",
+          "duration": 60,
+          "room": "",
+          "status": "approved",
+          "version": 1,
+          "timing": {
+            "serverTime": 1893542400000,
+            "opensAt": 1893544200000,
+            "endsAt": 1893549600000,
+            "displayStatus": "approved",
+            "canCheckIn": false,
+            "canCheckOut": false,
+            "canCancel": false
+          },
+          "code": "01234567",
+          "name": "Visitor Example",
+          "organization": "Example Office",
+          "email": "visitor@example.test",
+          "phone": "081234567890",
+          "officerId": "1",
+          "host": "Official Example",
+          "vip": false,
+          "purpose": "Discuss visitor services",
+          "visitors": [
+            "Visitor Example"
+          ],
+          "identityType": "KTP",
+          "history": []
+        }
+      },
+      "request": {
+        "version": 1
+      }
+    },
+    "staffReject": {
+      "success": {
+        "200": {
+          "id": "1",
+          "visitKind": "standard",
+          "date": "2030-01-02",
+          "time": "09:00",
+          "duration": 60,
+          "room": "",
+          "status": "rejected",
+          "version": 1,
+          "timing": {
+            "serverTime": 1893542400000,
+            "opensAt": 1893544200000,
+            "endsAt": 1893549600000,
+            "displayStatus": "rejected",
+            "canCheckIn": false,
+            "canCheckOut": false,
+            "canCancel": false
+          },
+          "code": "01234567",
+          "name": "Visitor Example",
+          "organization": "Example Office",
+          "email": "visitor@example.test",
+          "phone": "081234567890",
+          "officerId": "1",
+          "host": "Official Example",
+          "vip": false,
+          "purpose": "Discuss visitor services",
+          "visitors": [
+            "Visitor Example"
+          ],
+          "identityType": "KTP",
+          "history": []
+        }
+      },
+      "request": {
+        "version": 1,
+        "rejectionReason": "Requested appointment unavailable"
+      }
+    },
+    "staffReschedule": {
+      "success": {
+        "200": {
+          "id": "1",
+          "visitKind": "standard",
+          "date": "2030-01-02",
+          "time": "09:00",
+          "duration": 60,
+          "room": "",
+          "status": "pending",
+          "version": 1,
+          "timing": {
+            "serverTime": 1893542400000,
+            "opensAt": 1893544200000,
+            "endsAt": 1893549600000,
+            "displayStatus": "pending",
+            "canCheckIn": false,
+            "canCheckOut": false,
+            "canCancel": false
+          },
+          "code": "01234567",
+          "name": "Visitor Example",
+          "organization": "Example Office",
+          "email": "visitor@example.test",
+          "phone": "081234567890",
+          "officerId": "1",
+          "host": "Official Example",
+          "vip": false,
+          "purpose": "Discuss visitor services",
+          "visitors": [
+            "Visitor Example"
+          ],
+          "identityType": "KTP",
+          "history": []
+        }
+      },
+      "request": {
+        "version": 1,
+        "date": "2030-01-02",
+        "time": "09:00",
+        "duration": 60
+      }
+    },
+    "staffRestrictedUpdate": {
+      "success": {
+        "200": {
+          "id": "1",
+          "visitKind": "restricted",
+          "date": "2030-01-02",
+          "time": "09:00",
+          "duration": 60,
+          "room": "",
+          "status": "pending",
+          "version": 1,
+          "timing": {
+            "serverTime": 1893542400000,
+            "opensAt": 1893544200000,
+            "endsAt": 1893549600000,
+            "displayStatus": "pending",
+            "canCheckIn": false,
+            "canCheckOut": false,
+            "canCancel": false
+          },
+          "reference": "TRB-1",
+          "restrictedView": "full"
+        }
+      },
+      "request": {
+        "version": 1,
+        "visitKind": "restricted",
+        "date": "2030-01-02",
+        "time": "09:00"
+      }
+    },
+    "staffCancel": {
+      "success": {
+        "200": {
+          "id": "1",
+          "visitKind": "standard",
+          "date": "2030-01-02",
+          "time": "09:00",
+          "duration": 60,
+          "room": "",
+          "status": "cancelled",
+          "version": 1,
+          "timing": {
+            "serverTime": 1893542400000,
+            "opensAt": 1893544200000,
+            "endsAt": 1893549600000,
+            "displayStatus": "cancelled",
+            "canCheckIn": false,
+            "canCheckOut": false,
+            "canCancel": false
+          },
+          "code": "01234567",
+          "name": "Visitor Example",
+          "organization": "Example Office",
+          "email": "visitor@example.test",
+          "phone": "081234567890",
+          "officerId": "1",
+          "host": "Official Example",
+          "vip": false,
+          "purpose": "Discuss visitor services",
+          "visitors": [
+            "Visitor Example"
+          ],
+          "identityType": "KTP",
+          "history": []
+        }
+      },
+      "request": {
+        "version": 1,
+        "reason": "Schedule changed"
+      }
+    },
+    "staffCheckin": {
+      "success": {
+        "200": {
+          "id": "1",
+          "visitKind": "standard",
+          "date": "2030-01-02",
+          "time": "09:00",
+          "duration": 60,
+          "room": "",
+          "status": "checked_in",
+          "version": 1,
+          "timing": {
+            "serverTime": 1893542400000,
+            "opensAt": 1893544200000,
+            "endsAt": 1893549600000,
+            "displayStatus": "checked_in",
+            "canCheckIn": false,
+            "canCheckOut": false,
+            "canCancel": false
+          },
+          "code": "01234567",
+          "name": "Visitor Example",
+          "organization": "Example Office",
+          "email": "visitor@example.test",
+          "phone": "081234567890",
+          "officerId": "1",
+          "host": "Official Example",
+          "vip": false,
+          "purpose": "Discuss visitor services",
+          "visitors": [
+            "Visitor Example"
+          ],
+          "identityType": "KTP",
+          "history": []
+        }
+      },
+      "request": {
+        "credential": "01234567",
+        "version": 1
+      }
+    },
+    "staffCheckout": {
+      "success": {
+        "200": {
+          "id": "1",
+          "visitKind": "standard",
+          "date": "2030-01-02",
+          "time": "09:00",
+          "duration": 60,
+          "room": "",
+          "status": "checked_out",
+          "version": 1,
+          "timing": {
+            "serverTime": 1893542400000,
+            "opensAt": 1893544200000,
+            "endsAt": 1893549600000,
+            "displayStatus": "checked_out",
+            "canCheckIn": false,
+            "canCheckOut": false,
+            "canCancel": false
+          },
+          "code": "01234567",
+          "name": "Visitor Example",
+          "organization": "Example Office",
+          "email": "visitor@example.test",
+          "phone": "081234567890",
+          "officerId": "1",
+          "host": "Official Example",
+          "vip": false,
+          "purpose": "Discuss visitor services",
+          "visitors": [
+            "Visitor Example"
+          ],
+          "identityType": "KTP",
+          "history": []
+        }
+      },
+      "request": {
+        "credential": "01234567",
+        "version": 1
+      }
+    },
+    "staffResolve": {
+      "success": {
+        "200": {
+          "id": "1",
+          "visitKind": "standard",
+          "date": "2030-01-02",
+          "time": "09:00",
+          "duration": 60,
+          "room": "",
+          "status": "pending",
+          "version": 1,
+          "timing": {
+            "serverTime": 1893542400000,
+            "opensAt": 1893544200000,
+            "endsAt": 1893549600000,
+            "displayStatus": "pending",
+            "canCheckIn": false,
+            "canCheckOut": false,
+            "canCancel": false
+          },
+          "code": "01234567",
+          "name": "Visitor Example",
+          "organization": "Example Office",
+          "email": "visitor@example.test",
+          "phone": "081234567890",
+          "officerId": "1",
+          "host": "Official Example",
+          "vip": false,
+          "purpose": "Discuss visitor services",
+          "visitors": [
+            "Visitor Example"
+          ],
+          "identityType": "KTP",
+          "history": []
+        }
+      },
+      "request": {
+        "credential": "01234567"
+      }
+    },
+    "staffEmployees": {
+      "success": {
+        "200": {
+          "items": [],
+          "total": 0,
+          "totalAll": 0,
+          "page": 1,
+          "pageSize": 25
+        }
+      }
+    },
+    "staffEmployee": {
+      "success": {
+        "200": {
+          "id": "1",
+          "name": "Visitor Example",
+          "email": "visitor@example.test",
+          "roles": [
+            "PA"
+          ],
+          "active": true,
+          "assignedOfficerIds": [],
+          "version": 1
+        }
+      }
+    },
+    "staffIntegrations": {
+      "success": {
+        "200": []
+      }
+    },
+    "patchIntegration": {
+      "success": {
+        "200": {
+          "id": "1",
+          "name": "Visitor Example",
+          "description": "x",
+          "enabled": false,
+          "health": "not_configured",
+          "version": 1,
+          "fields": []
+        }
+      },
+      "request": {
+        "enabled": false,
+        "values": {},
+        "clearSecrets": [],
+        "version": 1
+      }
+    },
+    "reportSummary": {
+      "success": {
+        "200": {
+          "filter": {
+            "from": "2030-01-02",
+            "to": "2030-01-02",
+            "status": "all"
+          },
+          "scope": "organization",
+          "generatedAt": "2030-01-02T00:00:00Z",
+          "canExport": false,
+          "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "counts": {
+            "pending": 1,
+            "approved": 0,
+            "rejected": 0,
+            "cancelled": 0,
+            "checked_in": 0,
+            "checked_out": 0,
+            "missed": 0
+          },
+          "total": 1
+        }
+      }
+    },
+    "reportExport": {
+      "success": {
+        "200": {
+          "filename": "kunjungan-ringkasan-2030-01-02-2030-01-02.csv",
+          "csv": "Status,Jumlah\r\npending,1\r\n",
+          "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      }
+    },
+    "staffLogin": {
+      "request": {
+        "email": "visitor@example.test",
+        "password": "synthetic-passphrase"
+      },
+      "success": {
+        "200": {
+          "accessToken": "synthetic-access-token-not-a-credential",
+          "tokenType": "Bearer",
+          "accessExpiresAt": "2030-01-02T01:00:00Z",
+          "user": {
+            "active": true,
+            "id": "1",
+            "name": "Staff Example",
+            "role": "PA",
+            "permissions": [
+              "bookings",
+              "create",
+              "approve",
+              "reject",
+              "reschedule",
+              "cancel",
+              "reports",
+              "reportExport"
+            ],
+            "assignedOfficerIds": [
+              "1"
+            ]
+          }
+        }
+      }
+    },
+    "staffMe": {
+      "request": null,
+      "success": {
+        "200": {
+          "active": true,
+          "id": "1",
+          "name": "Staff Example",
+          "role": "PA",
+          "permissions": [
+            "bookings",
+            "create",
+            "approve",
+            "reject",
+            "reschedule",
+            "cancel",
+            "reports",
+            "reportExport"
+          ],
+          "assignedOfficerIds": [
+            "1"
+          ]
+        }
+      }
+    }
+  },
+  "runtimeExpectations": {},
+  "queryCases": [
+    {
+      "name": "list defaults",
+      "operation": "staffBookings",
+      "query": {
+        "view": "list"
+      },
+      "valid": true
+    },
+    {
+      "name": "list maximum page",
+      "operation": "staffBookings",
+      "query": {
+        "view": "list",
+        "page": 2147483647,
+        "pageSize": 100
+      },
+      "valid": true
+    },
+    {
+      "name": "list forbids reception mode",
+      "operation": "staffBookings",
+      "query": {
+        "view": "list",
+        "mode": "checkout"
+      },
+      "valid": false
+    },
+    {
+      "name": "dashboard requires date",
+      "operation": "staffBookings",
+      "query": {
+        "view": "dashboard"
+      },
+      "valid": false
+    },
+    {
+      "name": "dashboard first page",
+      "operation": "staffBookings",
+      "query": {
+        "view": "dashboard",
+        "date": "2030-01-02",
+        "page": 2
+      },
+      "valid": false
+    },
+    {
+      "name": "dashboard bounds",
+      "operation": "staffBookings",
+      "query": {
+        "view": "dashboard",
+        "date": "2030-01-02",
+        "pageSize": 101
+      },
+      "valid": false
+    },
+    {
+      "name": "checkin requested date",
+      "operation": "staffBookings",
+      "query": {
+        "view": "reception",
+        "mode": "checkin",
+        "date": "2030-01-02"
+      },
+      "valid": true
+    },
+    {
+      "name": "checkout spans all dates",
+      "operation": "staffBookings",
+      "query": {
+        "view": "reception",
+        "mode": "checkout"
+      },
+      "valid": true
+    },
+    {
+      "name": "checkout forbids date filter",
+      "operation": "staffBookings",
+      "query": {
+        "view": "reception",
+        "mode": "checkout",
+        "date": "2030-01-02"
+      },
+      "valid": false
+    },
+    {
+      "name": "reception requires mode",
+      "operation": "staffBookings",
+      "query": {
+        "view": "reception"
+      },
+      "valid": false
+    },
+    {
+      "name": "page is positive",
+      "operation": "staffBookings",
+      "query": {
+        "view": "list",
+        "page": 0
+      },
+      "valid": false
+    },
+    {
+      "name": "vip is wire enum",
+      "operation": "staffBookings",
+      "query": {
+        "view": "list",
+        "vip": "false"
+      },
+      "valid": false
+    }
+  ],
+  "correlationCases": [
+    {
+      "name": "dashboard has metrics",
+      "query": {
+        "view": "dashboard",
+        "date": "2030-01-02"
+      },
+      "body": {
+        "items": [
+          {
+            "id": "1",
+            "visitKind": "standard",
+            "date": "2030-01-02",
+            "time": "09:00",
+            "duration": 60,
+            "room": "",
+            "status": "pending",
+            "version": 1,
+            "timing": {
+              "serverTime": 1893542400000,
+              "opensAt": 1893544200000,
+              "endsAt": 1893549600000,
+              "displayStatus": "pending",
+              "canCheckIn": false,
+              "canCheckOut": false,
+              "canCancel": false
+            },
+            "code": "01234567",
+            "name": "Visitor Example",
+            "organization": "Example Office",
+            "email": "visitor@example.test",
+            "phone": "081234567890",
+            "officerId": "1",
+            "host": "Official Example",
+            "vip": false,
+            "purpose": "Discuss visitor services",
+            "visitors": [
+              "Visitor Example"
+            ],
+            "identityType": "KTP",
+            "history": []
+          }
+        ],
+        "total": 1,
+        "totalScoped": 1,
+        "page": 1,
+        "pageSize": 50,
+        "metrics": {
+          "today": 1,
+          "pending": 0,
+          "arrivals": 1,
+          "inside": 0,
+          "completed": 0
+        }
+      },
+      "valid": true
+    },
+    {
+      "name": "dashboard missing metrics",
+      "query": {
+        "view": "dashboard",
+        "date": "2030-01-02"
+      },
+      "body": {
+        "items": [
+          {
+            "id": "1",
+            "visitKind": "standard",
+            "date": "2030-01-02",
+            "time": "09:00",
+            "duration": 60,
+            "room": "",
+            "status": "pending",
+            "version": 1,
+            "timing": {
+              "serverTime": 1893542400000,
+              "opensAt": 1893544200000,
+              "endsAt": 1893549600000,
+              "displayStatus": "pending",
+              "canCheckIn": false,
+              "canCheckOut": false,
+              "canCancel": false
+            },
+            "code": "01234567",
+            "name": "Visitor Example",
+            "organization": "Example Office",
+            "email": "visitor@example.test",
+            "phone": "081234567890",
+            "officerId": "1",
+            "host": "Official Example",
+            "vip": false,
+            "purpose": "Discuss visitor services",
+            "visitors": [
+              "Visitor Example"
+            ],
+            "identityType": "KTP",
+            "history": []
+          }
+        ],
+        "total": 1,
+        "totalScoped": 1,
+        "page": 1,
+        "pageSize": 50
+      },
+      "valid": false
+    },
+    {
+      "name": "page mismatch",
+      "query": {
+        "view": "list",
+        "page": 2,
+        "pageSize": 7
+      },
+      "body": {
+        "items": [
+          {
+            "id": "1",
+            "visitKind": "standard",
+            "date": "2030-01-02",
+            "time": "09:00",
+            "duration": 60,
+            "room": "",
+            "status": "pending",
+            "version": 1,
+            "timing": {
+              "serverTime": 1893542400000,
+              "opensAt": 1893544200000,
+              "endsAt": 1893549600000,
+              "displayStatus": "pending",
+              "canCheckIn": false,
+              "canCheckOut": false,
+              "canCancel": false
+            },
+            "code": "01234567",
+            "name": "Visitor Example",
+            "organization": "Example Office",
+            "email": "visitor@example.test",
+            "phone": "081234567890",
+            "officerId": "1",
+            "host": "Official Example",
+            "vip": false,
+            "purpose": "Discuss visitor services",
+            "visitors": [
+              "Visitor Example"
+            ],
+            "identityType": "KTP",
+            "history": []
+          }
+        ],
+        "total": 1,
+        "totalScoped": 1,
+        "page": 1,
+        "pageSize": 7
+      },
+      "valid": false
+    },
+    {
+      "name": "page size mismatch",
+      "query": {
+        "view": "list",
+        "page": 1,
+        "pageSize": 50
+      },
+      "body": {
+        "items": [
+          {
+            "id": "1",
+            "visitKind": "standard",
+            "date": "2030-01-02",
+            "time": "09:00",
+            "duration": 60,
+            "room": "",
+            "status": "pending",
+            "version": 1,
+            "timing": {
+              "serverTime": 1893542400000,
+              "opensAt": 1893544200000,
+              "endsAt": 1893549600000,
+              "displayStatus": "pending",
+              "canCheckIn": false,
+              "canCheckOut": false,
+              "canCancel": false
+            },
+            "code": "01234567",
+            "name": "Visitor Example",
+            "organization": "Example Office",
+            "email": "visitor@example.test",
+            "phone": "081234567890",
+            "officerId": "1",
+            "host": "Official Example",
+            "vip": false,
+            "purpose": "Discuss visitor services",
+            "visitors": [
+              "Visitor Example"
+            ],
+            "identityType": "KTP",
+            "history": []
+          }
+        ],
+        "total": 1,
+        "totalScoped": 1,
+        "page": 1,
+        "pageSize": 7
+      },
+      "valid": false
+    }
+  ]
+}

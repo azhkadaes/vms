@@ -5,7 +5,7 @@
   "operations_match_contract": 38,
   "unique_operation_ids": 38,
   "schemas_meta_schema_valid": 70,
-  "resolved_internal_refs": 660,
+  "resolved_internal_refs": 603,
   "schema_cases_passed": 65,
   "cases": [
     {
@@ -276,5 +276,5 @@
   ],
   "selected_decisions_sequential": 100,
   "diagram_entity_rows": 20,
-  "artifact_sha256": "42ff8b17592579266fe67aa232980dabcb15b3c3fcd1d11028dd55365f8c0cde"
+  "artifact_sha256": "d75a77c0f70b91460dcb6683418f8d480935cc0c71886190afa5e8d23d7f2229"
 }

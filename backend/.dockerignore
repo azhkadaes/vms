@@ -1,0 +1,8 @@
+.git
+.runtime
+.env
+.env.*
+*.exe
+*.log
+coverage
+tmp

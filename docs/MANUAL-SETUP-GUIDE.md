@@ -1,5 +1,7 @@
 # VMS setup guide: local testing, then deployment
 
+> Historical setup record for the earlier backend. For the current SIHP-aligned backend, follow [backend setup](../backend/README.md) and [local development](../backend/docs/LOCAL-DEVELOPMENT.md). The current implementation provides public catalogs and health checks; identity, bookings and SMTP are pending. Commands, ports and backend file links below describe the earlier implementation and must not be used to configure the current backend.
+
 Initial inventory checked on 10 November 2026, WITA. The user-approved local Docker upgrade completed on 11 November: nine migrations, reviewed API/worker and real site at `http://127.0.0.1:3010`. This guide separates your manual account/device steps from application configuration. Email integration and public registration remain disabled; the user confirmed receipt from the separate one-off SMTP test.
 
 ## What is already set up
@@ -91,7 +93,7 @@ The normal development workflow has two limitations for real setup:
 1. Select actual backend requests. `packages/data/src/config.ts` currently enables demo data whenever the frontend is a development build on localhost/loopback. There is no existing documented environment switch that turns this off.
 2. Route API requests to Docker's port 8081. Both current Vite proxies target the native API port 8080.
 
-A local launcher is now provided in [REAL-BACKEND-LOCAL.md](../frontendx/REAL-BACKEND-LOCAL.md). It serves the production builds (which select actual API requests) and forwards `/v1` to an explicitly selected loopback API. This avoids changing the normal demo workflow or introducing another data-mode flag. It does not start or upgrade a backend, create an administrator or activate email. Request/response transport and route/security boundaries passed a focused local test with a disposable synthetic HTTP upstream; this is not a fresh real-login or SMTP acceptance result.
+A local launcher is now provided in [REAL-BACKEND-LOCAL.md](frontend/REAL-BACKEND-LOCAL.md). It serves the production builds (which select actual API requests) and forwards `/v1` to an explicitly selected loopback API. This avoids changing the normal demo workflow or introducing another data-mode flag. It does not start or upgrade a backend, create an administrator or activate email. Request/response transport and route/security boundaries passed a focused local test with a disposable synthetic HTTP upstream; this is not a fresh real-login or SMTP acceptance result.
 
 The real local site now runs on port 3010 with API target 8081. To restart it, use `npm.cmd run serve:backend -- --api http://127.0.0.1:8081 --port 3010` from `frontendx`, with Docker Desktop and the upgraded backend running. Setting `VITE_API_BASE_PATH=/v1` alone does not solve demo selection or the upstream port.
 
@@ -241,7 +243,7 @@ The approved local upgrade and real sign-in page checks are complete, and the us
 ## Project evidence
 
 - [Compose configuration](../backend/compose.yaml), [Docker helper](../backend/scripts/Run-Docker.ps1) and [Docker setup](../backend/docs/DOCKER.md).
-- [Configuration loader](../backend/config/config.go), [operations runbook](../backend/docs/OPERATIONS.md) and [migration files](../backend/migration/files/).
+- [Configuration loader](../backend/config/config.go), [operations runbook](../backend/docs/OPERATIONS.md) and [migration files](../backend/migration/files).
 - [Frontend preview selection](../frontendx/packages/data/src/config.ts), [visitor proxy](../frontendx/apps/visitor/vite.config.ts) and [staff proxy](../frontendx/apps/admin/vite.config.ts).
 - [SMTP settings and validation](../backend/internal/usecase/integrations/settings.go), [SMTP adapter](../backend/internal/platform/mail/smtp.go) and [worker](../backend/cmd/worker/main.go).
 - [QR admission behavior](../backend/internal/usecase/visits/admission.go) and [camera scanner](../frontendx/apps/admin/src/features/Scanner.tsx).

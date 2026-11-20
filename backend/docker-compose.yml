@@ -1,0 +1,87 @@
+name: vms-backend-stage1
+services:
+  db:
+    image: postgres:18.6
+    restart: "no"
+    environment:
+      POSTGRES_DB: vms_stage1
+      POSTGRES_USER: vms_owner
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_owner_password
+    ports:
+      - "127.0.0.1:${VMS_STAGE1_PG_PORT:-55450}:5432"
+    volumes:
+      - pg18_data:/var/lib/postgresql
+      - ./ops/stage1/init-db.sh:/docker-entrypoint-initdb.d/001-vms-roles.sh:ro
+    secrets:
+      - db_owner_password
+      - db_migrator_password
+      - db_api_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U vms_owner -d vms_stage1"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  api:
+    profiles: ["api"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: local
+      additional_contexts:
+        vms_binaries: ./.runtime/linux
+    image: vms-backend:stage1
+    restart: "no"
+    environment:
+      APP_ENVIRONMENT: development
+      APP_HOST: 0.0.0.0
+      APP_PORT: "8080"
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_USER: vms_api
+      DB_PASSWORD_FILE: /run/secrets/db_api_password
+      DB_NAME: vms_stage1
+      DB_SSL_MODE: disable
+      RATE_LIMIT_KEY_FILE: /run/secrets/rate_key
+    ports:
+      - "127.0.0.1:${VMS_STAGE1_API_PORT:-58050}:8080"
+    secrets:
+      - db_api_password
+      - rate_key
+    depends_on:
+      db:
+        condition: service_healthy
+  migrate:
+    profiles: ["tools"]
+    image: vms-backend:stage1
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: local
+      additional_contexts:
+        vms_binaries: ./.runtime/linux
+    entrypoint: ["/vms-migrate"]
+    command: ["-mode", "plan"]
+    environment:
+      APP_ENVIRONMENT: development
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_USER: vms_migrator
+      DB_PASSWORD_FILE: /run/secrets/db_migrator_password
+      DB_NAME: vms_stage1
+      DB_SSL_MODE: disable
+    secrets:
+      - db_migrator_password
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  pg18_data:
+secrets:
+  db_owner_password:
+    file: ./.runtime/stage1/db_owner_password
+  db_migrator_password:
+    file: ./.runtime/stage1/db_migrator_password
+  db_api_password:
+    file: ./.runtime/stage1/db_api_password
+  rate_key:
+    file: ./.runtime/stage1/rate_key

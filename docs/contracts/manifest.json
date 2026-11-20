@@ -1,0 +1,3188 @@
+{
+  "version": 4,
+  "reviewedAt": "2026-11-19",
+  "contract": {
+    "operations": "FRONTEND-DRIVEN-REST-API-2026-11-16.md",
+    "fieldRules": "FRONTEND-DRIVEN-DETAILS-2026-11-16.md",
+    "validation": "UI-CONTRACT-VALIDATION-2026-11-18.md",
+    "schema": "PHYSICAL-SCHEMA-2026-11-18.md",
+    "tickets": "../../.scratch/backend-api-2026-11-18/spec.md"
+  },
+  "sourceBaseline": "source-baseline.json",
+  "runtimeCaptures": [
+    {
+      "package": "./internal/handler",
+      "test": "TestContractHTTP"
+    },
+    {
+      "package": "./internal/handler",
+      "test": "TestBookingAccessContractHTTP"
+    },
+    {
+      "package": "./internal/handler",
+      "test": "TestStaffBookingContract"
+    },
+    {
+      "package": "./internal/handler",
+      "test": "TestStaffDecisionContract"
+    },
+    {
+      "package": "./internal/handler",
+      "test": "TestReceptionContract"
+    },
+    {
+      "package": "./internal/handler",
+      "test": "TestContractBookingFiles"
+    },
+    {
+      "package": "./internal/handler",
+      "test": "TestReportContract"
+    }
+  ],
+  "operations": [
+    {
+      "number": 1,
+      "id": "publicCatalogs",
+      "method": "GET",
+      "path": "/public/catalogs",
+      "summary": "Read public catalogs",
+      "ticket": "baseline",
+      "status": "implemented",
+      "handler": "internal/handler/catalog_handler.go:catalogHandler.PublicCatalogs",
+      "calls": [
+        "h.usecase.GetPublicCatalogs"
+      ],
+      "usecase": "CatalogUsecase.GetPublicCatalogs",
+      "requestDto": null,
+      "responseDto": "PublicCatalog"
+    },
+    {
+      "number": 2,
+      "id": "publicUploadAttachment",
+      "method": "POST",
+      "path": "/public/attachments",
+      "summary": "Upload a visitor attachment",
+      "ticket": "05",
+      "status": "implemented",
+      "handler": "internal/handler/upload_handler.go:uploadHandler.PublicUpload",
+      "calls": [
+        "h.usecase.UploadPublic"
+      ],
+      "usecase": "UploadUsecase.UploadPublic",
+      "requestDto": null,
+      "responseDto": "UploadResult"
+    },
+    {
+      "number": 3,
+      "id": "publicCreateBooking",
+      "method": "POST",
+      "path": "/public/bookings",
+      "summary": "Submit a visit registration",
+      "ticket": "06",
+      "status": "implemented",
+      "handler": "internal/handler/public_booking_handler.go:publicBookingHandler.Create",
+      "calls": [
+        "h.usecase.Create"
+      ],
+      "usecase": "PublicBookingUsecase.Create",
+      "requestDto": "PublicBookingCreate",
+      "responseDto": "PublicBooking"
+    },
+    {
+      "number": 4,
+      "id": "publicResolveSubmission",
+      "method": "POST",
+      "path": "/public/submissions/resolve",
+      "summary": "Recover an uncertain registration",
+      "ticket": "06",
+      "status": "implemented",
+      "handler": "internal/handler/public_booking_handler.go:publicBookingHandler.Resolve",
+      "calls": [
+        "h.usecase.Resolve"
+      ],
+      "usecase": "PublicBookingUsecase.Resolve",
+      "requestDto": "PublicSubmissionProof",
+      "responseDto": "PublicSubmissionResolution"
+    },
+    {
+      "number": 5,
+      "id": "publicLookup",
+      "method": "POST",
+      "path": "/public/lookup",
+      "summary": "Look up a visit by code and email",
+      "ticket": "07",
+      "status": "implemented",
+      "handler": "internal/handler/booking_access_handler.go:bookingAccessHandler.Lookup",
+      "calls": [
+        "h.usecase.Lookup"
+      ],
+      "usecase": "BookingAccessUsecase.Lookup",
+      "requestDto": "PublicLookup",
+      "responseDto": "PublicBooking"
+    },
+    {
+      "number": 6,
+      "id": "publicCancelBooking",
+      "method": "POST",
+      "path": "/public/bookings/{id}/cancel",
+      "summary": "Cancel a visit as the visitor",
+      "ticket": "07",
+      "status": "implemented",
+      "handler": "internal/handler/booking_access_handler.go:bookingAccessHandler.Cancel",
+      "calls": [
+        "h.usecase.Cancel"
+      ],
+      "usecase": "BookingAccessUsecase.Cancel",
+      "requestDto": "PublicCancel",
+      "responseDto": "PublicBooking"
+    },
+    {
+      "number": 7,
+      "id": "publicAdmission",
+      "method": "POST",
+      "path": "/public/bookings/{id}/admission",
+      "summary": "Issue the admission QR",
+      "ticket": "08",
+      "status": "implemented",
+      "handler": "internal/handler/admission_handler.go:admissionHandler.Issue",
+      "calls": [
+        "h.usecase.Issue"
+      ],
+      "usecase": "AdmissionUsecase.Issue",
+      "requestDto": "PublicCancel",
+      "responseDto": "Admission"
+    },
+    {
+      "number": 8,
+      "id": "staffCatalogs",
+      "method": "GET",
+      "path": "/staff/catalogs",
+      "summary": "Read staff catalogs",
+      "ticket": "04",
+      "status": "implemented",
+      "handler": "internal/handler/catalog_handler.go:catalogHandler.StaffCatalogs",
+      "calls": [
+        "h.usecase.GetStaffCatalogs",
+        "restmiddleware.Session"
+      ],
+      "usecase": "CatalogUsecase.GetStaffCatalogs",
+      "requestDto": null,
+      "responseDto": "StaffCatalog"
+    },
+    {
+      "number": 9,
+      "id": "staffBookings",
+      "method": "GET",
+      "path": "/staff/bookings",
+      "summary": "List, count and dashboard visits",
+      "ticket": "09",
+      "status": "implemented",
+      "handler": "internal/handler/staff_booking_handler.go:staffBookingHandler.List",
+      "calls": [
+        "h.usecase.List",
+        "restmiddleware.Session"
+      ],
+      "usecase": "StaffBookingUsecase.List",
+      "requestDto": null,
+      "responseDto": "StaffBookingPage"
+    },
+    {
+      "number": 10,
+      "id": "staffBooking",
+      "method": "GET",
+      "path": "/staff/bookings/{id}",
+      "summary": "Read one visit",
+      "ticket": "09",
+      "status": "implemented",
+      "handler": "internal/handler/staff_booking_handler.go:staffBookingHandler.Get",
+      "calls": [
+        "h.usecase.Get",
+        "restmiddleware.Session"
+      ],
+      "usecase": "StaffBookingUsecase.Get",
+      "requestDto": null,
+      "responseDto": "StaffBooking"
+    },
+    {
+      "number": 11,
+      "id": "staffCreateBooking",
+      "method": "POST",
+      "path": "/staff/bookings",
+      "summary": "Create a visit as staff",
+      "ticket": "10",
+      "status": "implemented",
+      "handler": "internal/handler/staff_booking_create_handler.go:staffBookingCreateHandler.Create",
+      "calls": [
+        "h.usecase.CreateStaffBooking"
+      ],
+      "usecase": "StaffBookingCreateUsecase.CreateStaffBooking",
+      "requestDto": "StaffBookingCreate",
+      "responseDto": "StaffBooking"
+    },
+    {
+      "number": 12,
+      "id": "staffApproveBooking",
+      "method": "POST",
+      "path": "/staff/bookings/{id}/approve",
+      "summary": "Approve a visit",
+      "ticket": "11",
+      "status": "implemented",
+      "handler": "internal/handler/decision_handler.go:decisionHandler.Approve",
+      "calls": [
+        "h.usecase.Approve",
+        "restmiddleware.Proof"
+      ],
+      "usecase": "DecisionUsecase.Approve",
+      "requestDto": "ApproveBooking",
+      "responseDto": "StaffBooking"
+    },
+    {
+      "number": 13,
+      "id": "staffRejectBooking",
+      "method": "POST",
+      "path": "/staff/bookings/{id}/reject",
+      "summary": "Reject a visit",
+      "ticket": "11",
+      "status": "implemented",
+      "handler": "internal/handler/decision_handler.go:decisionHandler.Reject",
+      "calls": [
+        "h.usecase.Reject",
+        "restmiddleware.Proof"
+      ],
+      "usecase": "DecisionUsecase.Reject",
+      "requestDto": "RejectBooking",
+      "responseDto": "StaffBooking"
+    },
+    {
+      "number": 14,
+      "id": "staffRescheduleBooking",
+      "method": "POST",
+      "path": "/staff/bookings/{id}/reschedule",
+      "summary": "Reschedule or edit a visit",
+      "ticket": "12",
+      "status": "implemented",
+      "handler": "internal/handler/decision_handler.go:decisionHandler.Reschedule",
+      "calls": [
+        "h.usecase.Reschedule",
+        "restmiddleware.Proof"
+      ],
+      "usecase": "DecisionUsecase.Reschedule",
+      "requestDto": "RescheduleBooking",
+      "responseDto": "StaffBooking"
+    },
+    {
+      "number": 15,
+      "id": "staffCancelBooking",
+      "method": "POST",
+      "path": "/staff/bookings/{id}/cancel",
+      "summary": "Cancel a visit as staff",
+      "ticket": "11",
+      "status": "implemented",
+      "handler": "internal/handler/decision_handler.go:decisionHandler.Cancel",
+      "calls": [
+        "h.usecase.Cancel",
+        "restmiddleware.Proof"
+      ],
+      "usecase": "DecisionUsecase.Cancel",
+      "requestDto": "CancelBooking",
+      "responseDto": "StaffBooking"
+    },
+    {
+      "number": 16,
+      "id": "staffUpdateRestrictedBooking",
+      "method": "POST",
+      "path": "/staff/bookings/{id}/update",
+      "summary": "Update a restricted visit",
+      "ticket": "12",
+      "status": "implemented",
+      "handler": "internal/handler/decision_handler.go:decisionHandler.UpdateRestricted",
+      "calls": [
+        "h.usecase.UpdateRestricted",
+        "restmiddleware.Proof"
+      ],
+      "usecase": "DecisionUsecase.UpdateRestricted",
+      "requestDto": "UpdateRestrictedBooking",
+      "responseDto": "StaffBooking"
+    },
+    {
+      "number": 17,
+      "id": "staffResolveCredential",
+      "method": "POST",
+      "path": "/staff/resolve",
+      "summary": "Resolve a code or QR at reception",
+      "ticket": "13",
+      "status": "implemented",
+      "handler": "internal/handler/reception_handler.go:receptionHandler.Resolve",
+      "calls": [
+        "h.usecase.Resolve",
+        "restmiddleware.Session"
+      ],
+      "usecase": "ReceptionUsecase.Resolve",
+      "requestDto": "ReceptionResolve",
+      "responseDto": "StaffBooking"
+    },
+    {
+      "number": 18,
+      "id": "staffRecordAttendance",
+      "method": "POST",
+      "path": "/staff/bookings/{id}/attendance",
+      "summary": "Check a visit in or out",
+      "ticket": "13",
+      "status": "implemented",
+      "handler": "internal/handler/reception_handler.go:receptionHandler.Attendance",
+      "calls": [
+        "h.usecase.Attendance",
+        "restmiddleware.Proof"
+      ],
+      "usecase": "ReceptionUsecase.Attendance",
+      "requestDto": "ReceptionAttendance",
+      "responseDto": "StaffBooking"
+    },
+    {
+      "number": 19,
+      "id": "staffUploadAttachment",
+      "method": "POST",
+      "path": "/staff/attachments",
+      "summary": "Upload a staff attachment",
+      "ticket": "05",
+      "status": "implemented",
+      "handler": "internal/handler/upload_handler.go:uploadHandler.StaffUpload",
+      "calls": [
+        "h.usecase.UploadStaff"
+      ],
+      "usecase": "UploadUsecase.UploadStaff",
+      "requestDto": null,
+      "responseDto": "UploadResult"
+    },
+    {
+      "number": 20,
+      "id": "staffBookingAttachment",
+      "method": "GET",
+      "path": "/staff/bookings/{id}/attachment",
+      "summary": "Read a visit Nota Dinas",
+      "ticket": "14",
+      "status": "implemented",
+      "handler": "internal/handler/booking_file_handler.go:bookingFileHandler.StaffAttachment",
+      "calls": [
+        "h.staff"
+      ],
+      "usecase": "BookingFileUsecase.OpenStaffFile",
+      "requestDto": null,
+      "responseDto": null
+    },
+    {
+      "number": 21,
+      "id": "staffBookingVisitorPhoto",
+      "method": "GET",
+      "path": "/staff/bookings/{id}/visitor-photo",
+      "summary": "Read a visitor photo",
+      "ticket": "14",
+      "status": "implemented",
+      "handler": "internal/handler/booking_file_handler.go:bookingFileHandler.StaffVisitorPhoto",
+      "calls": [
+        "h.staff"
+      ],
+      "usecase": "BookingFileUsecase.OpenStaffFile",
+      "requestDto": null,
+      "responseDto": null
+    },
+    {
+      "number": 22,
+      "id": "reportSummary",
+      "method": "GET",
+      "path": "/staff/reports/summary",
+      "summary": "Read analytics counts",
+      "ticket": "15",
+      "status": "implemented",
+      "handler": "internal/handler/report_handler.go:reportHandler.Summary",
+      "calls": [
+        "h.usecase.Summary"
+      ],
+      "usecase": "ReportUsecase.Summary",
+      "requestDto": null,
+      "responseDto": "VisitSummary"
+    },
+    {
+      "number": 23,
+      "id": "reportSummaryExport",
+      "method": "GET",
+      "path": "/staff/reports/export",
+      "summary": "Export analytics counts as CSV",
+      "ticket": "15",
+      "status": "implemented",
+      "handler": "internal/handler/report_handler.go:reportHandler.ExportSummary",
+      "calls": [
+        "h.usecase.ExportSummary"
+      ],
+      "usecase": "ReportUsecase.ExportSummary",
+      "requestDto": null,
+      "responseDto": "SummaryExport"
+    },
+    {
+      "number": 24,
+      "id": "reportVisitLog",
+      "method": "GET",
+      "path": "/staff/reports/visits",
+      "summary": "Read the visit log",
+      "ticket": "16",
+      "status": "implemented",
+      "handler": "internal/handler/report_handler.go:reportHandler.VisitLog",
+      "calls": [
+        "h.usecase.VisitLog"
+      ],
+      "usecase": "ReportUsecase.VisitLog",
+      "requestDto": null,
+      "responseDto": "VisitLogResponse"
+    },
+    {
+      "number": 25,
+      "id": "reportVisitLogExport",
+      "method": "GET",
+      "path": "/staff/reports/visits/export",
+      "summary": "Export the visit log",
+      "ticket": "16",
+      "status": "implemented",
+      "handler": "internal/handler/report_handler.go:reportHandler.ExportVisitLog",
+      "calls": [
+        "h.usecase.ExportVisitLog"
+      ],
+      "usecase": "ReportUsecase.ExportVisitLog",
+      "requestDto": null,
+      "responseDto": "VisitLogSnapshot"
+    },
+    {
+      "number": 26,
+      "id": "staffEmployees",
+      "method": "GET",
+      "path": "/staff/employees",
+      "summary": "List employees",
+      "ticket": "17",
+      "status": "implemented",
+      "handler": "internal/handler/employee_handler.go:employeeHandler.Employees",
+      "calls": [
+        "h.usecase.GetEmployees"
+      ],
+      "usecase": "EmployeeUsecase.GetEmployees",
+      "requestDto": null,
+      "responseDto": "EmployeePage"
+    },
+    {
+      "number": 27,
+      "id": "staffEmployee",
+      "method": "GET",
+      "path": "/staff/employees/{id}",
+      "summary": "Read one employee",
+      "ticket": "17",
+      "status": "implemented",
+      "handler": "internal/handler/employee_handler.go:employeeHandler.Employee",
+      "calls": [
+        "h.usecase.GetEmployee"
+      ],
+      "usecase": "EmployeeUsecase.GetEmployee",
+      "requestDto": null,
+      "responseDto": "Employee"
+    },
+    {
+      "number": 28,
+      "id": "staffCreateEmployee",
+      "method": "POST",
+      "path": "/staff/employees",
+      "summary": "Create an employee",
+      "ticket": "17",
+      "status": "implemented",
+      "handler": "internal/handler/employee_handler.go:employeeHandler.CreateEmployee",
+      "calls": [
+        "h.usecase.CreateEmployee"
+      ],
+      "usecase": "EmployeeUsecase.CreateEmployee",
+      "requestDto": "EmployeeCreate",
+      "responseDto": "Employee"
+    },
+    {
+      "number": 29,
+      "id": "staffUpdateEmployee",
+      "method": "PATCH",
+      "path": "/staff/employees/{id}",
+      "summary": "Update or deactivate an employee",
+      "ticket": "17",
+      "status": "implemented",
+      "handler": "internal/handler/employee_handler.go:employeeHandler.UpdateEmployee",
+      "calls": [
+        "h.usecase.UpdateEmployee"
+      ],
+      "usecase": "EmployeeUsecase.UpdateEmployee",
+      "requestDto": "EmployeeUpdate",
+      "responseDto": "Employee"
+    },
+    {
+      "number": 30,
+      "id": "staffRoles",
+      "method": "GET",
+      "path": "/staff/roles",
+      "summary": "List roles and permissions",
+      "ticket": "18",
+      "status": "implemented",
+      "handler": "internal/handler/role_handler.go:roleHandler.Roles",
+      "calls": [
+        "h.usecase.GetRoles",
+        "restmiddleware.Session"
+      ],
+      "usecase": "RoleUsecase.GetRoles",
+      "requestDto": null,
+      "responseDto": "[]RoleDefinition"
+    },
+    {
+      "number": 31,
+      "id": "staffUpdateRole",
+      "method": "PATCH",
+      "path": "/staff/roles/{id}",
+      "summary": "Update role permissions",
+      "ticket": "18",
+      "status": "implemented",
+      "handler": "internal/handler/role_handler.go:roleHandler.UpdateRole",
+      "calls": [
+        "h.usecase.UpdateRole",
+        "restmiddleware.Proof"
+      ],
+      "usecase": "RoleUsecase.UpdateRole",
+      "requestDto": "RoleUpdate",
+      "responseDto": "RoleDefinition"
+    },
+    {
+      "number": 32,
+      "id": "createSession",
+      "method": "POST",
+      "path": "/staff/sessions",
+      "summary": "Sign in",
+      "ticket": "baseline",
+      "status": "implemented",
+      "handler": "internal/handler/auth_handler.go:authHandler.Login",
+      "calls": [
+        "h.usecase.Login"
+      ],
+      "usecase": "SessionUsecase.Login",
+      "requestDto": "Login",
+      "responseDto": "TokenResult"
+    },
+    {
+      "number": 33,
+      "id": "getSession",
+      "method": "GET",
+      "path": "/staff/session",
+      "summary": "Read the current session",
+      "ticket": "baseline",
+      "status": "implemented",
+      "handler": "internal/handler/auth_handler.go:authHandler.Current",
+      "calls": [
+        "restmiddleware.Session"
+      ],
+      "usecase": "AuthUsecase.GetSession",
+      "requestDto": null,
+      "responseDto": "Session"
+    },
+    {
+      "number": 34,
+      "id": "selectRole",
+      "method": "POST",
+      "path": "/staff/session/role",
+      "summary": "Select the active role",
+      "ticket": "baseline",
+      "status": "implemented",
+      "handler": "internal/handler/auth_handler.go:authHandler.Role",
+      "calls": [
+        "h.usecase.SwitchRole"
+      ],
+      "usecase": "SessionUsecase.SwitchRole",
+      "requestDto": "RoleSelect",
+      "responseDto": "TokenResult"
+    },
+    {
+      "number": 35,
+      "id": "deleteSession",
+      "method": "DELETE",
+      "path": "/staff/session",
+      "summary": "Sign out",
+      "ticket": "baseline",
+      "status": "implemented",
+      "handler": "internal/handler/auth_handler.go:authHandler.Logout",
+      "calls": [
+        "h.usecase.Logout"
+      ],
+      "usecase": "SessionUsecase.Logout",
+      "requestDto": null,
+      "responseDto": null
+    },
+    {
+      "number": 36,
+      "id": "changePassword",
+      "method": "POST",
+      "path": "/staff/password",
+      "summary": "Change password",
+      "ticket": "baseline",
+      "status": "implemented",
+      "handler": "internal/handler/auth_handler.go:authHandler.Password",
+      "calls": [
+        "h.usecase.ChangePassword"
+      ],
+      "usecase": "SessionUsecase.ChangePassword",
+      "requestDto": "PasswordChange",
+      "responseDto": "TokenResult"
+    },
+    {
+      "number": 37,
+      "id": "receptionBookingAttachment",
+      "method": "POST",
+      "path": "/staff/bookings/{id}/attachment",
+      "summary": "Open a visit Nota Dinas with the visitor credential",
+      "ticket": "14",
+      "status": "implemented",
+      "handler": "internal/handler/booking_file_handler.go:bookingFileHandler.ReceptionAttachment",
+      "calls": [
+        "h.reception"
+      ],
+      "usecase": "BookingFileUsecase.OpenReceptionFile",
+      "requestDto": "ReceptionResolve",
+      "responseDto": null
+    },
+    {
+      "number": 38,
+      "id": "receptionBookingVisitorPhoto",
+      "method": "POST",
+      "path": "/staff/bookings/{id}/visitor-photo",
+      "summary": "Open a visitor photo with the visitor credential",
+      "ticket": "14",
+      "status": "implemented",
+      "handler": "internal/handler/booking_file_handler.go:bookingFileHandler.ReceptionVisitorPhoto",
+      "calls": [
+        "h.reception"
+      ],
+      "usecase": "BookingFileUsecase.OpenReceptionFile",
+      "requestDto": "ReceptionResolve",
+      "responseDto": null
+    },
+    {
+      "number": 39,
+      "id": "refreshSession",
+      "method": "POST",
+      "path": "/staff/session/refresh",
+      "summary": "Refresh the access token",
+      "ticket": "baseline",
+      "status": "implemented",
+      "handler": "internal/handler/auth_handler.go:authHandler.Refresh",
+      "calls": [
+        "h.usecase.Refresh"
+      ],
+      "usecase": "SessionUsecase.Refresh",
+      "requestDto": "Refresh",
+      "responseDto": "TokenResult"
+    },
+    {
+      "number": 40,
+      "id": "renewSession",
+      "method": "POST",
+      "path": "/staff/session/renew",
+      "summary": "Renew the session on activity",
+      "ticket": "baseline",
+      "status": "implemented",
+      "handler": "internal/handler/auth_handler.go:authHandler.Renew",
+      "calls": [
+        "h.usecase.Renew"
+      ],
+      "usecase": "SessionUsecase.Renew",
+      "requestDto": null,
+      "responseDto": "Session"
+    }
+  ],
+  "sourceInterfaces": {
+    "internal/infrastructure/storage/storage.go:Storage": {
+      "Delete": "func(ctx context.Context, key string) error",
+      "Open": "func(ctx context.Context, key string) (io.ReadCloser, error)",
+      "Put": "func(ctx context.Context, content []byte) (string, error)"
+    },
+    "internal/repository/admission/admission_repository.go:AdmissionRepository": {
+      "PublicRequest": "func(ctx context.Context, key string) (entity.RequestAdmission, error)"
+    },
+    "internal/repository/admission/limits.go:RequestLimitRepository": {
+      "RequestLimit": "func(ctx context.Context, key string, limit int, window time.Duration) (entity.RequestAdmission, error)"
+    },
+    "internal/repository/auth/auth_repository.go:AuthRepository": {
+      "GetSessionSnapshot": "func(ctx context.Context, sessionID string) (entity.SessionSnapshot, error)"
+    },
+    "internal/repository/auth/auth_repository.go:AuthorityLock": {
+      "LockAuthority": "func(proof entity.SessionProof) (entity.SessionSnapshot, error)"
+    },
+    "internal/repository/auth/session_repository.go:SessionRepository": {
+      "@AuthRepository": "AuthRepository",
+      "FindRefresh": "func(ctx context.Context, hash string) (string, error)",
+      "FinishLogin": "func(ctx context.Context, reservation string, success bool) error",
+      "GetCredential": "func(ctx context.Context, email string) (entity.EmployeeCredential, error)",
+      "ReserveLogin": "func(ctx context.Context, ipKey, accountKey string) (string, int, error)",
+      "Transaction": "func(ctx context.Context, employeeID int32, operation func(tx SessionTransaction) error) error"
+    },
+    "internal/repository/auth/session_repository.go:SessionTransaction": {
+      "Audit": "func(employeeID int32, action string) error",
+      "ClearRecoveries": "func(sessionID string) error",
+      "Create": "func(session entity.StaffSession) error",
+      "Credential": "func(employeeID int32) (entity.EmployeeCredential, error)",
+      "Now": "func() time.Time",
+      "Recovery": "func(sessionID, requestID string) (entity.SessionRecovery, error)",
+      "RememberRefresh": "func(sessionID, hash string) error",
+      "Roles": "func(employeeID int32) (map[string]int32, error)",
+      "Save": "func(session entity.StaffSession) error",
+      "SaveRecovery": "func(recovery entity.SessionRecovery) error",
+      "Session": "func(id string) (entity.StaffSession, error)",
+      "SetPassword": "func(employeeID int32, encodedHash string, currentSessionID string) error"
+    },
+    "internal/repository/booking/booking_access_repository.go:BookingAccessRepository": {
+      "AccessTransaction": "func(context.Context, func(BookingAccessTransaction) error) error"
+    },
+    "internal/repository/booking/booking_access_repository.go:BookingAccessTransaction": {
+      "CancelPublic": "func(id int32, now time.Time, ip string) (int, error)",
+      "CurrentQR": "func(visitID int32) (entity.VisitQR, error)",
+      "InsertQR": "func(entity.VisitQR) error",
+      "Now": "func() (time.Time, error)",
+      "PublicHistory": "func(id int32) ([]entity.VisitHistory, error)",
+      "PublicVisit": "func(code, email string, expectedID *int32) (entity.Visit, error)",
+      "ReserveQRID": "func() (int32, error)"
+    },
+    "internal/repository/booking/booking_repository.go:BookingRepository": {
+      "Transaction": "func(context.Context, func(BookingTransaction) error) error"
+    },
+    "internal/repository/booking/booking_repository.go:BookingTransaction": {
+      "ActiveOfficer": "func(id int32) (name string, vip bool, err error)",
+      "AdmitBooking": "func(bucket string) (entity.RequestAdmission, error)",
+      "CreatePublicVisit": "func(visit entity.Visit, photoID int32, documentID *int32, now time.Time, privacyVersion, ip string) (int32, error)",
+      "LinkUpload": "func(tokenHash, purpose, audience, ownerDigest string, now time.Time) (int32, error)",
+      "LockReference": "func(audience, ownerDigest, reference string) error",
+      "Now": "func() (time.Time, error)",
+      "PublicHistory": "func(id int32) ([]entity.VisitHistory, error)",
+      "ReadVisit": "func(id int32) (entity.Visit, error)",
+      "Request": "func(audience, ownerDigest, reference string) (entity.BookingRequest, error)",
+      "StoreRequest": "func(audience, ownerDigest, reference string, request entity.BookingRequest) error"
+    },
+    "internal/repository/booking/staff_booking_writer.go:StaffBookingTransaction": {
+      "@authrepository.AuthorityLock": "authrepository.AuthorityLock",
+      "ActiveOfficer": "func(id int32) (name string, vip bool, err error)",
+      "ActiveRoom": "func(id int32) error",
+      "CreateStaffVisit": "func(visit entity.StaffVisit, photoID, documentID *int32, actorID int32, now time.Time, ip string) (int32, error)",
+      "LinkUpload": "func(tokenHash, purpose, audience, ownerDigest string, now time.Time) (int32, error)",
+      "LockReference": "func(audience, ownerDigest, reference string) error",
+      "LockScheduleResources": "func(officerIDs, roomIDs []int32) error",
+      "Now": "func() (time.Time, error)",
+      "ReadStaffVisit": "func(id int32) (entity.StaffVisit, error)",
+      "Request": "func(audience, ownerDigest, reference string) (entity.BookingRequest, error)",
+      "ScheduleConflict": "func(excludeVisitID, officerID int32, roomID *int32, start time.Time, duration int) (bool, error)",
+      "StoreRequest": "func(audience, ownerDigest, reference string, request entity.BookingRequest) error"
+    },
+    "internal/repository/booking/staff_booking_writer.go:StaffBookingWriter": {
+      "StaffTransaction": "func(context.Context, func(StaffBookingTransaction) error) error"
+    },
+    "internal/repository/bookingfile/booking_file_repository.go:BookingFileRepository": {
+      "Lookup": "func(context.Context, int32, string, *entity.ReceptionCredential) (entity.BookingFile, error)"
+    },
+    "internal/repository/catalog/catalog_repository.go:CatalogRepository": {
+      "GetPublicCatalogs": "func(ctx context.Context) (entity.PublicCatalog, error)",
+      "GetStaffCatalogs": "func(ctx context.Context, assignedInactiveOfficers bool) (entity.StaffCatalog, error)"
+    },
+    "internal/repository/employee/employee_repository.go:EmployeeRepository": {
+      "GetEmployee": "func(ctx context.Context, id int32) (entity.Employee, error)",
+      "GetEmployees": "func(ctx context.Context, filter entity.EmployeeFilter) (entity.EmployeePage, error)",
+      "Transaction": "func(ctx context.Context, fn func(tx EmployeeTransaction) error) error"
+    },
+    "internal/repository/employee/employee_repository.go:EmployeeTransaction": {
+      "@authrepository.AuthorityLock": "authrepository.AuthorityLock",
+      "Audit": "func(event entity.EmployeeEvent) error",
+      "CreateEmployee": "func(employee entity.Employee, encodedHash string) (entity.Employee, error)",
+      "EmailInUse": "func(email string, except int32) (bool, error)",
+      "EndSessions": "func(employeeID int32, at time.Time) error",
+      "LockEmployee": "func(id int32) (entity.Employee, error)",
+      "Officers": "func(ids []int32) ([]entity.EmployeeOfficer, error)",
+      "OtherActiveSuperAdmins": "func(except int32) (int, error)",
+      "ReloadSessions": "func(employeeID int32, removedRoles []string, at time.Time) error",
+      "SaveEmployee": "func(before, after entity.Employee) (entity.Employee, error)"
+    },
+    "internal/repository/reception/reception_repository.go:ReceptionRepository": {
+      "Resolve": "func(context.Context, entity.ReceptionCredential) (entity.StaffVisit, entity.ReceptionMatch, time.Time, error)",
+      "Transaction": "func(context.Context, func(ReceptionTransaction) error) error"
+    },
+    "internal/repository/reception/reception_repository.go:ReceptionTransaction": {
+      "@authrepository.AuthorityLock": "authrepository.AuthorityLock",
+      "LockVisit": "func(int32) (entity.StaffVisit, error)",
+      "MatchCredential": "func(entity.ReceptionCredential, int32) (entity.ReceptionMatch, error)",
+      "Now": "func() (time.Time, error)",
+      "Transition": "func(id int32, version int, actor int32, action string, at time.Time) (entity.StaffVisit, error)"
+    },
+    "internal/repository/report/report_repository.go:ReportReader": {
+      "Summary": "func(context.Context, dto.Session, dto.SummaryFilter) ([]entity.ReportStatus, time.Time, error)",
+      "VisitLog": "func(context.Context, dto.VisitLogFilter) (entity.ReportSnapshot, error)"
+    },
+    "internal/repository/role/role_repository.go:RoleRepository": {
+      "GetRoles": "func(ctx context.Context) ([]entity.Role, error)",
+      "Transaction": "func(ctx context.Context, fn func(tx RoleTransaction) error) error"
+    },
+    "internal/repository/role/role_repository.go:RoleTransaction": {
+      "@authrepository.AuthorityLock": "authrepository.AuthorityLock",
+      "AuditPermissionChange": "func(actor int32, before, after entity.Role, at time.Time) error",
+      "BumpRoleRevision": "func(roleID int32, at time.Time) error",
+      "LockRole": "func(id int32) (entity.Role, error)",
+      "SavePermissions": "func(role entity.Role, permissions []string, actor int32, at time.Time) (entity.Role, error)"
+    },
+    "internal/repository/staffbooking/decision_repository.go:DecisionRepository": {
+      "DecisionTransaction": "func(context.Context, func(DecisionTransaction) error) error"
+    },
+    "internal/repository/staffbooking/decision_repository.go:DecisionTransaction": {
+      "@auth.AuthorityLock": "auth.AuthorityLock",
+      "ActiveOfficer": "func(id int32) (bool, error)",
+      "ActiveRoom": "func(id int32) (bool, error)",
+      "ApplyChange": "func(id int32, version int, actor int32, role string, now time.Time, change entity.VisitChange) (entity.StaffVisit, error)",
+      "HasConflict": "func(visitID int32, schedule entity.VisitSchedule, start time.Time) (bool, error)",
+      "LockResources": "func(officers, rooms []int32) error",
+      "LockVisit": "func(id int32) (entity.StaffVisit, error)",
+      "Now": "func() (time.Time, error)"
+    },
+    "internal/repository/staffbooking/staff_booking_repository.go:StaffBookingReader": {
+      "Find": "func(context.Context, dto.Session, int32) (entity.StaffVisit, time.Time, error)",
+      "List": "func(context.Context, dto.Session) ([]entity.StaffVisit, time.Time, error)"
+    },
+    "internal/repository/upload/upload_repository.go:UploadRepository": {
+      "Transaction": "func(ctx context.Context, operation func(tx UploadTransaction) error) error"
+    },
+    "internal/repository/upload/upload_repository.go:UploadTransaction": {
+      "@authrepository.AuthorityLock": "authrepository.AuthorityLock",
+      "AdmitUpload": "func(bucket string, limit int, window time.Duration) (entity.RequestAdmission, error)",
+      "CreateDocument": "func(document entity.FormDocument) (int32, error)",
+      "CreateUpload": "func(record entity.UploadRecord) error",
+      "FindUpload": "func(audience, ownerDigest, reference string) (entity.UploadRecord, error)",
+      "LockReference": "func(audience, ownerDigest, reference string) error",
+      "Now": "func() (time.Time, error)"
+    },
+    "internal/serializer/auth/auth_serializer.go:AuthSerializer": {
+      "ToSession": "func(snapshot entity.SessionSnapshot) dto.Session"
+    },
+    "internal/serializer/booking/booking_serializer.go:BookingSerializer": {
+      "ToPublicBooking": "func(entity.Visit, time.Time, []entity.VisitHistory) dto.PublicBooking"
+    },
+    "internal/serializer/catalog/catalog_serializer.go:CatalogSerializer": {
+      "ToPublicCatalog": "func(in entity.PublicCatalog) dto.PublicCatalog",
+      "ToStaffCatalog": "func(in entity.StaffCatalog) dto.StaffCatalog"
+    },
+    "internal/serializer/employee/employee_serializer.go:EmployeeSerializer": {
+      "ToEmployee": "func(in entity.Employee) dto.Employee",
+      "ToEmployeePage": "func(in entity.EmployeePage, filter entity.EmployeeFilter) dto.EmployeePage"
+    },
+    "internal/serializer/report/report_serializer.go:ReportSerializer": {
+      "ToSummaryExport": "func(dto.VisitSummary, []string) dto.SummaryExport",
+      "ToVisitLogRow": "func(entity.ReportVisit, string) dto.VisitLogRow"
+    },
+    "internal/serializer/role/role_serializer.go:RoleSerializer": {
+      "ToRoleDefinition": "func(in entity.Role) dto.RoleDefinition",
+      "ToRoleDefinitions": "func(in []entity.Role) []dto.RoleDefinition"
+    },
+    "internal/serializer/staffbooking/staff_booking_serializer.go:StaffBookingSerializer": {
+      "Project": "func(entity.StaffVisit, dto.Session, time.Time, bool) dto.StaffBooking"
+    },
+    "internal/serializer/upload/upload_serializer.go:UploadSerializer": {
+      "ToUploadResult": "func(issued entity.IssuedUpload) dto.UploadResult"
+    },
+    "internal/server/rest/server.go:Health": {
+      "PingContext": "func(ctx context.Context) error"
+    },
+    "internal/usecase/admission/admission_usecase.go:AdmissionUsecase": {
+      "PublicRequest": "func(ctx context.Context, ip string) (entity.RequestAdmission, error)"
+    },
+    "internal/usecase/admission/limits.go:RequestLimiter": {
+      "Admit": "func(ctx context.Context, purpose, identity string, limit int, window time.Duration) error"
+    },
+    "internal/usecase/auth/auth_usecase.go:AuthUsecase": {
+      "GetSession": "func(ctx context.Context, proof entity.SessionProof) (dto.Session, error)"
+    },
+    "internal/usecase/auth/credential.go:CredentialVerifier": {
+      "Hash": "func(ctx context.Context, password string) (string, error)",
+      "Verify": "func(ctx context.Context, encodedHash, password string) (bool, error)"
+    },
+    "internal/usecase/auth/session_usecase.go:SessionUsecase": {
+      "Binding": "func(ctx context.Context, secret string, allowConsumed bool) (string, time.Time, error)",
+      "ChangePassword": "func(ctx context.Context, proof entity.SessionProof, request dto.PasswordChange) (CredentialResult, error)",
+      "Login": "func(ctx context.Context, request dto.Login, ip string) (CredentialResult, error)",
+      "Logout": "func(ctx context.Context, secret string) error",
+      "Refresh": "func(ctx context.Context, secret, requestID string) (CredentialResult, error)",
+      "Renew": "func(ctx context.Context, proof entity.SessionProof) (dto.Session, error)",
+      "SwitchRole": "func(ctx context.Context, proof entity.SessionProof, role string) (CredentialResult, error)"
+    },
+    "internal/usecase/auth/session_validator.go:SessionValidator": {
+      "Validate": "func(snapshot entity.SessionSnapshot, proof entity.SessionProof) (dto.Session, error)"
+    },
+    "internal/usecase/booking/admission_usecase.go:AdmissionUsecase": {
+      "Issue": "func(context.Context, int32, dto.PublicCancel) (dto.Admission, error)"
+    },
+    "internal/usecase/booking/booking_access_usecase.go:BookingAccessUsecase": {
+      "Cancel": "func(context.Context, int32, dto.PublicCancel, string) (dto.PublicBooking, error)",
+      "Lookup": "func(context.Context, dto.PublicLookup) (dto.PublicBooking, error)"
+    },
+    "internal/usecase/booking/public_booking_usecase.go:PublicBookingUsecase": {
+      "Create": "func(ctx context.Context, ip string, input dto.PublicBookingCreate) (dto.PublicBooking, bool, error)",
+      "Resolve": "func(ctx context.Context, input dto.PublicSubmissionProof) (dto.PublicSubmissionResolution, error)"
+    },
+    "internal/usecase/bookingfile/booking_file_usecase.go:BookingFileUsecase": {
+      "OpenReceptionFile": "func(context.Context, dto.Session, int32, string, dto.ReceptionResolve) (Opened, error)",
+      "OpenStaffFile": "func(context.Context, dto.Session, int32, string) (Opened, error)"
+    },
+    "internal/usecase/catalog/catalog_usecase.go:CatalogUsecase": {
+      "GetPublicCatalogs": "func(ctx context.Context) (dto.PublicCatalog, error)",
+      "GetStaffCatalogs": "func(ctx context.Context, session dto.Session) (dto.StaffCatalog, error)"
+    },
+    "internal/usecase/employee/employee_usecase.go:EmployeeUsecase": {
+      "CreateEmployee": "func(ctx context.Context, session dto.Session, proof entity.SessionProof, req dto.EmployeeCreate) (dto.Employee, error)",
+      "GetEmployee": "func(ctx context.Context, session dto.Session, id int32) (dto.Employee, error)",
+      "GetEmployees": "func(ctx context.Context, session dto.Session, query EmployeeQuery) (dto.EmployeePage, error)",
+      "UpdateEmployee": "func(ctx context.Context, session dto.Session, proof entity.SessionProof, id int32, req dto.EmployeeUpdate) (dto.Employee, error)"
+    },
+    "internal/usecase/reception/reception_usecase.go:ReceptionUsecase": {
+      "Attendance": "func(context.Context, entity.SessionProof, int32, dto.ReceptionAttendance) (dto.StaffBooking, error)",
+      "Resolve": "func(context.Context, dto.Session, dto.ReceptionResolve) (dto.StaffBooking, error)"
+    },
+    "internal/usecase/report/report_usecase.go:ReportUsecase": {
+      "ExportSummary": "func(context.Context, dto.Session, dto.SummaryFilter, string) (dto.SummaryExport, error)",
+      "ExportVisitLog": "func(context.Context, dto.Session, dto.VisitLogFilter, string) (dto.VisitLogSnapshot, error)",
+      "Summary": "func(context.Context, dto.Session, dto.SummaryFilter) (dto.VisitSummary, error)",
+      "VisitLog": "func(context.Context, dto.Session, dto.VisitLogFilter, int, int) (dto.VisitLogResponse, error)"
+    },
+    "internal/usecase/role/role_usecase.go:RoleUsecase": {
+      "GetRoles": "func(ctx context.Context, session dto.Session) ([]dto.RoleDefinition, error)",
+      "UpdateRole": "func(ctx context.Context, proof entity.SessionProof, id int32, req dto.RoleUpdate) (dto.RoleDefinition, error)"
+    },
+    "internal/usecase/staffbooking/decision_usecase.go:DecisionUsecase": {
+      "Approve": "func(context.Context, entity.SessionProof, int32, dto.ApproveBooking) (dto.StaffBooking, error)",
+      "Cancel": "func(context.Context, entity.SessionProof, int32, dto.CancelBooking) (dto.StaffBooking, error)",
+      "Reject": "func(context.Context, entity.SessionProof, int32, dto.RejectBooking) (dto.StaffBooking, error)",
+      "Reschedule": "func(context.Context, entity.SessionProof, int32, dto.RescheduleBooking) (dto.StaffBooking, error)",
+      "UpdateRestricted": "func(context.Context, entity.SessionProof, int32, dto.UpdateRestrictedBooking) (dto.StaffBooking, error)"
+    },
+    "internal/usecase/staffbooking/staff_booking_create_usecase.go:StaffBookingCreateUsecase": {
+      "CreateStaffBooking": "func(context.Context, dto.Session, entity.SessionProof, string, dto.StaffBookingCreate) (dto.StaffBooking, bool, error)"
+    },
+    "internal/usecase/staffbooking/staff_booking_usecase.go:StaffBookingUsecase": {
+      "Get": "func(context.Context, dto.Session, int32) (dto.StaffBooking, error)",
+      "List": "func(context.Context, dto.Session, Query) (dto.StaffBookingPage, error)"
+    },
+    "internal/usecase/upload/upload_usecase.go:UploadUsecase": {
+      "UploadPublic": "func(ctx context.Context, ip string, upload entity.UploadRequest) (Issued, error)",
+      "UploadStaff": "func(ctx context.Context, proof entity.SessionProof, ip string, upload entity.UploadRequest) (Issued, error)"
+    }
+  },
+  "sourceDTOs": {
+    "pkg/dto/admission.go:Admission": [
+      {
+        "Name": "payload",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "expiresAt",
+        "Type": "time.Time",
+        "Optional": false
+      },
+      {
+        "Name": "serverTime",
+        "Type": "int64",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/auth.go:Login": [
+      {
+        "Name": "email",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "password",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/auth.go:PasswordChange": [
+      {
+        "Name": "currentPassword",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "newPassword",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/auth.go:Refresh": [
+      {
+        "Name": "refreshRequestId",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/auth.go:RoleSelect": [
+      {
+        "Name": "role",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/auth.go:TokenResult": [
+      {
+        "Name": "accessToken",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "tokenType",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "accessExpiresAt",
+        "Type": "time.Time",
+        "Optional": false
+      },
+      {
+        "Name": "session",
+        "Type": "Session",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/booking.go:BookingHistory": [
+      {
+        "Name": "at",
+        "Type": "time.Time",
+        "Optional": false
+      },
+      {
+        "Name": "action",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "publicMessage",
+        "Type": "*string",
+        "Optional": true
+      }
+    ],
+    "pkg/dto/booking.go:BookingOfficer": [
+      {
+        "Name": "nama",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/booking.go:BookingTiming": [
+      {
+        "Name": "serverTime",
+        "Type": "int64",
+        "Optional": false
+      },
+      {
+        "Name": "opensAt",
+        "Type": "int64",
+        "Optional": false
+      },
+      {
+        "Name": "endsAt",
+        "Type": "int64",
+        "Optional": false
+      },
+      {
+        "Name": "displayStatus",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "canCheckIn",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "canCheckOut",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "canCancel",
+        "Type": "bool",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/booking.go:PublicBooking": [
+      {
+        "Name": "id",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "code",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "name",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "organization",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "email",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "phone",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "officerId",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "pejabat",
+        "Type": "BookingOfficer",
+        "Optional": false
+      },
+      {
+        "Name": "vip",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "date",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "time",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "duration",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "room",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "roomId",
+        "Type": "*string",
+        "Optional": false
+      },
+      {
+        "Name": "purpose",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "visitors",
+        "Type": "[]string",
+        "Optional": false
+      },
+      {
+        "Name": "identityType",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "status",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "version",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "timing",
+        "Type": "BookingTiming",
+        "Optional": false
+      },
+      {
+        "Name": "history",
+        "Type": "[]BookingHistory",
+        "Optional": false
+      },
+      {
+        "Name": "visitKind",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "ndName",
+        "Type": "*string",
+        "Optional": true
+      },
+      {
+        "Name": "visitorInstructions",
+        "Type": "*string",
+        "Optional": true
+      },
+      {
+        "Name": "rejectionReason",
+        "Type": "*string",
+        "Optional": true
+      },
+      {
+        "Name": "cancellationReason",
+        "Type": "*string",
+        "Optional": true
+      },
+      {
+        "Name": "rescheduled",
+        "Type": "bool",
+        "Optional": true
+      }
+    ],
+    "pkg/dto/booking.go:PublicBookingCreate": [
+      {
+        "Name": "officerId",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "date",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "time",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "purpose",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "name",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "organization",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "email",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "phone",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "identityType",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "visitors",
+        "Type": "[]string",
+        "Optional": false
+      },
+      {
+        "Name": "visitKind",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "ndName",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "attachmentToken",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "visitorPhotoName",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "visitorPhotoToken",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "ack",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "privacyVersion",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "idempotencyKey",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/booking.go:PublicSubmissionProof": [
+      {
+        "Name": "idempotencyKey",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "email",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/booking.go:PublicSubmissionResolution": [
+      {
+        "Name": "outcome",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "booking",
+        "Type": "*PublicBooking",
+        "Optional": true
+      }
+    ],
+    "pkg/dto/booking_access.go:PublicCancel": [
+      {
+        "Name": "code",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "email",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "version",
+        "Type": "int",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/booking_access.go:PublicLookup": [
+      {
+        "Name": "code",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "email",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/booking_decision.go:ApproveBooking": [
+      {
+        "Name": "version",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "roomId",
+        "Type": "Optional[string]",
+        "Optional": true
+      },
+      {
+        "Name": "duration",
+        "Type": "*int",
+        "Optional": true
+      },
+      {
+        "Name": "visitorInstructions",
+        "Type": "Optional[string]",
+        "Optional": true
+      },
+      {
+        "Name": "coordinationNote",
+        "Type": "Optional[string]",
+        "Optional": true
+      }
+    ],
+    "pkg/dto/booking_decision.go:CancelBooking": [
+      {
+        "Name": "version",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "reason",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "internalCancellationNote",
+        "Type": "string",
+        "Optional": true
+      }
+    ],
+    "pkg/dto/booking_decision.go:RejectBooking": [
+      {
+        "Name": "version",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "rejectionReason",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "internalRejectionNote",
+        "Type": "string",
+        "Optional": true
+      }
+    ],
+    "pkg/dto/booking_decision.go:RescheduleBooking": [
+      {
+        "Name": "version",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "date",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "time",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "duration",
+        "Type": "*int",
+        "Optional": true
+      },
+      {
+        "Name": "roomId",
+        "Type": "Optional[string]",
+        "Optional": true
+      },
+      {
+        "Name": "reason",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "visitorInstructions",
+        "Type": "Optional[string]",
+        "Optional": true
+      },
+      {
+        "Name": "coordinationNote",
+        "Type": "Optional[string]",
+        "Optional": true
+      }
+    ],
+    "pkg/dto/booking_decision.go:UpdateRestrictedBooking": [
+      {
+        "Name": "version",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "visitKind",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "date",
+        "Type": "Optional[string]",
+        "Optional": true
+      },
+      {
+        "Name": "time",
+        "Type": "Optional[string]",
+        "Optional": true
+      },
+      {
+        "Name": "officerId",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "roomId",
+        "Type": "Optional[string]",
+        "Optional": true
+      },
+      {
+        "Name": "name",
+        "Type": "Optional[string]",
+        "Optional": true
+      },
+      {
+        "Name": "organization",
+        "Type": "Optional[string]",
+        "Optional": true
+      },
+      {
+        "Name": "serviceId",
+        "Type": "Optional[string]",
+        "Optional": true
+      },
+      {
+        "Name": "visitorInstructions",
+        "Type": "Optional[string]",
+        "Optional": true
+      },
+      {
+        "Name": "coordinationNote",
+        "Type": "Optional[string]",
+        "Optional": true
+      }
+    ],
+    "pkg/dto/catalog.go:CatalogOfficer": [
+      {
+        "Name": "id",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "name",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "vip",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "active",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "jobTitle",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "directorate",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "deputy",
+        "Type": "string",
+        "Optional": true
+      }
+    ],
+    "pkg/dto/catalog.go:CatalogRoom": [
+      {
+        "Name": "id",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "name",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "active",
+        "Type": "bool",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/catalog.go:PublicCatalog": [
+      {
+        "Name": "officers",
+        "Type": "[]CatalogOfficer",
+        "Optional": false
+      },
+      {
+        "Name": "rooms",
+        "Type": "[]CatalogRoom",
+        "Optional": false
+      },
+      {
+        "Name": "attachmentsEnabled",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "privacyNotice",
+        "Type": "*PublishedNotice",
+        "Optional": true
+      }
+    ],
+    "pkg/dto/catalog.go:PublishedNotice": [
+      {
+        "Name": "version",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "id",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "en",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/catalog.go:StaffCatalog": [
+      {
+        "Name": "officers",
+        "Type": "[]CatalogOfficer",
+        "Optional": false
+      },
+      {
+        "Name": "rooms",
+        "Type": "[]CatalogRoom",
+        "Optional": false
+      },
+      {
+        "Name": "privacyNotice",
+        "Type": "*PublishedNotice",
+        "Optional": true
+      }
+    ],
+    "pkg/dto/employee.go:Employee": [
+      {
+        "Name": "id",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "name",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "email",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "roles",
+        "Type": "[]string",
+        "Optional": false
+      },
+      {
+        "Name": "jobTitle",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "deputy",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "directorate",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "phone",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "nip",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "active",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "assignedOfficerIds",
+        "Type": "[]string",
+        "Optional": false
+      },
+      {
+        "Name": "version",
+        "Type": "int32",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/employee.go:EmployeeCreate": [
+      {
+        "Name": "name",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "email",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "roles",
+        "Type": "[]string",
+        "Optional": false
+      },
+      {
+        "Name": "jobTitle",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "deputy",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "directorate",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "phone",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "nip",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "active",
+        "Type": "*bool",
+        "Optional": false
+      },
+      {
+        "Name": "assignedOfficerIds",
+        "Type": "[]string",
+        "Optional": false
+      },
+      {
+        "Name": "initialPassword",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "requirePasswordChange",
+        "Type": "*bool",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/employee.go:EmployeePage": [
+      {
+        "Name": "items",
+        "Type": "[]Employee",
+        "Optional": false
+      },
+      {
+        "Name": "total",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "totalAll",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "page",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "passwordMinLength",
+        "Type": "int",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/employee.go:EmployeeUpdate": [
+      {
+        "Name": "name",
+        "Type": "Optional[string]",
+        "Optional": false
+      },
+      {
+        "Name": "email",
+        "Type": "Optional[string]",
+        "Optional": false
+      },
+      {
+        "Name": "roles",
+        "Type": "[]string",
+        "Optional": false
+      },
+      {
+        "Name": "jobTitle",
+        "Type": "Optional[string]",
+        "Optional": false
+      },
+      {
+        "Name": "deputy",
+        "Type": "Optional[string]",
+        "Optional": false
+      },
+      {
+        "Name": "directorate",
+        "Type": "Optional[string]",
+        "Optional": false
+      },
+      {
+        "Name": "phone",
+        "Type": "Optional[string]",
+        "Optional": false
+      },
+      {
+        "Name": "nip",
+        "Type": "Optional[string]",
+        "Optional": false
+      },
+      {
+        "Name": "active",
+        "Type": "Optional[bool]",
+        "Optional": false
+      },
+      {
+        "Name": "assignedOfficerIds",
+        "Type": "[]string",
+        "Optional": false
+      },
+      {
+        "Name": "version",
+        "Type": "int32",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/optional.go:Optional": [],
+    "pkg/dto/reception.go:ReceptionAttendance": [
+      {
+        "Name": "action",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "credential",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "version",
+        "Type": "int",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/reception.go:ReceptionResolve": [
+      {
+        "Name": "credential",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/reports.go:SummaryExport": [
+      {
+        "Name": "filename",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "csv",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "revision",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/reports.go:SummaryFilter": [
+      {
+        "Name": "from",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "to",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "status",
+        "Type": "ReportFilterValues",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/reports.go:VisitLogFilter": [
+      {
+        "Name": "from",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "to",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "q",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "status",
+        "Type": "ReportFilterValues",
+        "Optional": false
+      },
+      {
+        "Name": "kind",
+        "Type": "ReportFilterValues",
+        "Optional": false
+      },
+      {
+        "Name": "officer",
+        "Type": "ReportFilterValues",
+        "Optional": false
+      },
+      {
+        "Name": "room",
+        "Type": "ReportFilterValues",
+        "Optional": false
+      },
+      {
+        "Name": "sort",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "dir",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/reports.go:VisitLogOfficer": [
+      {
+        "Name": "id",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "name",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/reports.go:VisitLogResponse": [
+      {
+        "Name": "filter",
+        "Type": "VisitLogFilter",
+        "Optional": false
+      },
+      {
+        "Name": "items",
+        "Type": "[]VisitLogRow",
+        "Optional": false
+      },
+      {
+        "Name": "summary",
+        "Type": "VisitLogSummary",
+        "Optional": false
+      },
+      {
+        "Name": "generatedAt",
+        "Type": "time.Time",
+        "Optional": false
+      },
+      {
+        "Name": "revision",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "page",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "total",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "canExport",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "officers",
+        "Type": "[]VisitLogOfficer",
+        "Optional": false
+      },
+      {
+        "Name": "rooms",
+        "Type": "[]string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/reports.go:VisitLogRow": [
+      {
+        "Name": "id",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "reference",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "name",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "organization",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "officerId",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "host",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "date",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "time",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "duration",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "room",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "purpose",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "kind",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "visitors",
+        "Type": "*int",
+        "Optional": false
+      },
+      {
+        "Name": "status",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "checkedInAt",
+        "Type": "*time.Time",
+        "Optional": false
+      },
+      {
+        "Name": "checkedOutAt",
+        "Type": "*time.Time",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/reports.go:VisitLogSnapshot": [
+      {
+        "Name": "filter",
+        "Type": "VisitLogFilter",
+        "Optional": false
+      },
+      {
+        "Name": "items",
+        "Type": "[]VisitLogRow",
+        "Optional": false
+      },
+      {
+        "Name": "summary",
+        "Type": "VisitLogSummary",
+        "Optional": false
+      },
+      {
+        "Name": "generatedAt",
+        "Type": "time.Time",
+        "Optional": false
+      },
+      {
+        "Name": "revision",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/reports.go:VisitLogSummary": [
+      {
+        "Name": "total",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "visitors",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "inside",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "completed",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "pending",
+        "Type": "int",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/reports.go:VisitSummary": [
+      {
+        "Name": "filter",
+        "Type": "SummaryFilter",
+        "Optional": false
+      },
+      {
+        "Name": "scope",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "generatedAt",
+        "Type": "time.Time",
+        "Optional": false
+      },
+      {
+        "Name": "canExport",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "revision",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "counts",
+        "Type": "map[string]int",
+        "Optional": false
+      },
+      {
+        "Name": "total",
+        "Type": "int",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/role.go:RoleDefinition": [
+      {
+        "Name": "id",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "name",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "description",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "permissions",
+        "Type": "[]string",
+        "Optional": false
+      },
+      {
+        "Name": "assignablePermissions",
+        "Type": "[]string",
+        "Optional": false
+      },
+      {
+        "Name": "editable",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "version",
+        "Type": "int32",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/role.go:RoleUpdate": [
+      {
+        "Name": "permissions",
+        "Type": "[]string",
+        "Optional": false
+      },
+      {
+        "Name": "version",
+        "Type": "int32",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/session.go:Session": [
+      {
+        "Name": "active",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "id",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "name",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "role",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "availableRoles",
+        "Type": "[]string",
+        "Optional": false
+      },
+      {
+        "Name": "roleSelectionRequired",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "roleRevision",
+        "Type": "int64",
+        "Optional": false
+      },
+      {
+        "Name": "permissions",
+        "Type": "[]string",
+        "Optional": false
+      },
+      {
+        "Name": "assignedOfficerIds",
+        "Type": "[]string",
+        "Optional": false
+      },
+      {
+        "Name": "mustChangePassword",
+        "Type": "bool",
+        "Optional": false
+      },
+      {
+        "Name": "passwordMinLength",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "passwordMaxBytes",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "timing",
+        "Type": "SessionTiming",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/session.go:SessionTiming": [
+      {
+        "Name": "serverTime",
+        "Type": "int64",
+        "Optional": false
+      },
+      {
+        "Name": "idleExpiresAt",
+        "Type": "time.Time",
+        "Optional": false
+      },
+      {
+        "Name": "absoluteExpiresAt",
+        "Type": "time.Time",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/staff_booking.go:StaffBooking": [
+      {
+        "Name": "id",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "date",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "time",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "duration",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "room",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "status",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "version",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "timing",
+        "Type": "BookingTiming",
+        "Optional": false
+      },
+      {
+        "Name": "visitKind",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "rescheduled",
+        "Type": "bool",
+        "Optional": true
+      },
+      {
+        "Name": "roomId",
+        "Type": "*string",
+        "Optional": true
+      },
+      {
+        "Name": "reference",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "restrictedView",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "code",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "name",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "organization",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "email",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "phone",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "officerId",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "pejabat",
+        "Type": "*BookingOfficer",
+        "Optional": true
+      },
+      {
+        "Name": "vip",
+        "Type": "*bool",
+        "Optional": true
+      },
+      {
+        "Name": "purpose",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "visitors",
+        "Type": "[]string",
+        "Optional": true
+      },
+      {
+        "Name": "identityType",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "visitorCount",
+        "Type": "*int",
+        "Optional": true
+      },
+      {
+        "Name": "attachmentAvailable",
+        "Type": "*bool",
+        "Optional": true
+      },
+      {
+        "Name": "visitorPhotoAvailable",
+        "Type": "*bool",
+        "Optional": true
+      },
+      {
+        "Name": "visitorPhotoName",
+        "Type": "*string",
+        "Optional": true
+      },
+      {
+        "Name": "ndName",
+        "Type": "*string",
+        "Optional": true
+      },
+      {
+        "Name": "createdBy",
+        "Type": "*StaffBookingActor",
+        "Optional": true
+      },
+      {
+        "Name": "serviceId",
+        "Type": "*string",
+        "Optional": true
+      },
+      {
+        "Name": "serviceIdLast4",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "visitorInstructions",
+        "Type": "*string",
+        "Optional": true
+      },
+      {
+        "Name": "coordinationNote",
+        "Type": "*string",
+        "Optional": true
+      },
+      {
+        "Name": "rejectionReason",
+        "Type": "*string",
+        "Optional": true
+      },
+      {
+        "Name": "internalRejectionNote",
+        "Type": "*string",
+        "Optional": true
+      },
+      {
+        "Name": "cancellationReason",
+        "Type": "*string",
+        "Optional": true
+      },
+      {
+        "Name": "internalCancellationNote",
+        "Type": "*string",
+        "Optional": true
+      },
+      {
+        "Name": "history",
+        "Type": "*[]StaffBookingEvent",
+        "Optional": true
+      }
+    ],
+    "pkg/dto/staff_booking.go:StaffBookingActor": [
+      {
+        "Name": "name",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "role",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/staff_booking.go:StaffBookingCounts": [
+      {
+        "Name": "all",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "pending",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "approved",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "missed",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "rejected",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "cancelled",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "checked_in",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "checked_out",
+        "Type": "int",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/staff_booking.go:StaffBookingEvent": [
+      {
+        "Name": "at",
+        "Type": "time.Time",
+        "Optional": false
+      },
+      {
+        "Name": "message",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/staff_booking.go:StaffBookingMetrics": [
+      {
+        "Name": "today",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "pending",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "arrivals",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "inside",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "completed",
+        "Type": "int",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/staff_booking.go:StaffBookingPage": [
+      {
+        "Name": "items",
+        "Type": "[]StaffBooking",
+        "Optional": false
+      },
+      {
+        "Name": "total",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "totalScoped",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "page",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "int",
+        "Optional": false
+      },
+      {
+        "Name": "statusCounts",
+        "Type": "*StaffBookingCounts",
+        "Optional": true
+      },
+      {
+        "Name": "metrics",
+        "Type": "*StaffBookingMetrics",
+        "Optional": true
+      }
+    ],
+    "pkg/dto/staff_booking_create.go:StaffBookingCreate": [
+      {
+        "Name": "officerId",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "date",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "time",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "visitKind",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "duration",
+        "Type": "*int",
+        "Optional": true
+      },
+      {
+        "Name": "roomId",
+        "Type": "*string",
+        "Optional": true
+      },
+      {
+        "Name": "name",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "organization",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "purpose",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "email",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "phone",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "identityType",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "visitors",
+        "Type": "[]string",
+        "Optional": true
+      },
+      {
+        "Name": "visitorPhotoName",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "visitorPhotoToken",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "ndName",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "attachmentToken",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "serviceId",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "visitorInstructions",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "coordinationNote",
+        "Type": "string",
+        "Optional": true
+      },
+      {
+        "Name": "idempotencyKey",
+        "Type": "string",
+        "Optional": false
+      }
+    ],
+    "pkg/dto/upload.go:UploadResult": [
+      {
+        "Name": "token",
+        "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "expiresAt",
+        "Type": "time.Time",
+        "Optional": false
+      },
+      {
+        "Name": "serverTime",
+        "Type": "int64",
+        "Optional": false
+      }
+    ]
+  },
+  "migrationTables": [
+    {
+      "table": "vms.kedeputian",
+      "migration": "202611180002_create_vms_kedeputian.sql"
+    },
+    {
+      "table": "vms.direktorat",
+      "migration": "202611180003_create_vms_direktorat.sql"
+    },
+    {
+      "table": "vms.jabatan",
+      "migration": "202611180004_create_vms_jabatan.sql"
+    },
+    {
+      "table": "vms.pejabat",
+      "migration": "202611180005_create_vms_pejabat.sql"
+    },
+    {
+      "table": "vms.ruangan",
+      "migration": "202611180006_create_vms_ruangan.sql"
+    },
+    {
+      "table": "vms.pegawai",
+      "migration": "202611180007_create_vms_pegawai.sql"
+    },
+    {
+      "table": "vms.role",
+      "migration": "202611180008_create_vms_role.sql"
+    },
+    {
+      "table": "vms.pegawai_pejabat",
+      "migration": "202611180009_create_vms_pegawai_pejabat.sql"
+    },
+    {
+      "table": "vms.role_pegawai",
+      "migration": "202611180010_create_vms_role_pegawai.sql"
+    },
+    {
+      "table": "vms.feature",
+      "migration": "202611180011_create_vms_feature.sql"
+    },
+    {
+      "table": "vms.action",
+      "migration": "202611180012_create_vms_action.sql"
+    },
+    {
+      "table": "vms.permission",
+      "migration": "202611180013_create_vms_permission.sql"
+    },
+    {
+      "table": "vms.policy",
+      "migration": "202611180014_create_vms_policy.sql"
+    },
+    {
+      "table": "vms.role_policy",
+      "migration": "202611180015_create_vms_role_policy.sql"
+    },
+    {
+      "table": "vms.policy_permission",
+      "migration": "202611180016_create_vms_policy_permission.sql"
+    },
+    {
+      "table": "vms.audit_log",
+      "migration": "202611180017_create_vms_audit_log.sql"
+    },
+    {
+      "table": "support.rate_limit_buckets",
+      "migration": "202611180018_create_support_rate_limit_buckets.sql"
+    },
+    {
+      "table": "support.rate_limit_events",
+      "migration": "202611180019_create_support_rate_limit_events.sql"
+    },
+    {
+      "table": "support.employee_credentials",
+      "migration": "202611180020_create_support_employee_credentials.sql"
+    },
+    {
+      "table": "support.staff_sessions",
+      "migration": "202611180021_create_support_staff_sessions.sql"
+    },
+    {
+      "table": "support.refresh_lineage",
+      "migration": "202611180022_create_support_refresh_lineage.sql"
+    },
+    {
+      "table": "support.refresh_recovery",
+      "migration": "202611180023_create_support_refresh_recovery.sql"
+    },
+    {
+      "table": "vms.form_documents",
+      "migration": "202611180024_create_vms_form_documents.sql"
+    },
+    {
+      "table": "support.form_document_uploads",
+      "migration": "202611180025_create_support_form_document_uploads.sql"
+    },
+    {
+      "table": "vms.detail_kunjungan",
+      "migration": "202611180026_create_vms_detail_kunjungan.sql"
+    },
+    {
+      "table": "vms.detail_pengunjung",
+      "migration": "202611180027_create_vms_detail_pengunjung.sql"
+    },
+    {
+      "table": "vms.kunjungan",
+      "migration": "202611180028_create_vms_kunjungan.sql"
+    },
+    {
+      "table": "support.booking_requests",
+      "migration": "202611180029_create_support_booking_requests.sql"
+    },
+    {
+      "table": "vms.qr_kunjungan",
+      "migration": "202611180030_create_vms_qr_kunjungan.sql"
+    }
+  ],
+  "consumerKnownGaps": [
+    "authenticated-request-missing-bearer",
+    "catalog-room-objects",
+    "login-token-result-unconsumed",
+    "role-token-result-parsed-as-session"
+  ],
+  "frontendRequestCalls": [
+    {
+      "file": "frontendx/packages/data/src/attachments.ts",
+      "call": "fetch(`/__preview${path}`, { method: \"POST\", headers: { \"Content-Type\": file.type }, body: file, })",
+      "operations": []
+    },
+    {
+      "file": "frontendx/packages/data/src/attachments.ts",
+      "call": "request(`/${audience}/attachments`, { body: form, authenticated: audience === \"staff\", })",
+      "operations": [
+        2,
+        19
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/attachments.ts",
+      "call": "request(`/staff/bookings/${encodeURIComponent(id)}/attachment`, { authenticated: true, responseType: \"blob\", })",
+      "operations": [
+        20
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/attachments.ts",
+      "call": "request(`/staff${path}`, { authenticated: true, responseType: \"blob\", signal })",
+      "operations": [
+        20,
+        21
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/attachments.ts",
+      "call": "request(`/staff${path}`, options)",
+      "operations": [
+        20,
+        21,
+        37,
+        38
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/http.ts",
+      "call": "fetcher(base + path, { method, credentials: \"include\", signal: controller.signal, headers: { ...(body === undefined || body instanceof FormData ? {} : { \"Content-Type\": \"application/json\" }), ...([\"GET\", \"HEAD\"].includes(method) ? {} : { \"X-VMS-Request\": \"browser\" }), }, body: body === undefined ? undefined : body instanceof FormData ? body : JSON.stringify(body), })",
+      "operations": []
+    },
+    {
+      "file": "frontendx/packages/data/src/management.ts",
+      "call": "request( `/staff/employees?${new URLSearchParams({ q: filter.q, page: String(filter.page), pageSize: String(filter.pageSize) })}`, { authenticated: true, signal }, )",
+      "operations": [
+        26
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/management.ts",
+      "call": "request(`/staff/employees/${encodeURIComponent(id)}`, { authenticated: true })",
+      "operations": [
+        27
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/management.ts",
+      "call": "request(`/staff/employees${id ? \"/\" + encodeURIComponent(id) : \"\"}`, { body: { ...input, version }, method: id ? \"PATCH\" : \"POST\", authenticated: true, })",
+      "operations": [
+        28,
+        29
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/management.ts",
+      "call": "request(\"/staff/roles\", { authenticated: true })",
+      "operations": [
+        30
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/management.ts",
+      "call": "request(`/staff/roles/${encodeURIComponent(record.id)}`, { body: { permissions, version: record.version }, method: \"PATCH\", authenticated: true, })",
+      "operations": [
+        31
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/management.ts",
+      "call": "request(\"/staff/integrations\", { authenticated: true })",
+      "operations": []
+    },
+    {
+      "file": "frontendx/packages/data/src/management.ts",
+      "call": "request(`/staff/integrations/${encodeURIComponent(record.id)}`, { body: input, method: \"PATCH\", authenticated: true, })",
+      "operations": []
+    },
+    {
+      "file": "frontendx/packages/data/src/read-model.ts",
+      "call": "request(`/staff/bookings?${params}`, { signal, authenticated: true })",
+      "operations": [
+        9
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/read-model.ts",
+      "call": "request(`/staff/bookings/${encodeURIComponent(id)}`, { signal, authenticated: true })",
+      "operations": [
+        10
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(staff(`/reports/visits?${params}`, role), { signal, authenticated: true, })",
+      "operations": [
+        24
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request( staff(`/reports/visits/export?${reportFilterParams({ ...filter, revision })}`, role), { authenticated: true, }, )",
+      "operations": [
+        25
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(role ? \"/staff/catalogs\" : \"/public/catalogs\", { signal, authenticated: !!role, })",
+      "operations": [
+        1,
+        8
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(staff(\"/bookings\", role), { signal, authenticated: true })",
+      "operations": [
+        9
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(publicPath(\"/bookings\"), { body: { ...body, idempotencyKey: key } })",
+      "operations": [
+        3
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(publicPath(\"/submissions/resolve\"), { body: { idempotencyKey, email } })",
+      "operations": [
+        4
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request( development ? `/staff/bookings?role=${encodeURIComponent(role)}` : \"/staff/bookings\", { body: { ...input, idempotencyKey: key }, authenticated: true }, )",
+      "operations": [
+        11
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request( development && action === \"cancel\" ? `/staff/bookings/${encodeURIComponent(id)}/cancel?role=${encodeURIComponent(role)}` : staff(`/bookings/${encodeURIComponent(id)}/${action}`, role), { body, authenticated: true, }, )",
+      "operations": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        18
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(staff(\"/resolve\", role), { body: { credential }, authenticated: true })",
+      "operations": [
+        17
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(publicPath(\"/lookup\"), { body: { code: code.trim(), email: email.trim() } })",
+      "operations": [
+        5
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(publicPath(`/bookings/${encodeURIComponent(id)}/cancel`), { body: input })",
+      "operations": [
+        6
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(publicPath(`/bookings/${encodeURIComponent(booking.id)}/admission`), { body: { code: booking.code, email: booking.email, version: booking.version }, signal, })",
+      "operations": [
+        7
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request(staff(`/reports/summary?${reportFilterParams(filter)}`, role), { signal, authenticated: true, })",
+      "operations": [
+        22
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/repositories.ts",
+      "call": "request( staff(`/reports/export?${reportFilterParams({ ...filter, revision })}`, role), { authenticated: true }, )",
+      "operations": [
+        23
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/session.tsx",
+      "call": "request(\"/staff/password\", { body: { currentPassword, newPassword }, authenticated: true })",
+      "operations": [
+        36
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/session.tsx",
+      "call": "request(\"/staff/sessions\", { body: credentials })",
+      "operations": [
+        32
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/session.tsx",
+      "call": "request(\"/staff/session\", { authenticated: true })",
+      "operations": [
+        33
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/session.tsx",
+      "call": "request(\"/staff/session/role\", { body: { role: next }, authenticated: true, })",
+      "operations": [
+        34
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/session.tsx",
+      "call": "request(\"/staff/session\", { method: \"DELETE\" })",
+      "operations": [
+        35
+      ]
+    }
+  ],
+  "sourceCorrections": [
+    {
+      "id": "DB-PROFILE",
+      "finding": "202611180007_create_vms_pegawai.sql defines jabatan/kedeputian/direktorat/nomor_hp/nip on vms.pegawai; no separate profile migration is needed."
+    },
+    {
+      "id": "DB-EMPLOYEE-ORGANIZATION",
+      "finding": "User requirement 2026-11-15: one current official per employee, with automatic organizational affiliation. 202611180002_create_vms_kedeputian.sql and 202611180003_create_vms_direktorat.sql create the Kedeputian-to-Direktorat reference hierarchy with verified unit names only, 202611180004_create_vms_jabatan.sql links Jabatan to one unit, and 202611180009_create_vms_pegawai_pejabat.sql enforces one active assignment per employee. See EMPLOYEE-ORGANIZATION.md."
+    }
+  ]
+}

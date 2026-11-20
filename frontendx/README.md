@@ -1,10 +1,10 @@
 # Visitor Management System — frontendx
 
-Current scope: **D:/oikn/VMS/frontendx only**, rechecked 4 November 2026, WITA. Visitor and staff applications share UI primitives, business rules and typed data adapters. **D:/oikn/VMS/backend is an empty directory** on this review date. This frontend's API contract remains the baseline; another repository is not automatically its implementation.
+The public visitor portal and staff workspace share UI components and typed data adapters. The visitor app handles registration and admission. The staff app handles booking decisions, reception, employee administration and reporting.
 
-The production frontend has real API request paths and management/upload screens. A disposable contract fixture tests those paths; it is not a real backend. See [current readiness](../docs/frontend/PLAN.md), [requirements](../docs/frontend/BUSINESS-REQUIREMENTS.md), [coverage map](../docs/frontend/REQUIREMENTS-MATRIX.md), [API handoff](../docs/frontend/API-CONTRACT.md) and [verification](../docs/frontend/VERIFICATION.md).
+The [Go backend](../backend/README.md) implements the new 40-operation contract. The [UI contract review](../docs/contracts/UI-CONTRACT-VALIDATION-2026-11-18.md#6-frontend-work-not-backend) lists the remaining adapter changes before the apps can use it end to end. See the [frontend requirements](../docs/frontend/BUSINESS-REQUIREMENTS.md) and [verification](../docs/frontend/VERIFICATION.md) for behavior and test coverage.
 
-Start backend work with the [4 November handoff](../docs/frontend/BACKEND-HANDOFF-2026-11-04.md) and [fresh readiness review](../docs/frontend/FRONTEND-READINESS-2026-11-04.md). Two frontend response-validation follow-ups remain before live integration acceptance. The [separate Go backend compatibility review](../docs/frontend/BACKEND-COMPATIBILITY-2026-11-04.md) records workflow and wire differences; a prefix change alone does not connect it.
+The [4 November readiness review](../docs/frontend/FRONTEND-READINESS-2026-11-04.md) and [compatibility review](../docs/frontend/BACKEND-COMPATIBILITY-2026-11-04.md) are historical records.
 
 ## Run locally
 

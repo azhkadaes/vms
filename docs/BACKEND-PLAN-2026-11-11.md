@@ -1,5 +1,7 @@
 # VMS backend plan
 
+> **Phase 1 supersession, 13 November 2026:** [The current Phase 1 contract](contracts/API-CONTRACT.md) replaces this document's session/refresh/CSRF/role-switch/password-workflow and editable account/role-policy scope for Phase 1. It defines 29 target operations with basic Bearer login/current-user and manually assigned single database roles. Unrelated business rules below remain historical decision evidence. Current source still uses the old session flow until the owning implementation slice replaces it.
+
 Approved planning baseline, 12 November 2026 WITA. The user explicitly approved freezing the reviewed plan, schema register and 38-operation OpenAPI, including the labelled schema/credential/SMTP/transport proposals. This approves planning only: no application edits, database/container operations, migrations or deployment. Reference-first handling and deferral of nonurgent future decisions remain in force. Documentation generator/tool selection and runtime/release gates remain deferred as recorded.
 
 Prepared 11 November 2026, continued 12 November 2026, WITA. Status: **approved and frozen planning baseline; application implementation is not approved**. Companions: [proposed API contract](BACKEND-API-CONTRACT-2026-11-11.md), [OpenAPI](BACKEND-OPENAPI-2026-11-12.json), [review](BACKEND-PLANNING-REVIEW-2026-11-11.md).
