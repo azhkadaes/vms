@@ -150,6 +150,6 @@ Required differences from the reference are Fiber 3, integer business IDs serial
 
 ## Docker and documentation layout
 
-The [Docker setup](docs/LOCAL-DEVELOPMENT.md#start-a-fresh-local-docker-project) builds the API and migration tool, starts PostgreSQL, and checks that the API is ready. Compose uses the source build by default. The guide also shows how to use prebuilt Linux binaries when the Docker disk is tight.
+On Windows, open `Start VMS.cmd` in the project root. The [Docker launcher guide](docs/LOCAL-DEVELOPMENT.md#persistent-docker-on-windows) explains the permanent local stack, Swagger and test catalog. The [separate development procedure](docs/LOCAL-DEVELOPMENT.md#start-a-fresh-local-docker-project) describes manual Compose operation and the prebuilt image.
 
 Supporting backend documentation lives under `docs/`, including [local setup and container operations](docs/LOCAL-DEVELOPMENT.md) and the embedded Swagger document under `docs/`. This root README is the entry point. Workspace-wide planning and evidence remain in the parent project's existing `../docs/` folder.

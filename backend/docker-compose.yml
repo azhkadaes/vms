@@ -95,22 +95,22 @@ volumes:
   upload_data:
 secrets:
   db_owner_password:
-    file: ./.runtime/stage1/db_owner_password
+    file: ${VMS_PRIVATE_DIR:-./.runtime/stage1}/db_owner_password
   db_migrator_password:
-    file: ./.runtime/stage1/db_migrator_password
+    file: ${VMS_PRIVATE_DIR:-./.runtime/stage1}/db_migrator_password
   db_api_password:
-    file: ./.runtime/stage1/db_api_password
+    file: ${VMS_PRIVATE_DIR:-./.runtime/stage1}/db_api_password
   rate_key:
-    file: ./.runtime/stage1/rate_key
+    file: ${VMS_PRIVATE_DIR:-./.runtime/stage1}/rate_key
   jwt_key:
-    file: ./.runtime/stage1/jwt_key
+    file: ${VMS_PRIVATE_DIR:-./.runtime/stage1}/jwt_key
   csrf_key:
-    file: ./.runtime/stage1/csrf_key
+    file: ${VMS_PRIVATE_DIR:-./.runtime/stage1}/csrf_key
   refresh_recovery_key:
-    file: ./.runtime/stage1/refresh_recovery_key
+    file: ${VMS_PRIVATE_DIR:-./.runtime/stage1}/refresh_recovery_key
   gateway_init_key:
-    file: ./.runtime/stage1/gateway_init_key
+    file: ${VMS_PRIVATE_DIR:-./.runtime/stage1}/gateway_init_key
   upload_token_key:
-    file: ./.runtime/stage1/upload_token_key
+    file: ${VMS_PRIVATE_DIR:-./.runtime/stage1}/upload_token_key
   admission_qr_key:
-    file: ./.runtime/stage1/admission_qr_key
+    file: ${VMS_PRIVATE_DIR:-./.runtime/stage1}/admission_qr_key

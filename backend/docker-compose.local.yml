@@ -1,0 +1,27 @@
+name: vms
+services:
+  db:
+    restart: unless-stopped
+    ports: !reset []
+  migrate:
+    profiles: !reset []
+    command: ["-mode", "up", "-expect-database", "vms_stage1"]
+  api:
+    profiles: !reset []
+    restart: unless-stopped
+    environment:
+      SWAGGER_USERNAME: local
+      SWAGGER_PASSWORD_FILE: /run/secrets/swagger_password
+    secrets:
+      - swagger_password
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+secrets:
+  swagger_password:
+    file: ./.runtime/local/swagger_password
+volumes:
+  pg18_data:
+    name: vms-postgres
+  upload_data:
+    name: vms-uploads

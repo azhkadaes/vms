@@ -66,6 +66,20 @@ docker-compose.yml defines project vms-backend-stage1, a new pg18_data volume, P
 
 Compose builds the API and migrator into the same non-root image. Its default `prod` build compiles the Go source in Docker. The prebuilt Linux option below uses the same pinned toolchain and saves Docker disk space. The default ports bind to loopback. The API and migration tool use separate profiles. This Compose file is for local development.
 
+## Persistent Docker on Windows
+
+1. Open Docker Desktop and wait for its engine. Double-click `Start VMS.cmd` in the VMS checkout. The first run builds the API image, starts PostgreSQL, and applies the migrations before the API starts. Later runs reuse the image and database.
+2. Open [Swagger](http://127.0.0.1:58100/swagger/index.html). Use the username `local` and the value in the private file `backend/.runtime/local/swagger_password`. You can also check [API readiness](http://127.0.0.1:58100/health/ready) without signing in.
+3. Double-click `Stop VMS.cmd` to stop the stack. Start it again with the same file. The database and uploads stay in Docker volumes `vms-postgres` and `vms-uploads`.
+
+The Compose project is named `vms`. The API listens only on the local machine at port `58100`. PostgreSQL uses the private Compose network. The start and stop launchers operate on this project alone.
+
+For a new empty catalog, run `".\Start VMS.cmd" -SeedTestCatalog` from Command Prompt, or `& '.\Start VMS.cmd' -SeedTestCatalog` from PowerShell. This inserts fictional officials and rooms once and turns on a clearly labeled testing notice if no operator notice is configured. The test data stays in the local database on restart. In Swagger, try `GET /v1/public/catalogs`, `POST /v1/public/attachments`, and `POST /v1/public/bookings`.
+
+This launcher serves the backend and its API tester. The separate browser apps still need their frontend adapter work to connect to this API. Staff sign-in for real users requires employee accounts and an HTTPS staff gateway. Do not enter real visitor details under the test notice. Use `-Rebuild` after pulling backend code changes.
+
+Verified on Windows on 20 November 2026. The launcher applied all 30 migrations on the first start and zero on the second. Swagger authentication, a visitor photo upload and a test booking passed. The same booking was found after using the stop and start launchers.
+
 ## Start a fresh local Docker project
 
 First inventory current Docker projects/containers/volumes and listening ports. Confirm the named project/volume are new and the two loopback ports are available. If they already exist, inspect them and preserve their contents rather than reuse/delete silently. Use only the VMS Compose file below; legacy make migrate-up does not apply.

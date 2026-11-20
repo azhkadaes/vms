@@ -22,6 +22,6 @@ The backend implements the [40-operation REST contract](docs/contracts/FRONTEND-
 ## Local development
 
 - Start the [frontend preview](frontendx/README.md#run-locally) to try the visitor and staff flows with demo data.
-- Use the [Docker setup](backend/docs/LOCAL-DEVELOPMENT.md#start-a-fresh-local-docker-project) to build the API and run it with PostgreSQL.
+- On Windows, open [Start VMS.cmd](Start%20VMS.cmd) to run the local API and open its Swagger page. See the [Docker launcher guide](backend/docs/LOCAL-DEVELOPMENT.md#persistent-docker-on-windows) for testing and stopping it.
 - Follow the [backend setup](backend/README.md#manual-setup) to configure PostgreSQL, run the migrations and start the API.
 - See the [documentation index](docs/README.md) for requirements, the API contract and verification.
