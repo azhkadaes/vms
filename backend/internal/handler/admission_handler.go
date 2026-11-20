@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v3"
 
 	bookingusecase "github.com/azhkadaes/vms/backend/internal/usecase/booking"
@@ -32,5 +34,12 @@ func (h *admissionHandler) Issue(c fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return c.JSON(result)
+	imagePNG, err := renderAdmissionQR(result.Payload)
+	if err != nil {
+		return fmt.Errorf("render admission QR: %w", err)
+	}
+	return c.JSON(struct {
+		dto.Admission
+		ImagePNG []byte `json:"imagePng"`
+	}{result, imagePNG})
 }

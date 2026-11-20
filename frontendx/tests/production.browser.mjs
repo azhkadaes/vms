@@ -3,9 +3,12 @@ import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { chromium } from "playwright";
 import AxeBuilder from "@axe-core/playwright";
+import qrcode from "qrcode";
 import { startProduction } from "./helpers/production-server.mjs";
 
 let browser, server;
+const qrPayload = "OPAQUE-SERVER-ADMISSION";
+const qrImage = await qrcode.toDataURL(qrPayload);
 const evidence = new URL("../anti-slop/evidence-2026-11-02/production/", import.meta.url);
 before(async () => {
   await mkdir(evidence, { recursive: true });
@@ -251,9 +254,10 @@ async function open(path = "/admin/employees", options = {}) {
     if (path === "/public/lookup") return send(state.booking);
     if (path.endsWith("/admission"))
       return send({
-        payload: `OPAQUE-SERVER-ADMISSION-${state.calls.filter((call) => call.path.endsWith("/admission")).length}`,
-        expiresAt: "2099-08-19T09:00:02+08:00",
-        serverTime: Date.parse("2099-08-19T09:00:00+08:00"),
+        payload: qrPayload,
+        imagePng: qrImage.split(",")[1],
+        expiresAt: "2099-08-19T11:00:00+08:00",
+        serverTime: state.booking.timing.serverTime,
       });
     if (path.endsWith("/cancel")) {
       state.booking.status = "cancelled";
@@ -688,15 +692,20 @@ test("public production booking uploads bytes before submitting a token, then us
     await page.locator("#status-code").fill(state.booking.code);
     await page.locator("#status-email").fill(state.booking.email);
     await page.getByRole("button", { name: "Lihat kunjungan", exact: true }).click();
-    const qr = page.getByRole("img", { name: "QR masuk untuk Visitor Contract" });
-    const initialImage = await qr.getAttribute("src");
-    assert.ok(initialImage);
+    const qr = page.getByRole("img", { name: "QR kunjungan untuk Visitor Contract" });
+    assert.equal(await qr.getAttribute("src"), qrImage);
     assert.equal(state.calls.filter((call) => call.path.endsWith("/admission")).length, 1);
-    await page.clock.runFor(2100);
-    await page.waitForFunction((initialImage) => {
-      const renewed = document.querySelector(".qr-display img")?.getAttribute("src");
-      return renewed && renewed !== initialImage;
-    }, initialImage);
+    state.booking.status = "checked_in";
+    state.booking.version++;
+    Object.assign(state.booking.timing, {
+      displayStatus: "checked_in",
+      canCheckOut: true,
+      canCancel: false,
+      serverTime: Date.parse("2099-08-19T12:00:00+08:00"),
+    });
+    await page.getByRole("button", { name: "Perbarui", exact: true }).click();
+    await page.getByText("Tunjukkan QR ini saat check out.").waitFor();
+    assert.equal(await qr.getAttribute("src"), qrImage);
     assert.equal(state.calls.filter((call) => call.path.endsWith("/admission")).length, 2);
     assert.equal(await page.getByRole("button", { name: "Perbarui QR" }).count(), 0);
     for (const width of [320, 1280]) {

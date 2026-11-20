@@ -55,18 +55,25 @@ func (u *admissionUsecase) Issue(ctx context.Context, id int32, input dto.Public
 		if err != nil {
 			return fmt.Errorf("read admission time: %w", err)
 		}
-		if visit.Status != "approved" || !now.Before(ends) {
+		checkedIn := visit.Status == "checked_in"
+		if !checkedIn && (visit.Status != "approved" || !now.Before(ends)) {
 			return failure.New(409, "invalid_state")
 		}
 		qr, err := tx.CurrentQR(visit.ID)
 		if errors.Is(err, bookingrepo.ErrNotFound) {
-			qr, err = u.createQR(tx, visit.ID, now, ends)
+			expires := ends
+			if checkedIn && !now.Before(expires) {
+				// A visit checked in by code may need its first QR after the scheduled end.
+				// Checkout is allowed for checked-in visits regardless of this timestamp.
+				expires = now.Add(time.Second)
+			}
+			qr, err = u.createQR(tx, visit.ID, now, expires)
 		}
 		if err != nil {
 			return err
 		}
 		payload := u.payload(qr)
-		if !qr.ExpiresAt.Equal(ends) || !security.Equal(qr.TokenHash, security.Hash(payload)) {
+		if (!checkedIn && !qr.ExpiresAt.Equal(ends)) || !security.Equal(qr.TokenHash, security.Hash(payload)) {
 			return failure.New(503, "service_unavailable").WithCause(errors.New("stored visit QR does not match current configuration or schedule"))
 		}
 		result = dto.Admission{Payload: payload, ExpiresAt: qr.ExpiresAt.UTC(), ServerTime: now.UnixMilli()}

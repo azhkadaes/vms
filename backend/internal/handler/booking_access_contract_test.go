@@ -1,8 +1,10 @@
 package handler_test
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"image/png"
 	"io"
 	"log/slog"
 	"net/http/httptest"
@@ -13,6 +15,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/piglig/go-qr/v2"
 	"go.opentelemetry.io/otel/trace/noop"
 
 	"github.com/azhkadaes/vms/backend/internal/entity"
@@ -141,6 +144,23 @@ func TestBookingAccessContractHTTP(t *testing.T) {
 			}
 			if tt.status == 429 && response.Header.Get("Retry-After") != "48" {
 				t.Fatal("429 lost its Retry-After header")
+			}
+			if tt.name == "public-admission" {
+				var admission struct {
+					dto.Admission
+					ImagePNG []byte `json:"imagePng"`
+				}
+				if err := json.Unmarshal(data, &admission); err != nil {
+					t.Fatal(err)
+				}
+				image, err := png.Decode(bytes.NewReader(admission.ImagePNG))
+				if err != nil {
+					t.Fatal(err)
+				}
+				decoded, err := qr.Decode(image)
+				if err != nil || decoded.Text != admission.Payload {
+					t.Fatalf("branded PNG does not encode the issued credential: %v", err)
+				}
 			}
 			record := capture{Name: tt.name, Method: "POST", Path: tt.path, Status: response.StatusCode, Bytes: len(data), Headers: map[string]string{}}
 			for _, field := range []string{"Content-Type", "Cache-Control", "X-Content-Type-Options", "X-Request-ID", "Retry-After"} {

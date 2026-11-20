@@ -16,7 +16,7 @@ export default function VisitTicket({
 }) {
   const { language, t } = useLanguage();
   const status = visitTiming(booking).displayStatus;
-  const approved = status === "approved";
+  const hasQR = status === "approved" || status === "checked_in";
   const PersonHeading = headingLevel === 3 ? "h3" : "h4";
   const statusText = {
     pending: t("Menunggu persetujuan", "Awaiting approval"),
@@ -110,7 +110,7 @@ export default function VisitTicket({
           <span className="visit-ticket__eyebrow">{t("Kode kunjungan", "Visit code")}</span>
           <strong>{booking.code}</strong>
         </div>
-        {approved ? (
+        {hasQR ? (
           <Suspense fallback={<Loading />}>
             <AdmissionQR booking={booking} ticket />
           </Suspense>

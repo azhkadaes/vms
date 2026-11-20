@@ -12,6 +12,7 @@ export default function AdmissionQR({
 }) {
   const { t } = useLanguage();
   const key = `${booking.id}:${booking.version}`;
+  const checkedIn = booking.status === "checked_in";
   const [media, setMedia] = useState<{ key: string; url: string }>({
     key: "",
     url: "",
@@ -40,18 +41,17 @@ export default function AdmissionQR({
         const admission = await repository.admission(booking, controller.signal);
         if (controller.signal.aborted) return;
         const deadline = requestedAt + Date.parse(admission.expiresAt) - admission.serverTime;
-        const qrcode = await import("qrcode");
-        const url = await qrcode.toDataURL(admission.payload, {
-          width: 280,
-          margin: 3,
-          color: { dark: "#0a2342", light: "#fffdf8" },
-        });
+        const url = admission.imagePng
+          ? `data:image/png;base64,${admission.imagePng}`
+          : await (await import("qrcode")).toDataURL(admission.payload, { width: 280 });
         if (controller.signal.aborted) return;
-        if (deadline <= performance.now())
+        if (!checkedIn && deadline <= performance.now())
           throw new Error("QR tidak tersedia. Coba lagi.");
         setMedia({ key, url });
-        expiresAt = deadline;
-        renewIfDue();
+        if (!checkedIn) {
+          expiresAt = deadline;
+          renewIfDue();
+        }
       } catch (error) {
         if (!controller.signal.aborted) setError(error);
       }
@@ -70,6 +70,7 @@ export default function AdmissionQR({
     booking.email,
     booking.version,
     booking.timing?.serverTime,
+    checkedIn,
     key,
     retry,
   ]);
@@ -81,7 +82,7 @@ export default function AdmissionQR({
           src={current.url}
           width={280}
           height={280}
-          alt={`${preview ? t("QR demo untuk", "Demo QR code for") : t("QR masuk untuk", "Admission QR code for")} ${booking.name}`}
+          alt={`${preview ? t("QR demo untuk", "Demo QR code for") : t("QR kunjungan untuk", "Visit QR code for")} ${booking.name}`}
         />
       ) : !error ? (
         <p className="qr-display__placeholder" role="status">
@@ -97,7 +98,12 @@ export default function AdmissionQR({
       <p>
         {preview
           ? t("QR preview · bukan izin masuk nyata.", "Preview QR code · not a real entry permit.")
-          : t("QR diterbitkan oleh layanan kunjungan.", "QR code issued by the visit service.")}
+          : checkedIn
+            ? t("Tunjukkan QR ini saat check out.", "Show this QR code at check-out.")
+            : t(
+                "Gunakan QR yang sama untuk check in dan check out.",
+                "Use the same QR code for check-in and check-out.",
+              )}
         <br />
         {t(
           "Pemindaian tetap diikuti validasi oleh petugas.",

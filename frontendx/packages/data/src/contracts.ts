@@ -19,6 +19,7 @@ export interface Catalogs {
 }
 export interface Admission {
   payload: string;
+  imagePng?: string;
   expiresAt: string;
   serverTime: number;
 }

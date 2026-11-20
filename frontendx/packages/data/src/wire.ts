@@ -184,6 +184,7 @@ export const staffReadModelResponse = z
   );
 export const admissionResponse = z.object({
   payload: z.string().min(1).max(4096),
+  imagePng: z.string().min(1),
   expiresAt: timestamp,
   serverTime: z.number().finite(),
 });

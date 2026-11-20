@@ -54,6 +54,8 @@ github.com/molecule-man/go-brrr v1.3.1 h1:EwaJUzRIlp/dFmIpzq4J17CA5Zi5OHo2vOGmu0
 github.com/molecule-man/go-brrr v1.3.1/go.mod h1:7ybW6/7gA3oKY45jOfVNjSJDtrr6ea4tzbsTkjmQDC4=
 github.com/philhofer/fwd v1.2.1 h1:UtpS73q8bFgy/yH3gCq8LSNvj5gv/FowNOiWZa7uKwQ=
 github.com/philhofer/fwd v1.2.1/go.mod h1:RqIHx9QI14HlwKwm98g9Re5prTQ6LdeRQn+gXJFxsJM=
+github.com/piglig/go-qr/v2 v2.7.0 h1:+pVV+Vn7Bev9nNYZJIAbH3dV9GzjDZhf5prUYZCrxUw=
+github.com/piglig/go-qr/v2 v2.7.0/go.mod h1:MmOJawPWUOpQbp7w9SIrYEGyK1usDHNTuEGqFdxPdNI=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/poy/onpar v1.1.2 h1:QaNrNiZx0+Nar5dLgTVp5mXkyoVFIbepjyEoGSnhbAY=
 github.com/poy/onpar v1.1.2/go.mod h1:6X8FLNoxyr9kkmnlqpK6LSoiOtrO6MICtWwEuWkLjzg=

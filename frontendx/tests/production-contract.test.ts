@@ -105,6 +105,7 @@ test("production repository uses audience paths, cookie credentials and no calle
       if (String(url).includes("/admission"))
         return response({
           payload: "server-issued-opaque-credential",
+          imagePng: "cG5nLWZpeHR1cmU=",
           expiresAt: "2099-08-19T03:00:00Z",
           serverTime: Date.parse("2099-08-19T01:00:00Z"),
         });
@@ -115,7 +116,7 @@ test("production repository uses audience paths, cookie credentials and no calle
   });
   const publicBooking = await api.lookup(record.code, record.email);
   await api.action(record.id, "approve", { version: 1, room: "Example Room", duration: 60 }, "PA");
-  await api.admission(publicBooking);
+  assert.equal((await api.admission(publicBooking)).imagePng, "cG5nLWZpeHR1cmU=");
   assert.deepEqual(
     calls.map((call) => call.url),
     [

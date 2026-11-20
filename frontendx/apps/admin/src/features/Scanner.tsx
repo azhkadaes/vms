@@ -1,4 +1,5 @@
 import { Button, ErrorNotice } from "@vms/ui";
+import jsQR from "jsqr";
 import { Camera, ScanLine } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 export default function Scanner({ onResult }: { onResult: (value: string) => unknown }) {
@@ -7,24 +8,24 @@ export default function Scanner({ onResult }: { onResult: (value: string) => unk
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [error, setError] = useState<unknown>();
   const [active, setActive] = useState(false);
+  const [starting, setStarting] = useState(false);
   const stopped = useRef(false);
   function stop() {
     stopped.current = true;
     clearTimeout(timer.current);
     stream.current?.getTracks().forEach((t) => t.stop());
     stream.current = null;
+    if (video.current) video.current.srcObject = null;
   }
   useEffect(() => () => stop(), []);
   async function start() {
     setError(null);
-    const Detector = (window as any).BarcodeDetector;
-    if (!Detector) {
-      setError(
-        "Pemindaian QR belum didukung browser ini. Gunakan pilihan kode kunjungan atau browser yang mendukung BarcodeDetector.",
-      );
-      return;
-    }
+    setStarting(true);
     try {
+      const element = video.current;
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      if (!element || !context) throw new Error("Kamera tidak tersedia.");
       stopped.current = false;
       const media = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment" },
@@ -35,33 +36,38 @@ export default function Scanner({ onResult }: { onResult: (value: string) => unk
         return;
       }
       stream.current = media;
-      if (video.current) {
-        video.current.srcObject = media;
-        await video.current.play();
-      }
+      element.srcObject = media;
+      await element.play();
+      if (stopped.current) return;
       setActive(true);
-      const detector = new Detector({ formats: ["qr_code"] });
-      const tick = async () => {
-        if (stopped.current || !video.current) return;
-        try {
-          const codes = await detector.detect(video.current);
-          if (stopped.current) return;
-          if (codes.length) {
+      const tick = () => {
+        if (stopped.current) return;
+        if (element.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+          const { videoWidth, videoHeight } = element;
+          const scale = Math.min(1, 960 / Math.max(videoWidth, videoHeight));
+          const width = Math.max(1, Math.round(videoWidth * scale));
+          const height = Math.max(1, Math.round(videoHeight * scale));
+          if (canvas.width !== width) canvas.width = width;
+          if (canvas.height !== height) canvas.height = height;
+          context.drawImage(element, 0, 0, width, height);
+          const frame = context.getImageData(0, 0, width, height);
+          const result = jsQR(frame.data, width, height, { inversionAttempts: "dontInvert" });
+          if (result?.data) {
             stop();
             setActive(false);
-            onResult(codes[0].rawValue);
+            onResult(result.data);
             return;
           }
-        } catch {
-          /* frame not ready; next frame remains cancellable */
         }
-        if (!stopped.current) timer.current = setTimeout(tick, 180);
+        timer.current = setTimeout(tick, 180);
       };
-      void tick();
+      tick();
     } catch {
       stop();
       setActive(false);
       setError("Kamera tidak dapat dibuka. Periksa izin kamera, atau gunakan kode kunjungan.");
+    } finally {
+      setStarting(false);
     }
   }
   return (
@@ -72,7 +78,9 @@ export default function Scanner({ onResult }: { onResult: (value: string) => unk
       </div>
       <ErrorNotice error={error} />
       <Button
+        type="button"
         kind="secondary"
+        disabled={starting}
         onClick={
           active
             ? () => {
