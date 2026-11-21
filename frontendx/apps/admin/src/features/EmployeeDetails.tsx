@@ -1,4 +1,4 @@
-import type { Employee } from "@vms/data/management-contract";
+import { employeePhoneNumbers, type Employee } from "@vms/data/management-contract";
 import { officerOrganization, type Catalogs } from "@vms/data";
 
 export default function EmployeeDetails({
@@ -14,10 +14,10 @@ export default function EmployeeDetails({
       ? officers?.find((officer) => officer.id === employee.assignedOfficerIds[0])
       : undefined;
   const organization = roles.includes("PA") ? officerOrganization(assignedOfficer) : undefined;
+  const phoneNumbers = employeePhoneNumbers(employee);
   const profile = (
     [
       ["Email", employee.email],
-      ["Nomor telepon", employee.phone],
       ["NIP", employee.nip],
       ["Jabatan", employee.jobTitle],
       ["Kedeputian", organization?.deputy || employee.deputy],
@@ -50,6 +50,12 @@ export default function EmployeeDetails({
             <dd>{value}</dd>
           </div>
         ))}
+        {phoneNumbers.length > 0 && (
+          <div>
+            <dt>Nomor telepon</dt>
+            {phoneNumbers.map((number, index) => <dd key={index}>{number}</dd>)}
+          </div>
+        )}
         <div className="span-2">
           <dt>Peran pegawai</dt>
           <dd className="employee-detail-tags">

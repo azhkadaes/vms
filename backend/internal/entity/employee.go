@@ -10,7 +10,7 @@ type Employee struct {
 	JobTitle           string
 	Deputy             string
 	Directorate        string
-	Phone              string
+	PhoneNumbers       []string
 	NIP                string
 	Active             bool
 	MustChangePassword bool

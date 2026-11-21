@@ -708,8 +708,17 @@
             "type": "string"
           },
           "phone": {
+            "description": "Legacy first phone number.",
             "maxLength": 255,
             "type": "string"
+          },
+          "phoneNumbers": {
+            "description": "Saved phone numbers in order. The legacy phone field mirrors the first number.",
+            "items": {
+              "maxLength": 255,
+              "type": "string"
+            },
+            "type": "array"
           },
           "roles": {
             "items": {
@@ -733,6 +742,7 @@
           "roles",
           "active",
           "assignedOfficerIds",
+          "phoneNumbers",
           "version"
         ],
         "type": "object"
@@ -783,9 +793,17 @@
             "type": "string"
           },
           "phone": {
-            "description": "Omit to leave unset or keep the current value. An empty string clears the field.",
+            "description": "Legacy first phone number. On update, replacing or clearing it preserves any additional numbers.",
             "maxLength": 255,
             "type": "string"
+          },
+          "phoneNumbers": {
+            "description": "Phone numbers in order. This list takes precedence over the legacy phone field.",
+            "items": {
+              "maxLength": 255,
+              "type": "string"
+            },
+            "type": "array"
           },
           "requirePasswordChange": {
             "type": "boolean"
@@ -895,9 +913,17 @@
             "type": "string"
           },
           "phone": {
-            "description": "Omit to leave unset or keep the current value. An empty string clears the field.",
+            "description": "Legacy first phone number. On update, replacing or clearing it preserves any additional numbers.",
             "maxLength": 255,
             "type": "string"
+          },
+          "phoneNumbers": {
+            "description": "Omit to keep the list or send an empty array to clear it. This list takes precedence over the legacy phone field.",
+            "items": {
+              "maxLength": 255,
+              "type": "string"
+            },
+            "type": "array"
           },
           "roles": {
             "items": {
@@ -6029,6 +6055,7 @@
                       "name": "Employee Example",
                       "nip": "123459900",
                       "phone": "0812345678",
+                      "phoneNumbers": ["0812345678", "+62 542 123456"],
                       "roles": [
                         "PA"
                       ],
@@ -6119,6 +6146,7 @@
                 "name": "Employee Example",
                 "nip": "123459900",
                 "phone": "0812345678",
+                "phoneNumbers": ["0812345678", "+62 542 123456"],
                 "requirePasswordChange": true,
                 "roles": [
                   "PA"
@@ -6150,6 +6178,7 @@
                   "name": "Employee Example",
                   "nip": "123459900",
                   "phone": "0812345678",
+                  "phoneNumbers": ["0812345678", "+62 542 123456"],
                   "roles": [
                     "PA"
                   ],
@@ -6250,6 +6279,7 @@
                   "name": "Employee Example",
                   "nip": "123459900",
                   "phone": "0812345678",
+                  "phoneNumbers": ["0812345678", "+62 542 123456"],
                   "roles": [
                     "PA"
                   ],
@@ -6359,6 +6389,7 @@
                   "name": "Employee Example",
                   "nip": "123459900",
                   "phone": "0812345678",
+                  "phoneNumbers": ["0812345678", "+62 542 123456"],
                   "roles": [
                     "PA"
                   ],

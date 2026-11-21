@@ -20,7 +20,7 @@ func null[T any]() dto.Optional[T]       { return dto.Optional[T]{Set: true, Nul
 // paEmployee is employee 8: an active PA and Protocol Officer assigned to official 3, at version 4.
 func paEmployee() entity.Employee {
 	return entity.Employee{ID: 8, Name: "Petugas Contoh", Email: "staff@example.test", JobTitle: "Asisten", Deputy: "Kedeputian Contoh", Directorate: "Direktorat Contoh",
-		Phone: "+62 811 0000", NIP: "198001012000011001", Active: true, MustChangePassword: true, Version: 4,
+		PhoneNumbers: []string{"+62 811 0000"}, NIP: "198001012000011001", Active: true, MustChangePassword: true, Version: 4,
 		Roles: []string{policy.RolePA, policy.RoleProtocol}, OfficerIDs: []int32{3}}
 }
 
@@ -206,12 +206,12 @@ func TestUpdatingAnEmployeeKeepsOmittedFieldsClearsBlankOnesAndAuditsTheChange(t
 		t.Fatal(err)
 	}
 	after := paEmployee()
-	after.Name, after.JobTitle, after.Phone, after.NIP, after.Version = "Nama Baru", "", "", "1990", 5
+	after.Name, after.JobTitle, after.PhoneNumbers, after.NIP, after.Version = "Nama Baru", "", []string{}, "1990", 5
 	if !reflect.DeepEqual(s.employees[8], after) {
 		t.Fatalf("stored %+v, want %+v", s.employees[8], after)
 	}
 	want := dto.Employee{ID: "8", Name: "Nama Baru", Email: "staff@example.test", Roles: []string{"PA", "Protocol Officer"}, Deputy: "Kedeputian Contoh",
-		Directorate: "Direktorat Contoh", NIP: "1990", Active: true, AssignedOfficerIDs: []string{"3"}, Version: 5}
+		Directorate: "Direktorat Contoh", PhoneNumbers: []string{}, NIP: "1990", Active: true, AssignedOfficerIDs: []string{"3"}, Version: 5}
 	if !reflect.DeepEqual(out, want) {
 		t.Fatalf("response %+v, want %+v", out, want)
 	}
@@ -222,6 +222,23 @@ func TestUpdatingAnEmployeeKeepsOmittedFieldsClearsBlankOnesAndAuditsTheChange(t
 	}
 	if len(s.ended) != 0 || len(s.reloaded) != 0 {
 		t.Fatalf("a profile edit touched sessions: ended %v reloaded %v", s.ended, s.reloaded)
+	}
+}
+
+func TestEmployeePhoneListsAndLegacyUpdates(t *testing.T) {
+	s := newStore()
+	s.employees[8] = paEmployee()
+	out, err := update(s, 8, dto.EmployeeUpdate{Version: 4, PhoneNumbers: set([]string{" 0812345678 ", "", "+62 542 123456"})})
+	if err != nil || out.Phone != "0812345678" || !slices.Equal(out.PhoneNumbers, []string{"0812345678", "+62 542 123456"}) {
+		t.Fatalf("save phone list: %+v, %v", out, err)
+	}
+	out, err = update(s, 8, dto.EmployeeUpdate{Version: out.Version, Phone: set("0812340000")})
+	if err != nil || out.Phone != "0812340000" || !slices.Equal(out.PhoneNumbers, []string{"0812340000", "+62 542 123456"}) {
+		t.Fatalf("update legacy primary: %+v, %v", out, err)
+	}
+	out, err = update(s, 8, dto.EmployeeUpdate{Version: out.Version, PhoneNumbers: set([]string{})})
+	if err != nil || out.Phone != "" || out.PhoneNumbers == nil || len(out.PhoneNumbers) != 0 {
+		t.Fatalf("clear phone list: %+v, %v", out, err)
 	}
 }
 

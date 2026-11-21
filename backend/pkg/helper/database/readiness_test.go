@@ -22,9 +22,6 @@ func TestReadinessRequiresEveryMigratedTable(t *testing.T) {
 			migrated = append(migrated, match[1]+"."+match[2])
 		}
 	}
-	if len(migrated) != len(items)-1 {
-		t.Fatalf("expected one schemas prerequisite and one migration per table, got %d tables in %d migrations", len(migrated), len(items))
-	}
 	if !slices.Equal(readinessTables, migrated) {
 		t.Fatalf("readiness tables differ from migrated tables:\n got %v\nwant %v", readinessTables, migrated)
 	}

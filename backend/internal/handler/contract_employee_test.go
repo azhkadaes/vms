@@ -15,7 +15,8 @@ type contractEmployees struct{}
 var contractEmployee = dto.Employee{
 	ID: "7", Name: "Employee Example", Email: "employee@example.test", JobTitle: "Asisten",
 	Deputy: "Kedeputian Contoh", Directorate: "Direktorat Contoh", Phone: "0812345678", NIP: "123459900",
-	Roles: []string{policy.RolePA}, Active: true, AssignedOfficerIDs: []string{"3"}, Version: 1,
+	PhoneNumbers: []string{"0812345678", "+62 542 123456"},
+	Roles:        []string{policy.RolePA}, Active: true, AssignedOfficerIDs: []string{"3"}, Version: 1,
 }
 
 func (contractEmployees) GetEmployees(_ context.Context, session dto.Session, query employeeusecase.EmployeeQuery) (dto.EmployeePage, error) {

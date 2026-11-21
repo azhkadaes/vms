@@ -99,7 +99,7 @@ func TestCreatingAnEmployeeStoresTheProfileRolesAssignmentAndPasswordVerifier(t 
 		t.Fatal(err)
 	}
 	want := entity.Employee{ID: 101, Name: "Petugas Contoh", Email: "staff@example.test", JobTitle: "Asisten", Deputy: "Kedeputian Contoh", Directorate: "Direktorat Contoh",
-		Phone: "+62 811 0000", NIP: "198001012000011001", Active: true, MustChangePassword: true, Version: 1,
+		PhoneNumbers: []string{"+62 811 0000"}, NIP: "198001012000011001", Active: true, MustChangePassword: true, Version: 1,
 		Roles: []string{policy.RolePA, policy.RoleSuperAdmin}, OfficerIDs: []int32{3}}
 	if !reflect.DeepEqual(s.employees[101], want) {
 		t.Fatalf("stored %+v, want %+v", s.employees[101], want)
@@ -108,7 +108,7 @@ func TestCreatingAnEmployeeStoresTheProfileRolesAssignmentAndPasswordVerifier(t 
 		t.Fatalf("hashed %v, stored verifier %q", h.hashed, s.hashes[101])
 	}
 	wantOut := dto.Employee{ID: "101", Name: "Petugas Contoh", Email: "staff@example.test", Roles: []string{"PA", "Super Admin"}, JobTitle: "Asisten", Deputy: "Kedeputian Contoh",
-		Directorate: "Direktorat Contoh", Phone: "+62 811 0000", NIP: "198001012000011001", Active: true, AssignedOfficerIDs: []string{"3"}, Version: 1}
+		Directorate: "Direktorat Contoh", Phone: "+62 811 0000", PhoneNumbers: []string{"+62 811 0000"}, NIP: "198001012000011001", Active: true, AssignedOfficerIDs: []string{"3"}, Version: 1}
 	if !reflect.DeepEqual(out, wantOut) {
 		t.Fatalf("response %+v, want %+v", out, wantOut)
 	}
@@ -129,7 +129,7 @@ func TestCreatingAnEmployeeWithoutOptionalFieldsOrAssignment(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := dto.Employee{ID: "101", Name: "Resepsionis Contoh", Email: "front@example.test", Roles: []string{"Receptionist"}, Active: false, AssignedOfficerIDs: []string{}, Version: 1}
+	want := dto.Employee{ID: "101", Name: "Resepsionis Contoh", Email: "front@example.test", Roles: []string{"Receptionist"}, PhoneNumbers: []string{}, Active: false, AssignedOfficerIDs: []string{}, Version: 1}
 	if !reflect.DeepEqual(out, want) || s.employees[101].MustChangePassword || slices.Contains(s.calls, "Officers") {
 		t.Fatalf("response %+v stored %+v calls %v", out, s.employees[101], s.calls)
 	}

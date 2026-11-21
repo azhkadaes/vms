@@ -124,14 +124,14 @@ func TestEmployeeListPassesTheTrimmedSearchAndPagingAndEchoesThem(t *testing.T) 
 
 func TestEmployeeReadsProjectProfileRolesAndAssignmentWithoutCredentials(t *testing.T) {
 	pa := entity.Employee{ID: 8, Name: "Petugas Contoh", Email: "staff@example.test", JobTitle: "Asisten", Deputy: "Kedeputian Contoh", Directorate: "Direktorat Contoh",
-		Phone: "+62 811 0000", NIP: "198001012000011001", Active: true, MustChangePassword: true, Version: 4, Roles: []string{policy.RolePA, policy.RoleProtocol}, OfficerIDs: []int32{2147483647}}
+		PhoneNumbers: []string{"+62 811 0000", "0542 123456"}, NIP: "198001012000011001", Active: true, MustChangePassword: true, Version: 4, Roles: []string{policy.RolePA, policy.RoleProtocol}, OfficerIDs: []int32{2147483647}}
 	bare := entity.Employee{ID: 9, Name: "Resepsionis Contoh", Email: "front@example.test", Active: false, Version: 1, Roles: []string{policy.RoleReceptionist}}
 	s := newStore(pa, bare)
 	s.page = entity.EmployeePage{Items: []entity.Employee{pa, bare}, Total: 2, TotalAll: 40}
 	u := newUsecase(s, &hasher{})
 	wantPA := dto.Employee{ID: "8", Name: "Petugas Contoh", Email: "staff@example.test", Roles: []string{"PA", "Protocol Officer"}, JobTitle: "Asisten", Deputy: "Kedeputian Contoh",
-		Directorate: "Direktorat Contoh", Phone: "+62 811 0000", NIP: "198001012000011001", Active: true, AssignedOfficerIDs: []string{"2147483647"}, Version: 4}
-	wantBare := dto.Employee{ID: "9", Name: "Resepsionis Contoh", Email: "front@example.test", Roles: []string{"Receptionist"}, Active: false, AssignedOfficerIDs: []string{}, Version: 1}
+		Directorate: "Direktorat Contoh", Phone: "+62 811 0000", PhoneNumbers: []string{"+62 811 0000", "0542 123456"}, NIP: "198001012000011001", Active: true, AssignedOfficerIDs: []string{"2147483647"}, Version: 4}
+	wantBare := dto.Employee{ID: "9", Name: "Resepsionis Contoh", Email: "front@example.test", Roles: []string{"Receptionist"}, PhoneNumbers: []string{}, Active: false, AssignedOfficerIDs: []string{}, Version: 1}
 	page, err := u.GetEmployees(context.Background(), superAdmin, employeeusecase.EmployeeQuery{Q: "contoh", Page: "1", PageSize: "2"})
 	if err != nil {
 		t.Fatal(err)
@@ -144,8 +144,8 @@ func TestEmployeeReadsProjectProfileRolesAndAssignmentWithoutCredentials(t *test
 		t.Fatalf("detail %+v %v, want %+v", one, err, wantPA)
 	}
 	// The projection is a copy: changing it cannot reach the stored employee.
-	one.Roles[0], one.AssignedOfficerIDs[0] = "Super Admin", "1"
-	if s.employees[8].Roles[0] != policy.RolePA || s.employees[8].OfficerIDs[0] != 2147483647 {
+	one.Roles[0], one.AssignedOfficerIDs[0], one.PhoneNumbers[0] = "Super Admin", "1", "changed"
+	if s.employees[8].Roles[0] != policy.RolePA || s.employees[8].OfficerIDs[0] != 2147483647 || s.employees[8].PhoneNumbers[0] != "+62 811 0000" {
 		t.Fatal("the projection shares slices with the entity")
 	}
 }

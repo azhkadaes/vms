@@ -73,9 +73,9 @@ func (t *transaction) CreateEmployee(employee entity.Employee, hash string) (ent
 		Version int32
 	}
 	result := t.db.Raw(`INSERT INTO vms.pegawai(nama,email,jabatan,kedeputian,direktorat,nomor_hp,nip,status_aktif,must_change_password)
-		VALUES (?,?,NULLIF(?,''),NULLIF(?,''),NULLIF(?,''),NULLIF(?,''),NULLIF(?,''),?,?) RETURNING id, version`,
+		VALUES (?,?,NULLIF(?,''),NULLIF(?,''),NULLIF(?,''),ARRAY(SELECT jsonb_array_elements_text(CAST(? AS jsonb))),NULLIF(?,''),?,?) RETURNING id, version`,
 		employee.Name, employee.Email, employee.JobTitle, employee.Deputy, employee.Directorate,
-		employee.Phone, employee.NIP, employee.Active, employee.MustChangePassword).Scan(&inserted)
+		phoneNumbersJSON(employee.PhoneNumbers), employee.NIP, employee.Active, employee.MustChangePassword).Scan(&inserted)
 	if result.Error != nil {
 		return entity.Employee{}, fmt.Errorf("insert employee: %w", employeeWriteError(result.Error))
 	}
@@ -93,8 +93,8 @@ func (t *transaction) CreateEmployee(employee entity.Employee, hash string) (ent
 }
 
 func (t *transaction) SaveEmployee(before, after entity.Employee) (entity.Employee, error) {
-	result := t.db.Exec(`UPDATE vms.pegawai SET nama=?,email=?,jabatan=NULLIF(?,''),kedeputian=NULLIF(?,''),direktorat=NULLIF(?,''),nomor_hp=NULLIF(?,''),nip=NULLIF(?,''),status_aktif=?,version=version+1
-		WHERE id=? AND version=?`, after.Name, after.Email, after.JobTitle, after.Deputy, after.Directorate, after.Phone, after.NIP,
+	result := t.db.Exec(`UPDATE vms.pegawai SET nama=?,email=?,jabatan=NULLIF(?,''),kedeputian=NULLIF(?,''),direktorat=NULLIF(?,''),nomor_hp=ARRAY(SELECT jsonb_array_elements_text(CAST(? AS jsonb))),nip=NULLIF(?,''),status_aktif=?,version=version+1
+		WHERE id=? AND version=?`, after.Name, after.Email, after.JobTitle, after.Deputy, after.Directorate, phoneNumbersJSON(after.PhoneNumbers), after.NIP,
 		after.Active, before.ID, before.Version)
 	if result.Error != nil {
 		return entity.Employee{}, fmt.Errorf("update employee: %w", employeeWriteError(result.Error))
@@ -107,6 +107,11 @@ func (t *transaction) SaveEmployee(before, after entity.Employee) (entity.Employ
 		return entity.Employee{}, err
 	}
 	return after, nil
+}
+
+func phoneNumbersJSON(numbers []string) string {
+	encoded, _ := json.Marshal(append([]string{}, numbers...))
+	return string(encoded)
 }
 
 func (t *transaction) saveAccess(before, after entity.Employee) error {

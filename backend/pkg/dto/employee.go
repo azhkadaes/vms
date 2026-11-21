@@ -11,6 +11,7 @@ type Employee struct {
 	Deputy             string   `json:"deputy,omitempty"`
 	Directorate        string   `json:"directorate,omitempty"`
 	Phone              string   `json:"phone,omitempty"`
+	PhoneNumbers       []string `json:"phoneNumbers"`
 	NIP                string   `json:"nip,omitempty"`
 	Active             bool     `json:"active"`
 	AssignedOfficerIDs []string `json:"assignedOfficerIds"`
@@ -37,6 +38,7 @@ type EmployeeCreate struct {
 	Deputy                string   `json:"deputy"`
 	Directorate           string   `json:"directorate"`
 	Phone                 string   `json:"phone"`
+	PhoneNumbers          []string `json:"phoneNumbers"`
 	NIP                   string   `json:"nip"`
 	Active                *bool    `json:"active"`
 	AssignedOfficerIDs    []string `json:"assignedOfficerIds"`
@@ -47,15 +49,16 @@ type EmployeeCreate struct {
 // EmployeeUpdate is op 29: an omitted field keeps its value, "" or null clears a profile field,
 // and an omitted or null roles or assignedOfficerIds list keeps the current one. Version is required.
 type EmployeeUpdate struct {
-	Name               Optional[string] `json:"name"`
-	Email              Optional[string] `json:"email"`
-	Roles              []string         `json:"roles"`
-	JobTitle           Optional[string] `json:"jobTitle"`
-	Deputy             Optional[string] `json:"deputy"`
-	Directorate        Optional[string] `json:"directorate"`
-	Phone              Optional[string] `json:"phone"`
-	NIP                Optional[string] `json:"nip"`
-	Active             Optional[bool]   `json:"active"`
-	AssignedOfficerIDs []string         `json:"assignedOfficerIds"`
-	Version            int32            `json:"version"`
+	Name               Optional[string]   `json:"name"`
+	Email              Optional[string]   `json:"email"`
+	Roles              []string           `json:"roles"`
+	JobTitle           Optional[string]   `json:"jobTitle"`
+	Deputy             Optional[string]   `json:"deputy"`
+	Directorate        Optional[string]   `json:"directorate"`
+	Phone              Optional[string]   `json:"phone"`
+	PhoneNumbers       Optional[[]string] `json:"phoneNumbers"`
+	NIP                Optional[string]   `json:"nip"`
+	Active             Optional[bool]     `json:"active"`
+	AssignedOfficerIDs []string           `json:"assignedOfficerIds"`
+	Version            int32              `json:"version"`
 }

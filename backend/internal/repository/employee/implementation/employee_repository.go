@@ -3,6 +3,7 @@ package employeerepositoryimplementation
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -21,7 +22,7 @@ func NewEmployeeRepository(db *gorm.DB) employeerepository.EmployeeRepository {
 
 const employeeSelect = `SELECT id, nama AS name, email, status_aktif AS active,
 	must_change_password, version, COALESCE(jabatan, '') AS job_title, COALESCE(kedeputian, '') AS deputy,
-	COALESCE(direktorat, '') AS directorate, COALESCE(nomor_hp, '') AS phone, COALESCE(nip, '') AS nip FROM vms.pegawai`
+	COALESCE(direktorat, '') AS directorate, array_to_json(nomor_hp)::text AS phone_numbers, COALESCE(nip, '') AS nip FROM vms.pegawai`
 
 // employeeRow keeps association slices out of GORM's scan target.
 type employeeRow struct {
@@ -31,7 +32,7 @@ type employeeRow struct {
 	JobTitle           string
 	Deputy             string
 	Directorate        string
-	Phone              string
+	PhoneNumbers       string
 	NIP                string
 	Active             bool
 	MustChangePassword bool
@@ -47,9 +48,13 @@ func withAccess(db *gorm.DB, rows []employeeRow) ([]entity.Employee, error) {
 	index := make(map[int32]int, len(rows))
 	for i, row := range rows {
 		ids[i], index[row.ID] = row.ID, i
+		var phoneNumbers []string
+		if err := json.Unmarshal([]byte(row.PhoneNumbers), &phoneNumbers); err != nil {
+			return nil, fmt.Errorf("read employee phone numbers: %w", err)
+		}
 		out[i] = entity.Employee{
 			ID: row.ID, Name: row.Name, Email: row.Email, JobTitle: row.JobTitle, Deputy: row.Deputy,
-			Directorate: row.Directorate, Phone: row.Phone, NIP: row.NIP, Active: row.Active,
+			Directorate: row.Directorate, PhoneNumbers: phoneNumbers, NIP: row.NIP, Active: row.Active,
 			MustChangePassword: row.MustChangePassword, Version: row.Version, Roles: []string{}, OfficerIDs: []int32{},
 		}
 	}

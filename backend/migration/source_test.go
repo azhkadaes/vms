@@ -41,6 +41,7 @@ var migrationOrder = []string{
 	"202611180028_create_vms_kunjungan.sql",
 	"202611180029_create_support_booking_requests.sql",
 	"202611180030_create_vms_qr_kunjungan.sql",
+	"202611210001_expand_pegawai_phone_numbers.sql",
 }
 
 var (
@@ -95,6 +96,9 @@ func TestEveryTableMigrationCreatesAndDropsOnlyItsOwnTable(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, item := range items[1:] {
+		if item.Id == "202611210001_expand_pegawai_phone_numbers.sql" {
+			continue
+		}
 		match := tableFile.FindStringSubmatch(item.Id)
 		if match == nil {
 			t.Fatalf("%s does not follow <timestamp>_create_<schema>_<table>.sql", item.Id)

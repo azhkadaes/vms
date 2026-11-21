@@ -98,7 +98,7 @@ var physicalSchema = []tableShape{
 		name: "vms.pegawai",
 		columns: []string{
 			"id integer NOT NULL IDENTITY ALWAYS", "nama varchar(255) NOT NULL", "jabatan varchar(255)", "kedeputian varchar(255)",
-			"direktorat varchar(255)", "email varchar(255) NOT NULL", "nomor_hp varchar(255)", "nip varchar(255)",
+			"direktorat varchar(255)", "email varchar(255) NOT NULL", "nomor_hp ARRAY NOT NULL DEFAULT ARRAY[]::text[]", "nip varchar(255)",
 			"status_aktif boolean NOT NULL", "must_change_password boolean NOT NULL", "version integer NOT NULL DEFAULT 1",
 		},
 		checks: []string{

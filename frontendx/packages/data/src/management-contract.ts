@@ -13,6 +13,7 @@ export const employeeSchema = z
     deputy: z.string().optional(),
     directorate: z.string().optional(),
     phone: z.string().optional(),
+    phoneNumbers: z.array(z.string()).optional(),
     nip: z.string().optional(),
     active: z.boolean(),
     assignedOfficerIds: z.array(z.string()),
@@ -20,6 +21,9 @@ export const employeeSchema = z
   })
   .refine((value) => !!value.roles?.length || !!value.role, "Peran pegawai wajib diisi.");
 export type Employee = z.infer<typeof employeeSchema>;
+export function employeePhoneNumbers(employee?: Employee | null): string[] {
+  return employee?.phoneNumbers ?? (employee?.phone ? [employee.phone] : []);
+}
 export const employeeListSchema = z.object({
   items: z.array(employeeSchema).max(250),
   total: z.number().int().nonnegative(),
@@ -39,6 +43,10 @@ export function employeeInputSchema(minimum: number, editing: boolean) {
       deputy: z.string().trim().max(255).optional(),
       directorate: z.string().trim().max(255).optional(),
       phone: z.string().trim().max(255).optional(),
+      phoneNumbers: z
+        .array(z.string().trim().max(255, "Maksimal 255 karakter."))
+        .transform((numbers) => numbers.filter(Boolean))
+        .optional(),
       nip: z.string().trim().max(255).optional(),
       active: z.boolean(),
       assignedOfficerIds: z

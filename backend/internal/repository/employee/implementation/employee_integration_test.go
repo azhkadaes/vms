@@ -85,7 +85,7 @@ func TestEmployeeAdministrationStoresProfilesAndRefreshesLiveAuthority(t *testin
 	req := dto.EmployeeCreate{
 		Name: "Employee Write Fixture", Email: strings.ToUpper(email), Roles: []string{policy.RoleProtocol, policy.RolePA},
 		Active: &enabled, RequirePasswordChange: &enabled, InitialPassword: password, AssignedOfficerIDs: []string{strconv.Itoa(int(officer))},
-		JobTitle: "Asisten", Deputy: "Deputy", Directorate: "Directorate", Phone: "081234", NIP: "9991",
+		JobTitle: "Asisten", Deputy: "Deputy", Directorate: "Directorate", PhoneNumbers: []string{"081234", "+62 542 123456"}, NIP: "9991",
 	}
 	var vip int32
 	if err := db.Raw(`SELECT p.id FROM vms.pejabat p JOIN vms.jabatan j ON p.id_jabatan = j.id
@@ -109,7 +109,7 @@ func TestEmployeeAdministrationStoresProfilesAndRefreshesLiveAuthority(t *testin
 	}
 	employeeID := int32(id)
 	detail, err := usecase.GetEmployee(ctx, adminSession, employeeID)
-	if err != nil || detail.JobTitle != req.JobTitle || detail.Deputy != req.Deputy || detail.Phone != req.Phone || detail.Directorate != req.Directorate ||
+	if err != nil || detail.JobTitle != req.JobTitle || detail.Deputy != req.Deputy || !slices.Equal(detail.PhoneNumbers, req.PhoneNumbers) || detail.Directorate != req.Directorate ||
 		!slices.Equal(detail.Roles, created.Roles) || !slices.Equal(detail.AssignedOfficerIDs, created.AssignedOfficerIDs) {
 		t.Fatalf("read employee: %+v %v", detail, err)
 	}

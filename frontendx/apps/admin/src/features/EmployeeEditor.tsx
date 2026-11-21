@@ -9,6 +9,7 @@ import {
 import { management } from "@vms/data/management";
 import {
   employeeInputSchema,
+  employeePhoneNumbers,
   type Employee,
   type EmployeeInput,
 } from "@vms/data/management-contract";
@@ -64,6 +65,15 @@ export default function EmployeeEditor({
     directorate: employee?.directorate || "",
     deputy: employee?.deputy || "",
   });
+  const [phoneRows, setPhoneRows] = useState([{ id: 0, number: "" }]);
+  const nextPhoneId = useRef(1);
+  const phoneFocus = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (phoneFocus.current) {
+      document.getElementById(phoneFocus.current)?.focus();
+      phoneFocus.current = undefined;
+    }
+  }, [phoneRows]);
   const isPA = selectedRoles.includes("PA");
   const assignedOfficer =
     assignments.length === 1
@@ -98,7 +108,7 @@ export default function EmployeeEditor({
       jobTitle: String(values.get("jobTitle") || ""),
       deputy: isPA ? assignedOrganization.deputy : profileOrganization.deputy,
       directorate: isPA ? assignedOrganization.directorate : profileOrganization.directorate,
-      phone: String(values.get("phone") || ""),
+      phoneNumbers: values.getAll("phoneNumbers").map(String),
       nip: String(values.get("nip") || ""),
       active: own || values.get("active") === "on",
       assignedOfficerIds: selectedRoles.includes("PA") ? assignments : [],
@@ -112,11 +122,11 @@ export default function EmployeeEditor({
           parsed.error.issues.map((issue) => [String(issue.path[0]), issue.message]),
         ),
       );
-      form
-        .querySelector<HTMLElement>(
-          `[name="${CSS.escape(String(parsed.error.issues[0].path[0]))}"]`,
-        )
-        ?.focus();
+      const [field, index] = parsed.error.issues[0].path;
+      const inputs = form.querySelectorAll<HTMLElement>(`[name="${CSS.escape(String(field))}"]`);
+      const invalidInput = inputs[typeof index === "number" ? index : 0];
+      if (field === "phoneNumbers") invalidInput?.closest("details")?.setAttribute("open", "");
+      invalidInput?.focus();
       return;
     }
     lock.current = true;
@@ -134,6 +144,8 @@ export default function EmployeeEditor({
             Object.entries(error.fieldErrors).map(([key, value]) => [key, value.join(" ")]),
           ),
         );
+      if (error instanceof ApiError && Object.keys(error.fieldErrors ?? {})[0] === "phoneNumbers")
+        form.querySelector('[name="phoneNumbers"]')?.closest("details")?.setAttribute("open", "");
       focusServerField(form, error);
     } finally {
       lock.current = false;
@@ -191,6 +203,9 @@ export default function EmployeeEditor({
                 onClick={() => {
                   if (!detail.data) return;
                   setEmployee(detail.data);
+                  const numbers = employeePhoneNumbers(detail.data);
+                  setPhoneRows((numbers.length ? numbers : [""]).map((number, id) => ({ id, number })));
+                  nextPhoneId.current = Math.max(1, numbers.length);
                   setSelectedRoles(detail.data.roles || [detail.data.role || "PA"]);
                   setAssignments(detail.data.assignedOfficerIds);
                   setProfileOrganization({
@@ -286,7 +301,6 @@ export default function EmployeeEditor({
                     ["jobTitle", "Jabatan"],
                     ["deputy", "Kedeputian"],
                     ["directorate", "Direktorat"],
-                    ["phone", "Nomor telepon"],
                     ["nip", "NIP"],
                   ] as const
                 )
@@ -314,7 +328,7 @@ export default function EmployeeEditor({
                               [key]: event.target.value,
                             }));
                         }}
-                        type={key === "phone" ? "tel" : "text"}
+                        type="text"
                         maxLength={255}
                         aria-invalid={!!fields[key]}
                         aria-describedby={fields[key] ? `person-${key}-error` : undefined}
@@ -326,6 +340,60 @@ export default function EmployeeEditor({
                       )}
                     </div>
                   ))}
+                <div className="field span-2" role="group" aria-label="Nomor telepon">
+                  {phoneRows.map(({ id, number }, index) => (
+                    <div className="field" key={id}>
+                      <label htmlFor={`person-phone-${id}`}>
+                        {index === 0 ? "Nomor telepon" : `Nomor telepon ${index + 1}`}
+                      </label>
+                      <input
+                        id={`person-phone-${id}`}
+                        name="phoneNumbers"
+                        type="tel"
+                        defaultValue={number}
+                        maxLength={255}
+                        aria-invalid={!!fields.phoneNumbers}
+                        aria-describedby={fields.phoneNumbers ? "person-phones-error" : undefined}
+                      />
+                      <div>
+                        <Button
+                          type="button"
+                          kind="ghost"
+                          aria-label={`Hapus nomor telepon ${index + 1}`}
+                          onClick={() => {
+                            const remaining = phoneRows.filter((row) => row.id !== id);
+                            const next = remaining[index] ?? remaining[index - 1];
+                            phoneFocus.current = next ? `person-phone-${next.id}` : "person-add-phone";
+                            setPhoneRows(remaining);
+                            setDirty(true);
+                          }}
+                        >
+                          Hapus
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  {fields.phoneNumbers && (
+                    <span id="person-phones-error" className="field-error" role="alert">
+                      {fields.phoneNumbers}
+                    </span>
+                  )}
+                  <div>
+                    <Button
+                      id="person-add-phone"
+                      type="button"
+                      kind="secondary"
+                      onClick={() => {
+                        const id = nextPhoneId.current++;
+                        phoneFocus.current = `person-phone-${id}`;
+                        setPhoneRows([...phoneRows, { id, number: "" }]);
+                        setDirty(true);
+                      }}
+                    >
+                      Tambah nomor telepon
+                    </Button>
+                  </div>
+                </div>
               </div>
             </details>
 

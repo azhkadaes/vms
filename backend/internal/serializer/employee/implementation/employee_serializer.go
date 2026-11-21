@@ -23,8 +23,13 @@ func (s *serializer) ToEmployee(in entity.Employee) dto.Employee {
 	for _, id := range in.OfficerIDs {
 		officers = append(officers, strconv.FormatInt(int64(id), 10))
 	}
+	var phone string
+	if len(in.PhoneNumbers) > 0 {
+		phone = in.PhoneNumbers[0]
+	}
 	return dto.Employee{ID: strconv.FormatInt(int64(in.ID), 10), Name: in.Name, Email: in.Email, Roles: append([]string{}, in.Roles...),
-		JobTitle: in.JobTitle, Deputy: in.Deputy, Directorate: in.Directorate, Phone: in.Phone, NIP: in.NIP,
+		JobTitle: in.JobTitle, Deputy: in.Deputy, Directorate: in.Directorate, Phone: phone,
+		PhoneNumbers: append([]string{}, in.PhoneNumbers...), NIP: in.NIP,
 		Active: in.Active, AssignedOfficerIDs: officers, Version: in.Version}
 }
 

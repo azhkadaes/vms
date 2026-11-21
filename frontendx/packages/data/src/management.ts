@@ -233,6 +233,12 @@ function createPreviewManagement(): ManagementRepository {
       const current = employees.find((record) => record.id === id);
       if (id && !current) throw new ApiError(404, "Pegawai tidak ditemukan.");
       if (current) conflict(current.version, version);
+      const savedNumbers = current?.phoneNumbers ?? (current?.phone ? [current.phone] : []);
+      const phoneNumbers =
+        input.phoneNumbers ??
+        (input.phone === undefined
+          ? savedNumbers
+          : [input.phone.trim(), ...savedNumbers.slice(1)].filter(Boolean));
       const record: Employee = {
         id: id || crypto.randomUUID(),
         name: input.name.trim(),
@@ -242,7 +248,8 @@ function createPreviewManagement(): ManagementRepository {
         jobTitle: input.jobTitle,
         deputy: isPA ? organization.deputy : input.deputy,
         directorate: isPA ? organization.directorate : input.directorate,
-        phone: input.phone,
+        phone: phoneNumbers[0],
+        phoneNumbers,
         nip: input.nip,
         assignedOfficerIds: (input.roles || [input.role]).includes("PA")
           ? input.assignedOfficerIds

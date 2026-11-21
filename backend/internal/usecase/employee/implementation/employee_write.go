@@ -156,7 +156,7 @@ func employeeAccess(e entity.Employee) policy.EmployeeAccess {
 
 func sameEmployee(a, b entity.Employee) bool {
 	return a.Name == b.Name && a.Email == b.Email && a.Active == b.Active && a.JobTitle == b.JobTitle &&
-		a.Deputy == b.Deputy && a.Directorate == b.Directorate && a.Phone == b.Phone && a.NIP == b.NIP &&
+		a.Deputy == b.Deputy && a.Directorate == b.Directorate && a.NIP == b.NIP && slices.Equal(a.PhoneNumbers, b.PhoneNumbers) &&
 		slices.Equal(a.Roles, b.Roles) && slices.Equal(a.OfficerIDs, b.OfficerIDs)
 }
 
@@ -184,7 +184,11 @@ func employeePatch(req dto.EmployeeUpdate) (func(entity.Employee) entity.Employe
 	req.JobTitle.Value = checkProfile(fields, "jobTitle", req.JobTitle.Value)
 	req.Deputy.Value = checkProfile(fields, "deputy", req.Deputy.Value)
 	req.Directorate.Value = checkProfile(fields, "directorate", req.Directorate.Value)
-	req.Phone.Value = checkProfile(fields, "phone", req.Phone.Value)
+	if req.PhoneNumbers.Set {
+		req.PhoneNumbers.Value = checkPhoneNumbers(fields, req.PhoneNumbers.Value)
+	} else {
+		req.Phone.Value = checkPhoneNumber(fields, "phone", req.Phone.Value)
+	}
 	req.NIP.Value = checkProfile(fields, "nip", req.NIP.Value)
 
 	return func(e entity.Employee) entity.Employee {
@@ -194,7 +198,11 @@ func employeePatch(req dto.EmployeeUpdate) (func(entity.Employee) entity.Employe
 		e.JobTitle = updateValue(e.JobTitle, req.JobTitle)
 		e.Deputy = updateValue(e.Deputy, req.Deputy)
 		e.Directorate = updateValue(e.Directorate, req.Directorate)
-		e.Phone = updateValue(e.Phone, req.Phone)
+		if req.PhoneNumbers.Set {
+			e.PhoneNumbers = req.PhoneNumbers.Value
+		} else if req.Phone.Set {
+			e.PhoneNumbers = replacePrimaryPhone(e.PhoneNumbers, req.Phone.Value)
+		}
 		e.NIP = updateValue(e.NIP, req.NIP)
 		if req.Roles != nil {
 			e.Roles = req.Roles
@@ -342,13 +350,46 @@ func checkProfile(fields *failure.ValidationBuilder, key, raw string) string {
 	return value
 }
 
+func checkPhoneNumber(fields *failure.ValidationBuilder, key, raw string) string {
+	number := checkProfile(fields, key, raw)
+	if strings.ContainsRune(number, 0) {
+		fields.Add(key, "Periksa nomor telepon pegawai.")
+	}
+	return number
+}
+
+func checkPhoneNumbers(fields *failure.ValidationBuilder, numbers []string) []string {
+	var checked []string
+	for _, raw := range numbers {
+		if number := checkPhoneNumber(fields, "phoneNumbers", raw); number != "" {
+			checked = append(checked, number)
+		}
+	}
+	return checked
+}
+
+func replacePrimaryPhone(numbers []string, phone string) []string {
+	if len(numbers) > 0 {
+		numbers = numbers[1:]
+	}
+	if phone == "" {
+		return numbers
+	}
+	return append([]string{phone}, numbers...)
+}
+
 // newEmployee validates op 28's fields on their own and returns the employee to store.
 func newEmployee(req dto.EmployeeCreate) (entity.Employee, error) {
 	fields := failure.Validation()
 	out := entity.Employee{Name: checkName(fields, req.Name), Email: checkEmailFormat(fields, req.Email), Roles: checkRoles(fields, req.Roles),
 		JobTitle: checkProfile(fields, "jobTitle", req.JobTitle), Deputy: checkProfile(fields, "deputy", req.Deputy),
-		Directorate: checkProfile(fields, "directorate", req.Directorate), Phone: checkProfile(fields, "phone", req.Phone),
-		NIP: checkProfile(fields, "nip", req.NIP), OfficerIDs: checkOfficerIDs(fields, req.AssignedOfficerIDs)}
+		Directorate: checkProfile(fields, "directorate", req.Directorate),
+		NIP:         checkProfile(fields, "nip", req.NIP), OfficerIDs: checkOfficerIDs(fields, req.AssignedOfficerIDs)}
+	if req.PhoneNumbers != nil {
+		out.PhoneNumbers = checkPhoneNumbers(fields, req.PhoneNumbers)
+	} else {
+		out.PhoneNumbers = replacePrimaryPhone(nil, checkPhoneNumber(fields, "phone", req.Phone))
+	}
 	if req.Active == nil {
 		fields.Add("active", "Status akun wajib diisi.")
 	} else {
