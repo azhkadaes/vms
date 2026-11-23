@@ -106,13 +106,17 @@ export function createRepository({
     },
     action: async (id, action, body, role) => {
       const { staffBookingResponse } = await import("./wire.ts");
+      const attendance = !development && (action === "checkin" || action === "checkout");
+      const operation = attendance ? "attendance" : action;
       return parse(
         await request(
           development && action === "cancel"
             ? `/staff/bookings/${encodeURIComponent(id)}/cancel?role=${encodeURIComponent(role)}`
-            : staff(`/bookings/${encodeURIComponent(id)}/${action}`, role),
+            : staff(`/bookings/${encodeURIComponent(id)}/${operation}`, role),
           {
-            body,
+            body: attendance
+              ? { ...body, action: action === "checkin" ? "check_in" : "check_out" }
+              : body,
             authenticated: true,
           },
         ),

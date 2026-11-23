@@ -144,7 +144,7 @@ export async function loadArrivalFile(
         ...options,
         body: { credential },
       })
-    : await request(`/staff${path}`, options);
+    : await request(`/staff${path}`, { ...options, body: { credential } });
   const validate = kind === "attachment" ? validateND : validateVisitorPhoto;
   if (
     !(blob instanceof Blob) ||

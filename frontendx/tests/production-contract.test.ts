@@ -145,6 +145,22 @@ test("malformed successful responses remain unavailable and cannot masquerade as
   await assert.rejects(invalidJson("/public/bookings", { body: {} }), ApiError);
 });
 
+test("production attendance uses the attendance endpoint with an explicit action and credential", async () => {
+  const api = createRepository({
+    fetcher: async (url, options) => {
+      assert.equal(String(url), "/v1/staff/bookings/contract/attendance");
+      assert.equal(options?.method, "POST");
+      const body = JSON.parse(String(options?.body));
+      assert.equal(body.credential, "00123456");
+      assert.equal(body.version, 2);
+      assert.ok(["check_in", "check_out"].includes(body.action));
+      return response(toStaffBooking(record, sessionFor("Receptionist")));
+    },
+  });
+  for (const action of ["checkin", "checkout"] as const)
+    await api.action(record.id, action, { credential: "00123456", version: 2 }, "Receptionist");
+});
+
 test("wire validation rejects accidental restricted identity in the general reception projection", async () => {
   const api = createRepository({
     fetcher: async () =>
