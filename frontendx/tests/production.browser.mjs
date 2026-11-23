@@ -51,7 +51,7 @@ async function open(path = "/admin/employees", options = {}) {
   const state = {
     sessionStatus: options.sessionStatus || 200,
     passwordRequired: !!options.passwordRequired,
-    role: "Super Admin",
+    role: options.role || "Super Admin",
     conflict: false,
     employees: [
       {
@@ -899,7 +899,10 @@ test("a changed server role removes the previous private management screen on re
 });
 
 test("production reports use an independent aggregate route and hide counts after denied refresh", async () => {
-  const env = await open("/admin/booking", { permissions: ["bookings", "reports", "reportExport"] });
+  const env = await open("/admin/booking", {
+    role: "PA",
+    permissions: ["bookings", "reports", "reportExport"],
+  });
   try {
     const { page, state } = env;
     await page.getByRole("button", { name: "Ekspor laporan kunjungan" }).click();
