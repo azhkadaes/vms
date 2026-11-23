@@ -8,7 +8,6 @@ if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) { throw 'Run th
 $vmsBackendRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $vmsPrivateRoot = Join-Path $vmsBackendRoot ".runtime/$Instance"
 $vmsFeatureKeys = @('jwt_key','csrf_key','refresh_recovery_key','gateway_init_key','upload_token_key','admission_qr_key')
-if ($Instance -eq 'local') { $vmsFeatureKeys += 'swagger_password' }
 function New-VmsRandomBytes {
     $vmsBytes = New-Object byte[] 32
     $vmsGenerator = [Security.Cryptography.RandomNumberGenerator]::Create()

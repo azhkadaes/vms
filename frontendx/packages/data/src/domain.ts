@@ -109,6 +109,7 @@ type PrivateFields =
   | "history";
 export interface StaffBooking
   extends Omit<Booking, PrivateFields>, Partial<Pick<Booking, PrivateFields>> {
+  roomId?: string | null;
   visitorPhotoAvailable?: boolean;
   visitorCount?: number;
   visitorPhotoName?: string;
@@ -490,7 +491,7 @@ export function validateReschedule(
   room: string,
   reason: string,
   restricted = false,
-  availableRooms = rooms,
+  availableRooms: string[] | null = rooms,
   now = Date.now(),
 ) {
   const stamp = new Date(`${date}T${time}:00+08:00`).getTime();
@@ -500,7 +501,8 @@ export function validateReschedule(
     return "Pilih waktu mulai antara 08.00–16.00 WITA.";
   if (!Number.isInteger(duration) || duration < 15 || duration > 240)
     return "Durasi harus 15–240 menit.";
-  if ((!restricted || room) && !availableRooms.includes(room)) return "Pilih ruangan.";
+  if (availableRooms && (!restricted || room) && !availableRooms.includes(room))
+    return "Pilih ruangan.";
   if ((!restricted || reason) && (typeof reason !== "string" || reason.trim().length < 5))
     return "Tuliskan alasan minimal 5 karakter.";
   return null;

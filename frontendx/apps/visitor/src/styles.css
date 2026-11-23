@@ -80,64 +80,11 @@
 .visitor-nav-label--compact {
   display: none;
 }
-.visitor-header .language-select {
-  display: block;
-  flex: 0 0 60px;
-  width: 60px;
-  min-height: 44px;
-  padding: 0 22px 0 7px;
-  border: 1px solid oklch(0.91179074 0.01287443 244.264761);
-  border-radius: 10px;
-  background-color: transparent;
-  background-position: right 5px center;
-  color: oklch(0.42836208 0.02928343 248.512167);
-  font: inherit;
-  font-size: 0.78rem;
-  font-weight: 600;
-  cursor: pointer;
+.language-switch--header {
+  margin-inline-start: auto;
 }
-.visitor-header .language-select:hover {
-  background: oklch(0.96872542 0.00513944 247.876977);
-}
-.visitor-header .language-select:focus-visible {
-  outline: 3px solid var(--focus);
-  outline-offset: 2px;
-}
-.language-switch {
-  display: inline-flex;
-  align-items: center;
-  flex: 0 0 auto;
-  gap: 1px;
-  color: oklch(0.42836208 0.02928343 248.512167);
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-.language-switch button {
-  min-width: 44px;
-  min-height: 44px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-}
-.language-switch > span {
-  color: oklch(0.66793433 0.01764959 245.199339);
-  font-weight: 400;
-}
-.language-switch button[aria-pressed="true"] {
-  color: var(--navy);
-  font-weight: 700;
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 5px;
-}
-.language-switch button:hover {
-  color: var(--navy);
-}
-.language-switch button:focus-visible {
-  outline: 3px solid var(--focus);
-  outline-offset: 2px;
+.visitor-header nav + .language-switch--header {
+  margin-inline-start: 0;
 }
 .language-switch--hero,
 .language-switch--task {
@@ -1035,15 +982,6 @@
   .visitor-sheet--selected .language-switch--task {
     display: inline-flex;
   }
-  .hero-toolbar-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .visitor-sheet--selected .landing-task-toolbar > .brand {
-    margin-left: auto;
-    margin-right: auto;
-  }
   .visitor-app--task .hero-toolbar,
   .visitor-app--task .hero-photo-caption {
     visibility: hidden !important;
@@ -1090,14 +1028,15 @@
     display: block;
   }
   .visitor-sheet--selected .landing-task-toolbar {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     position: sticky;
     top: 0;
     z-index: 5;
     align-items: center;
-    justify-content: space-between;
-    padding: max(12px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) 8px
-      max(12px, env(safe-area-inset-left));
+    gap: var(--space-2);
+    --task-toolbar-inset: max(var(--space-3), env(safe-area-inset-left), env(safe-area-inset-right));
+    padding: max(var(--space-3), env(safe-area-inset-top)) var(--task-toolbar-inset) var(--space-2);
     background: oklch(0.97071377 0.00265048 286.350361 / 0.94);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
@@ -1114,6 +1053,9 @@
   }
   .visitor-sheet--selected .landing-task-toolbar .brand span {
     display: none;
+  }
+  .language-switch--task {
+    justify-self: end;
   }
   .visitor-app--task .landing-task-back {
     display: flex;
@@ -1156,9 +1098,6 @@
   .visitor-header .brand img {
     width: 35px;
     height: 35px;
-  }
-  .visitor-header .language-switch--header {
-    margin-left: auto;
   }
   .visitor-home {
     --landing-photo-height: 82svh;
@@ -1271,15 +1210,6 @@
   }
   .hero-toolbar .brand span {
     display: none;
-  }
-  .hero-toolbar .language-switch,
-  .visitor-app--landing .visitor-header .language-switch {
-    min-height: 48px;
-    padding: 2px;
-    border-radius: 12px;
-    background: oklch(0.99999999 0 0 / 0.88);
-    backdrop-filter: blur(18px) saturate(145%);
-    -webkit-backdrop-filter: blur(18px) saturate(145%);
   }
   .hero-photo-caption {
     position: absolute;
@@ -1449,9 +1379,6 @@
     left: max(14px, env(safe-area-inset-left));
     right: max(14px, env(safe-area-inset-right));
   }
-  .hero-toolbar-actions {
-    gap: 6px;
-  }
 }
 @media (max-width: 760px) and (max-height: 500px) {
   .visitor-home {
@@ -1480,7 +1407,6 @@
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   .visitor-header,
   .hero-toolbar .brand,
-  .hero-toolbar .language-switch,
   .visitor-home .visitor-sheet,
   .visitor-sheet--selected .landing-task-toolbar,
   .visitor-app--task .landing-task-back {
@@ -1492,26 +1418,11 @@
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .visitor-header,
   .hero-toolbar .brand,
-  .hero-toolbar .language-switch,
   .visitor-home .visitor-sheet,
   .visitor-sheet--selected .landing-task-toolbar,
   .visitor-app--task .landing-task-back {
     background: var(--white);
   }
-}
-.privacy-link {
-  border: 0;
-  background: none;
-  display: inline;
-  padding: 0;
-  color: var(--blue);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  font: inherit;
-  cursor: pointer;
-}
-.privacy-link:focus-visible {
-  outline-offset: 2px;
 }
 .hero-note {
   color: var(--navy);

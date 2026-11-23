@@ -742,7 +742,7 @@ select.select-control {
   opacity: 0;
   cursor: pointer;
 }
-.shadcn-calendar .rdp-dropdown_root:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
+.shadcn-calendar .rdp-dropdown_root:focus-within { outline: 2px solid var(--focus); outline-offset: -2px; }
 .shadcn-calendar .rdp-month_grid { width: 100%; table-layout: fixed; border-collapse: collapse; }
 .shadcn-calendar th { height: 26px; padding: 0; background: transparent; text-align: center; font-size: 0.7rem; }
 .shadcn-calendar td { padding: 0; border: 0; }
@@ -753,9 +753,16 @@ select.select-control {
   min-height: 32px;
   padding: 0;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--menu-option-radius);
   font-variant-numeric: tabular-nums;
   font-weight: 400;
+}
+.shadcn-calendar-day:hover:not(:disabled, [data-selected-single]) {
+  background: var(--action-secondary-hover);
+}
+.shadcn-popover :is(.shadcn-calendar-day, .rdp-button_previous, .rdp-button_next, .shadcn-button):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
 }
 .shadcn-calendar-day[data-selected-single],
 .shadcn-calendar-day[data-selected-single]:hover:not(:disabled) {
@@ -846,10 +853,11 @@ select.select-control {
   gap: 2px;
   height: calc(var(--time-picker-option-height) * 5 + 16px);
   padding: 4px 7px;
+  scroll-padding-block: 4px;
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
-  scrollbar-color: oklch(0.85489312 0.00780513 241.680674) transparent;
+  scrollbar-color: var(--field-border) transparent;
   outline: none;
 }
 .time-picker-popover [data-slot="time-picker-option"] {
@@ -858,15 +866,18 @@ select.select-control {
   align-items: center;
   justify-content: center;
   height: var(--time-picker-option-height);
-  border-radius: 5px;
+  border-radius: var(--menu-option-radius);
   color: var(--ink);
   font-size: 0.875rem;
   font-variant-numeric: tabular-nums;
   cursor: pointer;
   user-select: none;
 }
-.time-picker-popover [data-slot="time-picker-option"]:hover { background: var(--surface-subtle); }
-.time-picker-popover [data-slot="time-picker-option"][aria-selected="true"] { background: var(--accent-soft); color: var(--blue); font-weight: 650; }
+.time-picker-popover [data-slot="time-picker-option"][aria-selected="true"] { background: var(--action-secondary); color: var(--action-primary); font-weight: 650; }
+.time-picker-popover [data-slot="time-picker-option"]:not([aria-disabled="true"]):hover,
+.time-picker-popover [data-slot="time-picker-column-list"]:focus-visible [data-highlighted] {
+  background: var(--action-secondary-hover);
+}
 .time-picker-popover [data-slot="time-picker-option"][aria-disabled="true"] { opacity: 0.45; cursor: default; pointer-events: none; }
 .time-picker-popover [data-slot="time-picker-column-list"]:focus-visible [data-highlighted] { outline: 2px solid var(--focus); outline-offset: -2px; }
 .time-picker-popover [data-slot="time-picker-footer"] { display: flex; align-items: center; gap: 5px; padding: 6px; border-top: 1px solid var(--line); }
@@ -1020,44 +1031,58 @@ select.select-control {
 }
 @supports (appearance: base-select) and selector(::picker(select)) {
   @media (forced-colors: none) {
-    .select-control:not([multiple]),
-    .select-control:not([multiple])::picker(select) {
+    :is(.select-control, .rdp-dropdown):not([multiple]),
+    :is(.select-control, .rdp-dropdown):not([multiple])::picker(select) {
       appearance: base-select;
     }
     .select-control.select-dismiss-picker:not([multiple]),
     .select-control.select-dismiss-picker:not([multiple])::picker(select) {
       appearance: none;
     }
-    .select-control::picker-icon {
+    :is(.select-control, .rdp-dropdown)::picker-icon {
       display: none;
     }
-    .select-control::picker(select) {
+    .shadcn-calendar .rdp-dropdown {
+      opacity: 1;
+      border: 0;
+      background: transparent;
+      color: transparent;
+      outline: none;
+    }
+    :is(.select-control, .rdp-dropdown)::picker(select) {
       margin-block-start: var(--space-1);
       padding: var(--space-1);
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: var(--field-radius);
       background: var(--white);
       color: var(--ink);
       box-shadow: 0 6px 20px oklch(0.2559226 0.0661087 255.485659 / 0.16);
     }
-    .select-control option {
+    :is(.select-control, .rdp-dropdown) option {
+      align-items: center;
       justify-content: flex-start;
       gap: var(--space-2);
       min-block-size: var(--menu-option-height);
+      margin-block: 1px;
       padding: var(--space-1) var(--space-2);
-      border-radius: 4px;
+      border-radius: var(--menu-option-radius);
+      color: var(--ink);
       text-align: start;
       white-space: normal;
       overflow-wrap: anywhere;
     }
-    .select-control option:checked {
+    :is(.select-control, .rdp-dropdown) option:checked {
       background: var(--action-secondary);
       color: var(--action-primary);
     }
-    .select-control option:enabled:is(:hover, :focus-visible) {
+    :is(.select-control, .rdp-dropdown) option:enabled:is(:hover, :focus-visible) {
       background: var(--action-secondary-hover);
     }
-    .select-control option:disabled {
+    :is(.select-control, .rdp-dropdown) option:enabled:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: -2px;
+    }
+    :is(.select-control, .rdp-dropdown) option:disabled {
       color: var(--muted);
     }
     .email-address .select-control {
@@ -1545,22 +1570,87 @@ td small {
   color: var(--ink);
   cursor: pointer;
 }
-.appointment-type-options button:hover, .appointment-type-options button:focus-visible { background: var(--blue-pale); }
+.appointment-type-options button:hover,
+.appointment-type-options button:focus-visible { background: var(--action-secondary-hover); }
+.appointment-type-options button:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
 .appointment-type-options small { color: var(--muted); }
 
 
 
 .visitor-roster summary {
-  width: fit-content;
+  min-height: var(--action-height);
+  align-content: center;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--field-radius);
   cursor: pointer;
   color: var(--action-primary);
 }
+.visitor-roster summary:hover {
+  background: var(--action-secondary-hover);
+}
+.visitor-roster :is(summary, ul):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
 .visitor-roster ul {
+  max-block-size: min(12rem, 30svh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
   margin-block: var(--space-2) 0;
-  padding-inline-start: var(--space-5);
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-6);
+  border: 1px solid var(--line);
+  border-radius: var(--field-radius);
+  overflow-wrap: anywhere;
+}
+.visitor-roster li + li {
+  margin-block-start: var(--space-2);
 }
 .detail-grid .detail-document-hint {
   display: block;
   margin-top: 4px;
   font-weight: 400;
+}
+
+.segmented-control {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border-radius: var(--control-radius);
+  background: var(--white);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.segmented-control > .button {
+  flex: 1 0 auto;
+  min-width: var(--action-height);
+  padding-inline: var(--space-2);
+  border-radius: var(--field-radius);
+  font-size: var(--field-message-size);
+}
+.segmented-control > .button:focus-visible {
+  outline-offset: -3px;
+}
+@media (forced-colors: active) {
+  .segmented-control > .button[aria-pressed="true"] {
+    text-decoration: underline;
+  }
+}
+
+:is(
+  .field input:not(:where([type="hidden"], [type="checkbox"], [type="radio"], [type="file"])),
+  .field textarea,
+  .control,
+  .select-control,
+  .date-picker-trigger,
+  .time-picker-trigger
+):is(:focus, :open, [aria-expanded="true"]):where(
+  :not(.email-address *, .multiselect-control *, .input-otp *)
+),
+:is(.email-address, .input-otp, .multiselect-control, .upload-field-picker):focus-within,
+.email-address:is(:has(select:open)) {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
 }

@@ -1,6 +1,6 @@
-import { Select } from "@vms/ui";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { UiLanguageProvider } from "@vms/ui/language";
+import { SegmentedControl } from "@vms/ui/segmented-control";
 
 export type Language = "id" | "en";
 
@@ -45,55 +45,20 @@ export function useLanguage() {
   };
 }
 
-export function LanguageSwitch({
-  className = "",
-  compact = false,
-}: {
-  className?: string;
-  compact?: boolean;
-}) {
-  const { language, setLanguage } = useLanguage();
-  if (compact)
-    return (
-      <Select
-        className={`language-select ${className}`}
-        aria-label={language === "id" ? "Bahasa halaman" : "Page language"}
-        value={language}
-        onChange={(event) => setLanguage(event.target.value === "en" ? "en" : "id")}
-      >
-        <option value="id" lang="id" label="ID">
-          Bahasa Indonesia
-        </option>
-        <option value="en" lang="en" label="EN">
-          English
-        </option>
-      </Select>
-    );
+const languageOptions = [
+  { value: "id", label: "ID", accessibleLabel: "ID · Bahasa Indonesia", lang: "id" },
+  { value: "en", label: "EN", accessibleLabel: "EN · English", lang: "en" },
+] as const;
+
+export function LanguageSwitch({ className }: { className?: string }) {
+  const { language, setLanguage, t } = useLanguage();
   return (
-    <div
-      className={`language-switch ${className}`}
-      role="group"
-      aria-label={language === "id" ? "Bahasa halaman" : "Page language"}
-    >
-      <button
-        type="button"
-        lang="id"
-        aria-label="ID · Bahasa Indonesia"
-        aria-pressed={language === "id"}
-        onClick={() => setLanguage("id")}
-      >
-        ID
-      </button>
-      <span aria-hidden="true">|</span>
-      <button
-        type="button"
-        lang="en"
-        aria-label="EN · English"
-        aria-pressed={language === "en"}
-        onClick={() => setLanguage("en")}
-      >
-        EN
-      </button>
-    </div>
+    <SegmentedControl
+      className={className}
+      label={t("Bahasa halaman", "Page language")}
+      options={languageOptions}
+      value={language}
+      onChange={setLanguage}
+    />
   );
 }

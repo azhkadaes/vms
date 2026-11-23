@@ -27,7 +27,12 @@ export async function startProduction() {
         return;
       }
       const data = await readFile(file);
-      res.writeHead(200, { "Content-Type": types[extname(file)] || "application/octet-stream" });
+      res.writeHead(200, {
+        "Content-Type": types[extname(file)] || "application/octet-stream",
+        ...(admin && !relative.startsWith("assets/")
+          ? { "Set-Cookie": "__Host-vms-csrf=fixture-csrf; Secure; Path=/; SameSite=Lax" }
+          : {}),
+      });
       res.end(data);
     } catch {
       res.writeHead(404).end();
@@ -35,7 +40,7 @@ export async function startProduction() {
   });
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   return {
-    origin: `http://127.0.0.1:${server.address().port}`,
+    origin: `http://localhost:${server.address().port}`,
     async close() {
       server.closeAllConnections();
       await new Promise((resolve) => server.close(resolve));

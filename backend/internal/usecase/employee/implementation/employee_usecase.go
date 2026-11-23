@@ -97,11 +97,12 @@ func bounded(raw string, min, max int) (int, bool) {
 	return n, err == nil && strconv.Itoa(n) == raw && n >= min && n <= max
 }
 
-// GetEmployee refuses a session without people before reading; an unknown ID is 404.
+// GetEmployee allows staff to read their own record. Other records require directory access.
 func (u *usecase) GetEmployee(ctx context.Context, session dto.Session, id int32) (dto.Employee, error) {
 	ctx, span := u.tracer.Start(ctx, "employee.get")
 	defer span.End()
-	if !policy.CanAdministerEmployees(session) {
+	self := policy.WorkspaceReady(session) && session.ID == strconv.FormatInt(int64(id), 10)
+	if !self && !policy.CanAdministerEmployees(session) {
 		return dto.Employee{}, forbidden()
 	}
 	employee, err := u.repo.GetEmployee(ctx, id)

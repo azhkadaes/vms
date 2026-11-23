@@ -73,12 +73,14 @@ async function initializeStaff(api, req, path, gatewayKey) {
   });
 }
 
-export async function startBackendSite({ apiOrigin, port = 3000, root = workspace, dockerGateway } ) {
+const localSiteOrigin = "http://localhost:58101";
+
+export async function startBackendSite({ apiOrigin, port = 3000, root = workspace, dockerGateway, siteOrigin }) {
   const api = new URL(apiOrigin);
   if (
     api.protocol !== "http:" ||
-    api.hostname !== "127.0.0.1" ||
-    !api.port ||
+    !(api.hostname === "127.0.0.1" || (dockerGateway && api.hostname === "api")) ||
+    (!api.port && !dockerGateway) ||
     api.username ||
     api.password ||
     api.pathname !== "/" ||
@@ -87,6 +89,10 @@ export async function startBackendSite({ apiOrigin, port = 3000, root = workspac
   )
     throw new Error("Select an HTTP API at 127.0.0.1 with an explicit port and no credentials.");
 
+  const publicSite = dockerGateway ? new URL(siteOrigin ?? localSiteOrigin) : undefined;
+  if (siteOrigin && (!publicSite || publicSite.protocol !== "https:" || publicSite.origin !== siteOrigin))
+    throw new Error("VMS_SITE_ORIGIN requires an exact HTTPS origin in Docker gateway mode.");
+
   const folders = {};
   for (const app of ["visitor", "admin"]) {
     folders[app] = await realpath(resolve(root, "apps", app, "dist"));
@@ -94,12 +100,19 @@ export async function startBackendSite({ apiOrigin, port = 3000, root = workspac
   }
 
   const server = createServer(async (req, res) => {
-    const host = dockerGateway ? "localhost:58101" : `127.0.0.1:${server.address().port}`;
+    const host = publicSite?.host ?? `127.0.0.1:${server.address().port}`;
     if (req.headers.host !== host) return res.writeHead(403).end();
     if (!req.url.startsWith("/") || req.url.startsWith("//")) return res.writeHead(400).end();
 
     const url = new URL(req.url, `http://${host}`);
-    if (url.pathname === "/v1" || url.pathname.startsWith("/v1/")) {
+    const gatewayProbe = dockerGateway && (req.method === "GET" || req.method === "HEAD") && (
+      url.pathname === "/health/live" ||
+      url.pathname === "/health/ready"
+    );
+    const localSwagger = publicSite?.origin === localSiteOrigin && (
+      url.pathname === "/swagger" || url.pathname.startsWith("/swagger/")
+    );
+    if (url.pathname === "/v1" || url.pathname.startsWith("/v1/") || gatewayProbe || localSwagger) {
       const headers = forwardedHeaders(req.headers);
       for (const name of Object.keys(headers)) {
         if (name === "forwarded" || name.startsWith("x-forwarded-") || name.startsWith("x-vms-gateway-"))
@@ -166,7 +179,8 @@ export async function startBackendSite({ apiOrigin, port = 3000, root = workspac
     server.listen(port, dockerGateway ? "0.0.0.0" : "127.0.0.1", accept);
   });
   return {
-    origin: dockerGateway ? "http://localhost:58101" : `http://127.0.0.1:${server.address().port}`,
+    origin: publicSite?.origin ?? `http://127.0.0.1:${server.address().port}`,
+    port: server.address().port,
     async close() {
       server.closeAllConnections();
       await new Promise((accept, reject) =>
@@ -187,10 +201,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     if (process.env.VMS_DOCKER_SITE === "1" && !dockerGateway)
       throw new Error("The Docker staff gateway key is missing.");
     const port = dockerGateway ? 8180 : Number(values.port);
-    const apiOrigin = dockerGateway ? "http://127.0.0.1:8080" : values.api;
+    const dockerApiHost = process.env.VMS_DOCKER_API_HOST || "127.0.0.1";
+    const apiOrigin = dockerGateway ? `http://${dockerApiHost}:${process.env.APP_PORT || "8080"}` : values.api;
     if (!apiOrigin || !Number.isInteger(port) || port < 1024 || port > 65535)
       throw new Error("Use npm run serve:backend -- --api http://127.0.0.1:PORT [--port 3000].");
-    const site = await startBackendSite({ apiOrigin, port, dockerGateway });
+    const site = await startBackendSite({ apiOrigin, port, dockerGateway, siteOrigin: process.env.VMS_SITE_ORIGIN });
     console.log(`Real backend site: ${site.origin}/ (staff: ${site.origin}/admin/)`);
     console.log(`API: ${new URL(apiOrigin).origin}`);
     let stopping = false;
@@ -202,7 +217,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       });
   } catch {
     console.error(
-      "Cannot start the local site. Build both apps, select a loopback API, and use a free port. See REAL-BACKEND-LOCAL.md.",
+      "Cannot start VMS frontend. Check the built apps, gateway origin, upstream and listen port. See backend/docs/LOCAL-DEVELOPMENT.md.",
     );
     process.exitCode = 1;
   }

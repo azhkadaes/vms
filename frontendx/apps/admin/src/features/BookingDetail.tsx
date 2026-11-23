@@ -57,7 +57,9 @@ export default function BookingDetail({
   const [mode, setMode] = useState<"approve" | "reject" | "reschedule" | "cancel" | null>(null);
   const [dirty, setDirty] = useState(false);
   const [schedule, setSchedule] = useState({ date: b.date, time: b.time });
-  const room = rooms.includes(b.room) ? b.room : "";
+  const room = preview ? (rooms.includes(b.room) ? b.room : "") : (b.roomId ?? (b.room ? "current-room" : ""));
+  const roomOptions = (preview ? rooms.map((name) => ({ id: name, name })) : (catalogs.data?.roomOptions ?? []))
+    .filter(({ id }) => id !== room);
   const hasChanges =
     dirty || (mode === "reschedule" && (schedule.date !== b.date || schedule.time !== b.time));
   useUnsavedChanges(hasChanges, mutation.isPending);
@@ -70,6 +72,7 @@ export default function BookingDetail({
   const [error, setError] = useState<unknown>();
   const [editing, setEditing] = useState(false);
   const restricted = isRestricted(b);
+  const roomRequired = preview && !restricted;
   const showContactAndCode = session?.role === "PA" || session?.role === "Protocol Officer";
   const protocolReadOnly = session?.role === "Protocol Officer" && !restricted && !b.vip;
   const [rejection, setRejection] = useState({
@@ -157,6 +160,7 @@ export default function BookingDetail({
         <>
           <VisitIdentity
             booking={b}
+            collapseVisitorNames
             showDocument
             showBookingCode={showContactAndCode}
             showVisitorContact={showContactAndCode}
@@ -239,10 +243,14 @@ export default function BookingDetail({
             if (mutation.isPending || (mode === "reschedule" && !hasChanges)) return;
             setError(null);
             const f = Object.fromEntries(new FormData(e.currentTarget));
+            const { room: selectedRoom, ...fields } = f;
             let values: Record<string, unknown> = {
-              ...f,
+              ...fields,
               duration: Number(f.duration || 60),
             };
+            if (preview) values.room = selectedRoom;
+            else if ((mode === "approve" || mode === "reschedule") && selectedRoom !== room)
+              values.roomId = selectedRoom || null;
             if (mode === "reject") {
               const parsed = rejectionSchema.safeParse(rejection);
               if (!parsed.success) {
@@ -285,7 +293,7 @@ export default function BookingDetail({
                 String(f.room),
                 String(f.reason),
                 restricted,
-                rooms,
+                preview ? rooms : null,
               );
               if (msg) {
                 setError(msg);
@@ -362,17 +370,18 @@ export default function BookingDetail({
                 <div className="field">
                   <label htmlFor="room">
                     Ruangan{" "}
-                    {restricted ? <span className="muted">(opsional)</span> : <RequiredMark />}
+                    {roomRequired ? <RequiredMark /> : <span className="muted">(opsional)</span>}
                   </label>
                   <Select
                     name="room"
                     id="room"
                     defaultValue={room}
-                    required={!restricted}
+                    required={roomRequired}
                   >
-                    <option value="">Pilih ruangan</option>
-                    {rooms.map((r) => (
-                      <option key={r}>{r}</option>
+                    <option value="">{roomRequired ? "Pilih ruangan" : "Tanpa ruangan"}</option>
+                    {room && <option value={room}>{b.room}</option>}
+                    {roomOptions.map(({ id, name }) => (
+                      <option key={id} value={id}>{name}</option>
                     ))}
                   </Select>
                 </div>

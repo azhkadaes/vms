@@ -71,6 +71,7 @@ export const staffBookingResponse = z
   .object({
     ...schedule,
     ...optionalDetails,
+    roomId: z.string().min(1).nullish(),
     visitKind: z.enum(["standard", "restricted"]).optional(),
     reference: z.string().optional(),
     restrictedView: z.enum(["full", "assigned-pa", "reception", "arrival"]).optional(),
@@ -114,6 +115,7 @@ export const staffBookingResponse = z
       ...(record.restrictedView === "full"
         ? [
             "code",
+            "roomId",
             "serviceId",
             "history",
             "createdBy",
@@ -138,32 +140,38 @@ export const staffBookingResponse = z
     ...booking,
     ...(pejabat ? { host: pejabat.nama } : {}),
   }));
-export const catalogsResponse = z.object({
-  officers: z.array(
-    z.object({
-      id: z.string().min(1),
-      name: z.string().min(1),
-      vip: z.boolean(),
-      active: z.boolean(),
-      jobTitle: z.string().max(255).optional(),
-      directorate: z.string().max(255).optional(),
-      deputy: z.string().max(255).optional(),
-    }),
-  ),
-  rooms: z
-    .array(
+export const catalogsResponse = z
+  .object({
+    officers: z.array(
+      z.object({
+        id: z.string().min(1),
+        name: z.string().min(1),
+        vip: z.boolean(),
+        active: z.boolean(),
+        jobTitle: z.string().max(255).optional(),
+        directorate: z.string().max(255).optional(),
+        deputy: z.string().max(255).optional(),
+      }),
+    ),
+    rooms: z.array(
       z.union([
         z.string().min(1),
         z.object({ id: z.string().min(1), name: z.string().min(1), active: z.boolean() }),
       ]),
-    )
-    .transform((rooms) =>
-      rooms.flatMap((room) => (typeof room === "string" ? [room] : room.active ? [room.name] : [])),
     ),
-  privacyNotice: z
-    .object({ version: z.string().min(1), id: z.string().min(1), en: z.string().min(1) })
-    .optional(),
-});
+    privacyNotice: z
+      .object({ version: z.string().min(1), id: z.string().min(1), en: z.string().min(1) })
+      .optional(),
+  })
+  .transform(({ rooms, ...catalog }) => ({
+    ...catalog,
+    rooms: rooms.flatMap((room) =>
+      typeof room === "string" ? [room] : room.active ? [room.name] : [],
+    ),
+    roomOptions: rooms.flatMap((room) =>
+      typeof room !== "string" && room.active ? [{ id: room.id, name: room.name }] : [],
+    ),
+  }));
 const count = z.number().int().nonnegative();
 export const staffReadModelResponse = z
   .object({

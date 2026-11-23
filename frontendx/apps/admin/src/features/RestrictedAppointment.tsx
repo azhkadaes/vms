@@ -3,6 +3,7 @@ import {
   useUnsavedChanges,
   ApiError,
   canCreateAppointment,
+  preview,
   today,
   useBookingAction,
   useCatalogs,
@@ -11,7 +12,7 @@ import {
   type StaffBooking,
 } from "@vms/data";
 import { restrictedAppointmentSchema, type RestrictedAppointmentDraft } from "@vms/data/validation";
-import { Select, Button, ErrorNotice, FormSection, Modal, RequiredFieldsHint } from "@vms/ui";
+import { FieldMessage, Select, Button, ErrorNotice, FormSection, Modal, RequiredFieldsHint } from "@vms/ui";
 import { DatePicker } from "@vms/ui/date-picker";
 import { ReferenceDataNotice } from "@vms/ui/reference-data-notice";
 import { TimePicker } from "@vms/ui/time-picker";
@@ -36,6 +37,7 @@ export default function RestrictedAppointment({
   const { session } = useSession();
   const catalogs = useCatalogs();
   const officers = catalogs.data?.officers || [];
+  const rooms = preview ? (catalogs.data?.rooms ?? []) : (catalogs.data?.roomOptions ?? []);
   const create = useCreateAppointment();
   const update = useBookingAction();
   const [error, setError] = useState<unknown>();
@@ -73,26 +75,28 @@ export default function RestrictedAppointment({
     if (lock.current || (booking && !dirty)) return;
     if (
       !session ||
+      (!preview && !values.officerId) ||
       !canCreateAppointment(session, values.officerId || "", "restricted", officers)
     ) {
       f.setError(
         "officerId",
-        { message: "Pilih pejabat aktif atau biarkan kosong." },
+        { message: preview ? "Pilih pejabat aktif atau biarkan kosong." : "Pilih pejabat yang aktif." },
         { shouldFocus: true },
       );
       return;
     }
     lock.current = true;
     setError(null);
+    const { room, ...details } = values;
     const input = booking
       ? {
-          ...values,
+          ...details,
           name: values.name || "",
           organization: values.organization || "",
           officerId: values.officerId || "",
           serviceId: values.serviceId || "",
         }
-      : values;
+      : { ...details, ...(preview ? { room } : { roomId: room || undefined }) };
     const payload = JSON.stringify(input);
     if (attempt.current?.payload !== payload)
       attempt.current = { payload, key: crypto.randomUUID() };
@@ -104,10 +108,14 @@ export default function RestrictedAppointment({
     } catch (err) {
       setError(err);
       if (err instanceof ApiError && err.fieldErrors) {
+        const fieldErrors: Record<string, string[] | undefined> = {
+          ...err.fieldErrors,
+          room: err.fieldErrors.roomId ?? err.fieldErrors.room,
+        };
         const fields = ["date", "time", "name", "organization", "serviceId", "officerId", "room"] as const;
         for (const key of fields)
-          if (err.fieldErrors[key]?.[0]) f.setError(key, { message: err.fieldErrors[key][0] });
-        const first = fields.find((key) => err.fieldErrors?.[key]?.[0]);
+          if (fieldErrors[key]?.[0]) f.setError(key, { message: fieldErrors[key][0] });
+        const first = fields.find((key) => fieldErrors[key]?.[0]);
         if (first) requestAnimationFrame(() => f.setFocus(first));
       }
     } finally {
@@ -131,9 +139,9 @@ export default function RestrictedAppointment({
           aria-describedby={issue ? `restricted-${key}-error` : undefined}
         />
         {issue && (
-          <span className="field-error" role="alert" id={`restricted-${key}-error`}>
+          <FieldMessage tone="error" id={`restricted-${key}-error`}>
             {issue.message}
-          </span>
+          </FieldMessage>
         )}
       </div>
     );
@@ -142,7 +150,11 @@ export default function RestrictedAppointment({
     <Modal
       open
       title={booking ? "Edit kunjungan terbatas" : "Buat kunjungan terbatas"}
-      description="Tanggal dan waktu wajib diisi. Empat isian lainnya opsional; rincian ditampilkan sesuai hak akses petugas."
+      description={
+        preview
+          ? "Tanggal dan waktu wajib diisi. Rincian lainnya opsional dan ditampilkan sesuai hak akses petugas."
+          : "Tanggal, waktu, dan pejabat tujuan wajib diisi. Rincian lainnya ditampilkan sesuai hak akses petugas."
+      }
       onClose={close}
       returnFocusTo={returnFocusTo}
     >
@@ -151,14 +163,14 @@ export default function RestrictedAppointment({
           <h3>Buang perubahan?</h3>
           <p>Isian yang belum disimpan akan dihapus.</p>
           <div className="form-actions">
-            <button
+            <Button
               type="button"
-              className="button secondary"
+              kind="secondary"
               ref={resume}
               onClick={() => setDiscard(false)}
             >
               Lanjutkan mengisi
-            </button>
+            </Button>
             <Button kind="danger" onClick={onClose}>
               Buang perubahan
             </Button>
@@ -214,11 +226,12 @@ export default function RestrictedAppointment({
               {field("serviceId", "No ID Dinas", 100)}
               <div className="field">
                 <label htmlFor="restricted-host">
-                  Pejabat yang dituju <span className="muted">(opsional)</span>
+                  Pejabat yang dituju {preview && <span className="muted">(opsional)</span>}
                 </label>
                 <Select
                   {...f.register("officerId")}
                   id="restricted-host"
+                  required={!preview}
                   aria-invalid={!!f.formState.errors.officerId}
                   aria-describedby={
                     f.formState.errors.officerId ? "restricted-host-error" : undefined
@@ -234,15 +247,15 @@ export default function RestrictedAppointment({
                     ))}
                 </Select>
                 {f.formState.errors.officerId && (
-                  <span className="field-error" role="alert" id="restricted-host-error">
+                  <FieldMessage tone="error" id="restricted-host-error">
                     {f.formState.errors.officerId.message}
-                  </span>
+                  </FieldMessage>
                 )}
               </div>
               {!booking && (
                 <AppointmentRoomField
                   id="restricted-room"
-                  rooms={catalogs.data?.rooms ?? []}
+                  rooms={rooms}
                   registration={f.register("room")}
                   error={f.formState.errors.room?.message}
                 />

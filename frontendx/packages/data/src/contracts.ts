@@ -15,6 +15,7 @@ export interface Catalogs {
     deputy?: string;
   }[];
   rooms: string[];
+  roomOptions?: { id: string; name: string }[];
   privacyNotice?: { version: string; id: string; en: string };
 }
 export interface Admission {

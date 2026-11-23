@@ -19,6 +19,12 @@ test("local backend site preserves API requests, cookies, binary responses and f
   }
   const binary = Buffer.from([0, 255, 128, 13, 10]);
   const upstream = createServer(async (req, res) => {
+    if (req.url === "/internal/staff/initialize") {
+      assert.equal(req.headers["x-vms-gateway-key"], "synthetic");
+      assert.equal(req.headers["x-vms-original-uri"], "/admin/login");
+      res.writeHead(204, { "Set-Cookie": "__Host-vms-csrf=synthetic; Secure; Path=/" });
+      return res.end();
+    }
     if (req.url === "/v1/disconnected") return req.socket.destroy();
     if (req.url === "/v1/attachment") {
       res.writeHead(200, { "Content-Type": "application/pdf" });
@@ -108,4 +114,35 @@ test("local backend site preserves API requests, cookies, binary responses and f
     startBackendSite({ apiOrigin: "http://user:secret@127.0.0.1:8080", root }),
     /no credentials/,
   );
+  await assert.rejects(
+    startBackendSite({ apiOrigin: "http://api:8080", root }),
+    /127\.0\.0\.1/,
+  );
+  await assert.rejects(
+    startBackendSite({ apiOrigin: "http://untrusted.example:8080", root, dockerGateway: "synthetic" }),
+    /127\.0\.0\.1/,
+  );
+  const dockerSite = await startBackendSite({
+    apiOrigin: "http://api:8080", root, dockerGateway: "synthetic", port: 0,
+  });
+  await dockerSite.close();
+  await assert.rejects(
+    startBackendSite({ apiOrigin, root, dockerGateway: "synthetic", siteOrigin: "http://vms.example.test" }),
+    /HTTPS origin/,
+  );
+  const httpsGateway = await startBackendSite({
+    apiOrigin, root, dockerGateway: "synthetic", siteOrigin: "https://vms.example.test", port: 0,
+  });
+  t.after(() => httpsGateway.close());
+  const gatewayRequest = (path, host) => new Promise((accept, reject) => {
+    request(`http://127.0.0.1:${httpsGateway.port}${path}`, { headers: { Host: host } }, (reply) => {
+      reply.resume();
+      accept({ status: reply.statusCode, cookies: reply.headers["set-cookie"] });
+    }).on("error", reject).end();
+  });
+  assert.deepEqual(await gatewayRequest("/admin/login", "vms.example.test"), {
+    status: 200, cookies: ["__Host-vms-csrf=synthetic; Secure; Path=/"],
+  });
+  assert.equal((await gatewayRequest("/admin/login", "other.example.test")).status, 403);
+  assert.equal((await gatewayRequest("/swagger/index.html", "vms.example.test")).status, 404);
 });

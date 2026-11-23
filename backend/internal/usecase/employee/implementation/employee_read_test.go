@@ -63,6 +63,37 @@ func TestEmployeeReadsRefuseSessionsWithoutPeopleBeforeAnyRead(t *testing.T) {
 	}
 }
 
+func TestStaffCanReadOnlyTheirOwnEmployeeRecordWithoutPeople(t *testing.T) {
+	employee := entity.Employee{ID: 7, Name: "Staff Example", Email: "staff@example.test",
+		PhoneNumbers: []string{"0812345678", "+62 542 123456"}, Active: true, Roles: []string{policy.RolePA}, Version: 1}
+	for _, role := range []string{policy.RolePA, policy.RoleProtocol, policy.RoleReceptionist, policy.RoleSuperAdmin} {
+		t.Run(role, func(t *testing.T) {
+			s := newStore(employee)
+			u := newUsecase(s, &hasher{})
+			staff := session(role)
+			staff.ID = "7"
+			profile, err := u.GetEmployee(context.Background(), staff, 7)
+			if err != nil || profile.ID != staff.ID || !slices.Equal(profile.PhoneNumbers, employee.PhoneNumbers) {
+				t.Fatalf("own profile = %+v, %v", profile, err)
+			}
+			_, err = u.GetEmployee(context.Background(), staff, 8)
+			failed(t, err, 403, "forbidden")
+		})
+	}
+	for _, blocked := range []dto.Session{
+		{ID: "7", Role: policy.RolePA},
+		{ID: "7", Active: true, Role: policy.RolePA, MustChangePassword: true},
+		{ID: "7", Active: true, RoleSelectionRequired: true},
+	} {
+		s := newStore(employee)
+		_, err := newUsecase(s, &hasher{}).GetEmployee(context.Background(), blocked, 7)
+		failed(t, err, 403, "forbidden")
+		if len(s.calls) != 0 {
+			t.Fatal("a blocked session reached the employee repository")
+		}
+	}
+}
+
 func TestEmployeeListRefusesInvalidPagingAndSearchBeforeAnyRead(t *testing.T) {
 	for _, tc := range []struct {
 		name  string

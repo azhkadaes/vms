@@ -1,4 +1,4 @@
-import { Component, useEffect, type ReactNode, type ButtonHTMLAttributes } from "react";
+import { Component, forwardRef, useEffect, type ReactNode, type ButtonHTMLAttributes } from "react";
 import { useLocation } from "react-router";
 import { ArrowRight } from "lucide-react";
 import { preview } from "@vms/data/config";
@@ -50,20 +50,19 @@ export function Brand({
     <div className={className}>{content}</div>
   );
 }
-export function Button({
-  children,
-  kind = "primary",
-  className = "",
-  ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & {
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   kind?: "primary" | "secondary" | "ghost" | "danger" | "danger-outline";
-}) {
+};
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  { children, kind = "primary", className = "", ...props },
+  ref,
+) {
   return (
-    <button className={`button ${kind} ${className}`} {...props}>
+    <button ref={ref} className={`button ${kind} ${className}`} {...props}>
       {children}
     </button>
   );
-}
+});
 export function PreviewNotice() {
   const { t } = useUiLanguage();
   return preview ? (

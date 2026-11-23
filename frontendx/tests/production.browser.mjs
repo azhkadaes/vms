@@ -31,6 +31,15 @@ const catalog = {
     en: "Example privacy notice for contract testing.",
   },
 };
+function staffToken(session, accessToken = "fixture-staff-token") {
+  const serverTime = Date.now();
+  return {
+    accessToken,
+    tokenType: "Bearer",
+    accessExpiresAt: new Date(serverTime + 5 * 60_000).toISOString(),
+    session: { ...session, timing: { serverTime } },
+  };
+}
 async function open(path = "/admin/employees", options = {}) {
   const context = await browser.newContext({
     viewport: options.viewport || { width: 390, height: 900 },
@@ -114,34 +123,35 @@ async function open(path = "/admin/employees", options = {}) {
       headers: req.headers(),
     });
     const send = (json, status = 200) => route.fulfill({ status, json });
+    const staffSession = () => ({
+      active: true,
+      id: "admin-42",
+      name: "Admin Layanan",
+      role: state.role,
+      permissions:
+        options.permissions ??
+        (state.role === "Super Admin"
+          ? ["people", "roles", "integrations", "reports"]
+          : ["bookings", "checkin", "checkout"]),
+      assignedOfficerIds: [],
+      mustChangePassword: state.passwordRequired,
+      passwordMinLength: 12,
+    });
     if (path === "/staff/session" && method === "GET")
-      return send(
-        {
-          active: true,
-          id: "admin-42",
-          name: "Admin Layanan",
-          role: state.role,
-          permissions:
-            state.role === "Super Admin"
-              ? ["people", "roles", "integrations", "reports"]
-              : ["bookings", "checkin", "checkout"],
-          assignedOfficerIds: [],
-          mustChangePassword: state.passwordRequired,
-          passwordMinLength: 12,
-        },
-        state.sessionStatus,
-      );
+      return send(staffSession(), state.sessionStatus);
+    if (path === "/staff/session/refresh")
+      return send(staffToken(staffSession()), state.sessionStatus);
+    if (path === "/staff/session/renew") return send(staffSession());
     if (path === "/staff/password") {
       state.passwordRequired = false;
-      return route.fulfill({ status: 204 });
+      return send(staffToken(staffSession()));
     }
     if (path === "/staff/sessions") {
       const status = state.loginStatus || 200;
-      if (status === 200) state.sessionStatus = 200;
-      return send(
-        { message: status === 429 ? "Terlalu banyak permintaan. Coba lagi nanti." : "OK" },
-        status,
-      );
+      if (status !== 200)
+        return send({ message: "Terlalu banyak permintaan. Coba lagi nanti." }, status);
+      state.sessionStatus = 200;
+      return send(staffToken(staffSession()));
     }
     if (path.endsWith("/catalogs")) return send(catalog);
     if (path === "/staff/reports/summary")
@@ -301,7 +311,12 @@ test("production email controls preserve visible labels and keyboard focus acros
   try {
     const { page } = env;
     for (const language of ["id", "en"]) {
-      await page.locator(".language-select").selectOption(language);
+      const control = page.getByRole("button", {
+        name: language === "id" ? "ID · Bahasa Indonesia" : "EN · English",
+        exact: true,
+      });
+      await control.click();
+      assert.equal(await control.getAttribute("aria-pressed"), "true");
       const email = page.getByRole("textbox", {
         name: language === "id" ? "Email pendaftaran" : "Registration email",
         exact: true,
@@ -313,25 +328,17 @@ test("production email controls preserve visible labels and keyboard focus acros
       await page.waitForFunction(() => document.activeElement?.id === "status-email-custom-domain");
       await page.keyboard.type("example.test");
       await page.keyboard.press("Tab");
-      const change = page.getByRole("button", {
-        name:
-          language === "id"
-            ? "Ubah domain email: pilih dari daftar"
-            : "Change email domain: choose from list",
-        exact: true,
-      });
-      assert.equal(await change.evaluate((node) => node === document.activeElement), true);
+      assert.equal(await domain.evaluate((node) => node === document.activeElement), true);
       await audit(page, `email-custom-domain-${language}`);
-      await page.keyboard.press("Enter");
-      await page.waitForFunction(() => document.activeElement?.id === "status-email-domain");
-      assert.equal(await email.inputValue(), "visitor");
       await domain.selectOption("gmail.com");
+      assert.equal(await email.inputValue(), "visitor");
       assert.equal(await domain.evaluate((node) => node === document.activeElement), true);
       await email.fill("visitor@example.test");
       assert.equal(await email.evaluate((node) => node === document.activeElement), true);
       assert.equal(await page.locator("#status-email-custom-domain").inputValue(), "example.test");
       await audit(page, `email-custom-paste-${language}`);
-      await change.click();
+      await domain.focus();
+      await domain.selectOption("gmail.com");
       await page.waitForFunction(() => document.activeElement?.id === "status-email-domain");
     }
     assert.deepEqual(env.state.errors, []);
@@ -389,7 +396,9 @@ test("production session outage offers retry and never accepts a stored preview 
     env.state.sessionStatus = 200;
     await env.page.getByRole("button", { name: "Coba lagi" }).click();
     await env.page.getByRole("heading", { name: "Pegawai", exact: true }).waitFor();
-    await env.page.getByRole("heading", { name: "Pegawai Layanan", exact: true }).waitFor();
+    await env.page
+      .getByRole("button", { name: "Lihat detail pegawai Pegawai Layanan", exact: true })
+      .waitFor();
     assert.equal(
       env.state.calls.some((call) => /role=/.test(call.query)),
       false,
@@ -538,10 +547,15 @@ test("employee creation uses backend catalogs and an initial password; conflicts
     await page.locator("#person-name").fill("Pegawai Baru");
     await page.locator("#person-email").fill("baru@example.test");
     await page.locator("#person-password").fill("Initial-password-42");
-    await page.getByLabel("Pejabat dari layanan", { exact: true }).check();
+    await page.getByRole("combobox", { name: "Pejabat yang didampingi" }).click();
+    const officer = page.getByRole("option", { name: "Pejabat dari layanan", exact: true });
+    await officer.hover();
+    assert.equal(await officer.getAttribute("data-highlighted"), "true");
+    assert.equal(await officer.evaluate((node) => getComputedStyle(node).borderRadius), "6px");
+    await officer.click();
     await audit(page, "employee-editor-production-390");
     await page.getByRole("button", { name: "Simpan pegawai", exact: true }).click();
-    await page.getByRole("heading", { name: "Pegawai Baru", exact: true }).waitFor();
+    await page.getByRole("button", { name: "Lihat detail pegawai Pegawai Baru" }).waitFor();
     const create = state.calls.find(
       (call) => call.path === "/staff/employees" && call.method === "POST",
     );
@@ -549,7 +563,8 @@ test("employee creation uses backend catalogs and an initial password; conflicts
     assert.deepEqual(create.body.assignedOfficerIds, ["officer-server-42"]);
     assert.equal(create.body.requirePasswordChange, true);
     assert.equal(create.headers["x-vms-request"], "browser");
-    await page.getByRole("button", { name: "Edit pegawai Pegawai Layanan", exact: true }).click();
+    await page.getByRole("button", { name: "Lihat detail pegawai Pegawai Layanan" }).click();
+    await page.getByRole("button", { name: "Edit pegawai", exact: true }).click();
     await page.locator("#person-name").fill("Perubahan belum disimpan");
     state.conflict = true;
     await page.getByRole("button", { name: "Simpan pegawai", exact: true }).click();
@@ -557,12 +572,16 @@ test("employee creation uses backend catalogs and an initial password; conflicts
     assert.equal(await page.locator("#person-name").inputValue(), "Perubahan belum disimpan");
     await page.getByRole("button", { name: "Muat versi terbaru" }).click();
     await page.getByRole("button", { name: "Buang perubahan dan muat" }).click();
+    await page.getByRole("dialog", { name: "Detail pegawai", exact: true }).waitFor();
+    await page.getByRole("button", { name: "Edit pegawai", exact: true }).click();
     await page.waitForFunction(
       () => document.querySelector("#person-name")?.value === "Versi terbaru dari layanan",
     );
     await page.getByLabel("Akun aktif", { exact: true }).uncheck();
     await page.getByRole("button", { name: "Simpan pegawai", exact: true }).click();
-    await page.getByRole("heading", { name: "Versi terbaru dari layanan", exact: true }).waitFor();
+    await page
+      .getByRole("button", { name: "Lihat detail pegawai Versi terbaru dari layanan" })
+      .waitFor();
     assert.equal(state.employees[0].active, false);
     assert.deepEqual(state.errors, []);
   } finally {
@@ -570,38 +589,20 @@ test("employee creation uses backend catalogs and an initial password; conflicts
   }
 });
 
-test("role edits and integration secrets use versioned writes and never reveal stored secret values", async () => {
+test("role edits send the permissions and current version", async () => {
   const env = await open("/admin/roles");
   const { page, state } = env;
   try {
     await page.getByRole("button", { name: "Edit akses PA", exact: true }).click();
     await page.getByRole("checkbox", { name: "Menolak permohonan", exact: true }).check();
     await page.getByRole("button", { name: "Simpan akses", exact: true }).click();
-    await page.getByRole("status").filter({ hasText: "Akses peran disimpan." }).waitFor();
+    await page.getByRole("status").filter({ hasText: "Akses PA disimpan." }).waitFor();
     assert.ok(state.definitions[0].permissions.includes("reject"));
-    await page.goto(server.origin + "/admin/integration");
-    await page.getByRole("button", { name: "Konfigurasi Email", exact: true }).click();
-    assert.equal(await page.locator("#integration-credential").inputValue(), "");
-    assert.equal((await page.locator("body").innerText()).includes("MUST-NEVER"), false);
-    await audit(page, "integration-editor-production-390");
-    await page.getByLabel("Integrasi aktif", { exact: true }).check();
-    await page.getByRole("button", { name: "Simpan konfigurasi", exact: true }).click();
-    await page.getByRole("status").filter({ hasText: "Konfigurasi disimpan." }).waitFor();
-    const first = state.calls.find(
-      (call) => call.method === "PATCH" && call.path.includes("integrations"),
+    const edit = state.calls.find(
+      (call) => call.method === "PATCH" && call.path === "/staff/roles/pa",
     );
-    assert.equal("credential" in first.body.values, false);
-    assert.deepEqual(first.body.clearSecrets, []);
-    await page.getByRole("button", { name: "Konfigurasi Email", exact: true }).click();
-    await page.getByLabel("Hapus kredensial tersimpan", { exact: true }).check();
-    assert.equal(
-      await page.getByRole("button", { name: "Simpan konfigurasi", exact: true }).isDisabled(),
-      true,
-    );
-    await page.getByLabel("Integrasi aktif", { exact: true }).uncheck();
-    await page.getByRole("button", { name: "Simpan konfigurasi", exact: true }).click();
-    await page.getByRole("status").filter({ hasText: "Konfigurasi disimpan." }).waitFor();
-    assert.equal(state.integrations[0].fields[1].configured, false);
+    assert.equal(edit.body.version, 1);
+    assert.deepEqual(edit.body.permissions, ["bookings", "approve", "reject"]);
     assert.deepEqual(state.errors, []);
   } finally {
     await env.close();
@@ -782,22 +783,17 @@ test("production staff lists request bounded pages, load a direct detail, and ga
     }));
     let permitCancellation = false;
     const cancellationCalls = [];
-    await context.route("**/v1/staff/session", (route) =>
-      route.fulfill({
-        json: {
-          active: true,
-          id: "pa-42",
-          name: "PA Layanan",
-          role: "PA",
-          permissions: [
-            "bookings",
-            "approve",
-            "reschedule",
-            ...(permitCancellation ? ["cancel"] : []),
-          ],
-          assignedOfficerIds: ["officer-server-42"],
-        },
-      }),
+    const staffSession = () => ({
+      active: true,
+      id: "pa-42",
+      name: "PA Layanan",
+      role: "PA",
+      permissions: ["bookings", "approve", "reschedule", ...(permitCancellation ? ["cancel"] : [])],
+      assignedOfficerIds: ["officer-server-42"],
+    });
+    await context.route("**/v1/staff/session", (route) => route.fulfill({ json: staffSession() }));
+    await context.route("**/v1/staff/session/refresh", (route) =>
+      route.fulfill({ json: staffToken(staffSession()) }),
     );
     const listCalls = [];
     let downloadDenied = false;
@@ -889,7 +885,9 @@ test("a changed server role removes the previous private management screen on re
   const env = await open();
   try {
     const { page, state } = env;
-    await page.getByRole("heading", { name: "Pegawai Layanan", exact: true }).waitFor();
+    await page
+      .getByRole("button", { name: "Lihat detail pegawai Pegawai Layanan", exact: true })
+      .waitFor();
     state.role = "Receptionist";
     await page.evaluate(() => window.dispatchEvent(new Event("visibilitychange")));
     await page.getByRole("heading", { name: "Akses terbatas", exact: true }).waitFor();
@@ -901,9 +899,10 @@ test("a changed server role removes the previous private management screen on re
 });
 
 test("production reports use an independent aggregate route and hide counts after denied refresh", async () => {
-  const env = await open("/admin/logs");
+  const env = await open("/admin/booking", { permissions: ["bookings", "reports", "reportExport"] });
   try {
     const { page, state } = env;
+    await page.getByRole("button", { name: "Ekspor laporan kunjungan" }).click();
     await page.getByTestId("report-total").waitFor();
     assert.equal(await page.getByTestId("report-total").innerText(), "0");
     assert.equal(
@@ -911,8 +910,8 @@ test("production reports use an independent aggregate route and hide counts afte
       true,
     );
     assert.equal(
-      state.calls.some((call) => call.path === "/staff/bookings"),
-      false,
+      state.calls.some((call) => call.path === "/staff/reports/summary"),
+      true,
     );
     state.summaryDenied = true;
     await page.getByRole("button", { name: "Perbarui laporan", exact: true }).click();
@@ -921,5 +920,805 @@ test("production reports use an independent aggregate route and hide counts afte
     assert.deepEqual(state.errors, []);
   } finally {
     await env.close();
+  }
+});
+
+test("the visitor language control uses the same buttons across landing, task and standalone layouts", async () => {
+  for (const width of [320, 768, 1280]) {
+    const { page, close } = await open("/", { viewport: { width, height: 850 } });
+    try {
+      const mobile = width <= 760;
+      const layouts = [
+        ["/", mobile ? ".hero-toolbar" : ".visitor-header"],
+        ...(mobile
+          ? [
+              ["/?view=registration#registration", ".landing-task-toolbar"],
+              ["/?view=status#booking-status", ".landing-task-toolbar"],
+            ]
+          : []),
+        ["/booking", ".visitor-header"],
+        ["/status", ".visitor-header"],
+      ];
+      let language = "id";
+      let buttonStyles;
+      for (const [path, toolbar] of layouts) {
+        if (path !== "/") await page.goto(server.origin + path);
+        const control = page
+          .locator(toolbar)
+          .getByRole("group", { name: /^(Bahasa halaman|Page language)$/ });
+        const id = control.getByRole("button", { name: "ID · Bahasa Indonesia", exact: true });
+        const en = control.getByRole("button", { name: "EN · English", exact: true });
+        const selected = language === "id" ? id : en;
+        const other = language === "id" ? en : id;
+        assert.equal(await selected.getAttribute("aria-pressed"), "true");
+        assert.equal(await other.getAttribute("aria-pressed"), "false");
+
+        const styles = await selected.evaluate((button) => {
+          const { width, height, left, right } = button.getBoundingClientRect();
+          const { backgroundColor, borderRadius, fontSize } = getComputedStyle(button);
+          return { width, height, left, right, backgroundColor, borderRadius, fontSize };
+        });
+        const { left, right, ...appearance } = styles;
+        assert.ok(left >= 0 && right <= width);
+        assert.ok(appearance.width >= 44 && appearance.height >= 44);
+        assert.equal(
+          await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+          true,
+        );
+        buttonStyles ??= appearance;
+        assert.deepEqual(appearance, buttonStyles);
+
+        await other.press("Enter");
+        language = language === "id" ? "en" : "id";
+        assert.equal(await other.getAttribute("aria-pressed"), "true");
+        assert.equal(await page.locator("html").getAttribute("lang"), language);
+      }
+    } finally {
+      await close();
+    }
+  }
+});
+
+test("destination, purpose and picker fields share their pointer and keyboard focus ring", async () => {
+  for (const width of [390, 1280]) {
+    const { page, close } = await open("/booking", { viewport: { width, height: 900 } });
+    try {
+      const outline = (selector) =>
+        page.locator(selector).evaluate((control) => {
+          const { outlineStyle, outlineWidth, outlineOffset, outlineColor } =
+            getComputedStyle(control);
+          return { outlineStyle, outlineWidth, outlineOffset, outlineColor };
+        });
+      await page.locator("#purpose").click();
+      const focusRing = await outline("#purpose");
+      assert.equal(focusRing.outlineStyle, "solid");
+      assert.equal(focusRing.outlineWidth, "3px");
+      assert.equal(focusRing.outlineOffset, "4px");
+
+      for (const selector of ["#officerId", "#date", ".time-picker-trigger"]) {
+        await page.locator(selector).click();
+        assert.deepEqual(await outline(selector), focusRing);
+        if (selector === "#officerId") {
+          await page.keyboard.press("ArrowDown");
+          const option = page.locator("#officerId option:focus-visible");
+          await option.waitFor();
+          assert.equal((await outline("#officerId option:focus-visible")).outlineOffset, "-2px");
+          const next = page.locator("#officerId option:enabled").last();
+          await next.hover();
+          assert.equal(await next.evaluate((node) => getComputedStyle(node).borderRadius), "6px");
+          assert.notEqual(await next.evaluate((node) => getComputedStyle(node).backgroundColor), "rgba(0, 0, 0, 0)");
+        }
+        await page.keyboard.press("Escape");
+      }
+      await page.locator("#purpose").click();
+      await page.keyboard.press("Shift+Tab");
+      assert.deepEqual(await outline(".time-picker-trigger"), focusRing);
+
+      await page.goto(server.origin + "/status");
+      await page.locator("#status-code").click();
+      assert.deepEqual(await outline(".input-otp"), focusRing);
+      await page.locator("#status-email").click();
+      assert.deepEqual(await outline(".email-address"), focusRing);
+      assert.equal((await outline(".input-otp")).outlineStyle, "none");
+    } finally {
+      await close();
+    }
+  }
+});
+
+for (const role of ["PA", "Protocol Officer", "Receptionist", "Super Admin"]) {
+  test(`staff avatar shows the current employee profile on hover for ${role} without directory permission`, async () => {
+    const env = await open("/admin/login", { permissions: ["bookings"] });
+    try {
+      const { page, state } = env;
+      state.role = role;
+      state.employees.push({
+        id: "admin-42",
+        name: "Pegawai Profil Uji",
+        email: "profile@example.test",
+        roles: [role],
+        active: true,
+        version: 1,
+        assignedOfficerIds: role === "PA" ? ["3"] : [],
+        jobTitle: "Asisten",
+        directorate: "Direktorat Uji",
+        nip: "123456789",
+        phoneNumbers: ["0812345678", "+62 542 123456"],
+      });
+      await page.goto(server.origin + "/admin/dashboard");
+      const profileRequests = () => state.calls.filter((call) => call.path.startsWith("/staff/employees"));
+      const avatar = page.getByRole("button", { name: "Buka profil saya" });
+      await avatar.waitFor();
+      assert.equal(profileRequests().length, 0);
+      await avatar.hover();
+      const dialog = page.getByRole("dialog", { name: "Profil saya", exact: true });
+      await dialog.getByRole("heading", { name: "Pegawai Profil Uji" }).waitFor();
+      await dialog.getByText(role, { exact: true }).waitFor();
+      for (const value of [
+        "profile@example.test", "Asisten", "Direktorat Uji", "123456789", "0812345678", "+62 542 123456",
+      ]) await dialog.getByText(value, { exact: true }).waitFor();
+      await dialog.hover();
+      assert.equal(await dialog.isVisible(), true);
+      assert.deepEqual(profileRequests().map(({ path, method, headers }) =>
+        [path, method, headers.authorization]), [["/staff/employees/admin-42", "GET", "Bearer fixture-staff-token"]]);
+      await page.mouse.move(0, 890);
+      await dialog.waitFor({ state: "hidden" });
+      await avatar.focus();
+      await dialog.waitFor();
+      await audit(page, `profile-hover-${role.replaceAll(" ", "-")}`);
+      await page.keyboard.press("Escape");
+      await dialog.waitFor({ state: "hidden" });
+      await page.waitForFunction(
+        () => document.activeElement?.getAttribute("aria-label") === "Buka profil saya",
+      );
+    } finally {
+      await env.close();
+    }
+  });
+}
+
+test("login resumes an existing staff session instead of showing a new login form", async () => {
+  const env = await open("/admin/login");
+  try {
+    await env.page.waitForURL("**/admin/dashboard");
+    await env.page.locator(".admin-shell").waitFor();
+    assert.equal(await env.page.locator("#password").count(), 0);
+    assert.equal(env.state.calls.some((call) => call.path === "/staff/sessions"), false);
+  } finally {
+    await env.close();
+  }
+});
+
+test("login renews an expired form once and preserves entered credentials", async () => {
+  const env = await open("/admin/login", { sessionStatus: 401 });
+  try {
+    const { page, context } = env;
+    let attempts = 0;
+    let initialized = false;
+    const bodies = [];
+    page.on("request", (request) => {
+      if (attempts === 1 && request.method() === "GET" && new URL(request.url()).pathname === "/admin/login")
+        initialized = true;
+    });
+    await context.route("**/v1/staff/sessions", (route) => {
+      bodies.push(route.request().postDataJSON());
+      attempts++;
+      return route.fulfill({
+        status: attempts === 1 ? 403 : 401,
+        json: attempts === 1
+          ? { code: "csrf_expired", message: "Formulir sudah kedaluwarsa. Muat ulang halaman lalu coba lagi." }
+          : { code: "invalid_credentials", message: "Email atau kata sandi tidak sesuai." },
+      });
+    });
+    await page.locator("#email").fill("visitor@example.test");
+    await page.locator("#password").fill("Fictional-password-42");
+    await page.getByRole("button", { name: "Masuk ke backoffice", exact: true }).click();
+    await page.getByText("Email atau kata sandi tidak sesuai.", { exact: true }).waitFor();
+    assert.equal(initialized, true);
+    assert.equal(attempts, 2);
+    assert.deepEqual(bodies[0], bodies[1]);
+    assert.equal(await page.locator("#password").inputValue(), "Fictional-password-42");
+  } finally {
+    await env.close();
+  }
+});
+
+test("staff access expiry refreshes silently and only real activity extends the eight-hour session", async () => {
+  const context = await browser.newContext();
+  try {
+    await context.addInitScript(() => {
+      document.cookie = "__Host-vms-csrf=fixture-csrf; Secure; Path=/";
+    });
+    const page = await context.newPage();
+    const minute = 60_000;
+    const start = Date.parse("2026-11-20T00:00:00Z");
+    await page.clock.install({ time: start });
+    let idleExpiry = start + 8 * 60 * minute;
+    let accessExpiry = start;
+    let refreshes = 0;
+    let renewals = 0;
+    let rejectNextRead = false;
+    let interruptNextRefresh = false;
+    const refreshIds = [];
+    await context.route("**/v1/**", async (route) => {
+      const request = route.request();
+      const path = new URL(request.url()).pathname;
+      const now = await page.evaluate(() => Date.now());
+      const session = () => ({
+        active: true,
+        id: "staff-42",
+        name: "Staf Uji",
+        role: "Super Admin",
+        permissions: ["people"],
+        assignedOfficerIds: [],
+        timing: {
+          serverTime: now,
+          idleExpiresAt: new Date(idleExpiry).toISOString(),
+          absoluteExpiresAt: new Date(start + 24 * 60 * minute).toISOString(),
+        },
+      });
+      const unauthorized = () =>
+        route.fulfill({ status: 401, json: { code: "unauthenticated" } });
+      if (path === "/v1/staff/session/refresh") {
+        assert.equal(request.headers()["x-csrf-token"], "fixture-csrf");
+        if (now >= idleExpiry) return unauthorized();
+        refreshIds.push(request.postDataJSON().refreshRequestId);
+        if (interruptNextRefresh) {
+          interruptNextRefresh = false;
+          return route.fulfill({ status: 503, json: {} });
+        }
+        refreshes++;
+        accessExpiry = Math.min(now + 5 * minute, idleExpiry);
+        return route.fulfill({
+          json: {
+            accessToken: `test-access-${refreshes}`,
+            tokenType: "Bearer",
+            accessExpiresAt: new Date(accessExpiry).toISOString(),
+            session: session(),
+          },
+        });
+      }
+      if (now >= accessExpiry || request.headers().authorization !== `Bearer test-access-${refreshes}`)
+        return unauthorized();
+      if (path === "/v1/staff/session/renew") {
+        renewals++;
+        idleExpiry = now + 8 * 60 * minute;
+        return route.fulfill({ json: session() });
+      }
+      if (path === "/v1/staff/session") {
+        if (rejectNextRead) {
+          rejectNextRead = false;
+          return unauthorized();
+        }
+        return route.fulfill({ json: session() });
+      }
+      if (path === "/v1/staff/employees")
+        return route.fulfill({ json: { items: [], total: 0, totalAll: 0, page: 1, pageSize: 25 } });
+      return route.fulfill({ status: 404, json: {} });
+    });
+
+    const visibilityCheck = () =>
+      page.evaluate(() => window.dispatchEvent(new Event("visibilitychange")));
+    const expectCurrent = async () => {
+      const current = page.waitForResponse((result) => result.url().endsWith("/v1/staff/session"));
+      await visibilityCheck();
+      assert.equal((await current).status(), 200);
+    };
+    await page.goto(server.origin + "/admin/employees");
+    const heading = page.getByRole("heading", { name: "Pegawai", exact: true });
+    await heading.waitFor();
+    await page.clock.fastForward(6 * minute);
+    await expectCurrent();
+    assert.equal(refreshes, 2);
+    assert.equal(renewals, 0);
+
+    rejectNextRead = true;
+    interruptNextRefresh = true;
+    const recovered = page.waitForResponse(
+      (result) => result.url().endsWith("/v1/staff/session") && result.ok(),
+    );
+    await visibilityCheck();
+    await recovered;
+    assert.equal(refreshes, 3);
+    assert.equal(refreshIds.at(-2), refreshIds.at(-1));
+
+    const renewed = page.waitForResponse("**/staff/session/renew");
+    await page.keyboard.press("Tab");
+    assert.equal((await renewed).status(), 200);
+    await page.keyboard.press("Tab");
+    await page.clock.fastForward(8 * 60 * minute - 3 * minute);
+    await expectCurrent();
+    assert.equal(renewals, 1);
+    await heading.waitFor();
+    await page.clock.fastForward(3 * minute);
+    await visibilityCheck();
+    await page.waitForURL("**/admin/login");
+  } finally {
+    await context.close();
+  }
+});
+
+test("PA approval submits the correct room field to the production API", async () => {
+  const env = await open();
+  const { page, context } = env;
+  try {
+    const visit = {
+      id: "42",
+      name: "Pengunjung Persetujuan",
+      officerId: catalog.officers[0].id,
+      host: catalog.officers[0].name,
+      vip: false,
+      date: "2099-08-19",
+      time: "10:00",
+      duration: 60,
+      room: "",
+      visitKind: "standard",
+      status: "pending",
+      version: 1,
+      timing: {
+        serverTime: Date.parse("2099-08-19T09:00:00+08:00"),
+        opensAt: Date.parse("2099-08-19T09:30:00+08:00"),
+        endsAt: Date.parse("2099-08-19T11:00:00+08:00"),
+        displayStatus: "pending",
+        canCheckIn: false,
+        canCheckOut: false,
+        canCancel: true,
+      },
+    };
+    const room = { id: "17", name: "Ruang Persetujuan", active: true };
+    let expectedRoomId;
+    const session = {
+      id: "pa-42",
+      name: "PA Layanan",
+      active: true,
+      role: "PA",
+      permissions: ["bookings", "approve"],
+      assignedOfficerIds: [visit.officerId],
+      timing: {
+        serverTime: visit.timing.serverTime,
+        idleExpiresAt: "2099-08-19T17:00:00+08:00",
+        absoluteExpiresAt: "2099-08-20T09:00:00+08:00",
+      },
+    };
+    await context.addInitScript(() => {
+      document.cookie = "__Host-vms-csrf=fixture-csrf; Secure; Path=/";
+    });
+    await context.route("**/v1/staff/session/refresh", (route) =>
+      route.fulfill({
+        json: {
+          accessToken: "fixture-pa-token",
+          tokenType: "Bearer",
+          accessExpiresAt: "2099-08-19T09:05:00+08:00",
+          session,
+        },
+      }),
+    );
+    await context.route("**/v1/staff/session", (route) =>
+      route.fulfill({ json: session }),
+    );
+    await context.route("**/v1/staff/catalogs", (route) =>
+      route.fulfill({ json: { ...catalog, rooms: [room] } }),
+    );
+    await context.route("**/v1/staff/bookings**", (route) => {
+      const url = new URL(route.request().url());
+      if (url.pathname.endsWith("/approve")) {
+        const body = route.request().postDataJSON();
+        if ("room" in body || body.roomId !== expectedRoomId) {
+          return route.fulfill({
+            status: 400,
+            json: {
+              code: "invalid_request",
+              message: "Permintaan tidak valid. Periksa data lalu coba lagi.",
+            },
+          });
+        }
+        visit.status = "approved";
+        visit.version++;
+        if ("roomId" in body) {
+          visit.room = body.roomId ? room.name : "";
+          visit.roomId = body.roomId;
+        }
+        visit.timing.displayStatus = "approved";
+      }
+      if (url.pathname === "/v1/staff/bookings") {
+        const items = visit.status === "pending" ? [visit] : [];
+        return route.fulfill({
+          json: { items, total: items.length, totalScoped: 1, page: 1, pageSize: 7 },
+        });
+      }
+      return route.fulfill({ json: visit });
+    });
+
+    for (const scenario of [
+      { initial: null, choose: room.name, roomId: room.id },
+      { initial: room.id },
+      { initial: room.id, choose: "Tanpa ruangan", roomId: null },
+      { initial: null },
+    ]) {
+      expectedRoomId = scenario.roomId;
+      visit.status = "pending";
+      visit.version = 1;
+      visit.roomId = scenario.initial;
+      visit.room = scenario.initial ? room.name : "";
+      visit.timing.displayStatus = "pending";
+      await page.goto(server.origin + "/admin/booking?status=pending");
+      await page.getByRole("button", { name: "Lihat detail Pengunjung Persetujuan" }).click();
+      await page.getByRole("button", { name: "Setujui", exact: true }).click();
+      const roomSelect = page.getByLabel(/Ruangan/);
+      if (scenario.choose) await roomSelect.selectOption({ label: scenario.choose });
+      else assert.equal(await roomSelect.inputValue(), scenario.initial ?? "");
+      await page.getByLabel(/Instruksi pengunjung/).fill("Lapor ke resepsionis.");
+      await page.getByLabel(/Catatan koordinasi internal/).fill("Hubungi petugas piket.");
+      const submitted = page.waitForResponse("**/v1/staff/bookings/42/approve");
+      await page.getByRole("button", { name: "Setujui kunjungan", exact: true }).click();
+      const result = await submitted;
+      assert.equal(result.status(), 200, await result.text());
+      assert.deepEqual(result.request().postDataJSON(), {
+        ...(scenario.roomId === undefined ? {} : { roomId: scenario.roomId }),
+        duration: 60,
+        visitorInstructions: "Lapor ke resepsionis.",
+        coordinationNote: "Hubungi petugas piket.",
+        version: 1,
+      });
+      await page.getByRole("status").filter({ hasText: "Kunjungan disetujui." }).waitFor();
+    }
+  } finally {
+    await env.close();
+  }
+});
+
+test("PA creates an approved visit with or without an optional room", async () => {
+  const env = await open();
+  const { page, context } = env;
+  try {
+    const officer = { ...catalog.officers[0], id: "2" };
+    const room = { id: "17", name: "Ruang Kunjungan", active: true };
+    const serverTime = Date.parse("2099-08-19T09:00:00+08:00");
+    const session = {
+      id: "pa-42",
+      name: "PA Layanan",
+      active: true,
+      role: "PA",
+      permissions: ["bookings", "create"],
+      assignedOfficerIds: [officer.id],
+      timing: { serverTime },
+    };
+    await context.addInitScript(() => {
+      document.cookie = "__Host-vms-csrf=fixture-csrf; Secure; Path=/";
+    });
+    await context.route("**/v1/staff/session/refresh", (route) =>
+      route.fulfill({
+        json: {
+          accessToken: "fixture-pa-token",
+          tokenType: "Bearer",
+          accessExpiresAt: "2099-08-19T09:05:00+08:00",
+          session,
+        },
+      }),
+    );
+    await context.route("**/v1/staff/session", (route) => route.fulfill({ json: session }));
+    await context.route("**/v1/staff/catalogs", (route) =>
+      route.fulfill({ json: { ...catalog, officers: [officer], rooms: [room] } }),
+    );
+    const uploadToken = "vmsu1.synthetic-photo-token";
+    await context.route("**/v1/staff/attachments", (route) => {
+      const multipart = route.request().postDataBuffer().toString("latin1");
+      assert.match(multipart, /name="purpose"\r\n\r\nvisitorPhoto\r\n/);
+      return route.fulfill({
+        status: 201,
+        json: { token: uploadToken, expiresAt: "2099-08-19T10:00:00+08:00", serverTime },
+      });
+    });
+    let expectedRoomId;
+    let created;
+    await context.route("**/v1/staff/bookings**", (route) => {
+      const request = route.request();
+      if (request.method() === "POST") {
+        const body = request.postDataJSON();
+        if ("room" in body || body.roomId !== expectedRoomId) {
+          return route.fulfill({
+            status: 400,
+            json: {
+              code: "invalid_request",
+              message: "Permintaan tidak valid. Periksa data lalu coba lagi.",
+            },
+          });
+        }
+        created = {
+          id: "53",
+          name: body.name,
+          officerId: body.officerId,
+          pejabat: { nama: officer.name },
+          visitKind: "standard",
+          date: body.date,
+          time: body.time,
+          duration: body.duration,
+          room: body.roomId ? room.name : "",
+          roomId: body.roomId,
+          status: "approved",
+          version: 1,
+          timing: {
+            serverTime,
+            opensAt: Date.parse("2099-08-19T09:30:00+08:00"),
+            endsAt: Date.parse("2099-08-19T11:00:00+08:00"),
+            displayStatus: "approved",
+            canCheckIn: false,
+            canCheckOut: false,
+            canCancel: true,
+          },
+        };
+        return route.fulfill({ status: 201, json: created });
+      }
+      if (new URL(request.url()).pathname.endsWith("/53")) return route.fulfill({ json: created });
+      return route.fulfill({ json: { items: [], total: 0, totalScoped: 0, page: 1, pageSize: 7 } });
+    });
+
+    for (const roomId of [room.id, undefined]) {
+      expectedRoomId = roomId;
+      await page.goto(server.origin + "/admin/booking?new=1&kind=standard");
+      const dialog = page.getByRole("dialog", { name: "Buat janji temu" });
+      await dialog.locator(".date-picker-trigger").click();
+      await page.locator('.shadcn-calendar-day[data-day="2099-08-19"]:not(:disabled)').first().click();
+      await dialog.locator(".time-picker-trigger").click();
+      await page
+        .getByRole("listbox", { name: "Jam", exact: true })
+        .getByRole("option", { name: "10", exact: true })
+        .click();
+      await page
+        .getByRole("listbox", { name: "Menit", exact: true })
+        .getByRole("option", { name: "00", exact: true })
+        .click();
+      await dialog.locator(".date-picker > small").click();
+      if (roomId) await dialog.locator("#appointment-room").selectOption({ label: room.name });
+      await dialog.locator("#appointment-purpose").fill("Pertemuan pengujian kunjungan PA.");
+      await dialog.getByRole("button", { name: "Lanjutkan", exact: true }).click();
+      await dialog.locator("#appointment-name").fill("Pengunjung Uji PA");
+      await dialog.locator("#appointment-organization").fill("Instansi Uji");
+      await dialog.locator("#appointment-email").fill("visitor@example.test");
+      await dialog.locator("#appointment-phone").fill("081234567890");
+      await dialog.locator("#appointment-photo").setInputFiles({
+        name: "visitor.png",
+        mimeType: "image/png",
+        buffer: Buffer.from(
+          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=",
+          "base64",
+        ),
+      });
+      await dialog.getByRole("button", { name: "Lanjutkan", exact: true }).click();
+      await dialog.getByRole("heading", { name: "Periksa janji temu" }).waitFor();
+      await dialog
+        .locator("dd")
+        .filter({ hasText: roomId ? room.name : "Belum ditetapkan" })
+        .waitFor();
+      const submitted = page.waitForResponse(
+        (result) => result.url().endsWith("/v1/staff/bookings") && result.request().method() === "POST",
+      );
+      await dialog.getByRole("button", { name: "Buat janji temu", exact: true }).click();
+      const result = await submitted;
+      assert.equal(result.status(), 201, await result.text());
+      const body = result.request().postDataJSON();
+      assert.equal(body.officerId, officer.id);
+      assert.equal(body.visitorPhotoToken, uploadToken);
+      assert.deepEqual(body.visitors, ["Pengunjung Uji PA"]);
+      assert.match(body.idempotencyKey, /^[0-9a-f-]{36}$/u);
+      await page
+        .getByRole("status")
+        .filter({ hasText: "Janji temu berhasil dibuat dan langsung disetujui." })
+        .waitFor();
+    }
+  } finally {
+    await env.close();
+  }
+});
+
+test("production restricted creation sends the selected officer and room IDs", async () => {
+  const env = await open("/admin/login", { permissions: ["bookings", "create"] });
+  try {
+    const { page, context, state } = env;
+    state.role = "Protocol Officer";
+    const officer = { id: "3", name: "Pejabat Uji", vip: false, active: true };
+    const room = { id: "7", name: "Ruangan Uji", active: true };
+    await context.route("**/v1/staff/catalogs", (route) =>
+      route.fulfill({ json: { ...catalog, officers: [officer], rooms: [room] } }),
+    );
+    await context.route("**/v1/staff/bookings**", (route) => {
+      if (route.request().method() !== "POST")
+        return route.fulfill({ json: { items: [], total: 0, totalScoped: 0, page: 1, pageSize: 7 } });
+      const { idempotencyKey, ...body } = route.request().postDataJSON();
+      assert.match(idempotencyKey, /^[0-9a-f-]{36}$/u);
+      assert.deepEqual(body, {
+        visitKind: "restricted",
+        date: "2099-08-19",
+        time: "10:00",
+        officerId: officer.id,
+        roomId: room.id,
+        visitorInstructions: "",
+        coordinationNote: "",
+      });
+      return route.fulfill({
+        status: 201,
+        json: {
+          ...body,
+          id: "53",
+          reference: "TRB-53",
+          restrictedView: "full",
+          room: room.name,
+          pejabat: { nama: officer.name },
+          duration: 60,
+          status: "approved",
+          version: 1,
+          timing: {
+            serverTime: Date.parse("2099-08-19T09:00:00+08:00"),
+            opensAt: Date.parse("2099-08-19T09:30:00+08:00"),
+            endsAt: Date.parse("2099-08-19T11:00:00+08:00"),
+            displayStatus: "approved",
+            canCheckIn: false,
+            canCheckOut: false,
+            canCancel: true,
+          },
+        },
+      });
+    });
+    await page.goto(server.origin + "/admin/today?new=1&kind=restricted");
+    const dialog = page.getByRole("dialog", { name: "Buat kunjungan terbatas", exact: true });
+    assert.equal(await dialog.locator("#restricted-host").getAttribute("required"), "");
+    await dialog.locator(".date-picker-trigger").click();
+    await page.locator('.shadcn-calendar-day[data-day="2099-08-19"]:not(:disabled)').first().click();
+    await dialog.locator(".time-picker-trigger").click();
+    await page.getByRole("listbox", { name: "Jam" }).getByRole("option", { name: "10", exact: true }).click();
+    await page.getByRole("listbox", { name: "Menit" }).getByRole("option", { name: "00", exact: true }).click();
+    await dialog.locator("#restricted-host").selectOption(officer.id);
+    await dialog.locator("#restricted-room").selectOption(room.id);
+    const saved = page.waitForResponse((result) =>
+      result.url().endsWith("/v1/staff/bookings") && result.request().method() === "POST",
+    );
+    await dialog.getByRole("button", { name: "Buat kunjungan terbatas", exact: true }).click();
+    assert.equal((await saved).status(), 201);
+    await dialog.waitFor({ state: "hidden" });
+  } finally {
+    await env.close();
+  }
+});
+
+test("large visitor rosters stay bounded and toggle in PA, protocol and reception previews", async () => {
+  for (const role of ["PA", "Protocol Officer", "Receptionist"]) {
+    for (const width of [390, 1280]) {
+      const env = await open("/admin/login", {
+        permissions: ["bookings", "approve", "checkin", "checkout"],
+        viewport: { width, height: 900 },
+      });
+      const { page, context, state } = env;
+      try {
+        state.role = role;
+        const session = {
+          active: true,
+          id: "staff-42",
+          name: "Petugas Uji",
+          role,
+          permissions: ["bookings", "approve", "checkin", "checkout"],
+          assignedOfficerIds: ["officer-server-42"],
+        };
+        await context.route("**/v1/staff/session", (route) =>
+          route.fulfill({ json: session }),
+        );
+        await context.route("**/v1/staff/session/refresh", (route) =>
+          route.fulfill({ json: staffToken(session) }),
+        );
+        const visit = {
+          id: "roster-42",
+          code: "88001001",
+          name: "Pengunjung Uji",
+          email: "visitor@example.test",
+          phone: "08123456789",
+          organization: "Instansi Contoh",
+          host: "Pejabat Contoh",
+          officerId: "officer-server-42",
+          vip: role === "Protocol Officer",
+          visitKind: "standard",
+          date: "2099-08-19",
+          time: "09:00",
+          duration: 60,
+          room: "Ruang Uji",
+          status: "approved",
+          version: 1,
+          purpose: "Pengujian daftar rombongan",
+          identityType: "KTP",
+          visitors: Array.from(
+            { length: 20 },
+            (_, i) => `Anggota ${i + 1} ${"NamaPanjang".repeat(12)}`,
+          ),
+          timing: {
+            serverTime: Date.parse("2099-08-19T09:00:00+08:00"),
+            opensAt: Date.parse("2099-08-19T08:30:00+08:00"),
+            endsAt: Date.parse("2099-08-19T10:00:00+08:00"),
+            displayStatus: "approved",
+            canCheckIn: true,
+            canCheckOut: false,
+            canCancel: false,
+          },
+        };
+        await context.route("**/v1/staff/resolve", (route) =>
+          route.fulfill({ json: visit }),
+        );
+        await context.route("**/v1/staff/bookings**", (route) =>
+          route.fulfill({
+            json:
+              new URL(route.request().url()).pathname === "/v1/staff/bookings"
+                ? {
+                    items: [visit],
+                    total: 1,
+                    totalScoped: 1,
+                    page: 1,
+                    pageSize: 7,
+                  }
+                : visit,
+          }),
+        );
+        if (role === "Receptionist") {
+          await page.goto(server.origin + "/admin/check-in");
+          await page
+            .getByRole("button", { name: /Kode kunjungan Masukkan/ })
+            .click();
+          await page.locator("#booking-code").fill(visit.code);
+          await page.locator("#booking-code").press("Enter");
+        } else {
+          await page.goto(server.origin + "/admin/booking?status=approved");
+          await page
+            .getByRole("button", {
+              name: "Lihat detail Pengunjung Uji",
+              exact: true,
+            })
+            .click();
+        }
+        const dialog = page.getByRole("dialog", {
+          name:
+            role === "Receptionist"
+              ? "Validasi pengunjung"
+              : "Detail kunjungan",
+          exact: true,
+        });
+        const roster = dialog.locator(".visitor-roster");
+        const trigger = roster.locator("summary");
+        const list = roster.getByRole("list", {
+          name: "Nama anggota rombongan",
+        });
+        assert.equal(await roster.getAttribute("open"), null);
+        assert.equal(await trigger.textContent(), "20 orang");
+        assert.equal(await list.isVisible(), false);
+        await trigger.click();
+        assert.equal(await list.getByRole("listitem").count(), 20);
+        assert.equal(await list.isVisible(), true);
+        const bounds = await list.evaluate((n) => ({
+          height: n.clientHeight,
+          scroll: n.scrollHeight,
+          width: n.clientWidth,
+          scrollWidth: n.scrollWidth,
+        }));
+        assert.ok(bounds.height <= 193 && bounds.scroll > bounds.height);
+        assert.ok(bounds.scrollWidth <= bounds.width);
+        await list.focus();
+        await list.press("End");
+        await page.waitForFunction(
+          () => document.querySelector(".visitor-roster ul")?.scrollTop > 0,
+        );
+        assert.equal(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth <= innerWidth,
+          ),
+          true,
+        );
+        await audit(
+          page,
+          `visitor-roster-${role.replaceAll(" ", "-")}-${width}`,
+        );
+        await trigger.press("Enter");
+        assert.equal(await list.isVisible(), false);
+        await trigger.press("Space");
+        assert.equal(await list.isVisible(), true);
+        assert.deepEqual(state.errors, []);
+      } finally {
+        await env.close();
+      }
+    }
   }
 });

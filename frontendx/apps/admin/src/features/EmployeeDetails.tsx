@@ -4,9 +4,11 @@ import { officerOrganization, type Catalogs } from "@vms/data";
 export default function EmployeeDetails({
   employee,
   officers,
+  showAssignments = true,
 }: {
   employee: Employee;
   officers?: Catalogs["officers"];
+  showAssignments?: boolean;
 }) {
   const roles = employee.roles || (employee.role ? [employee.role] : []);
   const assignedOfficer =
@@ -64,7 +66,7 @@ export default function EmployeeDetails({
             ))}
           </dd>
         </div>
-        {!!employee.assignedOfficerIds.length && (
+        {showAssignments && !!employee.assignedOfficerIds.length && (
           <div className="span-2">
             <dt>Penugasan pejabat</dt>
             <dd>

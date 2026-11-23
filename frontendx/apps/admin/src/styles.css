@@ -362,12 +362,16 @@
   width: 100%;
   justify-content: space-between;
   margin-top: 10px;
-  padding: 12px 0;
+  padding: 12px 14px;
+  border-radius: 10px;
   color: oklch(0.43596882 0.04498224 253.54089);
   font-size: 0.78rem;
 }
 .sidebar-signout.button:hover {
   color: var(--blue);
+}
+.sidebar-signout.button:focus-visible {
+  outline-offset: -3px;
 }
 .admin-body {
   margin-left: 250px;
@@ -1512,6 +1516,7 @@
   }
   .admin-shell[data-sidebar-expanded="false"] .sidebar-signout.button {
     justify-content: center;
+    padding-inline: 0;
     gap: 0;
     font-size: 0;
   }
@@ -2433,6 +2438,28 @@
 .employee-details {
   padding: 20px;
 }
+.profile-hover-card {
+  width: min(380px, calc(100vw - 24px));
+}
+.profile-icon-button.button {
+  width: var(--action-height);
+  padding: 0;
+  border-radius: var(--field-radius);
+}
+.profile-hover-card > .popover-scroll {
+  max-height: min(560px, calc(var(--radix-popover-content-available-height) - 10px));
+  padding: 12px;
+}
+.profile-hover-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.profile-hover-heading h2 { margin: 0; font-size: 1rem; }
+.profile-hover-card .employee-details { padding: 0; }
+.profile-hover-card .employee-detail-grid { grid-template-columns: minmax(0, 1fr); }
 .employee-detail-identity {
   display: flex;
   align-items: center;
@@ -2609,10 +2636,14 @@
   box-shadow: 0 8px 24px #132d441f;
 }
 .multiselect-popover [role="listbox"] {
+  display: grid;
+  align-content: start;
+  gap: 2px;
   max-height: calc(min(240px, var(--radix-popover-content-available-height)) - 10px);
+  padding: 2px;
   overflow-y: auto;
   overflow-x: hidden;
-  border-radius: 4px;
+  scroll-padding-block: 2px;
   scrollbar-gutter: stable;
 }
 .multiselect-option {
@@ -2622,7 +2653,7 @@
   gap: 10px;
   min-height: 36px;
   padding: 8px 10px;
-  border-radius: 4px;
+  border-radius: var(--menu-option-radius);
   font-size: 0.8125rem;
   cursor: pointer;
   overflow-wrap: anywhere;
@@ -2647,12 +2678,13 @@
   border-color: var(--action-primary);
   background: var(--action-primary);
 }
-.multiselect-option[data-highlighted="true"] {
-  background: var(--surface-subtle);
-}
 .multiselect-option[aria-selected="true"] {
+  background: var(--action-secondary);
   color: var(--action-primary);
   font-weight: 600;
+}
+.multiselect-option[data-highlighted="true"] {
+  background: var(--action-secondary-hover);
 }
 .multiselect-empty {
   padding: 12px 10px;

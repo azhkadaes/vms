@@ -5,6 +5,7 @@
   "exports": {
     ".": "./src/index.tsx",
     "./shell": "./src/shell.tsx",
+    "./segmented-control": "./src/segmented-control.tsx",
     "./language": "./src/language.tsx",
     "./date-picker": "./src/date-picker.tsx",
     "./time-picker": "./src/time-picker.tsx",

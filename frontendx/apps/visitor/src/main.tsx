@@ -166,7 +166,7 @@ function App() {
               )}
             </nav>
           )}
-          <LanguageSwitch className="language-switch--header" compact={!isLanding} />
+          <LanguageSwitch className="language-switch--header" />
         </div>
       </header>
       <PreviewNotice />
@@ -574,9 +574,7 @@ function LandingHero({
         </picture>
         <div className="hero-toolbar">
           <Brand />
-          <div className="hero-toolbar-actions">
-            <LanguageSwitch className="language-switch--hero" />
-          </div>
+          <LanguageSwitch className="language-switch--hero" />
         </div>
         <div className="hero-photo-caption">
           <MapPin size={16} aria-hidden="true" />

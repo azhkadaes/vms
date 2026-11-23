@@ -52,6 +52,7 @@ export default function CreateAppointment({
   const { session } = useSession();
   const catalogs = useCatalogs();
   const officers = catalogs.data?.officers || [];
+  const rooms = catalogs.data?.roomOptions ?? [];
   const rules = useMemo(() => staffAppointmentSchemaFor(officers), [catalogs.data]);
   const allowed = officers.filter(
     (o) => session && canCreateAppointment(session, o.id, "standard", officers),
@@ -106,6 +107,7 @@ export default function CreateAppointment({
   useUnsavedChanges(isDirty || !!document || !!photo, busy);
   const stepNames = ["Kunjungan", "Pengunjung", "Periksa"];
   const values = f.getValues();
+  const roomName = preview ? values.room : rooms.find((room) => room.id === values.room)?.name;
   const reviewDate = values.date
     ? new Intl.DateTimeFormat("id-ID", {
         dateStyle: "long",
@@ -182,8 +184,10 @@ export default function CreateAppointment({
     setError(null);
     setUploading(true);
     try {
+      const { room, ...details } = values;
       const input = {
-        ...values,
+        ...details,
+        ...(preview ? { room } : { roomId: room || undefined }),
         visitors: [values.name, ...values.visitors.map((v) => v.name)],
         ndName: document?.name,
         attachmentToken: await uploadAttachment(document, "staff"),
@@ -213,6 +217,8 @@ export default function CreateAppointment({
       if (err instanceof ApiError && err.status === 409)
         toast("Jadwal ruangan atau pejabat bertabrakan. Pilih ruangan atau waktu lain.", "error");
       if (err instanceof ApiError && err.fieldErrors) {
+        const fieldErrors = { ...err.fieldErrors };
+        if (fieldErrors.roomId) fieldErrors.room = fieldErrors.roomId;
         const keys = [
           "officerId",
           "date",
@@ -227,12 +233,12 @@ export default function CreateAppointment({
           "identityType",
           "visitors",
         ] as const;
-        const first = keys.find((key) => err.fieldErrors?.[key]?.[0]);
+        const first = keys.find((key) => fieldErrors[key]?.[0]);
         for (const key of keys)
-          if (err.fieldErrors[key]?.[0])
+          if (fieldErrors[key]?.[0])
             f.setError(key, {
               type: "server",
-              message: err.fieldErrors[key][0],
+              message: fieldErrors[key][0],
             });
         if (first === "room") editSection(0, "appointment-room");
         else if (first && first !== "visitors") requestAnimationFrame(() => f.setFocus(first));
@@ -472,7 +478,7 @@ export default function CreateAppointment({
                 </div>
                 <AppointmentRoomField
                   id="appointment-room"
-                  rooms={catalogs.data?.rooms ?? []}
+                  rooms={preview ? (catalogs.data?.rooms ?? []) : rooms}
                   registration={f.register("room")}
                   error={f.formState.errors.room?.message}
                 />
@@ -684,7 +690,7 @@ export default function CreateAppointment({
                   </div>
                   <div>
                     <dt>Ruangan kunjungan</dt>
-                    <dd>{values.room || "Belum ditetapkan"}</dd>
+                    <dd>{roomName || "Belum ditetapkan"}</dd>
                   </div>
                   <div className="appointment-review-wide">
                     <dt>Keperluan kunjungan</dt>

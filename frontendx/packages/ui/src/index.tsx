@@ -484,8 +484,10 @@ export function VisitIdentity({
           <dd>
             {collapseVisitorNames && b.visitors?.length ? (
               <details className="visitor-roster">
-                <summary>{partyLabel(b)}</summary>
-                <ul aria-label={t("Nama anggota rombongan", "Visitor names")}>
+                <summary aria-label={`${t("Daftar rombongan", "Visitor list")} · ${partyLabel(b)}`}>
+                  {partyLabel(b)}
+                </summary>
+                <ul tabIndex={0} aria-label={t("Nama anggota rombongan", "Visitor names")}>
                   {b.visitors.map((name, index) => (
                     <li key={index}>{name}</li>
                   ))}
