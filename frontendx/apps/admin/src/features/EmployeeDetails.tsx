@@ -1,12 +1,15 @@
 import { employeePhoneNumbers, type Employee } from "@vms/data/management-contract";
 import { officerOrganization, type Catalogs } from "@vms/data";
+import { Badge } from "@vms/ui";
 
 export default function EmployeeDetails({
   employee,
   officers,
+  showAssignments = true,
 }: {
   employee: Employee;
   officers?: Catalogs["officers"];
+  showAssignments?: boolean;
 }) {
   const roles = employee.roles || (employee.role ? [employee.role] : []);
   const assignedOfficer =
@@ -38,9 +41,9 @@ export default function EmployeeDetails({
         </span>
         <div>
           <h3>{employee.name}</h3>
-          <span className={`employee-account-badge ${employee.active ? "is-active" : ""}`}>
+          <Badge tone={employee.active ? "positive" : "neutral"}>
             {employee.active ? "Aktif" : "Nonaktif"}
-          </span>
+          </Badge>
         </div>
       </div>
       <dl className="employee-detail-grid">
@@ -64,7 +67,7 @@ export default function EmployeeDetails({
             ))}
           </dd>
         </div>
-        {!!employee.assignedOfficerIds.length && (
+        {showAssignments && !!employee.assignedOfficerIds.length && (
           <div className="span-2">
             <dt>Penugasan pejabat</dt>
             <dd>

@@ -2,6 +2,7 @@ package handler_test
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/azhkadaes/vms/backend/internal/entity"
 	"github.com/azhkadaes/vms/backend/internal/policy"
@@ -33,6 +34,11 @@ func (contractEmployees) GetEmployees(_ context.Context, session dto.Session, qu
 }
 
 func (contractEmployees) GetEmployee(_ context.Context, session dto.Session, id int32) (dto.Employee, error) {
+	if policy.WorkspaceReady(session) && session.ID == strconv.FormatInt(int64(id), 10) {
+		self := contractEmployee
+		self.ID, self.Name = session.ID, session.Name
+		return self, nil
+	}
 	if !policy.CanAdministerEmployees(session) {
 		return dto.Employee{}, failure.New(403, "forbidden")
 	}

@@ -197,11 +197,11 @@ def inspect_routes(go):
     return routes
 
 
-def go_base(type_name):
-    """Strip pointer, slice and dto.Optional wrappers: '[]*Officer' -> 'Officer'."""
+def go_base(type_name, *, unwrap_slice=True):
+    """Strip pointers and dto.Optional, and optionally unwrap array items."""
     while True:
         stripped = type_name.lstrip('*')
-        if stripped.startswith('[]'):
+        if unwrap_slice and stripped.startswith('[]'):
             stripped = stripped[2:]
         match = re.fullmatch(r'(?:dto\.)?Optional\[(.+)\]', stripped)
         if match:
@@ -238,7 +238,7 @@ def check_dto(spec, dtos, dto, schema, trail):
     for name, field in fields.items():
         assert not (name in required and field['Optional']), f'Required field marked omitempty: {trail}.{name}'
         target = resolve(spec, properties[name])
-        go_type = field['Type'].lstrip('*')
+        go_type = go_base(field['Type'], unwrap_slice=False)
         kind = json_type(target)
         if go_type.startswith('[]'):
             assert_equal(kind, 'array', f'Array type drift: {trail}.{name}')
@@ -493,6 +493,9 @@ def main():
         result = json.loads(run(['node', '--experimental-strip-types', str(HERE / 'check-consumers.mjs'), str(baseline_path)], cwd=ROOT))
         assert_equal(result['knownGaps'], sorted(manifest['consumerKnownGaps']), 'New or stale consumer gap: ' + json.dumps(result['knownGaps']))
         assert_equal(result['requestCalls'], [{'file': c['file'], 'call': c['call']} for c in manifest['frontendRequestCalls']], 'Frontend request calls changed; map them to operations in manifest frontendRequestCalls.')
+        mapped = {number for call in manifest['frontendRequestCalls'] for number in call['operations']}
+        uncovered = sorted(entry['number'] for entry in manifest['operations'] if entry['status'] == 'implemented' and entry['number'] not in mapped)
+        assert not uncovered, f'Implemented operations without a mapped frontend request: {uncovered}'
         consumers = {'executed': True, 'checks': len(result['cases']), 'knownGaps': result['knownGaps'], 'requestCalls': len(result['requestCalls'])}
         checks.append(f"{len(result['cases'])} frontend parser checks and {len(result['requestCalls'])} mapped request call sites")
 

@@ -108,4 +108,16 @@ test("local backend site preserves API requests, cookies, binary responses and f
     startBackendSite({ apiOrigin: "http://user:secret@127.0.0.1:8080", root }),
     /no credentials/,
   );
+  await assert.rejects(
+    startBackendSite({ apiOrigin: "http://api:8080", root }),
+    /127\.0\.0\.1/,
+  );
+  await assert.rejects(
+    startBackendSite({ apiOrigin: "http://untrusted.example:8080", root, dockerGateway: "synthetic" }),
+    /127\.0\.0\.1/,
+  );
+  const dockerSite = await startBackendSite({
+    apiOrigin: "http://api:8080", root, dockerGateway: "synthetic", port: 0,
+  });
+  await dockerSite.close();
 });

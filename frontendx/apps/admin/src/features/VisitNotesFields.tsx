@@ -1,3 +1,4 @@
+import { FieldMessage } from "@vms/ui";
 import { useId, type ComponentProps } from "react";
 
 export default function VisitNotesFields({
@@ -31,9 +32,9 @@ export default function VisitNotesFields({
           Terlihat oleh pengunjung pada detail kunjungan dan email pemberitahuan.
         </small>
         {visitorError && (
-          <span id={`${id}-visitor-error`} className="field-error" role="alert">
+          <FieldMessage tone="error" id={`${id}-visitor-error`}>
             {visitorError}
-          </span>
+          </FieldMessage>
         )}
       </div>
       <div className="field">
@@ -53,9 +54,9 @@ export default function VisitNotesFields({
           Hanya untuk petugas yang berwenang. Tidak ditampilkan kepada pengunjung atau resepsionis.
         </small>
         {coordinationError && (
-          <span id={`${id}-coordination-error`} className="field-error" role="alert">
+          <FieldMessage tone="error" id={`${id}-coordination-error`}>
             {coordinationError}
-          </span>
+          </FieldMessage>
         )}
       </div>
     </div>

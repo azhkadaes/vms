@@ -19,7 +19,20 @@ import {
 } from "@vms/data/visit-log";
 import { reportStatuses } from "@vms/data/reports";
 import { readFilter, reportFilterParams, selectedFilters } from "@vms/data/report-filter";
-import { Select, Button, Empty, ErrorNotice, Loading, Modal, StatusBadge } from "@vms/ui";
+import {
+  Button,
+  Empty,
+  ErrorNotice,
+  FieldMessage,
+  Loading,
+  Modal,
+  SearchField,
+  Select,
+  StatusBadge,
+  VisitKindBadge,
+  TableRegion,
+} from "@vms/ui";
+import { SegmentedControl } from "@vms/ui/segmented-control";
 import {
   ArrowDown,
   ArrowDownUp,
@@ -34,7 +47,6 @@ import {
   FileText,
   ListFilter,
   RefreshCw,
-  Search,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
@@ -60,6 +72,15 @@ export default function VisitLog() {
   );
   const parsed = visitLogFilterSchema.safeParse(values);
   const filter = parsed.success ? parsed.data : defaults;
+  const currentDate = today();
+  const [year, month] = currentDate.split("-").map(Number);
+  const monthEnd = new Date(Date.UTC(year, month, 0)).toISOString().slice(0, 10);
+  const periods = [
+    { label: "Semua waktu", value: "all", from: "", to: "" },
+    { label: "Bulan ini", value: "month", from: `${currentDate.slice(0, 7)}-01`, to: monthEnd },
+    { label: "Hari ini", value: "today", from: currentDate, to: currentDate },
+  ] as const;
+  const selectedPeriod = periods.find(({ from, to }) => filter.from === from && filter.to === to);
   const applied = JSON.stringify(values);
   const page = Math.min(100000, Math.max(1, Math.floor(Number(params.get("page")) || 1)));
   const pageSize = [10, 25, 50].includes(Number(params.get("size")))
@@ -201,7 +222,9 @@ export default function VisitLog() {
           filter.sort === key ? (filter.dir === "desc" ? "descending" : "ascending") : undefined
         }
       >
-        <button
+        <Button
+          type="button"
+          kind="sort-label"
           onClick={() =>
             apply({
               ...filter,
@@ -212,7 +235,7 @@ export default function VisitLog() {
         >
           {title}
           <Icon size={13} aria-hidden="true" />
-        </button>
+        </Button>
       </th>
     );
   }
@@ -328,46 +351,24 @@ export default function VisitLog() {
           }}
         >
           <div className="visit-log-search-row">
-            <div className="field search-field">
-              <label className="sr-only" htmlFor="visit-log-search">
-                Cari kunjungan
-              </label>
-              <Search size={17} aria-hidden="true" />
-              <input
-                id="visit-log-search"
-                name="q"
-                type="search"
-                maxLength={200}
-                placeholder="Cari nama, instansi, tujuan, atau referensi…"
-                defaultValue={filter.q}
-              />
-            </div>
-            <div className="visit-log-periods" aria-label="Periode cepat">
-              {["Semua waktu", "Bulan ini", "Hari ini"].map((label, i) => {
-                const current = today();
-                const from = i === 0 ? "" : i === 1 ? `${current.slice(0, 7)}-01` : current;
-                const to =
-                  i === 0
-                    ? ""
-                    : i === 1
-                      ? new Date(
-                          Date.UTC(Number(current.slice(0, 4)), Number(current.slice(5, 7)), 0),
-                        )
-                          .toISOString()
-                          .slice(0, 10)
-                      : current;
-                return (
-                  <button
-                    type="button"
-                    key={label}
-                    aria-pressed={filter.from === from && filter.to === to}
-                    onClick={() => apply({ ...filter, from, to })}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
+            <SearchField
+              id="visit-log-search"
+              aria-label="Cari kunjungan"
+              name="q"
+              maxLength={200}
+              placeholder="Cari nama, instansi, tujuan, atau referensi…"
+              defaultValue={filter.q}
+            />
+            <SegmentedControl
+              className="visit-log-periods"
+              label="Periode cepat"
+              options={periods}
+              value={selectedPeriod?.value}
+              onChange={(value) => {
+                const period = periods.find((option) => option.value === value);
+                if (period) apply({ ...filter, from: period.from, to: period.to });
+              }}
+            />
           </div>
           <div className="visit-log-filter-grid form-density-compact">
             {(
@@ -387,9 +388,9 @@ export default function VisitLog() {
                   aria-describedby={errors[key] ? `visit-log-${key}-error` : undefined}
                 />
                 {errors[key] && (
-                  <span className="field-error" id={`visit-log-${key}-error`}>
+                  <FieldMessage tone="error" id={`visit-log-${key}-error`}>
                     {errors[key]?.[0]}
-                  </span>
+                  </FieldMessage>
                 )}
               </div>
             ))}
@@ -516,12 +517,7 @@ export default function VisitLog() {
           )
         ) : data.items.length ? (
           <>
-            <div
-              className="table-wrap visit-log-table"
-              tabIndex={0}
-              role="region"
-              aria-label="Tabel log kunjungan"
-            >
+            <TableRegion className="visit-log-table" label="Tabel log kunjungan">
               <table>
                 <caption className="sr-only">
                   Log kunjungan sesuai filter. Klik judul kolom untuk mengurutkan.
@@ -545,19 +541,18 @@ export default function VisitLog() {
                   {data.items.map((b) => (
                     <tr key={b.id}>
                       <td>
-                        <button
-                          className="row-link"
+                        <Button
+                          type="button"
+                          kind="row-link"
                           onClick={(e) => openDetail(b, e.currentTarget)}
                         >
                           {b.name}
-                        </button>
+                        </Button>
                         <small>{b.organization || "—"}</small>
                         <span className="visit-log-reference">{b.reference}</span>
                       </td>
                       <td>
-                        <span className={`visit-log-kind visit-log-kind-${b.kind}`}>
-                          {visitKindLabels[b.kind]}
-                        </span>
+                        <VisitKindBadge kind={b.kind} />
                       </td>
                       <td className="tabular">
                         <strong>{dateLabel(b.date)}</strong>
@@ -602,6 +597,7 @@ export default function VisitLog() {
                       <td>
                         <Button
                           kind="ghost"
+                          size="icon"
                           aria-label={`Lihat detail ${b.name}`}
                           onClick={(e) => openDetail(b, e.currentTarget)}
                         >
@@ -612,7 +608,7 @@ export default function VisitLog() {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </TableRegion>
             <div className="pagination visit-log-pagination">
               <div>
                 <label htmlFor="visit-log-size">Baris per halaman</label>
@@ -633,6 +629,7 @@ export default function VisitLog() {
               <div>
                 <Button
                   kind="ghost"
+                  size="icon"
                   disabled={data.page === 1}
                   aria-label="Halaman sebelumnya"
                   onClick={() => update("page", String(data.page - 1))}
@@ -644,6 +641,7 @@ export default function VisitLog() {
                 </span>
                 <Button
                   kind="ghost"
+                  size="icon"
                   disabled={data.page >= pages}
                   aria-label="Halaman berikutnya"
                   onClick={() => update("page", String(data.page + 1))}

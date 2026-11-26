@@ -7,14 +7,14 @@
     "name": "axe"
   },
   "testEnvironment": {
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
     "windowWidth": 390,
     "windowHeight": 900,
     "orientationAngle": 0,
     "orientationType": "landscape-primary"
   },
-  "timestamp": "2099-08-19T01:00:04.691Z",
-  "url": "http://127.0.0.1:55101/admin/booking?status=approved&selected=staff-visit-8",
+  "timestamp": "2099-08-19T01:00:04.284Z",
+  "url": "http://127.0.0.1:59191/admin/booking?status=approved&selected=staff-visit-8",
   "toolOptions": {
     "runOnly": {
       "type": "tag",
@@ -1096,9 +1096,9 @@
             }
           ],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_n_\" aria-describedby=\"radix-_r_p_\" aria-labelledby=\"radix-_r_o_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_n_"
           ]
         },
         {
@@ -1136,7 +1136,7 @@
             }
           ],
           "impact": null,
-          "html": "<button class=\"button ghost \" aria-label=\"Tutup dialog\" type=\"button\">",
+          "html": "<button class=\"button ghost button-icon \" aria-label=\"Tutup dialog\" type=\"button\">",
           "target": [
             "button[aria-label=\"Tutup dialog\"]"
           ]
@@ -1265,9 +1265,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"booking-tabs\" role=\"group\" aria-label=\"Filter status\">",
+          "html": "<div class=\"segmented-control \" role=\"group\" aria-label=\"Filter status\">",
           "target": [
-            ".booking-tabs"
+            ".segmented-control"
           ]
         },
         {
@@ -1283,7 +1283,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"table-wrap booking-desktop-table\" tabindex=\"0\" role=\"region\" aria-label=\"Daftar janji temu\">",
+          "html": "<div class=\"table-wrap booking-desktop-table\" role=\"region\" aria-label=\"Daftar kunjungan\" tabindex=\"0\">",
           "target": [
             ".table-wrap"
           ]
@@ -1301,9 +1301,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_n_\" aria-describedby=\"radix-_r_p_\" aria-labelledby=\"radix-_r_o_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_n_"
           ]
         }
       ]
@@ -1355,9 +1355,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_n_\" aria-describedby=\"radix-_r_p_\" aria-labelledby=\"radix-_r_o_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_n_"
           ]
         },
         {
@@ -1373,7 +1373,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<button class=\"button ghost \" aria-label=\"Tutup dialog\" type=\"button\">",
+          "html": "<button class=\"button ghost button-icon \" aria-label=\"Tutup dialog\" type=\"button\">",
           "target": [
             "button[aria-label=\"Tutup dialog\"]"
           ]
@@ -1445,9 +1445,9 @@
             }
           ],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_n_\" aria-describedby=\"radix-_r_p_\" aria-labelledby=\"radix-_r_o_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_n_"
           ]
         }
       ]
@@ -1476,9 +1476,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_n_\" aria-describedby=\"radix-_r_p_\" aria-labelledby=\"radix-_r_o_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_n_"
           ]
         }
       ]
@@ -1566,7 +1566,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<div data-state=\"open\" class=\"modal-overlay\" data-aria-hidden=\"true\" aria-hidden=\"true\" style=\"pointer-events: auto;\"></div>",
+          "html": "<div data-state=\"open\" class=\"modal-overlay\" style=\"pointer-events: auto;\" data-aria-hidden=\"true\" aria-hidden=\"true\"></div>",
           "target": [
             ".modal-overlay"
           ]
@@ -1748,9 +1748,9 @@
             }
           ],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_n_\" aria-describedby=\"radix-_r_p_\" aria-labelledby=\"radix-_r_o_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_n_"
           ]
         },
         {
@@ -1766,7 +1766,7 @@
             }
           ],
           "impact": null,
-          "html": "<button class=\"button ghost \" aria-label=\"Tutup dialog\" type=\"button\">",
+          "html": "<button class=\"button ghost button-icon \" aria-label=\"Tutup dialog\" type=\"button\">",
           "target": [
             "button[aria-label=\"Tutup dialog\"]"
           ]
@@ -1838,9 +1838,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_n_\" aria-describedby=\"radix-_r_p_\" aria-labelledby=\"radix-_r_o_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_n_"
           ]
         }
       ]
@@ -1888,9 +1888,9 @@
             }
           ],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_n_\" aria-describedby=\"radix-_r_p_\" aria-labelledby=\"radix-_r_o_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_n_"
           ]
         }
       ]
@@ -1970,9 +1970,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_n_\" aria-describedby=\"radix-_r_p_\" aria-labelledby=\"radix-_r_o_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_n_"
           ]
         },
         {
@@ -2002,7 +2002,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<button class=\"button ghost \" aria-label=\"Tutup dialog\" type=\"button\">",
+          "html": "<button class=\"button ghost button-icon \" aria-label=\"Tutup dialog\" type=\"button\">",
           "target": [
             "button[aria-label=\"Tutup dialog\"]"
           ]
@@ -2120,9 +2120,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_n_\" aria-describedby=\"radix-_r_p_\" aria-labelledby=\"radix-_r_o_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_n_"
           ]
         },
         {
@@ -2138,7 +2138,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button class=\"button ghost \" aria-label=\"Tutup dialog\" type=\"button\">",
+          "html": "<button class=\"button ghost button-icon \" aria-label=\"Tutup dialog\" type=\"button\">",
           "target": [
             "button[aria-label=\"Tutup dialog\"]"
           ]
@@ -2255,9 +2255,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_n_\" aria-describedby=\"radix-_r_p_\" aria-labelledby=\"radix-_r_o_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_n_"
           ]
         }
       ]
@@ -2296,7 +2296,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button class=\"button ghost \" aria-label=\"Tutup dialog\" type=\"button\">",
+          "html": "<button class=\"button ghost button-icon \" aria-label=\"Tutup dialog\" type=\"button\">",
           "target": [
             "button[aria-label=\"Tutup dialog\"]"
           ]
@@ -2316,7 +2316,7 @@
           "impact": null,
           "html": "<button class=\"button ghost \" type=\"button\">Kembali</button>",
           "target": [
-            ".form-actions > .ghost.button[type=\"button\"]"
+            ".form-actions > .ghost[type=\"button\"]"
           ]
         },
         {
@@ -2373,9 +2373,9 @@
               "data": null,
               "relatedNodes": [
                 {
-                  "html": "<h2 id=\"radix-_r_d_\">Batalkan kunjungan</h2>",
+                  "html": "<h2 id=\"radix-_r_o_\">Batalkan kunjungan</h2>",
                   "target": [
-                    "#radix-_r_d_"
+                    "#radix-_r_o_"
                   ]
                 },
                 {
@@ -2392,7 +2392,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<html lang=\"id\">",
+          "html": "<html lang=\"id\" data-ui-theme=\"staff\">",
           "target": [
             "html"
           ]
@@ -2438,7 +2438,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<strong>Janji temu</strong>",
+          "html": "<strong>Kunjungan</strong>",
           "target": [
             "strong"
           ]
@@ -2488,7 +2488,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<span>Terakhir diperbarui <time datetime=\"2099-08-19T01:00:03.943Z\">09.00.03 WITA</time></span>",
+          "html": "<span>Terakhir diperbarui <time datetime=\"2099-08-19T01:00:03.646Z\">09.00.03 WITA</time></span>",
           "target": [
             ".bookings-refresh-copy > span:nth-child(1)"
           ]
@@ -2513,7 +2513,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<time datetime=\"2099-08-19T01:00:03.943Z\">09.00.03 WITA</time>",
+          "html": "<time datetime=\"2099-08-19T01:00:03.646Z\">09.00.03 WITA</time>",
           "target": [
             "time"
           ]
@@ -2563,7 +2563,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<h1>Janji temu</h1>",
+          "html": "<h1>Kunjungan</h1>",
           "target": [
             "h1"
           ]
@@ -2638,32 +2638,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<select id=\"booking-status\" class=\"control\">",
-          "target": [
-            "#booking-status"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#11131b",
-                "bgColor": "#ffffff",
-                "contrastRatio": 18.53,
-                "fontSize": "12.0pt (16px)",
-                "fontWeight": "normal",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element has sufficient color contrast of 18.53"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<input class=\"control\" aria-label=\"Cari janji temu\" placeholder=\"Cari nama, instansi, atau tujuan…\" value=\"\" style=\"\">",
+          "html": "<input aria-label=\"Cari kunjungan\" placeholder=\"Cari nama, instansi, atau tujuan…\" class=\"control\" type=\"search\" value=\"\" style=\"\">",
           "target": [
             "input"
           ]
@@ -2676,7 +2651,7 @@
                 "fgColor": "#11131b",
                 "bgColor": "#ffffff",
                 "contrastRatio": 18.53,
-                "fontSize": "10.0pt (13.28px)",
+                "fontSize": "10.5pt (14px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
@@ -2691,31 +2666,6 @@
           "html": "<label for=\"booking-sort\">Urutkan</label>",
           "target": [
             "label[for=\"booking-sort\"]"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#11131b",
-                "bgColor": "#ffffff",
-                "contrastRatio": 18.53,
-                "fontSize": "12.0pt (16px)",
-                "fontWeight": "normal",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element has sufficient color contrast of 18.53"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<select id=\"booking-sort\" class=\"control\" aria-label=\"Urutan janji temu\">",
-          "target": [
-            "#booking-sort"
           ]
         },
         {
@@ -2873,6 +2823,31 @@
             {
               "id": "color-contrast",
               "data": {
+                "fgColor": "#1769c2",
+                "bgColor": "#edf3fa",
+                "contrastRatio": 4.9,
+                "fontSize": "10.8pt (14.4px)",
+                "fontWeight": "normal",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 4.9"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 1\">",
+          "target": [
+            "article:nth-child(1) > .secondary"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
                 "fgColor": "#11131b",
                 "bgColor": "#ffffff",
                 "contrastRatio": 18.53,
@@ -3016,6 +2991,31 @@
           "html": "<dd>Pejabat dari layanan</dd>",
           "target": [
             "article:nth-child(2) > dl > div:nth-child(2) > dd"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#1769c2",
+                "bgColor": "#edf3fa",
+                "contrastRatio": 4.9,
+                "fontSize": "10.8pt (14.4px)",
+                "fontWeight": "normal",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 4.9"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 2\">",
+          "target": [
+            "article:nth-child(2) > .secondary"
           ]
         },
         {
@@ -3173,6 +3173,31 @@
             {
               "id": "color-contrast",
               "data": {
+                "fgColor": "#1769c2",
+                "bgColor": "#edf3fa",
+                "contrastRatio": 4.9,
+                "fontSize": "10.8pt (14.4px)",
+                "fontWeight": "normal",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 4.9"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 3\">",
+          "target": [
+            "article:nth-child(3) > .secondary"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
                 "fgColor": "#11131b",
                 "bgColor": "#ffffff",
                 "contrastRatio": 18.53,
@@ -3316,6 +3341,31 @@
           "html": "<dd>Pejabat dari layanan</dd>",
           "target": [
             "article:nth-child(4) > dl > div:nth-child(2) > dd"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#1769c2",
+                "bgColor": "#edf3fa",
+                "contrastRatio": 4.9,
+                "fontSize": "10.8pt (14.4px)",
+                "fontWeight": "normal",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 4.9"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 4\">",
+          "target": [
+            "article:nth-child(4) > .secondary"
           ]
         },
         {
@@ -3473,6 +3523,31 @@
             {
               "id": "color-contrast",
               "data": {
+                "fgColor": "#1769c2",
+                "bgColor": "#edf3fa",
+                "contrastRatio": 4.9,
+                "fontSize": "10.8pt (14.4px)",
+                "fontWeight": "normal",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 4.9"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 5\">",
+          "target": [
+            "article:nth-child(5) > .secondary"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
                 "fgColor": "#11131b",
                 "bgColor": "#ffffff",
                 "contrastRatio": 18.53,
@@ -3616,6 +3691,31 @@
           "html": "<dd>Pejabat dari layanan</dd>",
           "target": [
             "article:nth-child(6) > dl > div:nth-child(2) > dd"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#1769c2",
+                "bgColor": "#edf3fa",
+                "contrastRatio": 4.9,
+                "fontSize": "10.8pt (14.4px)",
+                "fontWeight": "normal",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 4.9"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 6\">",
+          "target": [
+            "article:nth-child(6) > .secondary"
           ]
         },
         {
@@ -3773,6 +3873,31 @@
             {
               "id": "color-contrast",
               "data": {
+                "fgColor": "#1769c2",
+                "bgColor": "#edf3fa",
+                "contrastRatio": 4.9,
+                "fontSize": "10.8pt (14.4px)",
+                "fontWeight": "normal",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 4.9"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 7\">",
+          "target": [
+            "article:nth-child(7) > .secondary"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
                 "fgColor": "#596273",
                 "bgColor": "#ffffff",
                 "contrastRatio": 6.14,
@@ -3873,24 +3998,24 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#1d1d1f",
+                "fgColor": "#11131b",
                 "bgColor": "#ffffff",
-                "contrastRatio": 16.82,
+                "contrastRatio": 18.53,
                 "fontSize": "18.0pt (24px)",
                 "fontWeight": "bold",
                 "expectedContrastRatio": "3:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 16.82"
+              "message": "Element has sufficient color contrast of 18.53"
             }
           ],
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<h2 id=\"radix-_r_d_\">Batalkan kunjungan</h2>",
+          "html": "<h2 id=\"radix-_r_o_\">Batalkan kunjungan</h2>",
           "target": [
-            "#radix-_r_d_"
+            "#radix-_r_o_"
           ]
         },
         {
@@ -3898,24 +4023,24 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#63636c",
+                "fgColor": "#596273",
                 "bgColor": "#ffffff",
-                "contrastRatio": 5.94,
+                "contrastRatio": 6.14,
                 "fontSize": "10.3pt (13.76px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 5.94"
+              "message": "Element has sufficient color contrast of 6.14"
             }
           ],
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<p id=\"radix-_r_e_\">Pembatalan oleh petugas dicatat dalam audit dan menutup izin masuk serta reservasi. Tindakan ini juga dapat dilakukan sesudah waktu mulai jika Anda berwenang.</p>",
+          "html": "<p id=\"radix-_r_p_\">Pembatalan oleh petugas dicatat dalam audit dan menutup izin masuk serta reservasi. Tindakan ini juga dapat dilakukan sesudah waktu mulai jika Anda berwenang.</p>",
           "target": [
-            "#radix-_r_e_"
+            "#radix-_r_p_"
           ]
         },
         {
@@ -3923,16 +4048,16 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#1d1d1f",
+                "fgColor": "#11131b",
                 "bgColor": "#ffffff",
-                "contrastRatio": 16.82,
+                "contrastRatio": 18.53,
                 "fontSize": "12.6pt (16.8px)",
                 "fontWeight": "bold",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 16.82"
+              "message": "Element has sufficient color contrast of 18.53"
             }
           ],
           "all": [],
@@ -3948,16 +4073,16 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#63636c",
+                "fgColor": "#596273",
                 "bgColor": "#ffffff",
-                "contrastRatio": 5.94,
+                "contrastRatio": 6.14,
                 "fontSize": "11.3pt (15px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 5.94"
+              "message": "Element has sufficient color contrast of 6.14"
             }
           ],
           "all": [],
@@ -3973,16 +4098,16 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#63636c",
+                "fgColor": "#596273",
                 "bgColor": "#ffffff",
-                "contrastRatio": 5.94,
+                "contrastRatio": 6.14,
                 "fontSize": "11.3pt (15px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 5.94"
+              "message": "Element has sufficient color contrast of 6.14"
             }
           ],
           "all": [],
@@ -3998,16 +4123,16 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#63636c",
+                "fgColor": "#596273",
                 "bgColor": "#ffffff",
-                "contrastRatio": 5.94,
+                "contrastRatio": 6.14,
                 "fontSize": "9.8pt (13px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 5.94"
+              "message": "Element has sufficient color contrast of 6.14"
             }
           ],
           "all": [],
@@ -4023,16 +4148,16 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#1d1d1f",
+                "fgColor": "#11131b",
                 "bgColor": "#ffffff",
-                "contrastRatio": 16.82,
-                "fontSize": "10.0pt (13.28px)",
+                "contrastRatio": 18.53,
+                "fontSize": "10.5pt (14px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 16.82"
+              "message": "Element has sufficient color contrast of 18.53"
             }
           ],
           "all": [],
@@ -4048,16 +4173,16 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#1d1d1f",
+                "fgColor": "#11131b",
                 "bgColor": "#ffffff",
-                "contrastRatio": 16.82,
+                "contrastRatio": 18.53,
                 "fontSize": "12.0pt (16px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 16.82"
+              "message": "Element has sufficient color contrast of 18.53"
             }
           ],
           "all": [],
@@ -4073,16 +4198,16 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#63636c",
+                "fgColor": "#596273",
                 "bgColor": "#ffffff",
-                "contrastRatio": 5.94,
-                "fontSize": "9.4pt (12.48px)",
+                "contrastRatio": 6.14,
+                "fontSize": "9.8pt (13px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 5.94"
+              "message": "Element has sufficient color contrast of 6.14"
             }
           ],
           "all": [],
@@ -4098,16 +4223,16 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#1d1d1f",
+                "fgColor": "#11131b",
                 "bgColor": "#ffffff",
-                "contrastRatio": 16.82,
-                "fontSize": "10.0pt (13.28px)",
+                "contrastRatio": 18.53,
+                "fontSize": "10.5pt (14px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 16.82"
+              "message": "Element has sufficient color contrast of 18.53"
             }
           ],
           "all": [],
@@ -4123,16 +4248,16 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#63636c",
+                "fgColor": "#596273",
                 "bgColor": "#ffffff",
-                "contrastRatio": 5.94,
-                "fontSize": "10.0pt (13.28px)",
+                "contrastRatio": 6.14,
+                "fontSize": "10.5pt (14px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 5.94"
+              "message": "Element has sufficient color contrast of 6.14"
             }
           ],
           "all": [],
@@ -4148,16 +4273,16 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#1d1d1f",
+                "fgColor": "#11131b",
                 "bgColor": "#ffffff",
-                "contrastRatio": 16.82,
+                "contrastRatio": 18.53,
                 "fontSize": "12.0pt (16px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 16.82"
+              "message": "Element has sufficient color contrast of 18.53"
             }
           ],
           "all": [],
@@ -4173,16 +4298,16 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#63636c",
+                "fgColor": "#596273",
                 "bgColor": "#ffffff",
-                "contrastRatio": 5.94,
-                "fontSize": "9.4pt (12.48px)",
+                "contrastRatio": 6.14,
+                "fontSize": "9.8pt (13px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 5.94"
+              "message": "Element has sufficient color contrast of 6.14"
             }
           ],
           "all": [],
@@ -4252,7 +4377,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<html lang=\"id\">",
+          "html": "<html lang=\"id\" data-ui-theme=\"staff\">",
           "target": [
             "html"
           ]
@@ -4288,7 +4413,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<select id=\"booking-status\" class=\"control\">",
+          "html": "<select id=\"booking-status\" class=\"select-control control\">",
           "target": [
             "#booking-status"
           ]
@@ -4306,7 +4431,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<select id=\"booking-sort\" class=\"control\" aria-label=\"Urutan janji temu\">",
+          "html": "<select id=\"booking-sort\" aria-label=\"Urutan kunjungan\" class=\"select-control control\">",
           "target": [
             "#booking-sort"
           ]
@@ -4315,7 +4440,7 @@
           "any": [
             {
               "id": "duplicate-id-aria",
-              "data": "radix-_r_d_",
+              "data": "radix-_r_o_",
               "relatedNodes": [],
               "impact": "critical",
               "message": "Document has no elements referenced with ARIA or labels that share the same id attribute"
@@ -4324,16 +4449,16 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<h2 id=\"radix-_r_d_\">Batalkan kunjungan</h2>",
+          "html": "<h2 id=\"radix-_r_o_\">Batalkan kunjungan</h2>",
           "target": [
-            "#radix-_r_d_"
+            "#radix-_r_o_"
           ]
         },
         {
           "any": [
             {
               "id": "duplicate-id-aria",
-              "data": "radix-_r_e_",
+              "data": "radix-_r_p_",
               "relatedNodes": [],
               "impact": "critical",
               "message": "Document has no elements referenced with ARIA or labels that share the same id attribute"
@@ -4342,9 +4467,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<p id=\"radix-_r_e_\">Pembatalan oleh petugas dicatat dalam audit dan menutup izin masuk serta reservasi. Tindakan ini juga dapat dilakukan sesudah waktu mulai jika Anda berwenang.</p>",
+          "html": "<p id=\"radix-_r_p_\">Pembatalan oleh petugas dicatat dalam audit dan menutup izin masuk serta reservasi. Tindakan ini juga dapat dilakukan sesudah waktu mulai jika Anda berwenang.</p>",
           "target": [
-            "#radix-_r_e_"
+            "#radix-_r_p_"
           ]
         },
         {
@@ -4445,9 +4570,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<h2 id=\"radix-_r_d_\">Batalkan kunjungan</h2>",
+          "html": "<h2 id=\"radix-_r_o_\">Batalkan kunjungan</h2>",
           "target": [
-            "#radix-_r_d_"
+            "#radix-_r_o_"
           ]
         },
         {
@@ -4579,9 +4704,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<h2 id=\"radix-_r_d_\">Batalkan kunjungan</h2>",
+          "html": "<h2 id=\"radix-_r_o_\">Batalkan kunjungan</h2>",
           "target": [
-            "#radix-_r_d_"
+            "#radix-_r_o_"
           ]
         },
         {
@@ -4636,7 +4761,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<html lang=\"id\">",
+          "html": "<html lang=\"id\" data-ui-theme=\"staff\">",
           "target": [
             "html"
           ]
@@ -4675,7 +4800,7 @@
             }
           ],
           "impact": null,
-          "html": "<html lang=\"id\">",
+          "html": "<html lang=\"id\" data-ui-theme=\"staff\">",
           "target": [
             "html"
           ]
@@ -4848,7 +4973,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<html lang=\"id\">",
+          "html": "<html lang=\"id\" data-ui-theme=\"staff\">",
           "target": [
             "html"
           ]
@@ -4954,7 +5079,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button class=\"button ghost \" aria-label=\"Tutup dialog\" type=\"button\">",
+          "html": "<button class=\"button ghost button-icon \" aria-label=\"Tutup dialog\" type=\"button\">",
           "target": [
             "button[aria-label=\"Tutup dialog\"]"
           ]
@@ -4974,7 +5099,7 @@
           "impact": null,
           "html": "<button class=\"button ghost \" type=\"button\">Kembali</button>",
           "target": [
-            ".form-actions > .ghost.button[type=\"button\"]"
+            ".form-actions > .ghost[type=\"button\"]"
           ]
         },
         {
@@ -5021,7 +5146,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<html lang=\"id\">",
+          "html": "<html lang=\"id\" data-ui-theme=\"staff\">",
           "target": [
             "html"
           ]
@@ -5096,9 +5221,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_n_\" aria-describedby=\"radix-_r_p_\" aria-labelledby=\"radix-_r_o_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_n_"
           ]
         },
         {
@@ -5156,7 +5281,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div><h2 id=\"radix-_r_d_\">Batalkan kunjungan</h2><p id=\"radix-_r_e_\">Pembatalan oleh petugas dicatat dalam audit dan menutup izin masuk serta reservasi. Tindakan ini juga dapat dilakukan sesudah waktu mulai jika Anda berwenang.</p></div>",
+          "html": "<div><h2 id=\"radix-_r_o_\">Batalkan kunjungan</h2><p id=\"radix-_r_p_\">Pembatalan oleh petugas dicatat dalam audit dan menutup izin masuk serta reservasi. Tindakan ini juga dapat dilakukan sesudah waktu mulai jika Anda berwenang.</p></div>",
           "target": [
             ".modal-heading > div"
           ]
@@ -5176,9 +5301,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<h2 id=\"radix-_r_d_\">Batalkan kunjungan</h2>",
+          "html": "<h2 id=\"radix-_r_o_\">Batalkan kunjungan</h2>",
           "target": [
-            "#radix-_r_d_"
+            "#radix-_r_o_"
           ]
         },
         {
@@ -5196,9 +5321,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<p id=\"radix-_r_e_\">Pembatalan oleh petugas dicatat dalam audit dan menutup izin masuk serta reservasi. Tindakan ini juga dapat dilakukan sesudah waktu mulai jika Anda berwenang.</p>",
+          "html": "<p id=\"radix-_r_p_\">Pembatalan oleh petugas dicatat dalam audit dan menutup izin masuk serta reservasi. Tindakan ini juga dapat dilakukan sesudah waktu mulai jika Anda berwenang.</p>",
           "target": [
-            "#radix-_r_e_"
+            "#radix-_r_p_"
           ]
         },
         {
@@ -5216,7 +5341,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button class=\"button ghost \" aria-label=\"Tutup dialog\" type=\"button\">",
+          "html": "<button class=\"button ghost button-icon \" aria-label=\"Tutup dialog\" type=\"button\">",
           "target": [
             "button[aria-label=\"Tutup dialog\"]"
           ]
@@ -5658,7 +5783,7 @@
           "impact": null,
           "html": "<button class=\"button ghost \" type=\"button\">Kembali</button>",
           "target": [
-            ".form-actions > .ghost.button[type=\"button\"]"
+            ".form-actions > .ghost[type=\"button\"]"
           ]
         },
         {
@@ -5747,9 +5872,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_n_\" aria-describedby=\"radix-_r_p_\" aria-labelledby=\"radix-_r_o_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_n_"
           ]
         }
       ]
@@ -5774,12 +5899,12 @@
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 50,
+                "width": 44,
                 "height": 44
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (50px by 44px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (44px by 44px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -5795,7 +5920,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button class=\"button ghost \" aria-label=\"Tutup dialog\" type=\"button\">",
+          "html": "<button class=\"button ghost button-icon \" aria-label=\"Tutup dialog\" type=\"button\">",
           "target": [
             "button[aria-label=\"Tutup dialog\"]"
           ]
@@ -5806,12 +5931,12 @@
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 314,
+                "width": 304,
                 "height": 120
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (314px by 120px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (304px by 120px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -5838,12 +5963,12 @@
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 314,
+                "width": 304,
                 "height": 96
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (314px by 96px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (304px by 96px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -5870,12 +5995,12 @@
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 82.6,
+                "width": 87.2,
                 "height": 44
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (82.6px by 44px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (87.2px by 44px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -5893,7 +6018,7 @@
           "impact": null,
           "html": "<button class=\"button ghost \" type=\"button\">Kembali</button>",
           "target": [
-            ".form-actions > .ghost.button[type=\"button\"]"
+            ".form-actions > .ghost[type=\"button\"]"
           ]
         },
         {
@@ -5902,12 +6027,12 @@
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 159.7,
+                "width": 169.3,
                 "height": 44
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (159.7px by 44px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (169.3px by 44px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -5958,7 +6083,7 @@
               "data": null,
               "relatedNodes": [
                 {
-                  "html": "<span data-radix-focus-guard=\"\" tabindex=\"0\" data-aria-hidden=\"true\" aria-hidden=\"true\" style=\"outline: none; opacity: 0; position: fixed; pointer-events: none;\"></span>",
+                  "html": "<span data-radix-focus-guard=\"\" tabindex=\"0\" style=\"outline: none; opacity: 0; position: fixed; pointer-events: none;\" data-aria-hidden=\"true\" aria-hidden=\"true\"></span>",
                   "target": [
                     "span[data-radix-focus-guard=\"\"][data-aria-hidden=\"true\"][aria-hidden=\"true\"]:nth-child(1)"
                   ]
@@ -5970,7 +6095,7 @@
           ],
           "none": [],
           "impact": "serious",
-          "html": "<span data-radix-focus-guard=\"\" tabindex=\"0\" data-aria-hidden=\"true\" aria-hidden=\"true\" style=\"outline: none; opacity: 0; position: fixed; pointer-events: none;\"></span>",
+          "html": "<span data-radix-focus-guard=\"\" tabindex=\"0\" style=\"outline: none; opacity: 0; position: fixed; pointer-events: none;\" data-aria-hidden=\"true\" aria-hidden=\"true\"></span>",
           "target": [
             "span[data-radix-focus-guard=\"\"][data-aria-hidden=\"true\"][aria-hidden=\"true\"]:nth-child(1)"
           ],
@@ -6010,7 +6135,7 @@
               "data": null,
               "relatedNodes": [
                 {
-                  "html": "<button class=\"button ghost menu-button\" aria-label=\"Buka navigasi\" aria-expanded=\"false\">",
+                  "html": "<button class=\"button ghost button-icon menu-button\" aria-label=\"Buka navigasi\" aria-expanded=\"false\">",
                   "target": [
                     ".menu-button"
                   ]
@@ -6022,19 +6147,19 @@
                   ]
                 },
                 {
-                  "html": "<select id=\"booking-status\" class=\"control\">",
+                  "html": "<select id=\"booking-status\" class=\"select-control control\">",
                   "target": [
                     "#booking-status"
                   ]
                 },
                 {
-                  "html": "<input class=\"control\" aria-label=\"Cari janji temu\" placeholder=\"Cari nama, instansi, atau tujuan…\" value=\"\" style=\"\">",
+                  "html": "<input aria-label=\"Cari kunjungan\" placeholder=\"Cari nama, instansi, atau tujuan…\" class=\"control\" type=\"search\" value=\"\" style=\"\">",
                   "target": [
                     "input"
                   ]
                 },
                 {
-                  "html": "<select id=\"booking-sort\" class=\"control\" aria-label=\"Urutan janji temu\">",
+                  "html": "<select id=\"booking-sort\" aria-label=\"Urutan kunjungan\" class=\"select-control control\">",
                   "target": [
                     "#booking-sort"
                   ]
@@ -6042,47 +6167,47 @@
                 {
                   "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 1\">",
                   "target": [
-                    "article:nth-child(1) > .secondary.button"
+                    "article:nth-child(1) > .secondary"
                   ]
                 },
                 {
                   "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 2\">",
                   "target": [
-                    "article:nth-child(2) > .secondary.button"
+                    "article:nth-child(2) > .secondary"
                   ]
                 },
                 {
                   "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 3\">",
                   "target": [
-                    "article:nth-child(3) > .secondary.button"
+                    "article:nth-child(3) > .secondary"
                   ]
                 },
                 {
                   "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 4\">",
                   "target": [
-                    "article:nth-child(4) > .secondary.button"
+                    "article:nth-child(4) > .secondary"
                   ]
                 },
                 {
                   "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 5\">",
                   "target": [
-                    "article:nth-child(5) > .secondary.button"
+                    "article:nth-child(5) > .secondary"
                   ]
                 },
                 {
                   "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 6\">",
                   "target": [
-                    "article:nth-child(6) > .secondary.button"
+                    "article:nth-child(6) > .secondary"
                   ]
                 },
                 {
                   "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 7\">",
                   "target": [
-                    "article:nth-child(7) > .secondary.button"
+                    "article:nth-child(7) > .secondary"
                   ]
                 },
                 {
-                  "html": "<button class=\"button ghost \" aria-label=\"Halaman berikutnya\">",
+                  "html": "<button class=\"button ghost button-icon \" aria-label=\"Halaman berikutnya\">",
                   "target": [
                     "button[aria-label=\"Halaman berikutnya\"]"
                   ]
@@ -6108,7 +6233,7 @@
               "data": null,
               "relatedNodes": [
                 {
-                  "html": "<span data-radix-focus-guard=\"\" tabindex=\"0\" data-aria-hidden=\"true\" aria-hidden=\"true\" style=\"outline: none; opacity: 0; position: fixed; pointer-events: none;\"></span>",
+                  "html": "<span data-radix-focus-guard=\"\" tabindex=\"0\" style=\"outline: none; opacity: 0; position: fixed; pointer-events: none;\" data-aria-hidden=\"true\" aria-hidden=\"true\"></span>",
                   "target": [
                     "span[data-radix-focus-guard=\"\"][data-aria-hidden=\"true\"][aria-hidden=\"true\"]:nth-child(5)"
                   ]
@@ -6120,7 +6245,7 @@
           ],
           "none": [],
           "impact": "serious",
-          "html": "<span data-radix-focus-guard=\"\" tabindex=\"0\" data-aria-hidden=\"true\" aria-hidden=\"true\" style=\"outline: none; opacity: 0; position: fixed; pointer-events: none;\"></span>",
+          "html": "<span data-radix-focus-guard=\"\" tabindex=\"0\" style=\"outline: none; opacity: 0; position: fixed; pointer-events: none;\" data-aria-hidden=\"true\" aria-hidden=\"true\"></span>",
           "target": [
             "span[data-radix-focus-guard=\"\"][data-aria-hidden=\"true\"][aria-hidden=\"true\"]:nth-child(5)"
           ],
@@ -6153,6 +6278,70 @@
               "id": "color-contrast",
               "data": {
                 "contrastRatio": 0,
+                "fontSize": "12.0pt (16px)",
+                "fontWeight": "normal",
+                "messageKey": "bgImage",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<select id=\"booking-status\" class=\"select-control control\">",
+                  "target": [
+                    "#booking-status"
+                  ]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element's background color could not be determined due to a background image"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<select id=\"booking-status\" class=\"select-control control\">",
+          "target": [
+            "#booking-status"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background image"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "contrastRatio": 0,
+                "fontSize": "12.0pt (16px)",
+                "fontWeight": "normal",
+                "messageKey": "bgImage",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<select id=\"booking-sort\" aria-label=\"Urutan kunjungan\" class=\"select-control control\">",
+                  "target": [
+                    "#booking-sort"
+                  ]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element's background color could not be determined due to a background image"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<select id=\"booking-sort\" aria-label=\"Urutan kunjungan\" class=\"select-control control\">",
+          "target": [
+            "#booking-sort"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background image"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "contrastRatio": 0,
                 "fontSize": "8.8pt (11.68px)",
                 "fontWeight": "normal",
                 "messageKey": "bgGradient",
@@ -6176,38 +6365,6 @@
           "html": "<span class=\"badge status-approved\">",
           "target": [
             "article:nth-child(1) > .booking-mobile-heading > .status-stack > .badge.status-approved"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "contrastRatio": 0,
-                "fontSize": "10.8pt (14.4px)",
-                "fontWeight": "normal",
-                "messageKey": "bgGradient",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 1\">",
-                  "target": [
-                    "article:nth-child(1) > .secondary.button"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element's background color could not be determined due to a background gradient"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 1\">",
-          "target": [
-            "article:nth-child(1) > .secondary.button"
           ],
           "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
         },
@@ -6249,38 +6406,6 @@
               "id": "color-contrast",
               "data": {
                 "contrastRatio": 0,
-                "fontSize": "10.8pt (14.4px)",
-                "fontWeight": "normal",
-                "messageKey": "bgGradient",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 2\">",
-                  "target": [
-                    "article:nth-child(2) > .secondary.button"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element's background color could not be determined due to a background gradient"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 2\">",
-          "target": [
-            "article:nth-child(2) > .secondary.button"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "contrastRatio": 0,
                 "fontSize": "8.8pt (11.68px)",
                 "fontWeight": "normal",
                 "messageKey": "bgGradient",
@@ -6304,38 +6429,6 @@
           "html": "<span class=\"badge status-approved\">",
           "target": [
             "article:nth-child(3) > .booking-mobile-heading > .status-stack > .badge.status-approved"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "contrastRatio": 0,
-                "fontSize": "10.8pt (14.4px)",
-                "fontWeight": "normal",
-                "messageKey": "bgGradient",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 3\">",
-                  "target": [
-                    "article:nth-child(3) > .secondary.button"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element's background color could not be determined due to a background gradient"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 3\">",
-          "target": [
-            "article:nth-child(3) > .secondary.button"
           ],
           "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
         },
@@ -6377,38 +6470,6 @@
               "id": "color-contrast",
               "data": {
                 "contrastRatio": 0,
-                "fontSize": "10.8pt (14.4px)",
-                "fontWeight": "normal",
-                "messageKey": "bgGradient",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 4\">",
-                  "target": [
-                    "article:nth-child(4) > .secondary.button"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element's background color could not be determined due to a background gradient"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 4\">",
-          "target": [
-            "article:nth-child(4) > .secondary.button"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "contrastRatio": 0,
                 "fontSize": "8.8pt (11.68px)",
                 "fontWeight": "normal",
                 "messageKey": "bgGradient",
@@ -6432,38 +6493,6 @@
           "html": "<span class=\"badge status-approved\">",
           "target": [
             "article:nth-child(5) > .booking-mobile-heading > .status-stack > .badge.status-approved"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "contrastRatio": 0,
-                "fontSize": "10.8pt (14.4px)",
-                "fontWeight": "normal",
-                "messageKey": "bgGradient",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 5\">",
-                  "target": [
-                    "article:nth-child(5) > .secondary.button"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element's background color could not be determined due to a background gradient"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 5\">",
-          "target": [
-            "article:nth-child(5) > .secondary.button"
           ],
           "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
         },
@@ -6505,38 +6534,6 @@
               "id": "color-contrast",
               "data": {
                 "contrastRatio": 0,
-                "fontSize": "10.8pt (14.4px)",
-                "fontWeight": "normal",
-                "messageKey": "bgGradient",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 6\">",
-                  "target": [
-                    "article:nth-child(6) > .secondary.button"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element's background color could not be determined due to a background gradient"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 6\">",
-          "target": [
-            "article:nth-child(6) > .secondary.button"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "contrastRatio": 0,
                 "fontSize": "8.8pt (11.68px)",
                 "fontWeight": "normal",
                 "messageKey": "bgGradient",
@@ -6560,38 +6557,6 @@
           "html": "<span class=\"badge status-approved\">",
           "target": [
             "article:nth-child(7) > .booking-mobile-heading > .status-stack > .badge.status-approved"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "contrastRatio": 0,
-                "fontSize": "10.8pt (14.4px)",
-                "fontWeight": "normal",
-                "messageKey": "bgGradient",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 7\">",
-                  "target": [
-                    "article:nth-child(7) > .secondary.button"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element's background color could not be determined due to a background gradient"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<button class=\"button secondary \" aria-label=\"Lihat detail Contract Visitor 7\">",
-          "target": [
-            "article:nth-child(7) > .secondary.button"
           ],
           "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
         },
@@ -6640,9 +6605,9 @@
               },
               "relatedNodes": [
                 {
-                  "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+                  "html": "<div role=\"dialog\" id=\"radix-_r_n_\" aria-describedby=\"radix-_r_p_\" aria-labelledby=\"radix-_r_o_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
                   "target": [
-                    "#radix-_r_c_"
+                    "#radix-_r_n_"
                   ]
                 }
               ],
@@ -6655,7 +6620,7 @@
           "impact": "serious",
           "html": "<button class=\"button ghost \" type=\"button\">Kembali</button>",
           "target": [
-            ".form-actions > .ghost.button[type=\"button\"]"
+            ".form-actions > .ghost[type=\"button\"]"
           ],
           "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
         }

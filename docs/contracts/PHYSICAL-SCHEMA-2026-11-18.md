@@ -1,6 +1,6 @@
 # Physical schema and per-table migrations
 
-18 November 2026, WITA. This is the build target for the [backend spec](../../.scratch/backend-api-2026-11-18/spec.md). It follows the user's database diagram strictly. It departs from the diagram only where an earlier agreement says otherwise; every departure is cited in the **Source** column.
+18 November 2026, WITA. This is the build target for the [backend spec](../specs/backend-api-2026-11-18/spec.md). It follows the user's database diagram strictly. It departs from the diagram only where an earlier agreement says otherwise; every departure is cited in the **Source** column.
 
 Decisions recorded today (user, 18 November 2026):
 
@@ -11,7 +11,7 @@ Decisions recorded today (user, 18 November 2026):
 
 Source abbreviations:
 - **Diagram**: the user's DB design.
-- **Dnn**: decision ticket nn in the [decision map](../../.scratch/frontend-driven-api-2026-11-16/map.md).
+- **Dnn**: decision ticket nn in the [decision map](../specs/frontend-driven-api-2026-11-16/map.md).
 - **Org**: the 15 November organization agreement.
 - **Contract**: required by the agreed REST operations.
 - **Plan**: the earlier [backend plan](../BACKEND-PLAN-2026-11-11.md), which agreed that operational records live in a separate `support` schema.

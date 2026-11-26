@@ -257,9 +257,9 @@ export default function BookingForm({
           aria-describedby={f.formState.errors[key] ? `${key}-error` : undefined}
         />
         {f.formState.errors[key] && (
-          <span id={`${key}-error`} className="field-error" role="alert">
+          <FieldMessage tone="error" id={`${key}-error`}>
             {localizeMessage(String(f.formState.errors[key]?.message), language)}
-          </span>
+          </FieldMessage>
         )}
       </div>
     );
@@ -668,9 +668,9 @@ export default function BookingForm({
                         ))}
                     </Select>
                     {f.formState.errors.officerId && (
-                      <span id="officerId-error" role="alert" className="field-error">
+                      <FieldMessage tone="error" id="officerId-error">
                         {localizeMessage(f.formState.errors.officerId.message, language)}
-                      </span>
+                      </FieldMessage>
                     )}
                   </div>
                   <Controller
@@ -730,9 +730,9 @@ export default function BookingForm({
                       aria-describedby={f.formState.errors.purpose ? "purpose-error" : undefined}
                     />
                     {f.formState.errors.purpose && (
-                      <span id="purpose-error" className="field-error" role="alert">
+                      <FieldMessage tone="error" id="purpose-error">
                         {localizeMessage(f.formState.errors.purpose.message, language)}
-                      </span>
+                      </FieldMessage>
                     )}
                   </div>
                 </div>
@@ -885,20 +885,20 @@ export default function BookingForm({
                       <GroupHeading className="roster-title">
                         {t("Rombongan pengunjung", "Visitor group")}
                       </GroupHeading>
-                      <small className="form-help">
+                      <FieldMessage>
                         {array.fields.length + 1}{" "}
                         {t(
                           "orang, termasuk perwakilan. Maksimal 20 orang.",
                           "people including the representative. Up to 20 people.",
                         )}
-                      </small>
+                      </FieldMessage>
                     </div>
                     <Users size={21} />
                   </div>
                   {f.formState.errors.visitors?.message && (
-                    <p role="alert" className="field-error">
+                    <FieldMessage tone="error">
                       {localizeMessage(f.formState.errors.visitors.message, language)}
-                    </p>
+                    </FieldMessage>
                   )}
                   {array.fields.map((item, i) => (
                     <div className="form-roster-row" key={item.id}>
@@ -917,14 +917,15 @@ export default function BookingForm({
                           }
                         />
                         {f.formState.errors.visitors?.[i]?.name && (
-                          <span id={`visitor-${i}-error`} role="alert" className="field-error">
+                          <FieldMessage tone="error" id={`visitor-${i}-error`}>
                             {localizeMessage(f.formState.errors.visitors[i]?.name?.message, language)}
-                          </span>
+                          </FieldMessage>
                         )}
                       </div>
                       <Button
                         type="button"
                         kind="ghost"
+                        size="icon"
                         aria-label={`${t("Hapus pengunjung", "Remove visitor")} ${i + 2}`}
                         onClick={() => array.remove(i)}
                       >
@@ -1019,16 +1020,16 @@ export default function BookingForm({
                   />
                   <span>
                     {t("Saya telah membaca", "I have read the")}{" "}
-                    <button
+                    <Button
                       type="button"
-                      className="privacy-link"
+                      kind="inline-link"
                       onClick={(event) => {
                         privacyTrigger.current = event.currentTarget;
                         setPrivacy(true);
                       }}
                     >
                       {t("pemberitahuan privasi", "privacy notice")}
-                    </button>{" "}
+                    </Button>{" "}
                     {t(
                       "dan memastikan data rombongan benar. Data digunakan untuk pengelolaan dan verifikasi kunjungan.",
                       "and confirm that the visitor details are correct. The data is used to manage and verify the visit.",
@@ -1037,9 +1038,9 @@ export default function BookingForm({
                   </span>
                 </label>
                 {f.formState.errors.ack && (
-                  <span id="ack-error" className="field-error" role="alert">
+                  <FieldMessage tone="error" id="ack-error">
                     {localizeMessage(f.formState.errors.ack.message, language)}
-                  </span>
+                  </FieldMessage>
                 )}
               </>
             )}

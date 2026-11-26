@@ -15,9 +15,10 @@ import (
 func TestRestrictedBookingKeys(t *testing.T) {
 	at := time.Date(2026, 11, 19, 4, 0, 0, 0, time.UTC)
 	private := "private-example"
+	roomID := int32(6)
 	visit := entity.StaffVisit{
 		Visit: entity.Visit{ID: 123, Kind: "terbatas", Code: "00123456", Date: "2026-11-19", Time: "12:30", Duration: 60,
-			Status: "approved", Version: 7, Name: "Restricted Name", Organization: "Organization", OfficerID: 5, OfficerName: "Officer",
+			Status: "approved", Version: 7, Name: "Restricted Name", Organization: "Organization", OfficerID: 5, OfficerName: "Officer", RoomID: &roomID,
 			Email: "private@example.test", Phone: "08123456789", IdentityType: "KTP", Visitors: []string{"Other visitor"},
 			NDName: &private, Instructions: &private, Rejection: &private, Cancellation: &private},
 		ServiceID: &private, CoordinationNote: &private, InternalRejection: &private, InternalCancellation: &private,
@@ -27,7 +28,7 @@ func TestRestrictedBookingKeys(t *testing.T) {
 	base := []string{"id", "date", "time", "duration", "room", "status", "version", "timing", "visitKind", "rescheduled", "reference", "restrictedView"}
 	identity := append(slices.Clone(base), "name", "officerId", "pejabat", "serviceIdLast4")
 	assigned := append(slices.Clone(identity), "organization")
-	full := append(slices.Clone(assigned), "code", "serviceId", "history", "createdBy", "visitorInstructions", "coordinationNote",
+	full := append(slices.Clone(assigned), "code", "roomId", "serviceId", "history", "createdBy", "visitorInstructions", "coordinationNote",
 		"rejectionReason", "internalRejectionNote", "cancellationReason", "internalCancellationNote")
 	for _, tc := range []struct {
 		role, view string

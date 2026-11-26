@@ -3,44 +3,23 @@ import { createContext, useContext, useEffect, useRef, useState, type ReactNode 
 import { apiBase, preview } from "./config.ts";
 import { roles, sessionFor, type Role, type Session, type PendingSession } from "./domain.ts";
 import { ApiError } from "./errors.ts";
-import { createHttpClient, onAuthenticationLoss } from "./http.ts";
+import { withLoginFormRecovery } from "./login-form.ts";
+import {
+  createHttpClient,
+  onAuthenticationLoss,
+  onStaffAuthorityChange,
+  refreshStaffAccess,
+} from "./http.ts";
 import { parseSession, sessionKey } from "./session-contract.ts";
 import { canSwitchRole } from "./unsaved.ts";
-import { csrfToken, setStaffAccessToken, staffAccessToken } from "./access-token.ts";
+import { adoptStaffAccess, clearStaffAccess, staffAccess } from "./access-token.ts";
 
 const request = createHttpClient(apiBase);
-function adoptSession(value: unknown) {
-  const result = value as { accessToken?: unknown; session?: unknown } | null;
-  if (typeof result?.accessToken !== "string" || !result.accessToken)
-    throw new ApiError(502, "Sesi masuk tidak valid. Coba lagi.");
-  const session = parseSession(result.session);
-  setStaffAccessToken(result.accessToken);
-  return session;
-}
-
-let refreshRequestId: string | undefined;
-let refreshInFlight: Promise<Session | PendingSession> | undefined;
+const staffSessionQueryKey = ["session", "current"];
+const activityEvents = ["pointerdown", "keydown", "input", "wheel"];
 async function readSession() {
-  if (staffAccessToken())
-    return parseSession(await request("/staff/session", { authenticated: true }));
-  if (!csrfToken()) throw new ApiError(401, "Silakan masuk.");
-  if (!refreshInFlight) {
-    refreshRequestId ||= crypto.randomUUID();
-    refreshInFlight = request("/staff/session/refresh", { body: { refreshRequestId } })
-      .then((value) => {
-        const session = adoptSession(value);
-        refreshRequestId = undefined;
-        return session;
-      })
-      .catch((error: unknown) => {
-        if (error instanceof ApiError && error.status < 500) refreshRequestId = undefined;
-        throw error;
-      })
-      .finally(() => {
-        refreshInFlight = undefined;
-      });
-  }
-  return refreshInFlight;
+  if (staffAccess()) return parseSession(await request("/staff/session", { authenticated: true }));
+  return (await refreshStaffAccess()).session;
 }
 function isPendingSession(value: Session | PendingSession): value is PendingSession {
   return value.role === "";
@@ -50,11 +29,13 @@ function isActiveSession(value: Session | PendingSession): value is Session {
 }
 export async function changePassword(currentPassword: string, newPassword: string) {
   if (preview) throw new ApiError(400, "Penggantian kata sandi tidak tersedia pada pratinjau.");
-  adoptSession(
+  const started = performance.now();
+  adoptStaffAccess(
     await request("/staff/password", {
       body: { currentPassword, newPassword },
       authenticated: true,
     }),
+    started,
   );
 }
 const SessionContext = createContext<{
@@ -82,7 +63,11 @@ const SessionContext = createContext<{
 export async function signIn(credentials: { email: string; password: string }) {
   if (preview) return;
   try {
-    adoptSession(await request("/staff/sessions", { body: credentials }));
+    const started = performance.now();
+    adoptStaffAccess(
+      await withLoginFormRecovery(() => request("/staff/sessions", { body: credentials })),
+      started,
+    );
   } catch (error) {
     if (error instanceof ApiError && error.status === 401)
       throw new ApiError(401, "Email atau kata sandi tidak sesuai.");
@@ -100,7 +85,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [previewRole, setPreviewRole] = useState(initialPreviewRole);
   const [expired, setExpired] = useState(false);
   const client = useQueryClient();
-  const key = ["session", preview ? previewRole : "current"];
+  const key = preview ? ["session", previewRole] : staffSessionQueryKey;
   const query = useQuery({
     queryKey: key,
     queryFn: async () => (preview ? sessionFor(previewRole) : readSession()),
@@ -133,6 +118,36 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       }),
     [client],
   );
+  useEffect(
+    () =>
+      onStaffAuthorityChange((next) => {
+        client.setQueryData(staffSessionQueryKey, next);
+      }),
+    [client],
+  );
+  useEffect(() => {
+    if (preview || !fingerprint) return;
+    const controller = new AbortController();
+    let lastRenewal = -Infinity;
+    function reportActivity(event: Event) {
+      const now = performance.now();
+      if (!event.isTrusted || now - lastRenewal < 60_000) return;
+      lastRenewal = now;
+      void request("/staff/session/renew", {
+        body: {},
+        authenticated: true,
+        signal: controller.signal,
+      }).catch(() => {
+        // Activity checks are retried on a later interaction. Confirmed expiry is handled by HTTP.
+      });
+    }
+    for (const type of activityEvents)
+      window.addEventListener(type, reportActivity, { capture: true, passive: true });
+    return () => {
+      controller.abort();
+      for (const type of activityEvents) window.removeEventListener(type, reportActivity, true);
+    };
+  }, [fingerprint]);
   function setRole(role: Role) {
     if (!preview) return;
     client.clear();
@@ -152,12 +167,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       if (preview) {
         setRole(next);
       } else {
-        const selected = adoptSession(
+        const started = performance.now();
+        const selected = adoptStaffAccess(
           await request("/staff/session/role", {
             body: { role: next },
             authenticated: true,
           }),
-        );
+          started,
+        ).session;
         if (selected.roleSelectionRequired || selected.role !== next)
           throw new ApiError(502, "Pilihan peran belum dikonfirmasi.");
       }
@@ -176,7 +193,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         if (!(error instanceof ApiError && error.status === 401)) throw error;
       }
     }
-    setStaffAccessToken();
+    clearStaffAccess();
     client.clear();
     location.assign("/admin/login");
   }

@@ -5,30 +5,49 @@ services:
     ports: !reset []
   migrate:
     profiles: !reset []
+    image: vms-migrate
     command: ["-mode", "up", "-expect-database", "vms_stage1"]
   api:
     profiles: !reset []
+    container_name: vms-backend
     restart: unless-stopped
     environment:
+      APP_PORT: "${APP_PORT:-8080}"
       STAFF_ORIGIN: http://localhost:58101
-      SWAGGER_USERNAME: local
-      SWAGGER_PASSWORD_FILE: /run/secrets/swagger_password
-    ports:
-      - "127.0.0.1:58101:8180"
-    secrets:
-      - swagger_password
+      SWAGGER_USERNAME: ${SWAGGER_USERNAME:-}
+      SWAGGER_PASSWORD: ${SWAGGER_PASSWORD:-}
+      GATEWAY_INIT_NETWORKS: 172.30.81.2/32
+    ports: !override
+      - "127.0.0.1:${APP_PORT:-8080}:${APP_PORT:-8080}"
+    networks:
+      default: {}
+      frontend_gateway:
+        ipv4_address: 172.30.81.3
     depends_on:
       migrate:
         condition: service_completed_successfully
   frontend:
     build:
       context: ../frontendx
-    image: vms-frontend:local-compose
+    image: vms-frontend
     restart: unless-stopped
-    # The private staff handshake reaches the API from loopback.
-    network_mode: service:api
+    ports:
+      - "127.0.0.1:58101:8180"
+    networks:
+      frontend_gateway:
+        ipv4_address: 172.30.81.2
     environment:
       VMS_DOCKER_SITE: "1"
+      APP_PORT: "${APP_PORT:-8080}"
+      VMS_DOCKER_API_HOST: api
+    # Use the checked-out gateway with existing frontend image builds.
+    volumes:
+      - type: bind
+        source: ../frontendx/tooling/backend-site.mjs
+        target: /site/tooling/backend-site.mjs
+        read_only: true
+        bind:
+          create_host_path: false
     secrets:
       - gateway_init_key
     depends_on:
@@ -36,13 +55,15 @@ services:
         condition: service_started
         restart: true
     healthcheck:
-      test: ["CMD", "node", "-e", "require('node:http').get({host:'127.0.0.1',port:8180,headers:{host:'localhost:58101'}},r=>{r.resume();if(r.statusCode!==200)process.exitCode=1}).on('error',()=>process.exitCode=1)"]
+      test: ["CMD", "node", "-e", "require('node:http').get({host:'127.0.0.1',port:8180,path:'/health/ready',headers:{host:'localhost:58101'}},r=>{r.resume();if(r.statusCode!==200)process.exitCode=1}).on('error',()=>process.exitCode=1)"]
       interval: 3s
       timeout: 3s
       retries: 15
-secrets:
-  swagger_password:
-    file: ./.runtime/local/swagger_password
+networks:
+  frontend_gateway:
+    ipam:
+      config:
+        - subnet: 172.30.81.0/29
 volumes:
   pg18_data:
     name: vms-postgres

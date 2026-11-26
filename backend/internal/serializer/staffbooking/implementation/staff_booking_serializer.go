@@ -82,6 +82,10 @@ func restricted(b dto.StaffBooking, v entity.StaffVisit, s dto.Session, arrival 
 		return b
 	}
 	b.RestrictedView, b.ServiceID = ViewFull, v.ServiceID
+	if v.RoomID != nil {
+		room := id(*v.RoomID)
+		b.RoomID = &room
+	}
 	addFull(&b, v, s)
 	return b
 }

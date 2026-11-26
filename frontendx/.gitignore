@@ -12,7 +12,8 @@ dist/
 anti-slop/
 layout-review/
 design-system-review.html
-tests/
+tests/*
+!tests/design-system.test.ts
 tooling/
 .github/
 .prettierignore

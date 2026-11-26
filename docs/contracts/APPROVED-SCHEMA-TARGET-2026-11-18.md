@@ -2,7 +2,7 @@
 
 As of 18 November 2026, WITA. Documentation only; no application or database changes. This summary consolidates explicit user choices. It does not declare outstanding constraints resolved or supersede the supplied diagram silently.
 
-References: [API operation reference](FRONTEND-DRIVEN-REST-API-2026-11-16.md), [detailed contract](FRONTEND-DRIVEN-DETAILS-2026-11-16.md), [diagram/source comparison](DATABASE-MAPPING-2026-11-16.md), [decision tickets](../../.scratch/frontend-driven-api-2026-11-16/map.md).
+References: [API operation reference](FRONTEND-DRIVEN-REST-API-2026-11-16.md), [detailed contract](FRONTEND-DRIVEN-DETAILS-2026-11-16.md), [diagram/source comparison](DATABASE-MAPPING-2026-11-16.md), [decision tickets](../specs/frontend-driven-api-2026-11-16/map.md).
 
 ## Visit and representative ownership
 

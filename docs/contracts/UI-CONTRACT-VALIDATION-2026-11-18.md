@@ -2,11 +2,11 @@
 
 18 November 2026, WITA. Documentation only. No application, migration or contract file was changed.
 
-**Validated:** [operation reference](FRONTEND-DRIVEN-REST-API-2026-11-16.md) (40 ops), [field rules](FRONTEND-DRIVEN-DETAILS-2026-11-16.md), [approved schema target](APPROVED-SCHEMA-TARGET-2026-11-18.md) and [decision log](../../.scratch/frontend-driven-api-2026-11-16/map.md).
+**Validated:** [operation reference](FRONTEND-DRIVEN-REST-API-2026-11-16.md) (40 ops), [field rules](FRONTEND-DRIVEN-DETAILS-2026-11-16.md), [approved schema target](APPROVED-SCHEMA-TARGET-2026-11-18.md) and [decision log](../specs/frontend-driven-api-2026-11-16/map.md).
 
 **Traced against:** every reachable data-consuming component in `frontendx/apps/visitor`, `frontendx/apps/admin` and `frontendx/packages/data/src`. Each one was followed from component to hook, repository, `http.ts` and the zod parser in `wire.ts`/`reports.ts`/`visit-log.ts`. The parser is what decides whether a backend response is accepted.
 
-**Next step:** the [backend implementation spec](../../.scratch/backend-api-2026-11-18/spec.md) turns these findings into build decisions.
+**Next step:** the [backend implementation spec](../specs/backend-api-2026-11-18/spec.md) turns these findings into build decisions.
 
 ## Verdict
 
@@ -65,7 +65,7 @@ Severity key:
 
 ## 2. Gaps and mismatches the backend must resolve
 
-Each row gives the evidence and the resolution the [spec](../../.scratch/backend-api-2026-11-18/spec.md) adopts.
+Each row gives the evidence and the resolution the [spec](../specs/backend-api-2026-11-18/spec.md) adopts.
 
 | ID | Finding | Evidence | Resolution |
 | --- | --- | --- | --- |
@@ -147,11 +147,11 @@ Each default is adopted in the spec until confirmed.
 | D-03 | Restricted edit (op 16): date and time read-only, as the UI does, rather than editable as the contract says. | Read-only |
 | D-04 | Should a staff reschedule reason be shown to the visitor as history `publicMessage` (as the preview does)? | Yes |
 | D-05 | Should the visit-log export snapshot be capped (all-time ranges vs the 15 s client timeout)? | 10,000 rows, then 422 `export_too_large` |
-| D-06 | The UI promises a notification email after staff actions (`VisitNotesFields.tsx:69`). Is the email outbox/worker in this build? | **Decided 18 November 2026:** later, via mailgrid over SMTP. See the [deferred email spec](../../.scratch/email-notifications-2026-11-18/spec.md) |
+| D-06 | The UI promises a notification email after staff actions (`VisitNotesFields.tsx:69`). Is the email outbox/worker in this build? | **Decided 18 November 2026:** later, via mailgrid over SMTP. See the [deferred email spec](../specs/email-notifications-2026-11-18/spec.md) |
 
 ## 6. Frontend work (not backend)
 
-**Ticketed 19 November 2026** as [frontend adapter tickets 01–10](../../.scratch/frontend-adapter-2026-11-19/map.md); that map shows which backend tickets each one waits for.
+**Ticketed 19 November 2026** as [frontend adapter tickets 01–10](../specs/frontend-adapter-2026-11-19/map.md); that map shows which backend tickets each one waits for.
 
 Already agreed, deferred adapter changes. Each breaks the UI against a conformant backend until it ships:
 

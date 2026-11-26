@@ -1,6 +1,7 @@
 import { labels } from "@vms/data";
 import { selectedFilters } from "@vms/data/report-filter";
 import { visitKindLabels, type VisitLogFilter, type VisitLogSnapshot } from "@vms/data/visit-log";
+import oiknLogo from "@vms/ui/assets/ikn-logo.png?inline";
 
 export function visitLogPeriod(filter: VisitLogFilter) {
   if (!filter.from && !filter.to) return "Semua waktu";
@@ -76,7 +77,11 @@ export async function visitLogPdf(snapshot: VisitLogSnapshot) {
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
   const width = doc.internal.pageSize.getWidth();
   const height = doc.internal.pageSize.getHeight();
-  doc.setProperties({ title: "Laporan Log Kunjungan", author: "Otorita Ibu Kota Nusantara" });
+  const margin = 13;
+  const contentTop = 51;
+  const title = "Laporan Kunjungan";
+  const agency = "Otorita Ibu Kota Nusantara";
+  doc.setProperties({ title, author: agency });
   const filter = snapshot.filter;
   const statusNames = selectedFilters(filter.status, "all")
     .filter((status) => status !== "all")
@@ -84,8 +89,9 @@ export async function visitLogPdf(snapshot: VisitLogSnapshot) {
   const kindNames = selectedFilters(filter.kind, "all")
     .filter((kind) => kind !== "all")
     .map((kind) => visitKindLabels[kind]);
-  const destinations = selectedFilters(filter.officer, "")
-    .map((id) => snapshot.items.find((b) => b.officerId === id)?.host || id);
+  const destinations = selectedFilters(filter.officer, "").map(
+    (id) => snapshot.items.find((b) => b.officerId === id)?.host || id,
+  );
   const rooms = selectedFilters(filter.room, "");
   const selected = [
     `Periode: ${visitLogPeriod(filter)}`,
@@ -98,24 +104,29 @@ export async function visitLogPdf(snapshot: VisitLogSnapshot) {
   ]
     .filter(Boolean)
     .join("  |  ");
-  doc.setFontSize(18);
-  doc.setTextColor(25, 45, 66);
-  doc.text("Laporan Log Kunjungan", 12, 17);
   doc.setFontSize(9);
-  doc.text("Otorita Ibu Kota Nusantara · Visitor Management System", 12, 24);
-  doc.setFontSize(8);
-  const filterLines = doc.splitTextToSize(selected, width - 24) as string[];
-  doc.text(filterLines, 12, 32);
-  const summaryY = 34 + filterLines.length * 4;
+  doc.setTextColor(38);
+  const filterLines = doc.splitTextToSize(selected, width - 2 * margin) as string[];
+  let summaryY = contentTop + 3;
+  for (const line of filterLines) {
+    if (summaryY > height - 38) {
+      doc.addPage();
+      summaryY = contentTop + 3;
+    }
+    doc.text(line, margin, summaryY);
+    summaryY += 4.5;
+  }
+  summaryY += 2;
   const s = snapshot.summary;
+  doc.setFont("helvetica", "bold");
   doc.text(
     `Total: ${s.total} kunjungan   |   Pengunjung tercatat: ${s.visitors} orang   |   Sedang berkunjung: ${s.inside}   |   Selesai: ${s.completed}   |   Pending: ${s.pending}`,
-    12,
+    margin,
     summaryY,
   );
   autoTable(doc, {
     startY: summaryY + 5,
-    margin: { top: 15, right: 12, bottom: 19, left: 12 },
+    margin: { top: contentTop, right: margin, bottom: 19, left: margin },
     head: [
       [
         "No. / Referensi",
@@ -147,8 +158,8 @@ export async function visitLogPdf(snapshot: VisitLogSnapshot) {
       overflow: "linebreak",
       valign: "top",
     },
-    headStyles: { fillColor: [29, 57, 83], textColor: 255, fontStyle: "bold" },
-    alternateRowStyles: { fillColor: [245, 248, 250] },
+    headStyles: { fillColor: [42, 71, 53], textColor: 255, fontStyle: "bold" },
+    alternateRowStyles: { fillColor: [244, 247, 244] },
     columnStyles: {
       0: { cellWidth: 26 },
       1: { cellWidth: 38 },
@@ -164,14 +175,34 @@ export async function visitLogPdf(snapshot: VisitLogSnapshot) {
   const pages = doc.getNumberOfPages();
   for (let page = 1; page <= pages; page++) {
     doc.setPage(page);
+    doc.addImage(oiknLogo, "PNG", margin, 9, 19, 19, "oikn-logo");
+    doc.setTextColor(25);
+    doc.setFont("times", "bold");
+    doc.setFontSize(18);
+    doc.text(agency.toUpperCase(), width / 2, 17, { align: "center" });
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text("Sistem Manajemen Pengunjung", width / 2, 23, { align: "center" });
+    doc.setDrawColor(42, 71, 53);
+    doc.setLineWidth(0.8);
+    doc.line(margin, 31, width - margin, 31);
+    doc.setLineWidth(0.25);
+    doc.line(margin, 32.3, width - margin, 32.3);
+    doc.setFont("times", "bold");
+    doc.setFontSize(16);
+    doc.text(title.toUpperCase(), width / 2, 43, { align: "center" });
+
+    doc.setDrawColor(175);
+    doc.line(margin, height - 15, width - margin, height - 15);
+    doc.setFont("helvetica", "normal");
     doc.setFontSize(7);
     doc.setTextColor(90);
     doc.text(
       `Dibuat ${visitLogTimestamp(snapshot.generatedAt)} WITA · Jumlah pengunjung terbatas tidak dicatat.`,
-      12,
+      margin,
       height - 10,
     );
-    doc.text(`Halaman ${page} / ${pages}`, width - 12, height - 10, { align: "right" });
+    doc.text(`Halaman ${page} / ${pages}`, width - margin, height - 10, { align: "right" });
   }
   return doc.output("blob");
 }

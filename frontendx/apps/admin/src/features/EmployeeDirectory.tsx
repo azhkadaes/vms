@@ -4,8 +4,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, preview, sessionKey, useSession } from "@vms/data";
 import { management } from "@vms/data/management";
 import type { Employee } from "@vms/data/management-contract";
-import { Button, Empty, ErrorNotice, Loading } from "@vms/ui";
-import { Eye, Plus, Search } from "lucide-react";
+import { Button, Empty, ErrorNotice, Loading, SearchField, TableRegion } from "@vms/ui";
+import { Eye, Plus } from "lucide-react";
 import { useRef, useState, type MouseEvent } from "react";
 import { useSearchParams } from "react-router";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
@@ -24,14 +24,15 @@ function DirectoryRecords({
     if (trigger) onView(person, trigger);
   }
   const name = (person: Employee) => (
-    <button
+    <Button
       type="button"
+      kind="row-link"
       className="employee-name"
       aria-label={`Lihat detail pegawai ${person.name}`}
       onClick={(event) => onView(person, event.currentTarget)}
     >
       {person.name}
-    </button>
+    </Button>
   );
   const details = (person: Employee) => (
     <Button
@@ -73,7 +74,7 @@ function DirectoryRecords({
           </article>
         ))}
       </div>
-      <div className="table-wrap employee-table">
+      <TableRegion className="employee-table" label="Direktori pegawai">
         <table>
           <caption className="sr-only">Direktori pegawai sesuai pencarian</caption>
           <thead>
@@ -103,7 +104,7 @@ function DirectoryRecords({
             ))}
           </tbody>
         </table>
-      </div>
+      </TableRegion>
     </>
   );
 }
@@ -184,18 +185,13 @@ export default function EmployeeDirectory() {
           </div>
           <div className="employee-search">
             <label htmlFor="employee-search">Cari nama, email, atau peran</label>
-            <div className="search-field">
-              <Search size={17} aria-hidden="true" />
-              <input
-                ref={searchInput}
-                id="employee-search"
-                type="search"
-                className="control"
-                placeholder="Cari pegawai…"
-                value={search}
-                onChange={(event) => changeSearch(event.target.value)}
-              />
-            </div>
+            <SearchField
+              ref={searchInput}
+              id="employee-search"
+              placeholder="Cari pegawai…"
+              value={search}
+              onChange={(event) => changeSearch(event.target.value)}
+            />
             {!!search && (
               <Button
                 kind="ghost"

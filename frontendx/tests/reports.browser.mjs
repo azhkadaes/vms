@@ -1,8 +1,7 @@
 import test, { before, after } from "node:test";
 import assert from "node:assert/strict";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { sessionFor } from "../packages/data/src/domain.ts";
 import { startPreview } from "./helpers/preview-server.mjs";
 
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || "playwright");
@@ -18,21 +17,9 @@ before(async () => {
   });
 });
 after(async () => browser?.close());
-async function open({ role = "PA", width = 390, mode = "normal", path = "/admin/logs" } = {}) {
-  let summaryMode = mode,
-    viewOnly = false;
-  const api = await startPreview({
-    time: "2099-08-19T09:00:00+08:00",
-    session: (role) => {
-      const session = sessionFor(role);
-      return {
-        ...session,
-        permissions: viewOnly
-          ? session.permissions.filter((permission) => permission !== "reportExport")
-          : session.permissions,
-      };
-    },
-  });
+async function open({ role = "PA", width = 390, mode = "normal" } = {}) {
+  let summaryMode = mode;
+  const api = await startPreview({ time: "2099-08-19T09:00:00+08:00" });
   async function create(officerId = "o2", kind = "standard") {
     const body = {
       visitKind: kind,
@@ -109,25 +96,18 @@ async function open({ role = "PA", width = 390, mode = "normal", path = "/admin/
   });
   const page = await context.newPage();
   page.setDefaultTimeout(10000);
-  const errors = [],
-    requests = [];
+  const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  page.on("request", (request) => requests.push(new URL(request.url()).pathname));
   await page.clock.install({ time: new Date("2099-08-19T09:00:00+08:00") });
-  await page.goto(origin + path);
+  await page.goto(origin + "/admin/dashboard");
   return {
     api,
     context,
     page,
     fixtures,
     errors,
-    requests,
-    create,
     setMode(value) {
       summaryMode = value;
-    },
-    revokeExport() {
-      viewOnly = true;
     },
     async close() {
       await context.close();
@@ -135,12 +115,11 @@ async function open({ role = "PA", width = 390, mode = "normal", path = "/admin/
     },
   };
 }
+function totalCard(page) {
+  return page.locator(".analytics-card-total strong");
+}
 async function total(page, value) {
-  await page
-    .getByTestId("report-total")
-    .filter({ hasText: String(value) })
-    .waitFor();
-  assert.equal(await page.getByTestId("report-total").innerText(), String(value));
+  await totalCard(page).filter({ hasText: new RegExp(`^${value}$`) }).waitFor();
 }
 async function snapshot(env, name) {
   assert.equal(
@@ -149,16 +128,16 @@ async function snapshot(env, name) {
   );
   assert.equal(
     await env.page
-      .locator(".report-summary-table td")
-      .evaluateAll((cells) =>
-        cells.every(
-          (cell) =>
-            cell.getBoundingClientRect().right <= innerWidth &&
-            cell.getBoundingClientRect().left >= 0,
+      .locator(".analytics-card")
+      .evaluateAll((cards) =>
+        cards.every(
+          (card) =>
+            card.getBoundingClientRect().right <= innerWidth &&
+            card.getBoundingClientRect().left >= 0,
         ),
       ),
     true,
-    "Count cells must not be clipped by a containing panel",
+    "Analytics cards must fit within the viewport",
   );
   assert.deepEqual(env.errors, []);
   await env.page.screenshot({
@@ -170,15 +149,8 @@ async function snapshot(env, name) {
     await env.page.locator("body").ariaSnapshot(),
   );
 }
-async function csv(page) {
-  const [download] = await Promise.all([
-    page.waitForEvent("download"),
-    page.getByRole("button", { name: "Unduh ringkasan CSV", exact: true }).click(),
-  ]);
-  return readFile(await download.path(), "utf8");
-}
 test("dashboard analytics applies two checked statuses and removes a filter tag on mobile", async () => {
-  const env = await open({ role: "Protocol Officer", width: 320, path: "/admin/dashboard" });
+  const env = await open({ role: "Protocol Officer", width: 320 });
   const { page } = env;
   try {
     const status = page.getByRole("combobox", { name: "Status", exact: true });
@@ -205,23 +177,14 @@ test("dashboard analytics applies two checked statuses and removes a filter tag 
     await env.close();
   }
 });
-test("Protocol Officer keeps aggregate reports without booking rows; summary CSV and controls reflow from 320px to desktop", async () => {
+test("dashboard analytics excludes restricted visits and fits mobile and desktop widths", async () => {
   const env = await open({ role: "Protocol Officer", width: 320 });
   try {
     await total(env.page, 3);
-    assert.equal(env.requests.filter((path) => path === "/__preview/bookings").length, 0);
-    assert.ok(
-      (await env.page.locator(".report-counts").innerText()).includes("Lingkup kunjungan yang diizinkan"),
-    );
+    const analytics = env.page.getByRole("region", { name: "Analitik kunjungan" });
+    assert.ok((await analytics.innerText()).includes("Tidak termasuk kunjungan terbatas"));
     for (const fixture of env.fixtures)
-      assert.equal((await env.page.locator("body").innerText()).includes(fixture.name), false);
-    const content = await csv(env.page);
-    assert.ok(content.includes('"Tanggal awal","Tanggal akhir","Cakupan","Status","Jumlah"'));
-    for (const fixture of env.fixtures)
-      for (const secret of [fixture.name, fixture.code, fixture.email, fixture.serviceId].filter(
-        Boolean,
-      ))
-        assert.equal(content.includes(secret), false, secret);
+      assert.equal((await analytics.innerText()).includes(fixture.name), false);
     await snapshot(env, "summary-admin-320");
     await env.page.setViewportSize({ width: 768, height: 900 });
     await snapshot(env, "summary-admin-768");
@@ -231,142 +194,81 @@ test("Protocol Officer keeps aggregate reports without booking rows; summary CSV
     await env.close();
   }
 });
-test("invalid filter focuses its field; applying a successful empty range shows zero and URL history restores filters", async () => {
+
+test("analytics validates a reversed date range, shows zero for an empty range and resets to this month", async () => {
   const env = await open();
+  const { page } = env;
   try {
-    await total(env.page, 2);
-    await env.page.locator("#report-from").fill("2099-09-01");
-    assert.equal(
-      await env.page.getByRole("button", { name: "Unduh ringkasan CSV", exact: true }).isDisabled(),
-      true,
-    );
-    await env.page.getByRole("button", { name: "Terapkan filter", exact: true }).click();
-    assert.equal(
-      await env.page.locator("#report-to").evaluate((node) => node === document.activeElement),
-      true,
-    );
-    assert.equal(await env.page.locator("#report-to").getAttribute("aria-invalid"), "true");
-    await env.page.locator("#report-to").fill("2099-09-30");
-    await env.page.getByRole("button", { name: "Terapkan filter", exact: true }).click();
-    await total(env.page, 0);
-    assert.ok(env.page.url().includes("from=2099-09-01"));
-    await env.page
-      .getByRole("status")
-      .filter({ hasText: "Tidak ada kunjungan sesuai filter" })
-      .waitFor();
+    await total(page, 1);
+    const filters = page.getByRole("button", { name: "Filter statistik", exact: true });
+    const from = page.getByLabel("Dari tanggal", { exact: true });
+    const to = page.getByLabel("Sampai tanggal", { exact: true });
+    const apply = page.getByRole("button", { name: "Terapkan", exact: true });
+    await filters.click();
+    await from.fill("2099-09-01");
+    await apply.click();
+    assert.equal(await to.getAttribute("aria-invalid"), "true");
+    assert.equal(await to.evaluate((node) => node === document.activeElement), true);
+    await to.fill("2099-09-30");
+    await apply.click();
+    await total(page, 0);
     await snapshot(env, "summary-empty-390");
-    await env.page.goBack();
-    await total(env.page, 2);
-    assert.equal(await env.page.locator("#report-from").inputValue(), "2099-08-01");
+    await filters.click();
+    await page.getByRole("button", { name: "Bulan ini", exact: true }).click();
+    await total(page, 1);
   } finally {
     await env.close();
   }
 });
-test("initial errors never show zero; refresh failure marks old results; denial hides them; malformed data stays unavailable", async () => {
+
+test("analytics keeps last counts after an outage and hides them when access is denied", async () => {
   const env = await open({ mode: "error" });
+  const { page } = env;
+  const refresh = page.getByRole("button", { name: "Perbarui statistik", exact: true });
   try {
-    await env.page.getByRole("button", { name: "Coba lagi", exact: true }).waitFor();
-    assert.equal(await env.page.getByTestId("report-total").count(), 0);
+    await page.getByRole("alert").filter({ hasText: "Gangguan ringkasan sintetis." }).waitFor();
+    assert.equal(await totalCard(page).count(), 0);
     env.setMode("normal");
-    await env.page.getByRole("button", { name: "Coba lagi", exact: true }).click();
-    await total(env.page, 2);
+    await refresh.click();
+    await total(page, 1);
     env.setMode("error");
-    await env.page.getByRole("button", { name: "Perbarui laporan", exact: true }).click();
-    await env.page
-      .getByText("Angka terakhir tetap ditampilkan. Perbarui laporan sebelum mengekspor.", {
-        exact: true,
-      })
-      .waitFor();
-    await total(env.page, 2);
-    assert.equal(
-      await env.page.getByRole("button", { name: "Unduh ringkasan CSV", exact: true }).isDisabled(),
-      true,
-    );
+    await refresh.click();
+    await page.getByText("Menampilkan data terakhir", { exact: false }).waitFor();
+    await total(page, 1);
     await snapshot(env, "summary-stale-390");
     env.setMode("denied");
-    await env.page.getByRole("button", { name: "Coba lagi", exact: true }).click();
-    await env.page
-      .getByRole("alert")
-      .filter({ hasText: "Akses laporan tidak diizinkan." })
-      .waitFor();
-    assert.equal(await env.page.getByTestId("report-total").count(), 0);
+    await refresh.click();
+    await page.getByRole("alert").filter({ hasText: "Akses laporan tidak diizinkan." }).waitFor();
+    assert.equal(await totalCard(page).count(), 0);
     await snapshot(env, "summary-denied-390");
     env.setMode("malformed");
-    await env.page.getByRole("button", { name: "Coba lagi", exact: true }).click();
-    await env.page
-      .getByRole("alert")
-      .filter({ hasText: /Data ringkasan belum dapat ditampilkan|Respons layanan tidak valid/ })
-      .waitFor();
-    assert.equal(
-      await env.page.getByRole("button", { name: "Unduh ringkasan CSV", exact: true }).isDisabled(),
-      true,
-    );
+    await refresh.click();
+    await page.getByRole("alert").filter({ hasText: "Respons layanan tidak valid" }).waitFor();
   } finally {
     await env.close();
   }
 });
-test("changed summaries require review before export; revoked export rights are reflected after refresh", async () => {
-  const env = await open({ width: 1280 });
-  try {
-    await total(env.page, 2);
-    await env.create();
-    await env.page.getByRole("button", { name: "Unduh ringkasan CSV", exact: true }).click();
-    await env.page
-      .getByRole("status")
-      .filter({ hasText: "Ringkasan diperbarui. Periksa angka terbaru" })
-      .waitFor();
-    await total(env.page, 3);
-    const content = await csv(env.page);
-    assert.ok(content.includes('"Pending","3"'));
-    env.revokeExport();
-    await env.page.getByRole("button", { name: "Unduh ringkasan CSV", exact: true }).click();
-    await env.page
-      .getByRole("alert")
-      .filter({ hasText: "Akses laporan tidak diizinkan." })
-      .waitFor();
-    assert.equal(await env.page.getByTestId("report-total").count(), 0);
-    await env.page.getByRole("button", { name: "Coba lagi", exact: true }).click();
-    await total(env.page, 3);
-    assert.equal(
-      await env.page.getByRole("button", { name: "Unduh ringkasan CSV", exact: true }).isDisabled(),
-      true,
-    );
-    await env.page
-      .getByText("Akun Anda dapat membaca ringkasan; izin ekspor diperlukan untuk mengunduhnya.", {
-        exact: true,
-      })
-      .waitFor();
-    assert.deepEqual(env.errors, []);
-  } finally {
-    await env.close();
-  }
-});
-test("an offline pending range shows unavailable data until a successful connection returns", async () => {
+
+test("analytics requests a new date range after the browser reconnects", async () => {
   const env = await open();
+  const { page } = env;
   try {
-    await total(env.page, 2);
-    await env.page.evaluate(() => {
+    await total(page, 1);
+    await page.evaluate(() => {
       Object.defineProperty(navigator, "onLine", { configurable: true, get: () => false });
       window.dispatchEvent(new Event("offline"));
     });
-    await env.page.locator("#report-from").fill("2099-07-01");
-    await env.page.locator("#report-to").fill("2099-07-31");
-    await env.page.getByRole("button", { name: "Terapkan filter", exact: true }).click();
-    await env.page.getByRole("status").filter({ hasText: "Anda sedang offline" }).waitFor();
-    assert.equal(await env.page.getByTestId("report-total").count(), 0);
-    assert.equal(
-      await env.page.getByRole("button", { name: "Unduh ringkasan CSV", exact: true }).isDisabled(),
-      true,
-    );
-    await env.page.evaluate(() => {
+    await page.getByRole("button", { name: "Filter statistik", exact: true }).click();
+    await page.getByLabel("Dari tanggal", { exact: true }).fill("2099-07-01");
+    await page.getByLabel("Sampai tanggal", { exact: true }).fill("2099-07-31");
+    await page.getByRole("button", { name: "Terapkan", exact: true }).click();
+    await page.getByRole("status").filter({ hasText: "Anda sedang offline" }).waitFor();
+    assert.equal(await totalCard(page).count(), 0);
+    await page.evaluate(() => {
       Object.defineProperty(navigator, "onLine", { configurable: true, get: () => true });
       window.dispatchEvent(new Event("online"));
     });
-    await total(env.page, 0);
-    await env.page
-      .getByRole("status")
-      .filter({ hasText: "Tidak ada kunjungan sesuai filter" })
-      .waitFor();
+    await total(page, 0);
   } finally {
     await env.close();
   }

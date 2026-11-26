@@ -6,13 +6,15 @@
     ".": "./src/index.tsx",
     "./shell": "./src/shell.tsx",
     "./language": "./src/language.tsx",
+    "./segmented-control": "./src/segmented-control.tsx",
     "./date-picker": "./src/date-picker.tsx",
     "./time-picker": "./src/time-picker.tsx",
     "./input-otp": "./src/input-otp.tsx",
     "./toast": "./src/toast.tsx",
     "./popover": "./src/components/ui/popover.tsx",
     "./reference-data-notice": "./src/reference-data-notice.tsx",
-    "./styles.css": "./src/styles.css"
+    "./styles.css": "./src/styles.css",
+    "./assets/ikn-logo.png": "./src/assets/ikn-logo.png"
   },
   "dependencies": {
     "@fontsource-variable/plus-jakarta-sans": "^5.3.0",

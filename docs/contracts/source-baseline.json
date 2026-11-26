@@ -454,7 +454,8 @@
                   "example": {
                     "payload": "vmsqr1.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                     "expiresAt": "2030-02-01T03:00:00Z",
-                    "serverTime": 1896138000000
+                    "serverTime": 1896138000000,
+                    "imagePng": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII="
                   }
                 }
               }
@@ -490,7 +491,7 @@
           "x-error-conditions": {
             "400": "Malformed body, unknown JSON field or query key, or an invalid path ID.",
             "404": "The proof does not match an available public visit.",
-            "409": "version_conflict when the expected version is stale; invalid_state when the visit is not approved or its scheduled end has arrived.",
+            "409": "version_conflict when the expected version is stale; invalid_state when the visit is neither checked in nor approved with time remaining before its scheduled end.",
             "413": "JSON request body exceeds 256 KiB.",
             "415": "Content type is not application/json.",
             "422": "Invalid proof fields.",
@@ -499,7 +500,7 @@
             "503": "Request admission is unavailable or the admission key is missing or cannot regenerate the current credential."
           },
           "x-reject-unknown-query": true,
-          "x-vms-business-rules": "First request creates the static credential for an approved visit strictly before its scheduled end. Replay returns the original payload and expiry without writes or a visit version change. Only the hash is stored. Cancellation revokes the credential.",
+          "x-vms-business-rules": "First request creates a static credential for an approved visit before its scheduled end, or for a checked-in visit that has no QR yet. Repeat requests return the original payload, image and expiry without writes or a visit version change. A checked-in visitor can retrieve the same QR after the scheduled end for checkout. Only the hash is stored. Cancellation revokes the credential.",
           "x-vms-resource-authorization": "Exact visit ID and code, with case-insensitive visitor email. Restricted visits are unavailable. Shares the D29 rolling credential-access limit with public lookup and cancel."
         }
       },
@@ -527,6 +528,47 @@
                 "application/json": {
                   "schema": {
                     "$ref": "#/components/schemas/PublicBooking"
+                  },
+                  "example": {
+                    "code": "00123456",
+                    "date": "2030-02-01",
+                    "duration": 60,
+                    "email": "visitor@example.test",
+                    "history": [
+                      {
+                        "action": "created",
+                        "at": "2030-02-01T01:00:00Z"
+                      }
+                    ],
+                    "id": "101",
+                    "identityType": "KTP",
+                    "name": "Visitor Example",
+                    "officerId": "2",
+                    "organization": "Example",
+                    "pejabat": {
+                      "nama": "Official Example"
+                    },
+                    "phone": "08123456789",
+                    "purpose": "Visit Example",
+                    "room": "",
+                    "roomId": null,
+                    "status": "cancelled",
+                    "time": "10:00",
+                    "timing": {
+                      "canCancel": false,
+                      "canCheckIn": false,
+                      "canCheckOut": false,
+                      "displayStatus": "cancelled",
+                      "endsAt": 1896145200000,
+                      "opensAt": 1896139800000,
+                      "serverTime": 1896138000000
+                    },
+                    "version": 2,
+                    "vip": false,
+                    "visitKind": "standard",
+                    "visitors": [
+                      "Visitor Example"
+                    ]
                   }
                 }
               }
@@ -680,6 +722,47 @@
                 "application/json": {
                   "schema": {
                     "$ref": "#/components/schemas/PublicBooking"
+                  },
+                  "example": {
+                    "code": "00123456",
+                    "date": "2030-02-01",
+                    "duration": 60,
+                    "email": "visitor@example.test",
+                    "history": [
+                      {
+                        "action": "created",
+                        "at": "2030-02-01T01:00:00Z"
+                      }
+                    ],
+                    "id": "101",
+                    "identityType": "KTP",
+                    "name": "Visitor Example",
+                    "officerId": "2",
+                    "organization": "Example",
+                    "pejabat": {
+                      "nama": "Official Example"
+                    },
+                    "phone": "08123456789",
+                    "purpose": "Visit Example",
+                    "room": "",
+                    "roomId": null,
+                    "status": "approved",
+                    "time": "10:00",
+                    "timing": {
+                      "canCancel": true,
+                      "canCheckIn": false,
+                      "canCheckOut": false,
+                      "displayStatus": "approved",
+                      "endsAt": 1896145200000,
+                      "opensAt": 1896139800000,
+                      "serverTime": 1896138000000
+                    },
+                    "version": 1,
+                    "vip": false,
+                    "visitKind": "standard",
+                    "visitors": [
+                      "Visitor Example"
+                    ]
                   }
                 }
               }
@@ -2806,7 +2889,10 @@
                         "deputy": "Kedeputian Contoh",
                         "directorate": "Direktorat Contoh",
                         "phone": "0812345678",
-                        "nip": "123459900"
+                        "nip": "123459900",
+                        "phoneNumbers": [
+                          "0812345678"
+                        ]
                       }
                     ],
                     "total": 1,
@@ -2927,7 +3013,10 @@
                     "deputy": "Kedeputian Contoh",
                     "directorate": "Direktorat Contoh",
                     "phone": "0812345678",
-                    "nip": "123459900"
+                    "nip": "123459900",
+                    "phoneNumbers": [
+                      "0812345678"
+                    ]
                   }
                 }
               }
@@ -3019,7 +3108,7 @@
       "/staff/employees/{id}": {
         "get": {
           "operationId": "staffEmployee",
-          "summary": "Read one employee",
+          "summary": "Read an employee profile",
           "tags": [
             "Directory"
           ],
@@ -3047,7 +3136,10 @@
                     "deputy": "Kedeputian Contoh",
                     "directorate": "Direktorat Contoh",
                     "phone": "0812345678",
-                    "nip": "123459900"
+                    "nip": "123459900",
+                    "phoneNumbers": [
+                      "0812345678"
+                    ]
                   }
                 }
               }
@@ -3088,7 +3180,7 @@
           "x-error-conditions": {
             "400": "A malformed or unknown query parameter, path ID, or JSON request.",
             "401": "Missing, expired or revoked staff session.",
-            "403": "The ready staff session lacks people, or role selection or password change is still pending.",
+            "403": "The session is not workspace-ready, or the requested employee is someone else and the current role lacks people.",
             "404": "Employee does not exist.",
             "409": "The access token carries a stale role revision (role_changed).",
             "413": "Body over the 256 KiB JSON limit.",
@@ -3098,7 +3190,7 @@
           },
           "x-operation-number": 27,
           "x-reject-unknown-query": true,
-          "x-vms-resource-authorization": "A ready Bearer staff session with people on its current role. Writes recheck the live session inside their transaction.",
+          "x-vms-resource-authorization": "A ready Bearer staff session may read the employee record whose ID matches the authenticated employee ID. Reading another employee requires people on the current role.",
           "parameters": [
             {
               "name": "id",
@@ -3140,7 +3232,10 @@
                     "deputy": "Kedeputian Contoh",
                     "directorate": "Direktorat Contoh",
                     "phone": "0812345678",
-                    "nip": "123459900"
+                    "nip": "123459900",
+                    "phoneNumbers": [
+                      "0812345678"
+                    ]
                   }
                 }
               }
@@ -5630,31 +5725,38 @@
       },
       "schemas": {
         "Admission": {
-          "type": "object",
           "additionalProperties": false,
+          "properties": {
+            "expiresAt": {
+              "description": "QR expiry in UTC. It limits check-in only. The QR remains valid for checkout while the visit is checked in.",
+              "format": "date-time",
+              "type": "string"
+            },
+            "imagePng": {
+              "description": "Base64-encoded PNG of the static QR with the OIKN logo centered.",
+              "contentEncoding": "base64",
+              "contentMediaType": "image/png",
+              "type": "string"
+            },
+            "payload": {
+              "description": "Opaque static admission QR payload.",
+              "maxLength": 4096,
+              "minLength": 16,
+              "type": "string"
+            },
+            "serverTime": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
           "required": [
             "payload",
+            "imagePng",
             "expiresAt",
             "serverTime"
           ],
-          "properties": {
-            "payload": {
-              "type": "string",
-              "minLength": 16,
-              "maxLength": 4096,
-              "description": "Opaque static admission QR payload."
-            },
-            "expiresAt": {
-              "type": "string",
-              "format": "date-time",
-              "description": "Scheduled visit end in UTC."
-            },
-            "serverTime": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
-            }
-          }
+          "type": "object"
         },
         "ApiError": {
           "type": "object",
@@ -5998,8 +6100,9 @@
               "maxLength": 255
             },
             "phone": {
-              "type": "string",
-              "maxLength": 255
+              "description": "Legacy first phone number.",
+              "maxLength": 255,
+              "type": "string"
             },
             "nip": {
               "type": "string",
@@ -6009,6 +6112,14 @@
               "type": "integer",
               "minimum": 1,
               "maximum": 2147483647
+            },
+            "phoneNumbers": {
+              "description": "Saved phone numbers in order. The legacy phone field mirrors the first number.",
+              "items": {
+                "maxLength": 255,
+                "type": "string"
+              },
+              "type": "array"
             }
           },
           "required": [
@@ -6018,6 +6129,7 @@
             "roles",
             "active",
             "assignedOfficerIds",
+            "phoneNumbers",
             "version"
           ],
           "additionalProperties": false
@@ -6069,9 +6181,9 @@
               "description": "Omit to leave unset or keep the current value. An empty string clears the field."
             },
             "phone": {
-              "type": "string",
+              "description": "Legacy first phone number. On update, replacing or clearing it preserves any additional numbers.",
               "maxLength": 255,
-              "description": "Omit to leave unset or keep the current value. An empty string clears the field."
+              "type": "string"
             },
             "nip": {
               "type": "string",
@@ -6083,6 +6195,14 @@
             },
             "requirePasswordChange": {
               "type": "boolean"
+            },
+            "phoneNumbers": {
+              "description": "Phone numbers in order. This list takes precedence over the legacy phone field.",
+              "items": {
+                "maxLength": 255,
+                "type": "string"
+              },
+              "type": "array"
             }
           },
           "required": [
@@ -6184,9 +6304,9 @@
               "description": "Omit to leave unset or keep the current value. An empty string clears the field."
             },
             "phone": {
-              "type": "string",
+              "description": "Legacy first phone number. On update, replacing or clearing it preserves any additional numbers.",
               "maxLength": 255,
-              "description": "Omit to leave unset or keep the current value. An empty string clears the field."
+              "type": "string"
             },
             "nip": {
               "type": "string",
@@ -6197,6 +6317,14 @@
               "type": "integer",
               "minimum": 1,
               "maximum": 2147483647
+            },
+            "phoneNumbers": {
+              "description": "Omit to keep the list or send an empty array to clear it. This list takes precedence over the legacy phone field.",
+              "items": {
+                "maxLength": 255,
+                "type": "string"
+              },
+              "type": "array"
             }
           },
           "required": [
@@ -7454,6 +7582,7 @@
                     "serviceIdLast4",
                     "organization",
                     "code",
+                    "roomId",
                     "serviceId",
                     "history",
                     "createdBy",
@@ -9245,6 +9374,15 @@
       "status": 400,
       "code": "invalid_query_parameter",
       "fieldErrors": "absent"
+    },
+    "employee-self-profile": {
+      "operation": 27,
+      "status": 200
+    },
+    "employee-other-profile-denied": {
+      "operation": 27,
+      "status": 403,
+      "code": "forbidden"
     }
   },
   "runtimeKnownGaps": {}

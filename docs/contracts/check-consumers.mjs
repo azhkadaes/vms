@@ -9,9 +9,9 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 import * as wire from '../../frontendx/packages/data/src/wire.ts';
 import { parseSession } from '../../frontendx/packages/data/src/session-contract.ts';
-import { roleDefinitionSchema } from '../../frontendx/packages/data/src/management-contract.ts';
+import { employeeListSchema, employeeSchema, roleDefinitionSchema } from '../../frontendx/packages/data/src/management-contract.ts';
 import { createHttpClient, onAuthenticationLoss } from '../../frontendx/packages/data/src/http.ts';
-import { setStaffAccessToken } from '../../frontendx/packages/data/src/access-token.ts';
+import { adoptStaffAccess, clearStaffAccess } from '../../frontendx/packages/data/src/access-token.ts';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const require = createRequire(path.join(root, 'frontendx/package.json'));
@@ -28,7 +28,8 @@ function check(name, accepted, expected = true) {
 function success(route, method) {
   const responses = spec.paths[route][method].responses;
   const status = Object.keys(responses).find((code) => code.startsWith('2'));
-  return responses[status].content['application/json'].example;
+  const content = responses[status].content['application/json'];
+  return content.example ?? Object.values(content.examples ?? {})[0]?.value;
 }
 function failure(code) {
   const status = spec['x-error-catalogue'][code].status;
@@ -48,6 +49,23 @@ const staffCatalogs = success('/staff/catalogs', 'get');
 check('catalog officers and privacy notice accepted', wire.catalogsResponse.safeParse({ ...catalogs, rooms: [] }).success);
 check('staff catalog officers with organization and inactive assignments accepted', wire.catalogsResponse.safeParse({ ...staffCatalogs, rooms: [] }).success);
 check('public and staff room objects accepted', wire.catalogsResponse.safeParse(catalogs).success && wire.catalogsResponse.safeParse(staffCatalogs).success);
+for (const path of ['/public/bookings', '/public/lookup', '/public/bookings/{id}/cancel']) {
+  check(`public booking response accepted for POST ${path}`,
+    wire.publicBookingResponse.safeParse(success(path, 'post')).success);
+}
+check('submission recovery accepted', wire.resolutionResponse.safeParse(success('/public/submissions/resolve', 'post')).success);
+check('admission credential and QR image accepted', wire.admissionResponse.safeParse(success('/public/bookings/{id}/admission', 'post')).success);
+check('staff bookings page accepted', wire.staffReadModelResponse.safeParse(success('/staff/bookings', 'get')).success);
+check('staff booking detail accepted', wire.staffBookingResponse.safeParse(success('/staff/bookings/{id}', 'get')).success);
+for (const route of ['approve', 'reject', 'reschedule', 'cancel', 'update', 'attendance']) {
+  const path = `/staff/bookings/{id}/${route}`;
+  check(`staff booking response accepted for POST ${path}`,
+    wire.staffBookingResponse.safeParse(success(path, 'post')).success);
+}
+for (const path of ['/staff/bookings', '/staff/resolve']) {
+  check(`staff booking response accepted for POST ${path}`,
+    wire.staffBookingResponse.safeParse(success(path, 'post')).success);
+}
 
 // Ops 32-34, 36, 39, 40: Session and TokenResult.
 const session = success('/staff/session', 'get');
@@ -62,10 +80,19 @@ const sessionText = readFileSync(path.join(root, 'frontendx/packages/data/src/se
 const sessionSource = ts.createSourceFile('session.tsx', sessionText, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 const signIn = sessionSource.statements.find((node) => ts.isFunctionDeclaration(node) && node.name?.text === 'signIn');
 if (!signIn?.body) throw new Error('Review the changed signIn boundary before updating its gap.');
-check('login consumes the token result', signIn.body.getText(sessionSource).includes('adoptSession('));
+check('login consumes the token result', signIn.body.getText(sessionSource).includes('adoptStaffAccess('));
 
 check('role definitions accepted by the role parser', roleDefinitionSchema.array().safeParse(success('/staff/roles', 'get')).success);
 check('updated role definition accepted by the role parser', roleDefinitionSchema.safeParse(success('/staff/roles/{id}', 'patch')).success);
+check('employee list accepted by the employee parser', employeeListSchema.safeParse(success('/staff/employees', 'get')).success);
+for (const [path, method] of [
+  ['/staff/employees/{id}', 'get'],
+  ['/staff/employees', 'post'],
+  ['/staff/employees/{id}', 'patch'],
+]) {
+  check(`employee ${method.toUpperCase()} ${path} accepts the saved number array`,
+    employeeSchema.safeParse(success(path, method)).success);
+}
 
 // Error body: catalogue message and field errors reach the form; a wrong current
 // password (422) keeps the session while an expired one (401) signs out.
@@ -86,9 +113,9 @@ const recording = createHttpClient('/v1', async (url, init) => {
   sent.push(init.headers);
   return new Response(JSON.stringify(session), { status: 200, headers: { 'Content-Type': 'application/json' } });
 });
-setStaffAccessToken(token.accessToken);
+adoptStaffAccess(token, performance.now());
 await recording('/staff/session', { authenticated: true });
-setStaffAccessToken();
+clearStaffAccess();
 check('staff requests carry the adopted bearer token', sent[0].Authorization === 'Bearer ' + token.accessToken);
 
 if (spec.paths['/staff/reports/summary']) {

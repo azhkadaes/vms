@@ -8,7 +8,7 @@ export function AppointmentRoomField({
   error,
 }: {
   id: string;
-  rooms: readonly string[];
+  rooms: readonly (string | { id: string; name: string })[];
   registration: UseFormRegisterReturn<"room">;
   error?: string;
 }) {
@@ -22,11 +22,14 @@ export function AppointmentRoomField({
         aria-describedby={error ? `${id}-error` : undefined}
       >
         <option value="">Belum ditetapkan</option>
-        {rooms.map((room) => (
-          <option key={room} value={room}>
-            {room}
-          </option>
-        ))}
+        {rooms.map((room) => {
+          const { id, name } = typeof room === "string" ? { id: room, name: room } : room;
+          return (
+            <option key={id} value={id}>
+              {name}
+            </option>
+          );
+        })}
       </Select>
       {error && (
         <FieldMessage id={`${id}-error`} tone="error">

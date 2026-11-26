@@ -23,6 +23,7 @@ import {
   LogIn,
   LogOut,
   ShieldCheck,
+  Search,
 } from "lucide-react";
 import {
   labels,
@@ -41,7 +42,7 @@ import {
   type DisplayStatus,
   type VisitTiming,
 } from "@vms/data";
-import { RestrictedIdentity } from "./restricted-identity";
+import { RestrictedIdentity, type RestrictedIdentitySections } from "./restricted-identity";
 import { localizeMessage, useUiLanguage } from "./language";
 export function RequiredMark() {
   return (
@@ -190,6 +191,44 @@ export const EmailInput = forwardRef<HTMLInputElement, EmailInputProps>(function
     </div>
   );
 });
+export const SearchField = forwardRef<
+  HTMLInputElement,
+  Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "className">
+>(function SearchField(props, ref) {
+  return (
+    <div className="search-field">
+      <Search size={17} aria-hidden="true" />
+      <input {...props} ref={ref} type="search" className="control" />
+    </div>
+  );
+});
+
+export function Badge({
+  children,
+  tone = "neutral",
+}: {
+  children: ReactNode;
+  tone?: "neutral" | "positive";
+}) {
+  return <span className={`badge badge-${tone}`}>{children}</span>;
+}
+
+export function TableRegion({
+  label,
+  children,
+  className = "",
+}: {
+  label: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`table-wrap ${className}`} role="region" aria-label={label} tabIndex={0}>
+      {children}
+    </div>
+  );
+}
+
 export function StatusBadge({
   status,
   rescheduled = false,
@@ -241,16 +280,22 @@ export function VIP() {
     </span>
   );
 }
-export function VisitKind({ booking }: { booking: Pick<StaffBooking, "visitKind" | "vip"> }) {
+export function VisitKindBadge({ kind }: { kind: "standard" | "vip" | "restricted" }) {
   const { t } = useUiLanguage();
-  return isRestricted(booking) ? (
+  return kind === "restricted" ? (
     <span className="vip restricted-badge">
       <ShieldCheck size={12} />
       {t("Terbatas", "Restricted")}
     </span>
-  ) : booking.vip ? (
+  ) : kind === "vip" ? (
     <VIP />
-  ) : null;
+  ) : (
+    <Badge>{t("Reguler", "Standard")}</Badge>
+  );
+}
+export function VisitKind({ booking }: { booking: Pick<StaffBooking, "visitKind" | "vip"> }) {
+  if (isRestricted(booking)) return <VisitKindBadge kind="restricted" />;
+  return booking.vip ? <VisitKindBadge kind="vip" /> : null;
 }
 export function ErrorNotice({ error }: { error: unknown }) {
   const { language } = useUiLanguage();
@@ -312,6 +357,7 @@ export function Modal({
   onClose,
   title,
   description,
+  headerAction,
   children,
   returnFocusTo,
   className,
@@ -322,6 +368,7 @@ export function Modal({
   onClose: () => void;
   title: string;
   description?: string;
+  headerAction?: ReactNode;
   children: ReactNode;
   returnFocusTo?: HTMLElement | null;
   className?: string;
@@ -330,6 +377,13 @@ export function Modal({
 }) {
   const { t } = useUiLanguage();
   const returnFocus = useRef<HTMLElement | null>(null);
+  const closeButton = dismissible && (
+    <Dialog.Close asChild>
+      <Button kind="ghost" size="icon" aria-label={t("Tutup dialog", "Close dialog")}>
+        <X size={20} />
+      </Button>
+    </Dialog.Close>
+  );
   return (
     <Dialog.Root open={open} onOpenChange={(v) => !v && dismissible && onClose()}>
       <Dialog.Portal>
@@ -388,12 +442,13 @@ export function Modal({
                     )}
                 </Dialog.Description>
               </div>
-              {dismissible && (
-                <Dialog.Close asChild>
-                  <Button kind="ghost" aria-label={t("Tutup dialog", "Close dialog")}>
-                    <X size={20} />
-                  </Button>
-                </Dialog.Close>
+              {headerAction ? (
+                <div className="modal-heading-actions">
+                  {headerAction}
+                  {closeButton}
+                </div>
+              ) : (
+                closeButton
               )}
             </div>
             {children}
@@ -409,15 +464,17 @@ export function VisitIdentity({
   showBookingCode = false,
   showVisitorContact = false,
   collapseVisitorNames = false,
+  restrictedSections,
 }: {
   booking: Booking | StaffBooking;
   showDocument?: boolean;
   showBookingCode?: boolean;
   showVisitorContact?: boolean;
   collapseVisitorNames?: boolean;
+  restrictedSections?: RestrictedIdentitySections;
 }) {
   const { language, t } = useUiLanguage();
-  if (isRestricted(b)) return <RestrictedIdentity booking={b} />;
+  if (isRestricted(b)) return <RestrictedIdentity booking={b} sections={restrictedSections} />;
   return (
     <>
       <div className="identity-title">
@@ -484,8 +541,10 @@ export function VisitIdentity({
           <dd>
             {collapseVisitorNames && b.visitors?.length ? (
               <details className="visitor-roster">
-                <summary>{partyLabel(b)}</summary>
-                <ul aria-label={t("Nama anggota rombongan", "Visitor names")}>
+                <summary aria-label={`${t("Daftar rombongan", "Visitor list")} · ${partyLabel(b)}`}>
+                  {partyLabel(b)}
+                </summary>
+                <ul tabIndex={0} aria-label={t("Nama anggota rombongan", "Visitor names")}>
                   {b.visitors.map((name, index) => (
                     <li key={index}>{name}</li>
                   ))}

@@ -91,64 +91,26 @@ export async function uploadAttachment(
   };
   return raw.token;
 }
-export async function downloadAttachment(id: string, name: string) {
-  const blob = await request(`/staff/bookings/${encodeURIComponent(id)}/attachment`, {
-    authenticated: true,
-    responseType: "blob",
-  });
-  if (
-    !(blob instanceof Blob) ||
-    (validateND({ type: blob.type, size: blob.size, name }) &&
-      validateVisitorPhoto({ type: blob.type, size: blob.size, name }))
-  )
-    throw new ApiError(502, "Berkas tidak valid atau belum tersedia.");
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = name.replace(/[\\/\u0000-\u001f]/g, "_");
-  document.body.append(link);
-  link.click();
-  link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-export async function loadVisitorPhoto(
-  id: string,
-  role: string,
-  signal?: AbortSignal,
-): Promise<Blob> {
-  const path = `/bookings/${encodeURIComponent(id)}/visitor-photo`;
-  const blob = preview
-    ? await createHttpClient("/__preview")(`${path}?role=${encodeURIComponent(role)}`, {
-        authenticated: true,
-        responseType: "blob",
-        signal,
-      })
-    : await request(`/staff${path}`, { authenticated: true, responseType: "blob", signal });
-  if (!(blob instanceof Blob) || validateVisitorPhoto({ type: blob.type, size: blob.size }))
-    throw new ApiError(502, "Foto pengunjung tidak valid atau belum tersedia.");
-  return blob;
-}
-
-export async function loadArrivalFile(
+export async function loadBookingFile(
   id: string,
   role: Role,
-  credential: string,
   kind: "attachment" | "visitor-photo",
   signal: AbortSignal,
+  credential?: string,
 ): Promise<Blob> {
   const path = `/bookings/${encodeURIComponent(id)}/${kind}`;
-  const options = { authenticated: true, responseType: "blob", signal } as const;
+  const options = {
+    authenticated: true,
+    responseType: "blob",
+    signal,
+    body: credential === undefined ? undefined : { credential },
+  } as const;
   const blob = preview
-    ? await createHttpClient("/__preview")(`${path}?role=${encodeURIComponent(role)}`, {
-        ...options,
-        body: { credential },
-      })
+    ? await createHttpClient("/__preview")(`${path}?role=${encodeURIComponent(role)}`, options)
     : await request(`/staff${path}`, options);
-  const validate = kind === "attachment" ? validateND : validateVisitorPhoto;
   if (
     !(blob instanceof Blob) ||
-    validate({ size: blob.size, type: blob.type }) ||
+    (validateVisitorPhoto(blob) && (kind !== "attachment" || validateND(blob))) ||
     !matchesAttachmentSignature(blob.type, new Uint8Array(await blob.slice(0, 8).arrayBuffer()))
   )
     throw new ApiError(502, "Berkas tidak valid atau belum tersedia.");

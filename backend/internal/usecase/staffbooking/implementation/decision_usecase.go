@@ -160,7 +160,7 @@ func (u decisions) Reschedule(ctx context.Context, proof entity.SessionProof, id
 		if err != nil {
 			return entity.VisitChange{}, err
 		}
-		start, err := validate.Start(input.Date, input.Time)
+		start, err := validate.StaffStart(input.Date, input.Time)
 		if err != nil {
 			return entity.VisitChange{}, err
 		}

@@ -219,8 +219,8 @@ test("public history translates actions, keeps public reasons and shows service 
     );
     assert.match(await history.locator("time").first().innerText(), /09[.:]00.*WITA/);
     await env.page
-      .getByRole("combobox", { name: "Bahasa halaman", exact: true })
-      .selectOption("en");
+      .getByRole("button", { name: "EN · English", exact: true })
+      .press("Enter");
     assert.ok((await history.innerText()).includes("Request received"));
     assert.ok((await history.innerText()).includes("Visit approved"));
     assert.ok((await history.innerText()).includes("Visit rescheduled"));

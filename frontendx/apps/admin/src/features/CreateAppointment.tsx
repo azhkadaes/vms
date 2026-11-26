@@ -3,6 +3,7 @@ import {
   useUnsavedChanges,
   ApiError,
   canCreateAppointment,
+  latestStaffStart,
   notaDinasType,
   phoneDigits,
   preview,
@@ -52,6 +53,7 @@ export default function CreateAppointment({
   const { session } = useSession();
   const catalogs = useCatalogs();
   const officers = catalogs.data?.officers || [];
+  const rooms = catalogs.data?.roomOptions ?? [];
   const rules = useMemo(() => staffAppointmentSchemaFor(officers), [catalogs.data]);
   const allowed = officers.filter(
     (o) => session && canCreateAppointment(session, o.id, "standard", officers),
@@ -106,6 +108,7 @@ export default function CreateAppointment({
   useUnsavedChanges(isDirty || !!document || !!photo, busy);
   const stepNames = ["Kunjungan", "Pengunjung", "Periksa"];
   const values = f.getValues();
+  const roomName = preview ? values.room : rooms.find((room) => room.id === values.room)?.name;
   const reviewDate = values.date
     ? new Intl.DateTimeFormat("id-ID", {
         dateStyle: "long",
@@ -182,8 +185,10 @@ export default function CreateAppointment({
     setError(null);
     setUploading(true);
     try {
+      const { room, ...details } = values;
       const input = {
-        ...values,
+        ...details,
+        ...(preview ? { room } : { roomId: room || undefined }),
         visitors: [values.name, ...values.visitors.map((v) => v.name)],
         ndName: document?.name,
         attachmentToken: await uploadAttachment(document, "staff"),
@@ -213,6 +218,8 @@ export default function CreateAppointment({
       if (err instanceof ApiError && err.status === 409)
         toast("Jadwal ruangan atau pejabat bertabrakan. Pilih ruangan atau waktu lain.", "error");
       if (err instanceof ApiError && err.fieldErrors) {
+        const fieldErrors = { ...err.fieldErrors };
+        if (fieldErrors.roomId) fieldErrors.room = fieldErrors.roomId;
         const keys = [
           "officerId",
           "date",
@@ -227,12 +234,12 @@ export default function CreateAppointment({
           "identityType",
           "visitors",
         ] as const;
-        const first = keys.find((key) => err.fieldErrors?.[key]?.[0]);
+        const first = keys.find((key) => fieldErrors[key]?.[0]);
         for (const key of keys)
-          if (err.fieldErrors[key]?.[0])
+          if (fieldErrors[key]?.[0])
             f.setError(key, {
               type: "server",
-              message: err.fieldErrors[key][0],
+              message: fieldErrors[key][0],
             });
         if (first === "room") editSection(0, "appointment-room");
         else if (first && first !== "visitors") requestAnimationFrame(() => f.setFocus(first));
@@ -279,9 +286,9 @@ export default function CreateAppointment({
           aria-describedby={issue ? `appointment-${key}-error` : undefined}
         />
         {issue && (
-          <span className="field-error" role="alert" id={`appointment-${key}-error`}>
+          <FieldMessage tone="error" id={`appointment-${key}-error`}>
             {issue.message}
-          </span>
+          </FieldMessage>
         )}
       </div>
     );
@@ -300,8 +307,8 @@ export default function CreateAppointment({
           <h3>Tutup tanpa menyimpan?</h3>
           <p>Isian janji temu ini akan dihapus.</p>
           <div className="form-actions">
-            <button
-              className="button secondary"
+            <Button
+              kind="secondary"
               type="button"
               ref={resumeButton}
               onClick={() => {
@@ -310,7 +317,7 @@ export default function CreateAppointment({
               }}
             >
               Lanjutkan mengisi
-            </button>
+            </Button>
             <Button kind="danger" type="button" onClick={onClose}>
               Buang isian
             </Button>
@@ -396,9 +403,9 @@ export default function CreateAppointment({
                       : "Kunjungan VIP dalam kewenangan Protokol."}
                   </small>
                   {f.formState.errors.officerId && (
-                    <span id="appointment-officerId-error" className="field-error" role="alert">
+                    <FieldMessage tone="error" id="appointment-officerId-error">
                       {f.formState.errors.officerId.message}
-                    </span>
+                    </FieldMessage>
                   )}
                 </div>
                 <Controller
@@ -422,7 +429,7 @@ export default function CreateAppointment({
                   render={({ field, fieldState }) => (
                     <TimePicker
                       min="08:00"
-                      max="16:00"
+                      max={latestStaffStart}
                       {...field}
                       id="appointment-time"
                       label="Waktu mulai · WITA"
@@ -465,14 +472,14 @@ export default function CreateAppointment({
                     }
                   />
                   {f.formState.errors.duration && (
-                    <span id="appointment-duration-error" role="alert" className="field-error">
+                    <FieldMessage tone="error" id="appointment-duration-error">
                       {f.formState.errors.duration.message}
-                    </span>
+                    </FieldMessage>
                   )}
                 </div>
                 <AppointmentRoomField
                   id="appointment-room"
-                  rooms={catalogs.data?.rooms ?? []}
+                  rooms={preview ? (catalogs.data?.rooms ?? []) : rooms}
                   registration={f.register("room")}
                   error={f.formState.errors.room?.message}
                 />
@@ -492,9 +499,9 @@ export default function CreateAppointment({
                     }
                   />
                   {f.formState.errors.purpose && (
-                    <span id="appointment-purpose-error" role="alert" className="field-error">
+                    <FieldMessage tone="error" id="appointment-purpose-error">
                       {f.formState.errors.purpose.message}
-                    </span>
+                    </FieldMessage>
                   )}
                 </div>
               </div>
@@ -584,9 +591,9 @@ export default function CreateAppointment({
             </FormSection>
             <FormSection disabled={busy} className="form-group-gap" legend="Rombongan pengunjung">
               <div className="form-stack">
-                <small className="form-help">
+                <FieldMessage>
                   {roster.fields.length + 1} orang termasuk perwakilan. Maksimal 20 orang.
-                </small>
+                </FieldMessage>
                 {roster.fields.map((person, i) => {
                   const key = `visitors.${i}.name` as FieldPath<StaffAppointmentDraft>;
                   const issue = f.formState.errors.visitors?.[i]?.name;
@@ -605,18 +612,15 @@ export default function CreateAppointment({
                           aria-describedby={issue ? `appointment-visitor-${i}-error` : undefined}
                         />
                         {issue && (
-                          <span
-                            id={`appointment-visitor-${i}-error`}
-                            className="field-error"
-                            role="alert"
-                          >
+                          <FieldMessage tone="error" id={`appointment-visitor-${i}-error`}>
                             {issue.message}
-                          </span>
+                          </FieldMessage>
                         )}
                       </div>
                       <Button
                         type="button"
                         kind="ghost"
+                        size="icon"
                         aria-label={`Hapus pengunjung ${i + 2}`}
                         onClick={() => roster.remove(i)}
                       >
@@ -626,9 +630,9 @@ export default function CreateAppointment({
                   );
                 })}
                 {f.formState.errors.visitors?.message && (
-                  <span className="field-error" role="alert">
+                  <FieldMessage tone="error">
                     {f.formState.errors.visitors.message}
-                  </span>
+                  </FieldMessage>
                 )}
                 <Button
                   kind="secondary"
@@ -684,7 +688,7 @@ export default function CreateAppointment({
                   </div>
                   <div>
                     <dt>Ruangan kunjungan</dt>
-                    <dd>{values.room || "Belum ditetapkan"}</dd>
+                    <dd>{roomName || "Belum ditetapkan"}</dd>
                   </div>
                   <div className="appointment-review-wide">
                     <dt>Keperluan kunjungan</dt>

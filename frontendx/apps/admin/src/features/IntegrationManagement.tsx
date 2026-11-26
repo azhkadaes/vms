@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, preview, sessionKey, useSession } from "@vms/data";
 import { management } from "@vms/data/management";
 import type { Integration } from "@vms/data/management-contract";
-import { Button, Empty, ErrorNotice, Loading, RequiredFieldsHint, RequiredMark } from "@vms/ui";
+import { FieldMessage, Button, Empty, ErrorNotice, Loading, RequiredFieldsHint, RequiredMark } from "@vms/ui";
 import { useRef, useState } from "react";
 import ManagementDialog, { focusServerField } from "./ManagementDialog";
 
@@ -133,9 +133,9 @@ function IntegrationEditor({
                       : "Nilai konfigurasi layanan."}
                   </small>
                   {fields[field.key] && (
-                    <span className="field-error" role="alert">
+                    <FieldMessage tone="error">
                       {fields[field.key].join(" ")}
-                    </span>
+                    </FieldMessage>
                   )}
                   {secret && field.configured && (
                     <label className="check-label">

@@ -74,8 +74,9 @@ export function createRepository({
       );
     },
     list: async (role, signal) => {
-      const { staffBookingResponse } = await import("./wire.ts");
+      const { staffBookingResponse, staffReadModelResponse } = await import("./wire.ts");
       const result = await request(staff("/bookings", role), { signal, authenticated: true });
+      if (!development) return (await parse(result, staffReadModelResponse)).items;
       if (!Array.isArray(result))
         throw new ApiError(502, "Respons layanan tidak valid. Coba lagi.");
       return Promise.all(result.map((value) => parse(value, staffBookingResponse)));
@@ -106,13 +107,18 @@ export function createRepository({
     },
     action: async (id, action, body, role) => {
       const { staffBookingResponse } = await import("./wire.ts");
+      const attendance = !development && (action === "checkin" || action === "checkout");
+      const endpoint = attendance ? "attendance" : action;
+      const requestBody = attendance
+        ? { ...body, action: action === "checkin" ? "check_in" : "check_out" }
+        : body;
       return parse(
         await request(
           development && action === "cancel"
             ? `/staff/bookings/${encodeURIComponent(id)}/cancel?role=${encodeURIComponent(role)}`
-            : staff(`/bookings/${encodeURIComponent(id)}/${action}`, role),
+            : staff(`/bookings/${encodeURIComponent(id)}/${endpoint}`, role),
           {
-            body,
+            body: requestBody,
             authenticated: true,
           },
         ),

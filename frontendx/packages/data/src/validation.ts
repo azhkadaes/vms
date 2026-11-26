@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { officers, today } from "./domain.ts";
+import { isStaffStartTime, officers, staffStartTimeError, today } from "./domain.ts";
 export const emailSchema = z.string().trim().email("Periksa nama email dan domain Anda.");
 export const rejectionSchema = z.object({
   rejectionReason: z
@@ -70,7 +70,7 @@ export const visitSchema = visitSchemaFor(officers);
 const bookingFields = {
   ...visitFields,
   name: z.string().trim().min(2, "Masukkan nama lengkap.").max(120),
-  organization: z.string().trim().min(2, "Masukkan instansi atau asal."),
+  organization: z.string().trim().min(2, "Masukkan instansi atau asal.").max(255, "Nama instansi maksimal 255 karakter."),
   email: emailSchema,
   phone: z.string().regex(/^[0-9]{8,20}$/, "Gunakan 8–20 digit angka untuk nomor telepon."),
   identityType: z.enum(["KTP", "Paspor", "SIM"]),
@@ -164,8 +164,15 @@ const appointmentDuration = z
   .min(15, "Durasi harus 15-240 menit.")
   .max(240, "Durasi harus 15-240 menit.");
 const appointmentRoom = z.string().trim().max(200, "Nama ruangan maksimal 200 karakter.").optional();
+const staffStartTime = z.string().refine(isStaffStartTime, staffStartTimeError);
 export const staffAppointmentSchema = z
-  .object({ ...bookingFields, ...visitNoteFields, room: appointmentRoom, duration: appointmentDuration })
+  .object({
+    ...bookingFields,
+    ...visitNoteFields,
+    time: staffStartTime,
+    room: appointmentRoom,
+    duration: appointmentDuration,
+  })
   .refine(futureStart, scheduleError);
 export type StaffAppointmentDraft = z.input<typeof staffAppointmentSchema>;
 export const staffAppointmentSchemaFor = (available: Officer[]) =>
@@ -174,7 +181,9 @@ export const standardStaffAppointmentInputSchema = z
   .object({
     ...bookingFields,
     ...visitNoteFields,
+    time: staffStartTime,
     room: appointmentRoom,
+    roomId: z.string().min(1).optional(),
     duration: appointmentDuration.default(60),
     visitKind: z.literal("standard").optional(),
     visitors: namedRoster,
@@ -197,11 +206,12 @@ export const restrictedAppointmentSchema = z
     ...visitNoteFields,
     visitKind: z.literal("restricted"),
     room: appointmentRoom,
+    roomId: z.string().min(1).optional(),
     date: visitFields.date,
-    time: visitFields.time,
+    time: staffStartTime,
     officerId: optionalText(z.string().trim().min(1)),
     name: optionalText(bookingFields.name),
-    organization: optionalText(bookingFields.organization.max(255)),
+    organization: optionalText(bookingFields.organization),
     serviceId: optionalText(
       z.string().trim().min(1).max(100, "No ID Dinas maksimal 100 karakter."),
     ),

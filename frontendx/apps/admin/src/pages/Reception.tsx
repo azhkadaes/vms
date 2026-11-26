@@ -23,12 +23,13 @@ import {
   RequiredMark,
   VisitIdentity,
   VisitKind,
+  TableRegion,
 } from "@vms/ui";
 import { InputOTP } from "@vms/ui/input-otp";
 import { ArrowRight, Check, KeyRound, ScanLine, ShieldCheck } from "lucide-react";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 const Scanner = lazy(() => import("../features/Scanner"));
-const ReceptionFiles = lazy(() => import("../features/ReceptionFiles"));
+const BookingFiles = lazy(() => import("../features/BookingFiles"));
 export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
   const [page, setPage] = useState(1);
   const q = useBookings({
@@ -62,6 +63,12 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
         : resolved,
     );
   const permitted = !!attendance && (incoming ? attendance.canCheckIn : attendance.canCheckOut);
+  const discardResolved = useCallback((error: Error) => {
+    setResolved(null);
+    setCredential("");
+    setChecked(false);
+    setError(error);
+  }, []);
   useEffect(() => {
     const denied = q.error instanceof ApiError && [401, 403].includes(q.error.status);
     if (
@@ -71,14 +78,11 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
           q.dataUpdatedAt > resolvedAt.current &&
           ((preview && !current) || (current && current.version !== resolved.version))))
     ) {
-      setResolved(null);
-      setCredential("");
-      setChecked(false);
-      setError(
+      discardResolved(
         new Error("Kunjungan diperbarui. Periksa kode atau QR kembali sebelum melanjutkan."),
       );
     }
-  }, [current, q.data, q.dataUpdatedAt, q.error, resolved]);
+  }, [current, discardResolved, q.data, q.dataUpdatedAt, q.error, resolved]);
   useEffect(
     () => () => {
       attempt.current++;
@@ -136,11 +140,8 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
       close();
     } catch (err) {
       if (err instanceof ApiError && [401, 403, 404, 409].includes(err.status)) {
-        setResolved(null);
-        setCredential("");
-        setChecked(false);
-      }
-      setError(err);
+        discardResolved(err);
+      } else setError(err);
     }
   }
   return (
@@ -171,7 +172,9 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
           <p>Pilih metode identifikasi pengunjung.</p>
         </div>
         <div className="method-options">
-          <button
+          <Button
+            type="button"
+            kind="action-card"
             onClick={(event) => {
               dialogTrigger.current = event.currentTarget;
               setMethod("code");
@@ -183,8 +186,10 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
               <small>Masukkan kode yang dibawa pengunjung</small>
             </span>
             <ArrowRight size={20} />
-          </button>
-          <button
+          </Button>
+          <Button
+            type="button"
+            kind="action-card"
             onClick={(event) => {
               dialogTrigger.current = event.currentTarget;
               setMethod("qr");
@@ -196,7 +201,7 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
               <small>Pindai QR kunjungan dengan kamera</small>
             </span>
             <ArrowRight size={20} />
-          </button>
+          </Button>
         </div>
       </section>
       <section className="panel section-gap">
@@ -220,12 +225,7 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
           hasData={q.data !== undefined}
         >
           {list.length ? (
-            <div
-              className="table-wrap"
-              tabIndex={0}
-              role="region"
-              aria-label="Daftar kehadiran kunjungan"
-            >
+            <TableRegion label="Daftar kehadiran kunjungan">
               <table>
                 <thead>
                   <tr>
@@ -258,7 +258,7 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </TableRegion>
           ) : (
             <Empty
               title={incoming ? "Belum ada kedatangan berikutnya" : "Belum ada pengunjung di dalam"}
@@ -311,11 +311,12 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
               !isRestricted(resolved) &&
               (resolved.attachmentAvailable || resolved.visitorPhotoAvailable) && (
                 <Suspense fallback={<Loading />}>
-                  <ReceptionFiles
+                  <BookingFiles
                     key={`${role}:${resolved.id}`}
                     booking={resolved}
                     role={role}
                     credential={credential}
+                    onAccessRejected={discardResolved}
                   />
                 </Suspense>
               )}

@@ -36,13 +36,8 @@ test("manual visits start approved and rescheduling conflicts preserve input", a
         officerId: "o3",
         date,
         time: "09:00",
-        purpose: "Synthetic occupied-slot fixture",
         name: "Browser Reservation Fixture",
         organization: "QA Example",
-        email: "reservation@example.test",
-        phone: "081234567890",
-        identityType: "KTP",
-        visitors: ["Browser Reservation Fixture"],
         idempotencyKey: crypto.randomUUID(),
       },
     });

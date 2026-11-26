@@ -3,7 +3,7 @@ $ErrorActionPreference = 'Stop'
 $backend = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $privateDir = Join-Path $backend '.runtime/local'
 $catalogMarker = Join-Path $privateDir 'test-catalog-seeded'
-$api = 'http://127.0.0.1:58100'
+$site = 'http://localhost:58101'
 $composeFiles = @('compose','-p','vms','-f','docker-compose.yml','-f','docker-compose.local.yml')
 
 function Invoke-VmsDocker {
@@ -14,8 +14,7 @@ function Invoke-VmsDocker {
 Push-Location $backend
 try {
     $env:VMS_PRIVATE_DIR = './.runtime/local'
-    $env:VMS_STAGE1_IMAGE = 'vms-backend:local-compose'
-    $env:VMS_STAGE1_API_PORT = '58100'
+    $env:VMS_STAGE1_IMAGE = 'vms-backend'
     $env:VMS_STAGE1_BUILD_TARGET = 'prod'
     $env:VMS_STAGE1_BINARY_CONTEXT = '.'
     & docker info --format '{{.ServerVersion}}' | Out-Null
@@ -26,6 +25,17 @@ try {
         Write-Host 'VMS stopped. Docker kept the database and files.'
         return
     }
+    $configuredPort = (Invoke-VmsDocker @composeFiles config --format json | Out-String | ConvertFrom-Json).services.api.environment.APP_PORT
+    $apiPort = 0
+    if (-not [int]::TryParse($configuredPort, [ref]$apiPort) -or $apiPort -lt 1 -or $apiPort -gt 65535) {
+        throw 'Set APP_PORT in backend/.env to a port between 1 and 65535.'
+    }
+    if ($apiPort -in @(8180, 58101)) {
+        throw 'Choose an APP_PORT other than 8180 or 58101. VMS uses those ports for the frontend.'
+    }
+    $api = "http://localhost:$apiPort"
+    $readyUri = "http://127.0.0.1:$apiPort/health/ready"
+
     if (Test-Path -LiteralPath $privateDir) {
         & ./ops/stage1/prepare.ps1 -Instance local -AddMissingFeatureKeys
     } else {
@@ -39,9 +49,10 @@ try {
             $env:VMS_NOTICE_EN = 'Local testing only. Use fictional data.'
         }
     }
-    $image = Invoke-VmsDocker image list --quiet --filter "reference=$env:VMS_STAGE1_IMAGE"
+    $image = Invoke-VmsDocker image list --quiet --filter "reference=${env:VMS_STAGE1_IMAGE}:latest"
     if ($Rebuild -or -not $image) { Invoke-VmsDocker @composeFiles build api }
-    $siteImage = Invoke-VmsDocker image list --quiet --filter 'reference=vms-frontend:local-compose'
+    Invoke-VmsDocker image tag $env:VMS_STAGE1_IMAGE vms-migrate
+    $siteImage = Invoke-VmsDocker image list --quiet --filter 'reference=vms-frontend:latest'
     if ($Rebuild -or -not $siteImage) { Invoke-VmsDocker @composeFiles build frontend }
     Invoke-VmsDocker @composeFiles up -d --no-build --wait --wait-timeout 120
 
@@ -54,7 +65,7 @@ try {
     $ready = $false
     for ($attempt = 0; $attempt -lt 30; $attempt++) {
         try {
-            if ((Invoke-RestMethod "$api/health/ready" -TimeoutSec 2).status -eq 'ready') { $ready = $true; break }
+            if ((Invoke-RestMethod $readyUri -TimeoutSec 2).status -eq 'ready') { $ready = $true; break }
         } catch { Start-Sleep -Milliseconds 500 }
     }
     if (-not $ready) {
@@ -63,10 +74,9 @@ try {
         throw 'VMS did not pass the readiness check.'
     }
     Write-Host "VMS ready: $api/health/ready"
-    Write-Host 'Visitor app: http://localhost:58101/'
-    Write-Host 'Staff app:   http://localhost:58101/admin/'
+    Write-Host "Visitor app: $site/"
+    Write-Host "Staff app:   $site/admin/"
     Write-Host "API docs:  $api/swagger/index.html"
-    Write-Host 'Swagger username: local'
-    Write-Host "Swagger password file: $(Join-Path $privateDir 'swagger_password')"
-    if (-not $NoBrowser) { Start-Process 'http://localhost:58101/' }
+    Write-Host 'Swagger credentials: SWAGGER_USERNAME and SWAGGER_PASSWORD in backend/.env'
+    if (-not $NoBrowser) { Start-Process "$site/" }
 } finally { Pop-Location }

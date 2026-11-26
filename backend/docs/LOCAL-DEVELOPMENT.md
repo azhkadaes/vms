@@ -70,14 +70,18 @@ Compose builds the API and migrator into the same non-root image. Its default `p
 
 1. Open Docker Desktop and wait for its engine. Double-click `Start VMS.cmd` in the VMS checkout. The first run builds the frontend and API images, starts PostgreSQL, and applies the migrations before the API starts. Later runs reuse the images and database.
 2. Open the [visitor app](http://localhost:58101/) or the [staff app](http://localhost:58101/admin/). Both apps make requests to the real API through the same address. Use `localhost` as shown for staff sign-in.
-3. For direct API testing, open [Swagger](http://127.0.0.1:58100/swagger/index.html). Use the username `local` and the value in the private file `backend/.runtime/local/swagger_password`. You can also check [API readiness](http://127.0.0.1:58100/health/ready) without signing in.
+3. For API testing, set `SWAGGER_USERNAME` and `SWAGGER_PASSWORD` in `backend/.env`, then run `Start VMS.cmd` again. The launcher prints the Swagger and readiness URLs for the configured port. With the default port, open [Swagger](http://localhost:8080/swagger/index.html) or [API readiness](http://localhost:8080/health/ready). Leave both Swagger credentials blank to disable Swagger.
 4. Double-click `Stop VMS.cmd` to stop the stack. Start it again with the same file. The database and uploads stay in Docker volumes `vms-postgres` and `vms-uploads`.
 
-The Compose project is named `vms`. Ports `58100` and `58101` listen only on the local machine. PostgreSQL uses the private Compose network. The start and stop launchers operate on this project alone.
+The Compose project is named `vms`. Port `58101` serves both apps. Set `APP_PORT` in `backend/.env` to change both the backend listener inside Docker and its direct port on the local machine. It defaults to `8080`. Ports `8180` and `58101` are reserved for the frontend. Both published ports listen only on the local machine, and PostgreSQL uses the private Compose network.
+
+Docker Desktop lists `58101:8180` under the frontend container and the direct API port under `vms-backend`. The frontend uses its own network connection and contacts `api` through a dedicated gateway network, so restarting Docker no longer leaves it attached to an old backend network namespace. Only the frontend address `172.30.81.2` is allowed to initialize staff forms, and the gateway secret is still required. The frontend health check also verifies backend readiness.
 
 For a new empty catalog, run `".\Start VMS.cmd" -SeedTestCatalog` from Command Prompt, or `& '.\Start VMS.cmd' -SeedTestCatalog` from PowerShell. This inserts fictional officials and rooms once and turns on a clearly labeled testing notice if no operator notice is configured. The test data stays in the local database on restart. In Swagger, try `GET /v1/public/catalogs`, `POST /v1/public/attachments`, and `POST /v1/public/bookings`.
 
 The bundled gateway is for local testing. Production staff sign-in requires employee accounts and a separate HTTPS gateway. Do not enter real visitor details under the test notice. Use `-Rebuild` after pulling changes to either app or the backend.
+
+If local test staff accounts have been provisioned, keep their login details in `backend/.runtime/local/staff_test_accounts.env`. The file is ignored by Git and excluded from Docker builds. The launcher does not load it as application configuration.
 
 Verified on Windows on 20 November 2026. The launcher applied all 30 migrations on the first start and zero on the second. Swagger authentication, a visitor photo upload and a test booking passed. The same booking was found after using the stop and start launchers.
 

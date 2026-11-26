@@ -1,5 +1,5 @@
 import { emailSchema } from "@vms/data/validation";
-import { Button, EmailInput, ErrorNotice, RequiredFieldsHint, RequiredMark } from "@vms/ui";
+import { FieldMessage, Button, EmailInput, ErrorNotice, RequiredFieldsHint, RequiredMark } from "@vms/ui";
 import { localizeMessage } from "@vms/ui/language";
 import { useRef, useState } from "react";
 import { useLanguage } from "../i18n";
@@ -78,9 +78,9 @@ export default function SubmissionRecovery({
             )}
           </small>
           {emailError && (
-            <span id="submission-email-error" className="field-error" role="alert">
+            <FieldMessage tone="error" id="submission-email-error">
               {localizeMessage(emailError, language)}
-            </span>
+            </FieldMessage>
           )}
         </div>
         <ErrorNotice error={error} />

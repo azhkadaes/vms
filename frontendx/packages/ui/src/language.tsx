@@ -36,6 +36,7 @@ const englishErrors: Record<string, string> = {
   "Pilih tujuan kunjungan.": "Choose who to visit.",
   "Pilih tanggal yang valid, hari ini atau sesudahnya.": "Choose a valid date, today or later.",
   "Pilih waktu mulai antara 08.00–16.00 WITA.": "Choose a start time between 08:00 and 16:00 WITA.",
+  "Pilih waktu mulai antara 08.00–16.59 WITA.": "Choose a start time between 08:00 and 16:59 WITA.",
   "Jelaskan keperluan minimal 5 karakter.": "Describe the purpose in at least 5 characters.",
   "Waktu kunjungan harus di masa depan (WITA).": "The visit start time must be in the future (WITA).",
   "Masukkan nama lengkap.": "Enter a full name.",

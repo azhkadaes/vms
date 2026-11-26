@@ -9,7 +9,7 @@ import {
   reportStatuses,
   summaryFilterSchema,
 } from "@vms/data/reports";
-import { Button, Empty, ErrorNotice, Loading, RequiredFieldsHint, RequiredMark } from "@vms/ui";
+import { FieldMessage, Button, Empty, ErrorNotice, Loading, RequiredFieldsHint, RequiredMark } from "@vms/ui";
 import { Download, RefreshCw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import ReportMultiSelect from "../features/ReportMultiSelect";
@@ -188,9 +188,9 @@ export default function Reports({ page }: { page: "analytics" | "logs" }) {
                   aria-describedby={issues[name]?.length ? `report-${name}-error` : undefined}
                 />
                 {issues[name]?.[0] && (
-                  <span role="alert" className="field-error" id={`report-${name}-error`}>
+                  <FieldMessage tone="error" id={`report-${name}-error`}>
                     {issues[name]![0]}
-                  </span>
+                  </FieldMessage>
                 )}
               </div>
             ))}

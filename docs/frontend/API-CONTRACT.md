@@ -1,6 +1,6 @@
 # New backend contract consumed by frontendx
 
-> Historical consumer baseline. The [current audited target contract](../contracts/API-CONTRACT.md) records actual frontend callsites, backend source status and coordinated changes, including Bearer/CSRF, Room objects/roomId and token-result responses. Read its gap register before treating the readiness or implemented claims below as current.
+> Historical consumer baseline. See the [current API reference](../contracts/FRONTEND-DRIVEN-REST-API-2026-11-16.md) and [contract validation](../contracts/VALIDATION.md) for current operations and verification results.
 
 ## Database alignment update — 9 November 2026
 

@@ -1,6 +1,6 @@
 # VMS backend: Go conventions for new modules
 
-Source read 18 November 2026, backend base `e4ca52f` plus working tree. This is the code template the [backend implementation spec](../.scratch/backend-api-2026-11-18/spec.md) tickets follow. The backend's sihp-be-derived layering is house style and must be followed. Section 7 lists existing code that must **not** be copied.
+Source read 18 November 2026, backend base `e4ca52f` plus working tree. This is the code template the [backend implementation spec](specs/backend-api-2026-11-18/spec.md) tickets follow. The backend's sihp-be-derived layering is house style and must be followed. Section 7 lists existing code that must **not** be copied.
 
 Paths are relative to `backend/`.
 

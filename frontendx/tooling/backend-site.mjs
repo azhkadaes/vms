@@ -77,8 +77,8 @@ export async function startBackendSite({ apiOrigin, port = 3000, root = workspac
   const api = new URL(apiOrigin);
   if (
     api.protocol !== "http:" ||
-    api.hostname !== "127.0.0.1" ||
-    !api.port ||
+    !(api.hostname === "127.0.0.1" || (dockerGateway && api.hostname === "api")) ||
+    (!api.port && !dockerGateway) ||
     api.username ||
     api.password ||
     api.pathname !== "/" ||
@@ -99,7 +99,13 @@ export async function startBackendSite({ apiOrigin, port = 3000, root = workspac
     if (!req.url.startsWith("/") || req.url.startsWith("//")) return res.writeHead(400).end();
 
     const url = new URL(req.url, `http://${host}`);
-    if (url.pathname === "/v1" || url.pathname.startsWith("/v1/")) {
+    const localBackendRoute = dockerGateway && (
+      url.pathname === "/swagger" ||
+      url.pathname.startsWith("/swagger/") ||
+      url.pathname === "/health/live" ||
+      url.pathname === "/health/ready"
+    );
+    if (url.pathname === "/v1" || url.pathname.startsWith("/v1/") || localBackendRoute) {
       const headers = forwardedHeaders(req.headers);
       for (const name of Object.keys(headers)) {
         if (name === "forwarded" || name.startsWith("x-forwarded-") || name.startsWith("x-vms-gateway-"))
@@ -187,7 +193,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     if (process.env.VMS_DOCKER_SITE === "1" && !dockerGateway)
       throw new Error("The Docker staff gateway key is missing.");
     const port = dockerGateway ? 8180 : Number(values.port);
-    const apiOrigin = dockerGateway ? "http://127.0.0.1:8080" : values.api;
+    const dockerApiHost = process.env.VMS_DOCKER_API_HOST || "127.0.0.1";
+    const apiOrigin = dockerGateway ? `http://${dockerApiHost}:${process.env.APP_PORT || "8080"}` : values.api;
     if (!apiOrigin || !Number.isInteger(port) || port < 1024 || port > 65535)
       throw new Error("Use npm run serve:backend -- --api http://127.0.0.1:PORT [--port 3000].");
     const site = await startBackendSite({ apiOrigin, port, dockerGateway });

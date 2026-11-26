@@ -9,7 +9,7 @@ import {
   useSession,
   visitTiming,
 } from "@vms/data";
-import { Empty, QueryState, StatusBadge, VisitKind } from "@vms/ui";
+import { Empty, QueryState, StatusBadge, VisitKind, TableRegion } from "@vms/ui";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -222,12 +222,7 @@ export default function Dashboard() {
                 />
               ) : (
                 <>
-                  <div
-                    className="table-wrap dashboard-agenda-table"
-                    tabIndex={0}
-                    role="region"
-                    aria-label="Agenda kunjungan"
-                  >
+                  <TableRegion className="dashboard-agenda-table" label="Agenda kunjungan">
                     <table>
                       <thead>
                         <tr>
@@ -265,7 +260,7 @@ export default function Dashboard() {
                         ))}
                       </tbody>
                     </table>
-                  </div>
+                  </TableRegion>
                   <ul className="dashboard-agenda-list">
                     {agenda.slice(0, 5).map((b) => {
                       const content = (
@@ -364,11 +359,11 @@ export default function Dashboard() {
         </QueryState>
       )}
       {session?.permissions.includes("reports") && (
-        <section className="section-gap" aria-label="Analitik kunjungan">
+        <div className="section-gap">
           <Suspense fallback={<Loading />}>
             <DashboardAnalytics key={session.role} />
           </Suspense>
-        </section>
+        </div>
       )}
     </div>
   );

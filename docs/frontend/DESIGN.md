@@ -130,17 +130,24 @@ components:
 
 Use the shared tokens in `frontendx/packages/ui/src/tokens.css`. The spacing scale uses 4, 8, 12, 16, 20, 24, and 32 px. Size tokens describe the purpose of a control so changes to forms can be made in one place.
 
+The staff theme sets Geist typography and compact neutral surfaces at the document root. Dialogs and popovers inherit the same theme as the staff page. Button colors, interaction states, and field borders come from the shared component styles.
+
 | Pattern | Spacing | Size |
 | --- | --- | --- |
 | Field | 8 px between label, control, helper, and error | Label 14/20 px, control text and placeholder 16/24 px, helper and error 13/20 px |
+| Field focus | Show the same blue focus ring for pointer and keyboard focus. Keep it visible while a picker is open. | Use a 3 px outline with a 4 px offset. Grouped controls show the ring around the whole control. Invalid fields retain their error border. |
 | Standard input, select, date, time, and grouped email | 14 px content inset. Reserve room for a select chevron at the trailing edge. | 48 px minimum height, 10 px corner radius |
 | Compact staff fields | Apply `form-density-compact` at the form boundary. Uses 12 px content insets and 12 px desktop grid gaps. | 40 px minimum height and 14/20 px text on desktop. Phone and touch layouts use at least 44 px height and 16/24 px text. |
 | Form grid and sections | 20 px between fields on desktop, 16 px on narrow screens, 24 px between groups | Section titles 16/24 px. Use `FormSection` for a fieldset and its legend. |
 | Upload and visitor group | 8 px within each group, 24 px between groups. Align the remove action with its input. | Use `UploadField`, `form-stack`, and `form-roster-row`. |
 | Buttons and action groups | 8 px icon gap, 12 px between actions. Default button inline inset is 20 px and falls to 16 px on narrow screens. | Shared actions have a 44 px minimum height. |
+| Icon and contextual actions | Use Button with `size="icon"` and an accessible name for icon-only actions. Use the action-card, menu-option, sort-label, row-link, and inline-link variants for the corresponding patterns. | Icon buttons are 44 × 44 px. Inline actions inside a sentence follow the surrounding text. |
+| Segmented control | Use `SegmentedControl` for visible, mutually exclusive choices such as language and quick date ranges. | Reuses the secondary Button for the selected choice and the ghost Button for other choices. Each choice has a 44 px minimum hit area. |
 | Single-choice menus | 4 px menu inset, 4 px vertical and 8 px horizontal option insets | 32 px minimum option height. Use `Select` for compatible choices. |
-| Standard tables | 12 px block and 16 px inline body-cell padding. Narrow tables use a 12 px inline inset. | Align multiline cells at the top. Preserve dedicated numeric or icon alignment. |
+| Search and multi-select | Use `SearchField` and `SearchableMultiSelect` for their respective controls. | Both share the field height, border, and radius tokens. |
+| Standard tables | 12 px block and 16 px inline body-cell padding. Narrow tables use a 12 px inline inset. | Use `TableRegion` for scrolling tables to provide an accessible name and keyboard scrolling. Preserve numeric and icon alignment. |
 | Panels and dialogs | Use 24 px for content groups. Shared panel headings use 24 px block padding and 20 px insets on narrow screens. | Keep compact surfaces in the existing component variants. |
+| Status and visit type badges | Use `StatusBadge`, `VisitKindBadge`, or `Badge` for their respective meanings. | Badge typography, spacing, and color treatments live in the shared stylesheet. |
 
 Use `FieldMessage` for helper text and validation errors. Put it inside its field after the control and connect its ID with `aria-describedby`. Keep a visible label even when a control has a placeholder. When a density variant is needed, set its gap or size at the component boundary using the shared scale.
 

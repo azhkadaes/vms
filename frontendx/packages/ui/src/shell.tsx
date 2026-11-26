@@ -1,4 +1,4 @@
-import { Component, useEffect, type ReactNode, type ButtonHTMLAttributes } from "react";
+import { Component, useEffect, type ReactNode, type ComponentPropsWithRef } from "react";
 import { useLocation } from "react-router";
 import { ArrowRight } from "lucide-react";
 import { preview } from "@vms/data/config";
@@ -53,13 +53,28 @@ export function Brand({
 export function Button({
   children,
   kind = "primary",
+  size = "default",
   className = "",
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & {
-  kind?: "primary" | "secondary" | "ghost" | "danger" | "danger-outline";
+}: ComponentPropsWithRef<"button"> & {
+  kind?:
+    | "primary"
+    | "secondary"
+    | "ghost"
+    | "danger"
+    | "danger-outline"
+    | "action-card"
+    | "menu-option"
+    | "sort-label"
+    | "row-link"
+    | "inline-link";
+  size?: "default" | "icon";
 }) {
   return (
-    <button className={`button ${kind} ${className}`} {...props}>
+    <button
+      className={`button ${kind}${size === "icon" ? " button-icon" : ""} ${className}`}
+      {...props}
+    >
       {children}
     </button>
   );

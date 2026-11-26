@@ -51,6 +51,7 @@ import { useEffect, useState } from "react";
 import "@vms/ui/styles.css";
 import "./styles.css";
 import BookingRefresh from "./components/BookingRefresh";
+import ProfilePreview from "./features/ProfilePreview";
 import { RoleSelection, RoleSwitcher } from "./features/RoleControls";
 const visitorHomeHref =
   preview && location.port === "3002" ? `${location.protocol}//${location.hostname}:3000/` : "/";
@@ -214,6 +215,7 @@ function Shell() {
             <div className="toolbar">
               <Button
                 kind="ghost"
+                size="icon"
                 className="menu-button"
                 aria-label="Buka navigasi"
                 aria-expanded={menu}
@@ -227,13 +229,7 @@ function Shell() {
             </div>
             <div className="toolbar">
               <span className="top-date mobile-hide">{dateLabel(today())} · WITA</span>
-              <div className="avatar">
-                {session.name
-                  .split(" ")
-                  .slice(0, 2)
-                  .map((n) => n[0])
-                  .join("")}
-              </div>
+              <ProfilePreview key={JSON.stringify([session.id, session.role])} session={session} />
             </div>
           </header>
           <PreviewNotice />
@@ -252,7 +248,7 @@ function Shell() {
                 <BookingRefresh mode={session.role === "Receptionist" ? "reception" : "staff"} />
               )}
             <Suspense fallback={<Loading />}>
-              <Outlet />
+              <Outlet key={JSON.stringify([session.id, session.role])} />
             </Suspense>
           </main>
           <footer className="admin-footer">
@@ -306,8 +302,11 @@ function VisitRoute({
   return <Navigate to={`/booking${params.size ? `?${params}` : ""}`} replace />;
 }
 function Login() {
+  const { session, pendingSession, loading } = useSession();
   const [error, setError] = useState<unknown>();
   const [pending, setPending] = useState(false);
+  if (!preview && loading) return <Loading />;
+  if (!preview && (session || pendingSession)) return <Navigate to="/dashboard" replace />;
   return (
     <main className="login-page">
       <Brand href={visitorHomeHref} />
@@ -510,7 +509,7 @@ function Sidebar({
             Pilih halaman ruang kerja Anda.
           </Dialog.Description>
           <Dialog.Close asChild>
-            <Button className="sidebar-close" kind="ghost" aria-label="Tutup navigasi">
+            <Button className="sidebar-close" kind="ghost" size="icon" aria-label="Tutup navigasi">
               <X size={18} />
             </Button>
           </Dialog.Close>

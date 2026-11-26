@@ -87,7 +87,7 @@ test("staff polling uses one shared request every 30 seconds and preserves URL/s
     assert.equal(requests.length, baseline + 1);
     assert.equal(page.url(), url);
     assert.equal(
-      await page.locator('input[aria-label="Cari janji temu"]').inputValue(),
+      await page.getByRole("textbox", { name: "Cari kunjungan", exact: true }).inputValue(),
       "AuditRefresh",
     );
   } finally {

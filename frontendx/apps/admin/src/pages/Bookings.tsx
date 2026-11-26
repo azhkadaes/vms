@@ -23,9 +23,12 @@ import {
   Loading,
   Modal,
   QueryState,
+  SearchField,
   StatusBadge,
   VisitKind,
+  TableRegion,
 } from "@vms/ui";
+import { SegmentedControl } from "@vms/ui/segmented-control";
 import { toast } from "@vms/ui/toast";
 import {
   ArrowDownUp,
@@ -36,7 +39,6 @@ import {
   ChevronRight,
   Download,
   Plus,
-  Search,
 } from "lucide-react";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
@@ -161,7 +163,9 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
   }
   function col(key: SortKey, title: string) {
     return (
-      <button
+      <Button
+        type="button"
+        kind="sort-label"
         onClick={() => {
           setParams((p) => {
             p.set("sort", key);
@@ -173,7 +177,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
       >
         {title}
         <ArrowDownUp size={12} />
-      </button>
+      </Button>
     );
   }
   function sortDirection(key: SortKey) {
@@ -232,7 +236,9 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                 <ChevronDown size={16} />
               </summary>
               <div className="appointment-type-options">
-                <button
+                <Button
+                  type="button"
+                  kind="menu-option"
                   aria-label="Kunjungan VIP"
                   onClick={(event) => {
                     createTrigger.current =
@@ -243,8 +249,10 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                 >
                   <strong>Kunjungan VIP</strong>
                   <small>Janji temu untuk Kepala Otorita</small>
-                </button>
-                <button
+                </Button>
+                <Button
+                  type="button"
+                  kind="menu-option"
                   aria-label="Kunjungan Terbatas"
                   onClick={(event) => {
                     createTrigger.current =
@@ -255,7 +263,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                 >
                   <strong>Kunjungan Terbatas</strong>
                   <small>Dibuat dan dikelola Protokol</small>
-                </button>
+                </Button>
               </div>
             </details>
           ) : mayCreate ? (
@@ -288,18 +296,23 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
         <ErrorNotice error="Kunjungan tidak tersedia dalam akses Anda." />
       )}
       <section className="panel section-gap booking-panel">
-        <div className="booking-tabs" role="group" aria-label="Filter status">
-          {["all", ...statusOptions].map((s) => (
-            <button
-              key={s}
-              className={status === s ? "active" : ""}
-              aria-pressed={status === s}
-              onClick={() => update("status", s)}
-            >
-              {s === "all" ? "Semua" : labels[s as keyof typeof labels]}
-              <span>{s === "all" ? list.length : list.filter((b) => b.status === s).length}</span>
-            </button>
-          ))}
+        <div className="booking-tabs">
+          <SegmentedControl
+            label="Filter status"
+            value={status}
+            options={["all", ...statusOptions].map((value) => ({
+              value,
+              label: (
+                <>
+                  {value === "all" ? "Semua" : labels[value as keyof typeof labels]}
+                  <span>
+                    {value === "all" ? list.length : list.filter((b) => b.status === value).length}
+                  </span>
+                </>
+              ),
+            }))}
+            onChange={(value) => update("status", value)}
+          />
         </div>
         <div className="mobile-status-filter">
           <label htmlFor="booking-status">Status janji temu</label>
@@ -318,16 +331,12 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
           </Select>
         </div>
         <div className="booking-toolbar">
-          <div className="search-field">
-            <Search size={18} />
-            <input
-              className="control"
-              aria-label="Cari kunjungan"
-              placeholder="Cari nama, instansi, atau tujuan…"
-              value={search}
-              onChange={(e) => update("q", e.target.value)}
-            />
-          </div>
+          <SearchField
+            aria-label="Cari kunjungan"
+            placeholder="Cari nama, instansi, atau tujuan…"
+            value={search}
+            onChange={(e) => update("q", e.target.value)}
+          />
           <div className="field booking-sort">
             <label htmlFor="booking-sort">Urutkan</label>
             <Select
@@ -411,12 +420,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                   </article>
                 ))}
               </div>
-              <div
-                className="table-wrap booking-desktop-table"
-                tabIndex={0}
-                role="region"
-                aria-label="Daftar kunjungan"
-              >
+              <TableRegion className="booking-desktop-table" label="Daftar kunjungan">
                 <table>
                   <thead>
                     <tr>
@@ -449,8 +453,9 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                                   {bookingName(b)} <VisitKind booking={b} />
                                 </strong>
                               ) : (
-                                <button
-                                  className="row-link"
+                                <Button
+                                  type="button"
+                                  kind="row-link"
                                   onClick={(event) => {
                                     detailTrigger.current = event.currentTarget;
                                     update("selected", b.id);
@@ -458,7 +463,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                                 >
                                   {bookingName(b)}
                                   <VisitKind booking={b} />
-                                </button>
+                                </Button>
                               )}
                               <small>
                                 {isRestricted(b)
@@ -489,6 +494,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                           <td>
                             <Button
                               kind="ghost"
+                              size="icon"
                               aria-label={`Lihat detail ${bookingName(b)}`}
                               onClick={(event) => {
                                 detailTrigger.current = event.currentTarget;
@@ -503,7 +509,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </TableRegion>
               <div className="pagination">
                 <span>
                   {(activePage - 1) * 7 + 1}–{Math.min(activePage * 7, total)} dari {total} booking
@@ -511,6 +517,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                 <div>
                   <Button
                     kind="ghost"
+                    size="icon"
                     disabled={activePage === 1}
                     aria-label="Halaman sebelumnya"
                     onClick={() => update("page", String(activePage - 1))}
@@ -522,6 +529,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                   </span>
                   <Button
                     kind="ghost"
+                    size="icon"
                     disabled={activePage === pages}
                     aria-label="Halaman berikutnya"
                     onClick={() => update("page", String(activePage + 1))}
@@ -570,14 +578,14 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
               returnFocusTo={createTrigger.current}
             >
               <div className="appointment-type-options inline">
-                <button onClick={() => openCreate("standard")}>
+                <Button type="button" kind="menu-option" onClick={() => openCreate("standard")}>
                   <strong>Kunjungan VIP</strong>
                   <small>Janji temu untuk Kepala Otorita</small>
-                </button>
-                <button onClick={() => openCreate("restricted")}>
+                </Button>
+                <Button type="button" kind="menu-option" onClick={() => openCreate("restricted")}>
                   <strong>Kunjungan Terbatas</strong>
                   <small>Dibuat dan dikelola Protokol</small>
-                </button>
+                </Button>
               </div>
             </Modal>
           ) : kind === "restricted" ? (

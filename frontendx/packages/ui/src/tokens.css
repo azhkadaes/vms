@@ -38,6 +38,13 @@
   --field-padding-block: 11px;
   --field-padding-inline: 14px;
   --field-radius: 10px;
+  --field-border: oklch(0.85489312 0.00780513 241.680674);
+  --field-border-hover: oklch(0.66364388 0.02752881 250.076571);
+  --field-border-invalid: oklch(0.50170852 0.15662789 28.344907);
+  --control-radius: 16px;
+  --badge-radius: 7px;
+  --panel-radius: 20px;
+  --dialog-radius: 20px;
   --field-text-size: 1rem;
   --field-text-line: 1.5rem;
   --field-label-size: 0.875rem;
@@ -48,9 +55,23 @@
   --form-title-line: 1.5rem;
   --action-height: 44px;
   --menu-option-height: var(--space-8);
+  --menu-option-radius: 6px;
   --font:
     -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui,
     sans-serif;
   --font-display: "Plus Jakarta Sans Variable", var(--font);
   color-scheme: light;
+}
+
+:root[data-ui-theme="staff"] {
+  --page: oklch(0.98415186 0.00341267 247.857544);
+  --ink: oklch(0.18848897 0.01661066 273.774258);
+  --muted: oklch(0.49470599 0.02944911 263.173717);
+  --line: oklch(0.91972855 0.00403148 286.320232);
+  --surface-subtle: oklch(0.96947991 0.00454128 258.324621);
+  --accent-soft: oklch(0.95803774 0.01593934 253.902066);
+  --font: "Geist Variable", "Segoe UI", system-ui, sans-serif;
+  --font-display: var(--font);
+  --panel-border: 1px solid var(--line);
+  --panel-shadow: 0 1px 2px oklch(0.18848897 0.01661066 273.774258 / 0.0392156863);
 }
