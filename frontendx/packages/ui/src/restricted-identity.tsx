@@ -1,7 +1,11 @@
 import { dateLabel, type StaffBooking } from "@vms/data";
 import { useUiLanguage } from "./language";
 
-export function RestrictedIdentity({ booking: b }: { booking: StaffBooking }) {
+export function RestrictedIdentity({
+  booking: b,
+}: {
+  booking: Omit<StaffBooking, "allowedActions">;
+}) {
   const { language, t } = useUiLanguage();
   return <section aria-label={t("Rincian kunjungan terbatas", "Restricted visit details")}>
     <h3>{b.reference || t("Kunjungan terbatas", "Restricted visit")}</h3>

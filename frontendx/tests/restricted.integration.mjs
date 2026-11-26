@@ -1,4 +1,4 @@
-import test, { before, after, beforeEach } from "node:test";
+import test, { afterEach, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { sessionFor } from "../packages/data/src/domain.ts";
@@ -7,7 +7,9 @@ import { startPreview } from "./helpers/preview-server.mjs";
 let api,
   base,
   assigned = ["o2", "o3"];
-before(async () => {
+// A fresh preview per test: every restricted visit now needs an officer, so visits left
+// behind by earlier tests would otherwise collide on the officer's schedule.
+beforeEach(async () => {
   api = await startPreview({
     session: (role) => ({
       ...sessionFor(role),
@@ -20,12 +22,13 @@ beforeEach(() => {
   api.setNow("2099-08-19T09:00:00+08:00");
   assigned = ["o2", "o3"];
 });
-after(async () => api?.close());
+afterEach(async () => api?.close());
 const protocol = encodeURIComponent("Protocol Officer");
 const input = () => ({
   visitKind: "restricted",
   date: "2099-08-19",
   time: "10:00",
+  officerId: "o1",
   idempotencyKey: randomUUID(),
 });
 async function post(path, body) {
@@ -49,6 +52,15 @@ async function create(extra = {}) {
   return result.data;
 }
 
+const visitCommands = [
+  ["approve", {}],
+  ["reject", {}],
+  ["reschedule", {}],
+  ["attendance", { action: "check_in" }],
+  ["attendance", { action: "check_out" }],
+  ["update", {}],
+];
+
 test("minimal Terbatas creation, payload-bound retry, edits and read-only role projections", async () => {
   const draft = input();
   for (const role of ["PA", "Receptionist", "Super Admin"])
@@ -59,7 +71,7 @@ test("minimal Terbatas creation, payload-bound retry, edits and read-only role p
   assert.equal((await post("/bookings", draft)).status, 403);
   const b = await create(draft);
   assert.equal(b.status, "approved");
-  for (const key of ["name", "organization", "serviceId", "officerId", "email", "visitors"])
+  for (const key of ["name", "organization", "serviceId", "email", "visitors"])
     assert.equal(key in b, false, key);
   assert.equal((await post(`/staff/bookings?role=${protocol}`, draft)).data.id, b.id);
   assert.equal(
@@ -95,10 +107,14 @@ test("minimal Terbatas creation, payload-bound retry, edits and read-only role p
     assert.equal(detail.data.organization, edit.organization);
     assert.equal(detail.data.serviceId, role === "Super Admin" ? edit.serviceId : undefined);
     assert.equal(detail.data.serviceIdLast4, role === "PA" ? "5678" : undefined);
-    for (const action of ["approve", "reject", "reschedule", "checkin", "checkout", "update"])
+    for (const [action, extra] of visitCommands)
       assert.equal(
-        (await post(`/bookings/${b.id}/${action}?role=${encodeURIComponent(role)}`, { version: 2 }))
-          .status,
+        (
+          await post(`/bookings/${b.id}/${action}?role=${encodeURIComponent(role)}`, {
+            version: 2,
+            ...extra,
+          })
+        ).status,
         403,
         action,
       );
@@ -117,8 +133,11 @@ test("minimal Terbatas creation, payload-bound retry, edits and read-only role p
     (await list("PA")).some((r) => r.id === b.id),
     false,
   );
-  for (const action of ["approve", "reject", "reschedule", "checkin", "checkout", "update"])
-    assert.equal((await post(`/bookings/${b.id}/${action}?role=PA`, { version: 2 })).status, 404);
+  for (const [action, extra] of visitCommands)
+    assert.equal(
+      (await post(`/bookings/${b.id}/${action}?role=PA`, { version: 2, ...extra })).status,
+      404,
+    );
   assert.equal((await post("/resolve?role=PA", { credential: b.code })).status, 404);
 });
 
@@ -159,10 +178,10 @@ test("reception list redacts identity and only code/QR lookup yields arrival det
   }
   api.setNow("2099-08-19T09:30:00+08:00");
   assert.equal(
-    (await post(`/bookings/${b.id}/checkin?role=Receptionist`, { version: b.version })).status,
+    (await post(`/bookings/${b.id}/attendance?role=Receptionist`, { action: "check_in", version: b.version })).status,
     404,
   );
-  const checkedIn = await post(`/bookings/${b.id}/checkin?role=Receptionist`, {
+  const checkedIn = await post(`/bookings/${b.id}/attendance?role=Receptionist`, { action: "check_in",
     version: b.version,
     credential: b.code,
   });
@@ -170,7 +189,7 @@ test("reception list redacts identity and only code/QR lookup yields arrival det
   assert.equal(checkedIn.data.status, "checked_in");
   assert.equal("name" in checkedIn.data, false);
   api.setNow("2099-08-20T15:00:00+08:00");
-  const checkedOut = await post(`/bookings/${b.id}/checkout?role=Receptionist`, {
+  const checkedOut = await post(`/bookings/${b.id}/attendance?role=Receptionist`, { action: "check_out",
     version: checkedIn.data.version,
     credential: `VMS-DEMO:${b.code}`,
   });
@@ -194,12 +213,18 @@ test("Terbatas edits clear optional values, immediately revoke former PA access 
     name: "",
     organization: "",
     serviceId: "",
-    officerId: "",
+    officerId: "o1",
   };
   const cleared = await post(`/bookings/${b.id}/update?role=${protocol}`, update);
   assert.equal(cleared.status, 200);
-  for (const key of ["name", "organization", "serviceId", "officerId"])
+  for (const key of ["name", "organization", "serviceId"])
     assert.equal(key in cleared.data, false, key);
+  assert.equal(cleared.data.officerId, "o1");
+  assert.equal(
+    (await post(`/bookings/${b.id}/update?role=${protocol}`, { ...update, officerId: "", version: 2 }))
+      .status,
+    422,
+  );
   assert.equal((await read(`/bookings/${b.id}?role=PA`)).status, 404);
   for (const extra of [
     { email: "test@example.test" },
@@ -246,7 +271,7 @@ for (const clock of ["09:29:59.999", "09:30:00.000", "11:00:00.000", "11:00:00.0
       const resolved = await post("/resolve?role=Receptionist", { credential });
       assert.equal(resolved.data.timing.canCheckIn, allowed);
     }
-    const response = await post(`/bookings/${b.id}/checkin?role=Receptionist`, {
+    const response = await post(`/bookings/${b.id}/attendance?role=Receptionist`, { action: "check_in",
       version: b.version,
       credential: b.code,
     });

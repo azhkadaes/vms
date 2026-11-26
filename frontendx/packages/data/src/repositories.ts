@@ -1,21 +1,39 @@
 import { apiBase, preview } from "./config.ts";
 import type { Repository } from "./contracts.ts";
-import { officers, rooms } from "./domain.ts";
+import { officers, roomOptions, rooms } from "./domain.ts";
 import { ApiError } from "./errors.ts";
-import { createHttpClient } from "./http.ts";
+import { createHttpClient, type Authorizer } from "./http.ts";
+import { staffSession } from "./staff-session.ts";
 import { reportFilterParams } from "./report-filter.ts";
 
-export function createRepository({
+export type ApiOptions = {
+  development?: boolean;
+  base?: string;
+  fetcher?: typeof fetch;
+  /** Defaults to the staff session in production and to none for the preview server. */
+  session?: Authorizer;
+};
+/**
+ * One HTTP client for either adapter behind the contract seam: the Go backend or the preview
+ * server. The preview takes production paths (ADR-0001); it only needs the impersonated role.
+ */
+export function createApi({
   development = false,
   base = "/v1",
   fetcher = fetch,
-}: { development?: boolean; base?: string; fetcher?: typeof fetch } = {}): Repository {
-  const request = createHttpClient(development ? "/__preview" : base, fetcher);
+  session = development ? undefined : staffSession,
+}: ApiOptions = {}) {
+  const request = createHttpClient(development ? "/__preview" : base, fetcher, session);
   const staff = (path: string, role: string) =>
     development
-      ? `${path}${path.includes("?") ? "&" : "?"}role=${encodeURIComponent(role)}`
+      ? `/staff${path}${path.includes("?") ? "&" : "?"}role=${encodeURIComponent(role)}`
       : `/staff${path}`;
-  const publicPath = (path: string) => (development ? path : `/public${path}`);
+  const publicPath = (path: string) => `/public${path}`;
+  return { request, staff, publicPath };
+}
+export function createRepository(options: ApiOptions = {}): Repository {
+  const development = options.development ?? false;
+  const { request, staff, publicPath } = createApi(options);
   async function parse<T>(
     value: unknown,
     schema: { safeParse: (value: unknown) => { success: true; data: T } | { success: false } },
@@ -63,7 +81,7 @@ export function createRepository({
       return result;
     },
     catalogs: async (role, signal) => {
-      if (development) return { officers, rooms };
+      if (development) return { officers, rooms, roomOptions };
       const { catalogsResponse } = await import("./wire.ts");
       return parse(
         await request(role ? "/staff/catalogs" : "/public/catalogs", {
@@ -97,29 +115,31 @@ export function createRepository({
     createStaff: async (input, key, role) => {
       const { staffBookingResponse } = await import("./wire.ts");
       return parse(
-        await request(
-          development ? `/staff/bookings?role=${encodeURIComponent(role)}` : "/staff/bookings",
-          { body: { ...input, idempotencyKey: key }, authenticated: true },
-        ),
+        await request(staff("/bookings", role), {
+          body: { ...input, idempotencyKey: key },
+          authenticated: true,
+        }),
         staffBookingResponse,
       );
     },
-    action: async (id, action, body, role) => {
+    perform: async (visit, command, role) => {
       const { staffBookingResponse } = await import("./wire.ts");
-      const attendance = !development && (action === "checkin" || action === "checkout");
-      const operation = attendance ? "attendance" : action;
+      const { type, ...fields } = command;
+      const [operation, body] =
+        command.type === "attend"
+          ? [
+              "attendance",
+              {
+                action: command.direction === "in" ? "check_in" : "check_out",
+                credential: command.credential,
+              },
+            ]
+          : [type, fields];
       return parse(
-        await request(
-          development && action === "cancel"
-            ? `/staff/bookings/${encodeURIComponent(id)}/cancel?role=${encodeURIComponent(role)}`
-            : staff(`/bookings/${encodeURIComponent(id)}/${operation}`, role),
-          {
-            body: attendance
-              ? { ...body, action: action === "checkin" ? "check_in" : "check_out" }
-              : body,
-            authenticated: true,
-          },
-        ),
+        await request(staff(`/bookings/${encodeURIComponent(visit.id)}/${operation}`, role), {
+          body: { ...body, version: visit.version },
+          authenticated: true,
+        }),
         staffBookingResponse,
       );
     },

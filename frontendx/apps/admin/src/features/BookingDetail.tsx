@@ -1,19 +1,19 @@
 import {
   useUnsavedChanges,
   ApiError,
-  can,
+  allows,
   canReadInternalRejection,
   canReadInternalCancellation,
   bookingName,
   dateLabel,
   isRestricted,
-  preview,
   today,
-  useBookingAction,
+  useVisitCommand,
   useCatalogs,
   useSession,
   validateReschedule,
   type StaffBooking,
+  type VisitCommand,
 } from "@vms/data";
 import { rejectionSchema, staffCancellationSchema } from "@vms/data/validation";
 import {
@@ -49,17 +49,15 @@ export default function BookingDetail({
   onSuccess: (text: string) => void;
 }) {
   const { session } = useSession();
-  const mutation = useBookingAction();
+  const mutation = useVisitCommand();
   const catalogs = useCatalogs();
-  const rooms = catalogs.data?.rooms || [];
   const [editSnapshot, setEditSnapshot] = useState<StaffBooking | null>(null);
   const b = editSnapshot || currentBooking;
   const [mode, setMode] = useState<"approve" | "reject" | "reschedule" | "cancel" | null>(null);
   const [dirty, setDirty] = useState(false);
   const [schedule, setSchedule] = useState({ date: b.date, time: b.time });
-  const room = preview ? (rooms.includes(b.room) ? b.room : "") : (b.roomId ?? (b.room ? "current-room" : ""));
-  const roomOptions = (preview ? rooms.map((name) => ({ id: name, name })) : (catalogs.data?.roomOptions ?? []))
-    .filter(({ id }) => id !== room);
+  const room = b.roomId ?? (b.room ? "current-room" : "");
+  const roomOptions = (catalogs.data?.roomOptions ?? []).filter(({ id }) => id !== room);
   const hasChanges =
     dirty || (mode === "reschedule" && (schedule.date !== b.date || schedule.time !== b.time));
   useUnsavedChanges(hasChanges, mutation.isPending);
@@ -72,7 +70,6 @@ export default function BookingDetail({
   const [error, setError] = useState<unknown>();
   const [editing, setEditing] = useState(false);
   const restricted = isRestricted(b);
-  const roomRequired = preview && !restricted;
   const showContactAndCode = session?.role === "PA" || session?.role === "Protocol Officer";
   const protocolReadOnly = session?.role === "Protocol Officer" && !restricted && !b.vip;
   const [rejection, setRejection] = useState({
@@ -102,7 +99,7 @@ export default function BookingDetail({
     setEditing(false);
     setEditSnapshot(null);
   }
-  if (editing && session && can(session, currentBooking, "update"))
+  if (editing && session && allows(currentBooking, "update"))
     return (
       <Suspense
         fallback={
@@ -184,9 +181,9 @@ export default function BookingDetail({
             )}
         </>
       )}
-      {mode !== "cancel" && !preview && b.attachmentAvailable && b.ndName && !restricted && (
+      {mode !== "cancel" && session && b.attachmentAvailable && b.ndName && !restricted && (
         <Suspense fallback={<Loading />}>
-          <AttachmentAccess id={b.id} name={b.ndName} />
+          <AttachmentAccess id={b.id} name={b.ndName} role={session.role} />
         </Suspense>
       )}
       {editSnapshot && currentBooking.version !== editSnapshot.version && (
@@ -243,14 +240,14 @@ export default function BookingDetail({
             if (mutation.isPending || (mode === "reschedule" && !hasChanges)) return;
             setError(null);
             const f = Object.fromEntries(new FormData(e.currentTarget));
-            const { room: selectedRoom, ...fields } = f;
-            let values: Record<string, unknown> = {
-              ...fields,
-              duration: Number(f.duration || 60),
+            const text = (key: string) => String(f[key] ?? "");
+            const duration = Number(f.duration || 60);
+            const notes = {
+              visitorInstructions: text("visitorInstructions"),
+              coordinationNote: text("coordinationNote"),
             };
-            if (preview) values.room = selectedRoom;
-            else if ((mode === "approve" || mode === "reschedule") && selectedRoom !== room)
-              values.roomId = selectedRoom || null;
+            const roomChange = text("room") !== room ? { roomId: text("room") || null } : {};
+            let command: VisitCommand;
             if (mode === "reject") {
               const parsed = rejectionSchema.safeParse(rejection);
               if (!parsed.success) {
@@ -265,9 +262,8 @@ export default function BookingDetail({
                 return;
               }
               setRejectionErrors({});
-              values = parsed.data;
-            }
-            if (mode === "cancel") {
+              command = { type: "reject", ...parsed.data };
+            } else if (mode === "cancel") {
               const parsed = staffCancellationSchema.safeParse({
                 reason: cancellationReason,
                 internalCancellationNote: cancellationNote,
@@ -283,25 +279,33 @@ export default function BookingDetail({
               }
               setCancellationError(undefined);
               setCancellationNoteError(undefined);
-              values = parsed.data;
-            }
-            if (mode === "reschedule") {
+              command = { type: "cancel", ...parsed.data };
+            } else if (mode === "reschedule") {
               const msg = validateReschedule(
-                String(f.date),
-                String(f.time),
-                Number(values.duration),
-                String(f.room),
-                String(f.reason),
+                text("date"),
+                text("time"),
+                duration,
+                text("room"),
+                text("reason"),
                 restricted,
-                preview ? rooms : null,
+                null,
               );
               if (msg) {
                 setError(msg);
                 return;
               }
-            }
+              command = {
+                type: "reschedule",
+                date: text("date"),
+                time: text("time"),
+                duration,
+                reason: text("reason"),
+                ...roomChange,
+                ...notes,
+              };
+            } else command = { type: "approve", duration, ...roomChange, ...notes };
             try {
-              await mutation.mutateAsync({ booking: b, action: mode, values });
+              await mutation.mutateAsync({ booking: b, command });
               onSuccess(
                 mode === "cancel"
                   ? "Kunjungan dibatalkan oleh petugas."
@@ -370,15 +374,14 @@ export default function BookingDetail({
                 <div className="field">
                   <label htmlFor="room">
                     Ruangan{" "}
-                    {roomRequired ? <RequiredMark /> : <span className="muted">(opsional)</span>}
+                    <span className="muted">(opsional)</span>
                   </label>
                   <Select
                     name="room"
                     id="room"
                     defaultValue={room}
-                    required={roomRequired}
                   >
-                    <option value="">{roomRequired ? "Pilih ruangan" : "Tanpa ruangan"}</option>
+                    <option value="">Tanpa ruangan</option>
                     {room && <option value={room}>{b.room}</option>}
                     {roomOptions.map(({ id, name }) => (
                       <option key={id} value={id}>{name}</option>
@@ -647,7 +650,7 @@ export default function BookingDetail({
             ))}
           </ul>
           <div className="form-actions">
-            {session && can(session, b, "update") && (
+            {allows(b, "update") && (
               <Button
                 kind="secondary"
                 onClick={() => {
@@ -661,7 +664,7 @@ export default function BookingDetail({
             {(["cancel", "reject", "reschedule", "approve"] as const)
               .filter((a) => a !== "cancel" || b.status !== "pending")
               .filter((a) => !b.createdBy || (a !== "approve" && a !== "reject"))
-              .filter((a) => session && can(session, b, a))
+              .filter((a) => allows(b, a))
               .map((a) => (
                 <Button
                   key={a}

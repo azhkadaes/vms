@@ -258,6 +258,7 @@ async function open(path = "/admin/employees", options = {}) {
           canCheckIn: false,
           canCheckOut: false,
         },
+        allowedActions: ["approve", "reject", "cancel"],
       };
       return send(state.booking, 201);
     }
@@ -780,6 +781,10 @@ test("production staff lists request bounded pages, load a direct detail, and ga
         canCheckIn: false,
         canCheckOut: false,
       },
+      // The server decides allowed commands (ADR-0003); it grants cancel once the role may.
+      get allowedActions() {
+        return ["reschedule", ...(permitCancellation ? ["cancel"] : [])];
+      },
     }));
     let permitCancellation = false;
     const cancellationCalls = [];
@@ -1267,6 +1272,7 @@ test("PA approval submits the correct room field to the production API", async (
         canCheckOut: false,
         canCancel: true,
       },
+      allowedActions: ["approve", "reject", "cancel"],
     };
     const room = { id: "17", name: "Ruang Persetujuan", active: true };
     let expectedRoomId;
@@ -1449,6 +1455,7 @@ test("PA creates an approved visit with or without an optional room", async () =
             canCheckOut: false,
             canCancel: true,
           },
+          allowedActions: ["reschedule", "cancel"],
         };
         return route.fulfill({ status: 201, json: created });
       }
@@ -1559,6 +1566,7 @@ test("production restricted creation sends the selected officer and room IDs", a
             canCheckOut: false,
             canCancel: true,
           },
+          allowedActions: ["reschedule", "cancel", "update"],
         },
       });
     });
@@ -1639,6 +1647,7 @@ test("large visitor rosters stay bounded and toggle in PA, protocol and receptio
             canCheckOut: false,
             canCancel: false,
           },
+          allowedActions: ["reschedule", "cancel"],
         };
         await context.route("**/v1/staff/resolve", (route) =>
           route.fulfill({ json: visit }),

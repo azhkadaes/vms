@@ -38,7 +38,7 @@ test("late staff cancellation exposes the visitor reason, protects internal note
     visit = (
       await request(api, `/bookings/${visit.id}/approve?role=PA`, {
         version: visit.version,
-        room: "Ruang Rapat Nusantara",
+        roomId: "room-1",
         duration: 60,
       })
     ).data;
@@ -58,7 +58,7 @@ test("late staff cancellation exposes the visitor reason, protects internal note
       (
         await request(api, `/bookings/${next.id}/approve?role=PA`, {
           version: next.version,
-          room: "Ruang Rapat Nusantara",
+          roomId: "room-1",
           duration: 60,
         })
       ).status,
@@ -109,7 +109,7 @@ test("late staff cancellation exposes the visitor reason, protects internal note
       (
         await request(api, `/bookings/${next.id}/approve?role=PA`, {
           version: next.version,
-          room: "Ruang Rapat Nusantara",
+          roomId: "room-1",
           duration: 60,
         })
       ).status,
@@ -194,13 +194,13 @@ test("staff cancellation cannot bypass missing permission or an already checked-
     visit = (
       await request(api, `/bookings/${visit.id}/approve?role=PA`, {
         version: visit.version,
-        room: "Ruang Rapat Nusantara",
+        roomId: "room-1",
         duration: 60,
       })
     ).data;
     api.setNow("2099-08-19T09:30:00+08:00");
     visit = (
-      await request(api, `/bookings/${visit.id}/checkin?role=Receptionist`, {
+      await request(api, `/bookings/${visit.id}/attendance?role=Receptionist`, { action: "check_in",
         version: visit.version,
         credential: visit.code,
         verified: true,

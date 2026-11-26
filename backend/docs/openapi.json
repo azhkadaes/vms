@@ -1908,6 +1908,7 @@
                   "status",
                   "version",
                   "timing",
+                  "allowedActions",
                   "visitKind",
                   "rescheduled",
                   "reference",
@@ -1943,6 +1944,7 @@
                   "status",
                   "version",
                   "timing",
+                  "allowedActions",
                   "visitKind",
                   "rescheduled",
                   "reference",
@@ -1982,6 +1984,7 @@
                   "status",
                   "version",
                   "timing",
+                  "allowedActions",
                   "visitKind",
                   "rescheduled",
                   "reference",
@@ -2022,6 +2025,7 @@
                   "status",
                   "version",
                   "timing",
+                  "allowedActions",
                   "visitKind",
                   "rescheduled",
                   "reference",
@@ -2166,6 +2170,22 @@
           "timing": {
             "$ref": "#/components/schemas/BookingTiming"
           },
+          "allowedActions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "approve",
+                "reject",
+                "reschedule",
+                "cancel",
+                "update",
+                "checkin",
+                "checkout"
+              ]
+            },
+            "description": "Visit commands the caller may run now, computed from the server's visit policy (ADR-0003). Attendance still requires a matching credential."
+          },
           "version": {
             "minimum": 1,
             "type": "integer"
@@ -2211,6 +2231,7 @@
           "status",
           "version",
           "timing",
+          "allowedActions",
           "visitKind"
         ],
         "type": "object"
@@ -4328,6 +4349,10 @@
                         "opensAt": 1795051800000,
                         "serverTime": 1795051800000
                       },
+                      "allowedActions": [
+                        "reschedule",
+                        "cancel"
+                      ],
                       "version": 5,
                       "vip": false,
                       "visitKind": "standard",
@@ -4460,6 +4485,11 @@
                     "opensAt": 1794879000000,
                     "serverTime": 1794794400000
                   },
+                  "allowedActions": [
+                    "reschedule",
+                    "cancel",
+                    "update"
+                  ],
                   "version": 1,
                   "visitKind": "restricted"
                 },
@@ -4499,6 +4529,11 @@
                     "opensAt": 1794879000000,
                     "serverTime": 1794794400000
                   },
+                  "allowedActions": [
+                    "reschedule",
+                    "cancel",
+                    "update"
+                  ],
                   "version": 1,
                   "visitKind": "restricted"
                 },
@@ -4619,6 +4654,10 @@
                     "opensAt": 1795051800000,
                     "serverTime": 1795051800000
                   },
+                  "allowedActions": [
+                    "reschedule",
+                    "cancel"
+                  ],
                   "version": 5,
                   "vip": false,
                   "visitKind": "standard",
@@ -4744,6 +4783,10 @@
                     "opensAt": 1893634200000,
                     "serverTime": 1893463200000
                   },
+                  "allowedActions": [
+                    "reschedule",
+                    "cancel"
+                  ],
                   "version": 2,
                   "vip": true,
                   "visitKind": "standard",
@@ -5071,6 +5114,9 @@
                     "opensAt": 1795051800000,
                     "serverTime": 1795053600000
                   },
+                  "allowedActions": [
+                    "checkout"
+                  ],
                   "version": 6,
                   "vip": false,
                   "visitKind": "standard",
@@ -5209,6 +5255,7 @@
                     "opensAt": 1893634200000,
                     "serverTime": 1893463200000
                   },
+                  "allowedActions": [],
                   "version": 2,
                   "vip": true,
                   "visitKind": "standard",
@@ -5346,6 +5393,7 @@
                     "opensAt": 1893634200000,
                     "serverTime": 1893463200000
                   },
+                  "allowedActions": [],
                   "version": 2,
                   "vip": true,
                   "visitKind": "standard",
@@ -5485,6 +5533,10 @@
                     "opensAt": 1893634200000,
                     "serverTime": 1893463200000
                   },
+                  "allowedActions": [
+                    "reschedule",
+                    "cancel"
+                  ],
                   "version": 2,
                   "vip": true,
                   "visitKind": "standard",
@@ -5622,6 +5674,12 @@
                     "opensAt": 1893634200000,
                     "serverTime": 1893463200000
                   },
+                  "allowedActions": [
+                    "approve",
+                    "reject",
+                    "cancel",
+                    "update"
+                  ],
                   "version": 2,
                   "visitKind": "restricted"
                 },
@@ -7498,6 +7556,10 @@
                     "opensAt": 1795051800000,
                     "serverTime": 1795053600000
                   },
+                  "allowedActions": [
+                    "reschedule",
+                    "cancel"
+                  ],
                   "version": 5,
                   "vip": false,
                   "visitKind": "standard",

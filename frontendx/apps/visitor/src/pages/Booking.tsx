@@ -13,7 +13,7 @@ import {
   visitorPhotoTypes,
   type PublicBooking,
 } from "@vms/data";
-import { uploadAttachment } from "@vms/data/attachments";
+import { visitFiles } from "@vms/data/visit-files";
 import { BookingSubmission, type SubmissionPhase } from "@vms/data/submission";
 import {
   bookingSchemaFor,
@@ -330,9 +330,9 @@ export default function BookingForm({
         identityType: data.identityType,
         visitors: [data.name, ...data.visitors.map((v) => v.name)],
         ndName: nd?.name,
-        attachmentToken: await uploadAttachment(nd, "public"),
+        attachmentToken: await visitFiles.upload(nd, "public", "attachment"),
         visitorPhotoName: visitorPhoto.name,
-        visitorPhotoToken: await uploadAttachment(visitorPhoto, "public", "visitorPhoto"),
+        visitorPhotoToken: await visitFiles.upload(visitorPhoto, "public", "visitor-photo"),
         privacyVersion: catalogs.data?.privacyNotice?.version,
         ack: data.ack,
       });

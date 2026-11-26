@@ -28,7 +28,7 @@ async function open(role = "PA", route = "/admin/booking", width = 1280) {
   await page.clock.install();
   const requests = [];
   page.on("request", (request) => {
-    if (new URL(request.url()).pathname === "/__preview/bookings" && request.method() === "GET")
+    if (new URL(request.url()).pathname === "/__preview/staff/bookings" && request.method() === "GET")
       requests.push(request.url());
   });
   await page.goto(origin + route);
@@ -132,7 +132,7 @@ test("manual refresh retains records on error, reports stale data and recovers",
   try {
     const before = await page.locator(".booking-desktop-table tbody").innerText();
     const lastSuccess = await page.locator(".bookings-refresh time").getAttribute("datetime");
-    await page.route("**/__preview/bookings?*", (route) =>
+    await page.route("**/__preview/staff/bookings?*", (route) =>
       route.fulfill({
         status: 503,
         contentType: "application/json",
@@ -154,7 +154,7 @@ test("manual refresh retains records on error, reports stale data and recovers",
     await page.screenshot({
       path: new URL("staff-stale.png", evidence).pathname.replace(/^\/(\w:)/, "$1"),
     });
-    await page.unroute("**/__preview/bookings?*");
+    await page.unroute("**/__preview/staff/bookings?*");
     await page.getByRole("button", { name: "Perbarui data kunjungan", exact: true }).click();
     await page.locator('.bookings-refresh[data-freshness="current"]').waitFor();
     await page.getByRole("button", { name: "Perbarui data kunjungan", exact: true }).waitFor();
@@ -191,7 +191,7 @@ test("an access-denied refresh hides the cached list instead of presenting it as
   const { context, page } = await open();
   try {
     await page.locator(".booking-desktop-table tbody").waitFor();
-    await page.route("**/__preview/bookings?*", (route) =>
+    await page.route("**/__preview/staff/bookings?*", (route) =>
       route.fulfill({
         status: 403,
         contentType: "application/json",
@@ -272,7 +272,7 @@ test("a background update does not silently advance the version of an open decis
       exact: true,
     });
     await reason.fill("Keep this draft while another staff member updates the visit.");
-    await page.route("**/__preview/bookings?*", async (route) => {
+    await page.route("**/__preview/staff/bookings?*", async (route) => {
       const response = await route.fetch();
       const records = await response.json();
       await route.fulfill({
@@ -289,7 +289,7 @@ test("a background update does not silently advance the version of an open decis
       "Keep this draft while another staff member updates the visit.",
     );
     let submitted;
-    await page.route(`**/__preview/bookings/${id}/reject?*`, async (route) => {
+    await page.route(`**/__preview/staff/bookings/${id}/reject?*`, async (route) => {
       submitted = route.request().postDataJSON();
       await route.fulfill({
         status: 409,

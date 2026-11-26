@@ -87,7 +87,7 @@ test("phone/tablet cards and a desktop table expose one readable directory witho
         );
       await snapshot(env, `directory-${width}`);
     }
-    assert.equal(env.requests.filter((path) => path === "/__preview/bookings").length, 0);
+    assert.equal(env.requests.filter((path) => path === "/__preview/staff/bookings").length, 0);
   } finally {
     await env.context.close();
   }

@@ -1094,6 +1094,10 @@
                           "canCheckOut": false,
                           "canCancel": true
                         },
+                        "allowedActions": [
+                          "reschedule",
+                          "cancel"
+                        ],
                         "visitKind": "standard",
                         "code": "00123456",
                         "name": "Pengunjung Contoh",
@@ -1274,7 +1278,12 @@
                       "canCheckIn": false,
                       "canCheckOut": false,
                       "canCancel": true
-                    }
+                    },
+                    "allowedActions": [
+                      "reschedule",
+                      "cancel",
+                      "update"
+                    ]
                   }
                 }
               }
@@ -1313,7 +1322,12 @@
                       "canCheckIn": false,
                       "canCheckOut": false,
                       "canCancel": true
-                    }
+                    },
+                    "allowedActions": [
+                      "reschedule",
+                      "cancel",
+                      "update"
+                    ]
                   }
                 }
               }
@@ -1385,6 +1399,10 @@
                       "canCheckOut": false,
                       "canCancel": true
                     },
+                    "allowedActions": [
+                      "reschedule",
+                      "cancel"
+                    ],
                     "visitKind": "standard",
                     "code": "00123456",
                     "name": "Pengunjung Contoh",
@@ -1517,6 +1535,10 @@
                       "canCheckOut": false,
                       "canCancel": true
                     },
+                    "allowedActions": [
+                      "reschedule",
+                      "cancel"
+                    ],
                     "visitKind": "standard",
                     "code": "00123456",
                     "name": "Pengunjung Contoh",
@@ -1845,6 +1867,9 @@
                       "canCheckOut": true,
                       "canCancel": false
                     },
+                    "allowedActions": [
+                      "checkout"
+                    ],
                     "visitKind": "standard",
                     "name": "Pengunjung Contoh",
                     "organization": "Instansi Contoh",
@@ -1982,6 +2007,7 @@
                       "canCheckOut": false,
                       "canCancel": false
                     },
+                    "allowedActions": [],
                     "visitKind": "standard",
                     "code": "00123456",
                     "name": "Pengunjung Contoh",
@@ -2119,6 +2145,7 @@
                       "canCheckOut": false,
                       "canCancel": false
                     },
+                    "allowedActions": [],
                     "visitKind": "standard",
                     "code": "00123456",
                     "name": "Pengunjung Contoh",
@@ -2258,6 +2285,10 @@
                       "canCheckOut": false,
                       "canCancel": true
                     },
+                    "allowedActions": [
+                      "reschedule",
+                      "cancel"
+                    ],
                     "visitKind": "standard",
                     "code": "00123456",
                     "name": "Pengunjung Contoh",
@@ -2398,6 +2429,12 @@
                       "canCheckOut": false,
                       "canCancel": true
                     },
+                    "allowedActions": [
+                      "approve",
+                      "reject",
+                      "cancel",
+                      "update"
+                    ],
                     "visitKind": "restricted",
                     "reference": "TRB-1",
                     "restrictedView": "full",
@@ -4267,6 +4304,10 @@
                       "canCheckOut": false,
                       "canCancel": false
                     },
+                    "allowedActions": [
+                      "reschedule",
+                      "cancel"
+                    ],
                     "visitKind": "standard",
                     "name": "Pengunjung Contoh",
                     "organization": "Instansi Contoh",
@@ -7163,6 +7204,22 @@
             "timing": {
               "$ref": "#/components/schemas/BookingTiming"
             },
+            "allowedActions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "approve",
+                  "reject",
+                  "reschedule",
+                  "cancel",
+                  "update",
+                  "checkin",
+                  "checkout"
+                ]
+              },
+              "description": "Visit commands the caller may run now, computed from the server's visit policy (ADR-0003). Attendance still requires a matching credential."
+            },
             "visitKind": {
               "type": "string",
               "enum": [
@@ -7290,6 +7347,7 @@
             "status",
             "version",
             "timing",
+            "allowedActions",
             "visitKind"
           ],
           "allOf": [
@@ -7330,6 +7388,7 @@
                     "status",
                     "version",
                     "timing",
+                    "allowedActions",
                     "visitKind",
                     "rescheduled",
                     "reference",
@@ -7365,6 +7424,7 @@
                     "status",
                     "version",
                     "timing",
+                    "allowedActions",
                     "visitKind",
                     "rescheduled",
                     "reference",
@@ -7404,6 +7464,7 @@
                     "status",
                     "version",
                     "timing",
+                    "allowedActions",
                     "visitKind",
                     "rescheduled",
                     "reference",
@@ -7444,6 +7505,7 @@
                     "status",
                     "version",
                     "timing",
+                    "allowedActions",
                     "visitKind",
                     "rescheduled",
                     "reference",

@@ -1,26 +1,14 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
-import { apiBase, preview } from "./config.ts";
+import { preview } from "./config.ts";
 import { roles, sessionFor, type Role, type Session, type PendingSession } from "./domain.ts";
 import { ApiError } from "./errors.ts";
-import { withLoginFormRecovery } from "./login-form.ts";
-import {
-  createHttpClient,
-  onAuthenticationLoss,
-  onStaffAuthorityChange,
-  refreshStaffAccess,
-} from "./http.ts";
-import { parseSession, sessionKey } from "./session-contract.ts";
+import { sessionKey } from "./session-contract.ts";
+import { staffSession } from "./staff-session.ts";
 import { canSwitchRole } from "./unsaved.ts";
-import { adoptStaffAccess, clearStaffAccess, staffAccess } from "./access-token.ts";
 
-const request = createHttpClient(apiBase);
 const staffSessionQueryKey = ["session", "current"];
 const activityEvents = ["pointerdown", "keydown", "input", "wheel"];
-async function readSession() {
-  if (staffAccess()) return parseSession(await request("/staff/session", { authenticated: true }));
-  return (await refreshStaffAccess()).session;
-}
 function isPendingSession(value: Session | PendingSession): value is PendingSession {
   return value.role === "";
 }
@@ -29,14 +17,7 @@ function isActiveSession(value: Session | PendingSession): value is Session {
 }
 export async function changePassword(currentPassword: string, newPassword: string) {
   if (preview) throw new ApiError(400, "Penggantian kata sandi tidak tersedia pada pratinjau.");
-  const started = performance.now();
-  adoptStaffAccess(
-    await request("/staff/password", {
-      body: { currentPassword, newPassword },
-      authenticated: true,
-    }),
-    started,
-  );
+  await staffSession.changePassword(currentPassword, newPassword);
 }
 const SessionContext = createContext<{
   session: Session | null;
@@ -62,17 +43,7 @@ const SessionContext = createContext<{
 
 export async function signIn(credentials: { email: string; password: string }) {
   if (preview) return;
-  try {
-    const started = performance.now();
-    adoptStaffAccess(
-      await withLoginFormRecovery(() => request("/staff/sessions", { body: credentials })),
-      started,
-    );
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 401)
-      throw new ApiError(401, "Email atau kata sandi tidak sesuai.");
-    throw error;
-  }
+  await staffSession.signIn(credentials);
 }
 function initialPreviewRole(): Role {
   try {
@@ -88,7 +59,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const key = preview ? ["session", previewRole] : staffSessionQueryKey;
   const query = useQuery({
     queryKey: key,
-    queryFn: async () => (preview ? sessionFor(previewRole) : readSession()),
+    queryFn: async () => (preview ? sessionFor(previewRole) : staffSession.current()),
     enabled: !expired,
     refetchOnWindowFocus: "always",
     refetchOnReconnect: "always",
@@ -111,7 +82,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [client, fingerprint]);
   useEffect(
     () =>
-      onAuthenticationLoss(() => {
+      staffSession.onLoss(() => {
         setExpired(true);
         void client.cancelQueries({ predicate: (query) => query.queryKey[0] !== "session" });
         client.removeQueries({ predicate: (query) => query.queryKey[0] !== "session" });
@@ -120,7 +91,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   );
   useEffect(
     () =>
-      onStaffAuthorityChange((next) => {
+      staffSession.onAuthorityChange((next) => {
         client.setQueryData(staffSessionQueryKey, next);
       }),
     [client],
@@ -133,11 +104,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       const now = performance.now();
       if (!event.isTrusted || now - lastRenewal < 60_000) return;
       lastRenewal = now;
-      void request("/staff/session/renew", {
-        body: {},
-        authenticated: true,
-        signal: controller.signal,
-      }).catch(() => {
+      void staffSession.renew(controller.signal).catch(() => {
         // Activity checks are retried on a later interaction. Confirmed expiry is handled by HTTP.
       });
     }
@@ -167,16 +134,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       if (preview) {
         setRole(next);
       } else {
-        const started = performance.now();
-        const selected = adoptStaffAccess(
-          await request("/staff/session/role", {
-            body: { role: next },
-            authenticated: true,
-          }),
-          started,
-        ).session;
-        if (selected.roleSelectionRequired || selected.role !== next)
-          throw new ApiError(502, "Pilihan peran belum dikonfirmasi.");
+        await staffSession.selectRole(next);
       }
       await client.cancelQueries();
       client.clear();
@@ -186,14 +144,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     }
   }
   async function signOut() {
-    if (!preview) {
-      try {
-        await request("/staff/session", { method: "DELETE" });
-      } catch (error) {
-        if (!(error instanceof ApiError && error.status === 401)) throw error;
-      }
-    }
-    clearStaffAccess();
+    if (!preview) await staffSession.signOut();
     client.clear();
     location.assign("/admin/login");
   }

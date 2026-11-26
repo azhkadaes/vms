@@ -1,6 +1,7 @@
 import type { Plugin } from "vite";
 import { readFilter } from "../packages/data/src/report-filter.ts";
 import { createHash } from "node:crypto";
+import { Readable } from "node:stream";
 import {
   aggregateVisits,
   canReadSummary,
@@ -13,14 +14,15 @@ import { hasReservationConflict } from "../packages/data/src/scheduling.ts";
 import {
   canReadVisitLog, projectVisitLog, selectVisitLog, summarizeVisitLog, visitLogFilterSchema,
 } from "../packages/data/src/visit-log.ts";
+import { allowedActions, can } from "./preview-policy.ts";
 import {
-  can,
   canCreateAppointment,
   isRestricted,
   matchesAttachmentSignature,
   notaDinasType,
   officers,
   rooms,
+  roomOptions,
   roles,
   scope,
   sessionFor,
@@ -161,6 +163,16 @@ export function previewApi({
         res.setHeader("Content-Type", "application/json");
         try {
           const url = new URL(req.url || "/", "http://localhost");
+          // ADR-0001: accept the production paths. `/public/*` and `/staff/*` map onto the
+          // preview routes; only staff creation and staff cancellation keep their prefix.
+          const staffRequest = url.pathname.startsWith("/staff/");
+          if (url.pathname.startsWith("/public/")) url.pathname = url.pathname.slice("/public".length);
+          else if (
+            staffRequest &&
+            !(url.pathname === "/staff/bookings" && req.method === "POST") &&
+            !/^\/staff\/bookings\/[^/]+\/cancel$/.test(url.pathname)
+          )
+            url.pathname = url.pathname.slice("/staff".length);
           const role = (url.searchParams.get("role") || "PA") as Role;
           const s = session(role);
           const requestTime = now();
@@ -171,35 +183,59 @@ export function previewApi({
                 attachmentAvailable: !!booking.attachmentToken && documents.has(booking.attachmentToken),
               },
               actor,
-              { arrival, now: requestTime },
+              { arrival, now: requestTime, allowedActions: allowedActions(actor, booking, requestTime) },
             );
           const toVisitorBooking = (booking: Booking) => projectVisitor(booking, requestTime);
-          if (["/visitor-photos", "/attachments"].includes(url.pathname) && req.method === "POST") {
-            const photo = url.pathname === "/visitor-photos";
-            const type = req.headers["content-type"] || "";
-            const invalidType = photo ? "Gunakan foto JPEG atau PNG." : "Gunakan berkas PDF.";
-            if (photo ? !visitorPhotoTypes.includes(type) : type !== notaDinasType) {
-              res.writeHead(422).end(JSON.stringify({ message: invalidType }));
+          if (url.pathname === "/attachments" && req.method === "POST") {
+            // ADR-0001: the production upload — multipart `file`, `reference` and `purpose`.
+            const reply = (status: number, data: unknown) =>
+              res.writeHead(status).end(JSON.stringify(data));
+            const headers = new Headers();
+            for (const [key, value] of Object.entries(req.headers))
+              if (value !== undefined) headers.set(key, String(value));
+            let form: FormData;
+            try {
+              form = await new Request("http://preview.local/attachments", {
+                method: "POST",
+                headers,
+                body: Readable.toWeb(req) as ReadableStream,
+                duplex: "half",
+              } as RequestInit).formData();
+            } catch {
+              reply(422, { message: "Unggahan harus berupa formulir berkas." });
               return;
             }
-            const chunks: Buffer[] = [];
-            let size = 0;
-            for await (const chunk of req) {
-              size += chunk.length;
-              if (size > 5 * 1024 * 1024) {
-                res.writeHead(413).end(JSON.stringify({ message: "Berkas maksimal 5 MB." }));
-                return;
-              }
-              chunks.push(Buffer.from(chunk));
+            const file = form.get("file");
+            const purpose = form.get("purpose");
+            if (
+              !(file instanceof File) ||
+              typeof form.get("reference") !== "string" ||
+              (purpose !== "document" && purpose !== "visitorPhoto")
+            ) {
+              reply(422, { message: "Periksa berkas yang diunggah." });
+              return;
             }
-            const bytes = Buffer.concat(chunks);
-            if (!matchesAttachmentSignature(type, bytes)) {
-              res.writeHead(422).end(JSON.stringify({ message: invalidType }));
+            const photo = purpose === "visitorPhoto";
+            const invalidType = photo ? "Gunakan foto JPEG atau PNG." : "Gunakan berkas PDF.";
+            if (file.size > 5 * 1024 * 1024) {
+              reply(413, { message: "Berkas maksimal 5 MB." });
+              return;
+            }
+            const bytes = Buffer.from(await file.arrayBuffer());
+            if (
+              (photo ? !visitorPhotoTypes.includes(file.type) : file.type !== notaDinasType) ||
+              !matchesAttachmentSignature(file.type, bytes)
+            ) {
+              reply(422, { message: invalidType });
               return;
             }
             const token = crypto.randomUUID();
-            (photo ? visitorPhotos : documents).set(token, { bytes, type });
-            res.end(JSON.stringify({ token }));
+            (photo ? visitorPhotos : documents).set(token, { bytes, type: file.type });
+            reply(201, {
+              token,
+              expiresAt: new Date(now() + 15 * 60_000).toISOString(),
+              serverTime: now(),
+            });
             return;
           }
           let body: any = {};
@@ -218,6 +254,41 @@ export function previewApi({
           if (!roles.includes(role)) {
             send({ message: "Peran tidak tersedia." }, 403);
             return;
+          }
+          // ADR-0001: attendance and room identity use the production wire format.
+          const attendance = url.pathname.match(/^\/bookings\/([^/]+)\/attendance$/);
+          if (attendance && req.method === "POST") {
+            const direction = ({ check_in: "checkin", check_out: "checkout" } as const)[
+              body.action as "check_in" | "check_out"
+            ];
+            if (!direction) {
+              send(
+                { message: "Periksa tindakan kehadiran.", fieldErrors: { action: ["Pilih check in atau check out."] } },
+                422,
+              );
+              return;
+            }
+            url.pathname = `/bookings/${attendance[1]}/${direction}`;
+            delete body.action;
+          }
+          if (req.method === "POST" && Object.hasOwn(body, "room")) {
+            send({ message: "Gunakan roomId.", fieldErrors: { room: ["Gunakan roomId."] } }, 422);
+            return;
+          }
+          if (req.method === "POST" && Object.hasOwn(body, "roomId")) {
+            if (body.roomId === null || body.roomId === "") body.room = "";
+            else {
+              const room = roomOptions.find(({ id }) => id === body.roomId);
+              if (!room) {
+                send(
+                  { message: "Pilih ruangan yang aktif.", fieldErrors: { roomId: ["Pilih ruangan yang aktif."] } },
+                  422,
+                );
+                return;
+              }
+              body.room = room.name;
+            }
+            delete body.roomId;
           }
           const fileMatch = url.pathname.match(/^\/bookings\/([^/]+)\/(visitor-photo|attachment)$/);
           if (fileMatch && ["GET", "POST"].includes(req.method || "")) {
@@ -367,6 +438,16 @@ export function previewApi({
               return;
             }
             const input = parsed.data;
+            if (!input.officerId) {
+              send(
+                {
+                  message: "Periksa data janji temu.",
+                  fieldErrors: { officerId: ["Pilih pejabat dari daftar yang tersedia."] },
+                },
+                422,
+              );
+              return;
+            }
             if (!canCreateAppointment(s, input.officerId, kind)) {
               send({ message: "Tujuan kunjungan di luar kewenangan Anda." }, 403);
               return;
@@ -397,7 +478,7 @@ export function previewApi({
               send(
                 {
                   message: "Pilih ruangan yang tersedia.",
-                  fieldErrors: { room: ["Pilih ruangan yang tersedia."] },
+                  fieldErrors: { roomId: ["Pilih ruangan yang tersedia."] },
                 },
                 422,
               );
@@ -617,7 +698,7 @@ export function previewApi({
                 }
               }
             }
-            const staffCancellation = action === "cancel" && url.pathname.startsWith("/staff/");
+            const staffCancellation = action === "cancel" && staffRequest;
             if (
               !b ||
               (staffCancellation && !scope([b], s).length) ||
@@ -651,6 +732,16 @@ export function previewApi({
               const officerId = Object.hasOwn(body, "officerId")
                 ? parsed.data.officerId || ""
                 : b.officerId;
+              if (!officerId) {
+                send(
+                  {
+                    message: "Periksa data kunjungan.",
+                    fieldErrors: { officerId: ["Pilih pejabat dari daftar yang tersedia."] },
+                  },
+                  422,
+                );
+                return;
+              }
               if (!canCreateAppointment(s, officerId, "restricted")) {
                 send({ message: "Tujuan tidak tersedia." }, 403);
                 return;
@@ -773,12 +864,8 @@ export function previewApi({
               send({ message: "Kunjungan tidak ditemukan." }, 404);
               return;
             }
-            if (
-              action === "approve" &&
-              (!isRestricted(b) || body.room) &&
-              !rooms.includes(body.room)
-            )
-              throw Error("Pilih ruangan sebelum menyetujui.");
+            if (action === "approve" && body.room && !rooms.includes(body.room))
+              throw Error("Pilih ruangan yang aktif.");
             if (
               action === "approve" &&
               (!Number.isInteger(body.duration ?? 60) ||
@@ -789,7 +876,7 @@ export function previewApi({
             if (
               action === "approve" &&
               hasReservationConflict(
-                { ...b, room: body.room || "", duration: body.duration ?? 60 },
+                { ...b, room: body.room ?? b.room, duration: body.duration ?? 60 },
                 bookings,
                 b.id,
               )
@@ -813,9 +900,9 @@ export function previewApi({
               b.internalRejectionNote = parsed.data.internalRejectionNote || undefined;
             }
             if (action === "reschedule") {
+              body.room ??= b.room;
               if (isRestricted(b)) {
                 body.duration ??= b.duration;
-                body.room ??= b.room;
                 body.reason ??= "";
               }
               const error = validateReschedule(
@@ -825,7 +912,7 @@ export function previewApi({
                 body.room,
                 body.reason,
                 isRestricted(b),
-                rooms,
+                body.room ? rooms : null,
                 requestTime,
               );
               if (error) throw Error(error);
@@ -854,7 +941,7 @@ export function previewApi({
               });
             } else if (action === "approve") {
               b.status = "approved";
-              b.room = body.room || "";
+              b.room = body.room ?? b.room;
               b.duration = body.duration || 60;
             } else
               b.status = (

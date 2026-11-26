@@ -1,4 +1,5 @@
-import { loadVisitorPhoto } from "@vms/data/attachments";
+import type { Role } from "@vms/data";
+import { visitFiles } from "@vms/data/visit-files";
 import { Button, ErrorNotice, Modal } from "@vms/ui";
 import { Eye } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -9,7 +10,7 @@ export default function VisitorPhoto({
   name,
 }: {
   id: string;
-  role: string;
+  role: Role;
   name?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -44,7 +45,7 @@ export default function VisitorPhoto({
   );
 }
 
-function PhotoContent({ id, role, name }: { id: string; role: string; name?: string }) {
+function PhotoContent({ id, role, name }: { id: string; role: Role; name?: string }) {
   const [attempt, setAttempt] = useState(0);
   const [photo, setPhoto] = useState<{ id: string; url: string }>();
   const [error, setError] = useState<unknown>();
@@ -53,7 +54,8 @@ function PhotoContent({ id, role, name }: { id: string; role: string; name?: str
     let url: string | undefined;
     setPhoto(undefined);
     setError(undefined);
-    void loadVisitorPhoto(id, role, controller.signal)
+    void visitFiles
+      .open(id, "visitor-photo", role, { signal: controller.signal })
       .then((blob) => {
         if (controller.signal.aborted) return;
         url = URL.createObjectURL(blob);

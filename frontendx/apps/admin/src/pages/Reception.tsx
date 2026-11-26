@@ -6,7 +6,7 @@ import {
   preview,
   repository,
   today,
-  useBookingAction,
+  useVisitCommand,
   useBookings,
   useSession,
   visitTiming,
@@ -41,7 +41,7 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
     },
   });
   const { role } = useSession();
-  const action = useBookingAction();
+  const action = useVisitCommand();
   const [method, setMethod] = useState<"code" | "qr" | null>(null);
   const [resolved, setResolved] = useState<StaffBooking | null>(null);
   const [credential, setCredential] = useState("");
@@ -131,7 +131,10 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
     if (action.isPending || !checked || !permitted) return;
     setError(null);
     try {
-      await action.mutateAsync({ booking, action: mode, values: { credential } });
+      await action.mutateAsync({
+        booking,
+        command: { type: "attend", direction: mode === "checkin" ? "in" : "out", credential },
+      });
       setNotice(`${bookingName(booking)} berhasil ${incoming ? "check in" : "check out"}.`);
       close();
     } catch (err) {

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { roles, statuses } from "./domain.ts";
+import { roles, statuses, visitActions } from "./domain.ts";
 import { publicVisitActions } from "./history.ts";
 
 const timestamp = z.string().refine((value) => Number.isFinite(Date.parse(value)));
@@ -23,6 +23,8 @@ const schedule = {
   rescheduled: z.boolean().optional(),
   timing,
 };
+/** Staff responses only: the server's verdict on which visit commands may run (ADR-0003). */
+const allowedActions = z.array(z.enum(visitActions));
 const details = {
   code: z.string().regex(/^\d{8}$/),
   name: z.string(),
@@ -70,6 +72,7 @@ export const publicBookingResponse = z
 export const staffBookingResponse = z
   .object({
     ...schedule,
+    allowedActions,
     ...optionalDetails,
     roomId: z.string().min(1).nullish(),
     visitKind: z.enum(["standard", "restricted"]).optional(),
@@ -103,6 +106,7 @@ export const staffBookingResponse = z
     }
     const allowed = new Set([
       ...Object.keys(schedule),
+      "allowedActions",
       "visitKind",
       "reference",
       "restrictedView",

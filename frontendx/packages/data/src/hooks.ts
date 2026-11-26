@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { preview } from "./config.ts";
-import type { BookingAction } from "./contracts.ts";
-import { can, officers, rooms, scope, type StaffBooking } from "./domain.ts";
+import { commandAction, type VisitCommand } from "./contracts.ts";
+import { allows, officers, roomOptions, rooms, scope, type StaffBooking } from "./domain.ts";
 import { ApiError } from "./errors.ts";
 import {
   readStaffBooking,
@@ -22,7 +22,7 @@ export function useCatalogs() {
     queryKey: ["catalogs", sessionKey(session)],
     queryFn: ({ signal }) => repository.catalogs(session?.role, signal),
     staleTime: 60000,
-    initialData: preview ? { officers, rooms } : undefined,
+    initialData: preview ? { officers, rooms, roomOptions } : undefined,
   });
 }
 export function useBookings({
@@ -117,28 +117,16 @@ export function useCreateAppointment() {
     },
   });
 }
-export function useBookingAction() {
+/** Runs a visit command against the visit's current version. */
+export function useVisitCommand() {
   const { session } = useSession();
   const client = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      booking,
-      action,
-      values = {},
-    }: {
-      booking: StaffBooking;
-      action: BookingAction;
-      values?: Record<string, unknown>;
-    }) => {
+    mutationFn: ({ booking, command }: { booking: StaffBooking; command: VisitCommand }) => {
       if (!session) throw new ApiError(401, "Sesi berakhir. Silakan masuk kembali.");
-      if (!can(session, booking, action))
+      if (!allows(booking, commandAction(command)))
         throw new ApiError(403, "Tindakan tidak diizinkan untuk kunjungan ini.");
-      return repository.action(
-        booking.id,
-        action,
-        { ...values, version: booking.version },
-        session.role,
-      );
+      return repository.perform(booking, command, session.role);
     },
     onSuccess: () => client.invalidateQueries({ queryKey: ["bookings"] }),
     onError: (error) => {

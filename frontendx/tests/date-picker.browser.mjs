@@ -250,6 +250,7 @@ test("restricted creation accepts date/time and editing keeps both controls read
     await page.getByRole("button", { name: /Kunjungan Terbatas/ }).click();
     await pickDate(page, "2096-02-29");
     await pickTime(page, "12:35");
+    await page.locator("#restricted-host").selectOption("o1");
     await page.getByRole("button", { name: "Buat kunjungan terbatas", exact: true }).click();
     await page.getByRole("button", { name: "Edit informasi pengunjung", exact: true }).click();
     await page.getByRole("heading", { name: "Edit kunjungan terbatas", exact: true }).waitFor();

@@ -65,7 +65,7 @@ async function open({
     booking = (
       await post(api, `/bookings/${booking.id}/approve?role=PA`, {
         version: booking.version,
-        room: "Ruang Rapat Nusantara",
+        roomId: "room-1",
         duration: 60,
       })
     ).data;
@@ -74,7 +74,7 @@ async function open({
         version: booking.version,
         date: "2099-08-19",
         time: "11:00",
-        room: "Ruang Rapat Meranti",
+        roomId: "room-2",
         duration: 60,
         reason: "Alasan publik asli.\nTidak diterjemahkan.",
       })

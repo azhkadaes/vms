@@ -84,13 +84,13 @@ test("reception opens linked memo and photo only after resolving the visit", asy
       "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=",
       "base64",
     );
-    async function upload(path, type, body) {
-      const response = await fetch(api.base + path, {
-        method: "POST",
-        headers: { "Content-Type": type },
-        body,
-      });
-      assert.equal(response.status, 200);
+    async function upload(purpose, type, body) {
+      const form = new FormData();
+      form.set("file", new File([body], purpose === "document" ? "memo.pdf" : "photo.png", { type }));
+      form.set("reference", crypto.randomUUID());
+      form.set("purpose", purpose);
+      const response = await fetch(api.base + "/staff/attachments", { method: "POST", body: form });
+      assert.equal(response.status, 201);
       return (await response.json()).token;
     }
     const booking = await post("/staff/bookings?role=PA", {
@@ -106,9 +106,9 @@ test("reception opens linked memo and photo only after resolving the visit", asy
       visitors: ["Visitor File Example", "Anggota Rombongan Contoh"],
       idempotencyKey: crypto.randomUUID(),
       ndName: "nota-dinas.pdf",
-      attachmentToken: await upload("/attachments", "application/pdf", memo.output("arraybuffer")),
+      attachmentToken: await upload("document", "application/pdf", memo.output("arraybuffer")),
       visitorPhotoName: "pengunjung.png",
-      visitorPhotoToken: await upload("/visitor-photos", "image/png", photo),
+      visitorPhotoToken: await upload("visitorPhoto", "image/png", photo),
     });
     const list = await fetch(api.base + "/bookings?role=Receptionist").then((r) => r.json());
     const row = list.find((item) => item.id === booking.id);
@@ -437,7 +437,7 @@ test("Missed appears in staff filtering and visitor ticket with no entry QR", as
     });
     await post(`/bookings/${ordinary.id}/approve?role=PA`, {
       version: 1,
-      room: "Ruang Rapat Meranti",
+      roomId: "room-2",
       duration: 60,
     });
     api.setNow("2099-08-19T11:00:00.001+08:00");

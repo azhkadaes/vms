@@ -1,4 +1,4 @@
-import type { PublicBooking, Role, StaffBooking } from "./domain.ts";
+import type { PublicBooking, Role, StaffBooking, VisitAction } from "./domain.ts";
 import type { SummaryExport, SummaryFilter, VisitSummary } from "./reports.ts";
 import type { VisitLogFilter, VisitLogResponse, VisitLogSnapshot } from "./visit-log.ts";
 import type { SubmissionResolution } from "./submission.ts";
@@ -24,8 +24,40 @@ export interface Admission {
   expiresAt: string;
   serverTime: number;
 }
-export type BookingAction =
-  "approve" | "reject" | "reschedule" | "checkin" | "checkout" | "update" | "cancel";
+export type BookingAction = VisitAction;
+type VisitNotes = { visitorInstructions?: string; coordinationNote?: string };
+/** `null` clears the room; an omitted `roomId` keeps the current one. */
+type RoomChange = { roomId?: string | null };
+/** A staff instruction that changes a visit (see CONTEXT.md, "Visit command"). */
+export type VisitCommand =
+  | ({ type: "approve"; duration?: number } & RoomChange & VisitNotes)
+  | ({
+      type: "reschedule";
+      date: string;
+      time: string;
+      duration?: number;
+      reason?: string;
+    } & RoomChange &
+      VisitNotes)
+  | { type: "reject"; rejectionReason: string; internalRejectionNote?: string }
+  | { type: "cancel"; reason: string; internalCancellationNote?: string }
+  | { type: "attend"; direction: "in" | "out"; credential: string }
+  | ({
+      type: "update";
+      visitKind?: "restricted";
+      officerId: string;
+      date?: string;
+      time?: string;
+      name?: string;
+      organization?: string;
+      serviceId?: string;
+    } & RoomChange &
+      VisitNotes);
+/** The `allowedActions` entry a command needs (ADR-0003). */
+export function commandAction(command: VisitCommand): BookingAction {
+  if (command.type === "attend") return command.direction === "in" ? "checkin" : "checkout";
+  return command.type;
+}
 export interface Repository {
   catalogs(role?: Role, signal?: AbortSignal): Promise<Catalogs>;
   list(role: Role, signal?: AbortSignal): Promise<StaffBooking[]>;
@@ -46,10 +78,9 @@ export interface Repository {
     idempotencyKey: string,
     role: Role,
   ): Promise<StaffBooking>;
-  action(
-    id: string,
-    action: BookingAction,
-    input: Record<string, unknown>,
+  perform(
+    visit: Pick<StaffBooking, "id" | "version">,
+    command: VisitCommand,
     role: Role,
   ): Promise<StaffBooking>;
   resolve(credential: string, role: Role): Promise<StaffBooking>;

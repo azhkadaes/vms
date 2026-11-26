@@ -109,6 +109,7 @@ type PrivateFields =
   | "history";
 export interface StaffBooking
   extends Omit<Booking, PrivateFields>, Partial<Pick<Booking, PrivateFields>> {
+  allowedActions: VisitAction[];
   roomId?: string | null;
   visitorPhotoAvailable?: boolean;
   visitorCount?: number;
@@ -139,6 +140,11 @@ export function partyLabel(b: Pick<StaffBooking, "visitors" | "visitorCount">) {
   return count ? `${count} orang` : "Rombongan belum diisi";
 }
 export const rooms = ["Ruang Rapat Nusantara", "Ruang Rapat Meranti", "Ruang Rapat Mahakam"];
+/** Preview room catalogue with the same `{ id, name }` identity the backend uses. */
+export const roomOptions = rooms.map((name, index) => ({ id: `room-${index + 1}`, name }));
+export function roomIdOf(name: string): string | null {
+  return roomOptions.find((room) => room.name === name)?.id ?? null;
+}
 export function today() {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Makassar",
@@ -246,7 +252,11 @@ export function canCreateAppointment(
 export function toStaffBooking(
   b: StoredBooking,
   s: Session,
-  { arrival = false, now = Date.now() }: { arrival?: boolean; now?: number } = {},
+  {
+    arrival = false,
+    now = Date.now(),
+    allowedActions = [],
+  }: { arrival?: boolean; now?: number; allowedActions?: VisitAction[] } = {},
 ): StaffBooking {
   if (!scope([b], s).length) throw new Error("Kunjungan tidak tersedia.");
   if (isRestricted(b)) {
@@ -262,6 +272,7 @@ export function toStaffBooking(
       version: b.version,
       rescheduled: b.rescheduled,
       timing: getVisitTiming(b, now),
+      allowedActions,
     };
     if (s.role === "Receptionist" && !arrival) return { ...common, restrictedView: "reception" };
     const identity = {
@@ -280,6 +291,7 @@ export function toStaffBooking(
       ...common,
       ...identity,
       restrictedView: "full",
+      roomId: roomIdOf(b.room),
       visitorInstructions: b.visitorInstructions,
       coordinationNote: b.coordinationNote,
       code: b.code,
@@ -314,9 +326,11 @@ export function toStaffBooking(
       version: b.version,
       rescheduled: b.rescheduled,
       timing: getVisitTiming(b, now),
+      allowedActions,
     };
   const visible: StaffBooking = {
     ...bookingProjection(b),
+    roomId: roomIdOf(b.room),
     ...(b.attachmentAvailable ? { attachmentAvailable: true } : {}),
     ...(b.visitorPhotoToken
       ? { visitorPhotoAvailable: true, visitorPhotoName: b.visitorPhotoName }
@@ -324,6 +338,7 @@ export function toStaffBooking(
     visitKind: b.visitKind,
     createdBy: b.createdBy,
     timing: getVisitTiming(b, now),
+    allowedActions,
     ...(["PA", "Protocol Officer"].includes(s.role)
       ? { coordinationNote: b.coordinationNote }
       : {}),
@@ -335,40 +350,20 @@ export function toStaffBooking(
     ? { ...visible, internalRejectionNote: b.internalRejectionNote }
     : visible;
 }
-const missedRescheduleWindowMs = 7 * 24 * 60 * 60 * 1000;
-
-export function can(
-  s: Session,
-  b: StaffBooking,
-  action: "approve" | "reject" | "reschedule" | "checkin" | "checkout" | "cancel" | "update",
-  now?: number,
-) {
-  const permission = action === "update" ? "create" : action;
-  if (!s.permissions.includes(permission) || !scope([b], s).length) return false;
-  if (action === "update")
-    return (
-      s.role === "Protocol Officer" && isRestricted(b) && ["pending", "approved"].includes(b.status)
-    );
-  const timing = now === undefined ? visitTiming(b) : getVisitTiming(b, now);
-  if (action === "checkin") return s.role === "Receptionist" && timing.canCheckIn;
-  if (action === "checkout") return s.role === "Receptionist" && timing.canCheckOut;
-  const owns =
-    s.role === "Protocol Officer"
-      ? isRestricted(b) || b.vip
-      : s.role === "PA" &&
-        !isRestricted(b) &&
-        !b.vip &&
-        !!b.officerId &&
-        s.assignedOfficerIds.includes(b.officerId);
-  if (action === "cancel") return owns && ["pending", "approved"].includes(b.status);
-  return (
-    owns &&
-    (action === "reschedule"
-      ? b.status === "approved" &&
-        (timing.displayStatus !== "missed" ||
-          timing.serverTime <= timing.endsAt + missedRescheduleWindowMs)
-      : b.status === "pending")
-  );
+/** Visit commands, named as the server names them in `allowedActions` (ADR-0003). */
+export const visitActions = [
+  "approve",
+  "reject",
+  "reschedule",
+  "cancel",
+  "update",
+  "checkin",
+  "checkout",
+] as const;
+export type VisitAction = (typeof visitActions)[number];
+/** Whether the server allows `action` on this visit for the current staff member. */
+export function allows(b: Pick<StaffBooking, "allowedActions">, action: VisitAction) {
+  return b.allowedActions.includes(action);
 }
 export function sessionFor(role: Role): Session {
   return {
@@ -400,7 +395,7 @@ export function sessionFor(role: Role): Session {
   };
 }
 export type SortKey = "priority" | "name" | "organization" | "host" | "time" | "status";
-export function selectBookings<T extends StaffBooking>(
+export function selectBookings<T extends Omit<StaffBooking, "allowedActions">>(
   list: T[],
   q: string,
   status: string,
@@ -408,7 +403,7 @@ export function selectBookings<T extends StaffBooking>(
   desc = false,
 ) {
   const needle = q.trim().toLocaleLowerCase("id");
-  const rank = (b: StaffBooking) =>
+  const rank = (b: T) =>
     b.name?.toLowerCase().startsWith(needle)
       ? 0
       : b.name?.toLowerCase().includes(needle)
@@ -429,7 +424,7 @@ export function selectBookings<T extends StaffBooking>(
           v?.toLowerCase().includes(needle),
         )),
   );
-  const priority = (b: StaffBooking) => {
+  const priority = (b: T) => {
     if (b.status === "pending") return 0;
     if (visitTiming(b).displayStatus === "approved" || b.status === "checked_in") return 1;
     return 2;

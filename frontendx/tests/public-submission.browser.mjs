@@ -49,7 +49,7 @@ async function open({ mode = "normal", width = 390, language = "id" } = {}) {
     const request = route.request();
     const url = new URL(request.url());
     const target = api.base + url.pathname.split("/__preview")[1] + url.search;
-    const creation = url.pathname.endsWith("/__preview/bookings") && request.method() === "POST";
+    const creation = url.pathname.endsWith("/__preview/public/bookings") && request.method() === "POST";
     if (creation) {
       posts.push(request.postDataJSON());
       if (
@@ -314,7 +314,7 @@ test("reload retains only the reference; wrong email preserves recovery and corr
     const approved = await fetch(env.api.base + `/bookings/${env.received.id}/approve?role=PA`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ version: 1, room: "Ruang Rapat Nusantara", duration: 60 }),
+      body: JSON.stringify({ version: 1, roomId: "room-1", duration: 60 }),
     });
     assert.equal(approved.status, 200);
     await env.page.locator("#submission-email").fill("original@example.test");

@@ -5,7 +5,6 @@ import {
   canCreateAppointment,
   notaDinasType,
   phoneDigits,
-  preview,
   today,
   useCatalogs,
   useCreateAppointment,
@@ -17,7 +16,7 @@ import {
 } from "@vms/data";
 import VisitNotesFields from "./VisitNotesFields";
 import { AppointmentRoomField } from "./AppointmentRoomField";
-import { uploadAttachment } from "@vms/data/attachments";
+import { visitFiles } from "@vms/data/visit-files";
 import { staffAppointmentSchemaFor, type StaffAppointmentDraft } from "@vms/data/validation";
 import {
   Select,
@@ -107,7 +106,7 @@ export default function CreateAppointment({
   useUnsavedChanges(isDirty || !!document || !!photo, busy);
   const stepNames = ["Kunjungan", "Pengunjung", "Periksa"];
   const values = f.getValues();
-  const roomName = preview ? values.room : rooms.find((room) => room.id === values.room)?.name;
+  const roomName = rooms.find((room) => room.id === values.room)?.name;
   const reviewDate = values.date
     ? new Intl.DateTimeFormat("id-ID", {
         dateStyle: "long",
@@ -187,12 +186,12 @@ export default function CreateAppointment({
       const { room, ...details } = values;
       const input = {
         ...details,
-        ...(preview ? { room } : { roomId: room || undefined }),
+        roomId: room || undefined,
         visitors: [values.name, ...values.visitors.map((v) => v.name)],
         ndName: document?.name,
-        attachmentToken: await uploadAttachment(document, "staff"),
+        attachmentToken: await visitFiles.upload(document, "staff", "attachment"),
         visitorPhotoName: photo.name,
-        visitorPhotoToken: await uploadAttachment(photo, "staff", "visitorPhoto"),
+        visitorPhotoToken: await visitFiles.upload(photo, "staff", "visitor-photo"),
       };
       const payload = JSON.stringify(input);
       if (attempt.current?.payload !== payload)
@@ -444,7 +443,7 @@ export default function CreateAppointment({
                   accept={notaDinasType}
                   file={document}
                   error={fileError}
-                  hint={`PDF · Maksimal 5 MB.${preview ? " Pratinjau hanya menyimpan nama dokumen." : ""}`}
+                  hint="PDF · Maksimal 5 MB."
                   choose="Pilih dokumen"
                   remove="Hapus dokumen"
                   onFileChange={(file) => {
@@ -478,7 +477,7 @@ export default function CreateAppointment({
                 </div>
                 <AppointmentRoomField
                   id="appointment-room"
-                  rooms={preview ? (catalogs.data?.rooms ?? []) : rooms}
+                  rooms={rooms}
                   registration={f.register("room")}
                   error={f.formState.errors.room?.message}
                 />

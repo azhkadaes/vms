@@ -1,8 +1,17 @@
-import { downloadAttachment } from "@vms/data/attachments";
+import type { Role } from "@vms/data";
+import { saveVisitFile } from "@vms/data/visit-files";
 import { Button, ErrorNotice } from "@vms/ui";
 import { useState } from "react";
 
-export default function AttachmentAccess({ id, name }: { id: string; name: string }) {
+export default function AttachmentAccess({
+  id,
+  name,
+  role,
+}: {
+  id: string;
+  name: string;
+  role: Role;
+}) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<unknown>();
   return (
@@ -14,7 +23,7 @@ export default function AttachmentAccess({ id, name }: { id: string; name: strin
           setBusy(true);
           setError(undefined);
           try {
-            await downloadAttachment(id, name);
+            await saveVisitFile(id, "attachment", role, name);
           } catch (error) {
             setError(error);
           } finally {

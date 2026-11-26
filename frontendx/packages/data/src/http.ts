@@ -1,97 +1,25 @@
-import {
-  adoptStaffAccess,
-  clearStaffAccess,
-  csrfToken,
-  sameStaffAuthority,
-  staffAccess,
-} from "./access-token.ts";
-import { apiBase } from "./config.ts";
-import { ApiError, isTemporaryNetworkError } from "./errors.ts";
+import { ApiError } from "./errors.ts";
 
-const authenticationLoss = new Set<() => void>();
-type StaffAccess = NonNullable<ReturnType<typeof staffAccess>>;
-const authorityChanges = new Set<(session: StaffAccess["session"]) => void>();
-export function onAuthenticationLoss(listener: () => void) {
-  authenticationLoss.add(listener);
-  return () => {
-    authenticationLoss.delete(listener);
-  };
-}
-
-export function onStaffAuthorityChange(listener: (session: StaffAccess["session"]) => void) {
-  authorityChanges.add(listener);
-  return () => {
-    authorityChanges.delete(listener);
-  };
-}
-
-function loseStaffAccess() {
-  clearStaffAccess();
-  authenticationLoss.forEach((listener) => listener());
-}
-
-async function withStaffCookieLock<T>(run: () => Promise<T>): Promise<T> {
-  // Refresh and password changes rotate a cookie shared by all tabs on this origin.
-  const locks = globalThis.navigator?.locks;
-  return locks ? await locks.request("vms-staff-session", run) : run();
-}
-
-let refreshInFlight: Promise<StaffAccess> | undefined;
-let refreshRequestId: string | undefined;
-
-export function refreshStaffAccess() {
-  if (!refreshInFlight) {
-    refreshInFlight = withStaffCookieLock(async () => {
-      const previous = staffAccess();
-      if (!csrfToken()) {
-        if (previous) loseStaffAccess();
-        throw new ApiError(401, "Silakan masuk.");
-      }
-      const request = createHttpClient(apiBase);
-      const body = { refreshRequestId: (refreshRequestId ||= crypto.randomUUID()) };
-      const refresh = async () => {
-        const started = performance.now();
-        const value = await request("/staff/session/refresh", { body });
-        return adoptStaffAccess(value, started);
-      };
-      try {
-        let next: StaffAccess;
-        try {
-          next = await refresh();
-        } catch (error) {
-          // Recover an uncertain rotation using the same ID while the server can recover it.
-          if (
-            !isTemporaryNetworkError(error) &&
-            !(error instanceof ApiError && error.status >= 500)
-          )
-            throw error;
-          next = await refresh();
-        }
-        refreshRequestId = undefined;
-        if (previous && !sameStaffAuthority(previous, next))
-          authorityChanges.forEach((listener) => listener(next.session));
-        return next;
-      } catch (error) {
-        if (error instanceof ApiError && error.status < 500) {
-          refreshRequestId = undefined;
-          if (error.status === 401) loseStaffAccess();
-        }
-        throw error;
-      }
-    }).finally(() => {
-      refreshInFlight = undefined;
-    });
-  }
-  return refreshInFlight;
-}
-
-type RequestOptions = {
+export type RequestOptions = {
   body?: unknown;
   signal?: AbortSignal;
   method?: string;
+  /** Sends the request through the client's staff session, if it has one. */
   authenticated?: boolean;
   responseType?: "blob";
 };
+/** What a session may add to a request on its way out. */
+export type TransportOptions = RequestOptions & {
+  token?: string;
+  csrf?: string;
+  timeoutMs?: number;
+};
+export type Send = (path: string, options?: TransportOptions) => Promise<unknown>;
+/** Attaches staff credentials to authenticated requests (see staff-session.ts). */
+export interface Authorizer {
+  authorized(send: Send, path: string, options: RequestOptions): Promise<unknown>;
+}
+
 function fieldErrors(value: unknown): Record<string, string[]> | undefined {
   if (!value || typeof value !== "object" || Array.isArray(value)) return;
   const entries = Object.entries(value).filter(
@@ -101,17 +29,20 @@ function fieldErrors(value: unknown): Record<string, string[]> | undefined {
   return Object.fromEntries(entries);
 }
 
-export function createHttpClient(base = "/v1", fetcher: typeof fetch = fetch) {
-  async function send(
-    path: string,
+/** A session-agnostic JSON/blob transport with timeouts and Indonesian error copy. */
+export function createTransport(base = "/v1", fetcher: typeof fetch = fetch): Send {
+  return async function send(
+    path,
     {
       body,
       signal,
       method = body === undefined ? "GET" : "POST",
       responseType,
-    }: RequestOptions = {},
-    token?: string,
-  ): Promise<unknown> {
+      token,
+      csrf,
+      timeoutMs = 15000,
+    } = {},
+  ) {
     const controller = new AbortController();
     const abort = () => controller.abort(signal?.reason);
     if (signal?.aborted) abort();
@@ -121,14 +52,9 @@ export function createHttpClient(base = "/v1", fetcher: typeof fetch = fetch) {
         controller.abort(
           new DOMException("Permintaan terlalu lama. Periksa koneksi Anda.", "TimeoutError"),
         ),
-      path === "/staff/session/refresh" ? 4000 : 15000,
+      timeoutMs,
     );
     try {
-      const lifecycle =
-        path === "/staff/sessions" ||
-        path === "/staff/session/refresh" ||
-        (path === "/staff/session" && method === "DELETE");
-      const csrf = lifecycle ? csrfToken() : undefined;
       const response = await fetcher(base + path, {
         method,
         credentials: "include",
@@ -178,67 +104,22 @@ export function createHttpClient(base = "/v1", fetcher: typeof fetch = fetch) {
       clearTimeout(timeout);
       signal?.removeEventListener("abort", abort);
     }
-  }
+  };
+}
 
-  return async function request(path: string, options: RequestOptions = {}) {
-    if (!options.authenticated) {
-      const changesCookies =
-        base === apiBase &&
-        (path === "/staff/sessions" || (path === "/staff/session" && options.method === "DELETE"));
-      return changesCookies ? withStaffCookieLock(() => send(path, options)) : send(path, options);
-    }
-    options.signal?.throwIfAborted();
-
-    const protectedStaff = base === apiBase && path.startsWith("/staff/");
-    const currentSession = path === "/staff/session";
-    const previous = protectedStaff ? staffAccess() : undefined;
-    let credential = previous;
-    const verifyAuthority = (next: StaffAccess) => {
-      options.signal?.throwIfAborted();
-      if (!currentSession && previous && !sameStaffAuthority(previous, next))
-        throw new ApiError(
-          409,
-          "Sesi atau peran telah berubah. Periksa kembali sebelum melanjutkan.",
-        );
-    };
-    const sendProtected = (access?: StaffAccess) =>
-      protectedStaff && path === "/staff/password"
-        ? withStaffCookieLock(() => send(path, options, access?.token))
-        : send(path, options, access?.token);
-
-    if (
-      protectedStaff &&
-      (previous
-        ? previous.usableUntil <= performance.now() + 1000 || previous.csrf !== csrfToken()
-        : !!csrfToken())
-    ) {
-      credential = await refreshStaffAccess();
-      verifyAuthority(credential);
-    }
-
-    try {
-      return await sendProtected(credential);
-    } catch (error) {
-      if (!(error instanceof ApiError) || (error.status !== 401 && error.code !== "role_changed"))
-        throw error;
-      if (!protectedStaff || (!credential && !csrfToken())) {
-        if (error.status === 401) loseStaffAccess();
-        throw error;
-      }
-
-      // A rejected bearer does not establish that the server session has expired.
-      options.signal?.throwIfAborted();
-      const latest = staffAccess();
-      const next = latest && latest !== credential ? latest : await refreshStaffAccess();
-      verifyAuthority(next);
-      if (error.code === "role_changed" && !currentSession) throw error;
-      try {
-        return await sendProtected(next);
-      } catch (retryError) {
-        if (retryError instanceof ApiError && retryError.status === 401)
-          throw new ApiError(503, "Sesi belum dapat diverifikasi. Coba lagi.");
-        throw retryError;
-      }
-    }
+/**
+ * A request function. Authenticated requests go through `session`; a client without one (the
+ * preview adapter, public callers) sends every request as-is.
+ */
+export function createHttpClient(
+  base = "/v1",
+  fetcher: typeof fetch = fetch,
+  session?: Authorizer,
+) {
+  const send = createTransport(base, fetcher);
+  return function request(path: string, options: RequestOptions = {}) {
+    return options.authenticated && session
+      ? session.authorized(send, path, options)
+      : send(path, options);
   };
 }

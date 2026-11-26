@@ -3,9 +3,8 @@ import {
   useUnsavedChanges,
   ApiError,
   canCreateAppointment,
-  preview,
   today,
-  useBookingAction,
+  useVisitCommand,
   useCatalogs,
   useCreateAppointment,
   useSession,
@@ -37,9 +36,9 @@ export default function RestrictedAppointment({
   const { session } = useSession();
   const catalogs = useCatalogs();
   const officers = catalogs.data?.officers || [];
-  const rooms = preview ? (catalogs.data?.rooms ?? []) : (catalogs.data?.roomOptions ?? []);
+  const rooms = catalogs.data?.roomOptions ?? [];
   const create = useCreateAppointment();
-  const update = useBookingAction();
+  const update = useVisitCommand();
   const [error, setError] = useState<unknown>();
   const [discard, setDiscard] = useState(false);
   const attempt = useRef<{ payload: string; key: string } | null>(null);
@@ -75,12 +74,12 @@ export default function RestrictedAppointment({
     if (lock.current || (booking && !dirty)) return;
     if (
       !session ||
-      (!preview && !values.officerId) ||
+      !values.officerId ||
       !canCreateAppointment(session, values.officerId || "", "restricted", officers)
     ) {
       f.setError(
         "officerId",
-        { message: preview ? "Pilih pejabat aktif atau biarkan kosong." : "Pilih pejabat yang aktif." },
+        { message: "Pilih pejabat yang aktif." },
         { shouldFocus: true },
       );
       return;
@@ -88,21 +87,23 @@ export default function RestrictedAppointment({
     lock.current = true;
     setError(null);
     const { room, ...details } = values;
-    const input = booking
-      ? {
-          ...details,
-          name: values.name || "",
-          organization: values.organization || "",
-          officerId: values.officerId || "",
-          serviceId: values.serviceId || "",
-        }
-      : { ...details, ...(preview ? { room } : { roomId: room || undefined }) };
+    const input = { ...details, roomId: room || undefined };
     const payload = JSON.stringify(input);
     if (attempt.current?.payload !== payload)
       attempt.current = { payload, key: crypto.randomUUID() };
     try {
       const saved = booking
-        ? await update.mutateAsync({ booking, action: "update", values: input })
+        ? await update.mutateAsync({
+            booking,
+            command: {
+              ...details,
+              type: "update",
+              name: values.name || "",
+              organization: values.organization || "",
+              officerId: values.officerId || "",
+              serviceId: values.serviceId || "",
+            },
+          })
         : await create.mutateAsync({ input, idempotencyKey: attempt.current.key });
       onSaved(saved);
     } catch (err) {
@@ -150,11 +151,7 @@ export default function RestrictedAppointment({
     <Modal
       open
       title={booking ? "Edit kunjungan terbatas" : "Buat kunjungan terbatas"}
-      description={
-        preview
-          ? "Tanggal dan waktu wajib diisi. Rincian lainnya opsional dan ditampilkan sesuai hak akses petugas."
-          : "Tanggal, waktu, dan pejabat tujuan wajib diisi. Rincian lainnya ditampilkan sesuai hak akses petugas."
-      }
+      description="Tanggal, waktu, dan pejabat tujuan wajib diisi. Rincian lainnya ditampilkan sesuai hak akses petugas."
       onClose={close}
       returnFocusTo={returnFocusTo}
     >
@@ -226,12 +223,12 @@ export default function RestrictedAppointment({
               {field("serviceId", "No ID Dinas", 100)}
               <div className="field">
                 <label htmlFor="restricted-host">
-                  Pejabat yang dituju {preview && <span className="muted">(opsional)</span>}
+                  Pejabat yang dituju
                 </label>
                 <Select
                   {...f.register("officerId")}
                   id="restricted-host"
-                  required={!preview}
+                  required
                   aria-invalid={!!f.formState.errors.officerId}
                   aria-describedby={
                     f.formState.errors.officerId ? "restricted-host-error" : undefined

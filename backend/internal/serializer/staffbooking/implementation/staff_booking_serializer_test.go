@@ -25,7 +25,7 @@ func TestRestrictedBookingKeys(t *testing.T) {
 		Rescheduled: true, AttachmentAvailable: true, VisitorPhotoName: &private, VisitorCount: 1,
 		CreatorName: "Staff", CreatorRole: policy.RoleProtocol, History: []entity.StaffVisitEvent{{At: at, Message: "Created"}},
 	}
-	base := []string{"id", "date", "time", "duration", "room", "status", "version", "timing", "visitKind", "rescheduled", "reference", "restrictedView"}
+	base := []string{"id", "date", "time", "duration", "room", "status", "version", "timing", "allowedActions", "visitKind", "rescheduled", "reference", "restrictedView"}
 	identity := append(slices.Clone(base), "name", "officerId", "pejabat", "serviceIdLast4")
 	assigned := append(slices.Clone(identity), "organization")
 	full := append(slices.Clone(assigned), "code", "roomId", "serviceId", "history", "createdBy", "visitorInstructions", "coordinationNote",
