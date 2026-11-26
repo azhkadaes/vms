@@ -2,16 +2,28 @@ import { apiBase, preview } from "./config.ts";
 import type { Repository } from "./contracts.ts";
 import { officers, roomOptions, rooms } from "./domain.ts";
 import { ApiError } from "./errors.ts";
-import { createHttpClient } from "./http.ts";
+import { createHttpClient, type Authorizer } from "./http.ts";
+import { staffSession } from "./staff-session.ts";
 import { reportFilterParams } from "./report-filter.ts";
 
-export type ApiOptions = { development?: boolean; base?: string; fetcher?: typeof fetch };
+export type ApiOptions = {
+  development?: boolean;
+  base?: string;
+  fetcher?: typeof fetch;
+  /** Defaults to the staff session in production and to none for the preview server. */
+  session?: Authorizer;
+};
 /**
  * One HTTP client for either adapter behind the contract seam: the Go backend or the preview
  * server. The preview takes production paths (ADR-0001); it only needs the impersonated role.
  */
-export function createApi({ development = false, base = "/v1", fetcher = fetch }: ApiOptions = {}) {
-  const request = createHttpClient(development ? "/__preview" : base, fetcher);
+export function createApi({
+  development = false,
+  base = "/v1",
+  fetcher = fetch,
+  session = development ? undefined : staffSession,
+}: ApiOptions = {}) {
+  const request = createHttpClient(development ? "/__preview" : base, fetcher, session);
   const staff = (path: string, role: string) =>
     development
       ? `/staff${path}${path.includes("?") ? "&" : "?"}role=${encodeURIComponent(role)}`

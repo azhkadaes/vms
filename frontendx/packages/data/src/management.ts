@@ -2,7 +2,8 @@ import { apiBase, preview } from "./config.ts";
 import { officers, roles, sessionFor } from "./domain.ts";
 import { ApiError } from "./errors.ts";
 import { officerOrganization } from "./organization.ts";
-import { createHttpClient } from "./http.ts";
+import { createHttpClient, type Authorizer } from "./http.ts";
+import { staffSession } from "./staff-session.ts";
 import type {
   Employee,
   EmployeeFilter,
@@ -41,8 +42,9 @@ function validateAssignmentCount(input: EmployeeInput) {
 export function createManagementRepository(
   base = "/v1",
   fetcher: typeof fetch = fetch,
+  session: Authorizer = staffSession,
 ): ManagementRepository {
-  const request = createHttpClient(base, fetcher);
+  const request = createHttpClient(base, fetcher, session);
   async function parse<T>(input: unknown, schema: { parse: (input: unknown) => T }) {
     try {
       return schema.parse(input);

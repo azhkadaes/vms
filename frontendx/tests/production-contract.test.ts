@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createHttpClient, onAuthenticationLoss } from "../packages/data/src/http.ts";
+import { createHttpClient } from "../packages/data/src/http.ts";
+import { createStaffSession } from "../packages/data/src/staff-session.ts";
 import { parseSession, sessionKey } from "../packages/data/src/session-contract.ts";
 import { createRepository } from "../packages/data/src/repositories.ts";
 import { ApiError } from "../packages/data/src/errors.ts";
@@ -68,7 +69,8 @@ test("a session has one explicit canonical role and scope follows identity, perm
 
 test("HTTP failures keep status, fields, rate-limit advice and only authenticated 401 signals session loss", async () => {
   let lost = 0;
-  const stop = onAuthenticationLoss(() => lost++);
+  const session = createStaffSession({ csrf: () => undefined, locks: undefined });
+  const stop = session.onLoss(() => lost++);
   const client = createHttpClient("/v1", async () =>
     response(
       {
@@ -90,7 +92,7 @@ test("HTTP failures keep status, fields, rate-limit advice and only authenticate
       error.fieldErrors?.email[0] === "Check email" &&
       !error.fieldErrors.invalid,
   );
-  const unauthorized = createHttpClient("/v1", async () => response({}, 401));
+  const unauthorized = createHttpClient("/v1", async () => response({}, 401), session);
   await assert.rejects(unauthorized("/public/lookup", { body: {} }));
   assert.equal(lost, 0);
   await assert.rejects(unauthorized("/staff/bookings", { authenticated: true }));

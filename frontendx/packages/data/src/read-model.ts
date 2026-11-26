@@ -2,6 +2,7 @@ import { apiBase } from "./config.ts";
 import type { StaffBooking } from "./domain.ts";
 import { ApiError } from "./errors.ts";
 import { createHttpClient } from "./http.ts";
+import { staffSession } from "./staff-session.ts";
 
 export type ReadFilter = {
   view: "list" | "dashboard" | "reception";
@@ -23,7 +24,7 @@ export type StaffReadModel = {
   pageSize: number;
   metrics?: { today: number; pending: number; arrivals: number; inside: number; completed: number };
 };
-const request = createHttpClient(apiBase);
+const request = createHttpClient(apiBase, fetch, staffSession);
 export async function readStaffBookings(
   filter: ReadFilter,
   signal?: AbortSignal,
