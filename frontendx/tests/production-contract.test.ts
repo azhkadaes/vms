@@ -4,6 +4,7 @@ import { createHttpClient, onAuthenticationLoss } from "../packages/data/src/htt
 import { parseSession, sessionKey } from "../packages/data/src/session-contract.ts";
 import { createRepository } from "../packages/data/src/repositories.ts";
 import { ApiError } from "../packages/data/src/errors.ts";
+import type { VisitCommand } from "../packages/data/src/contracts.ts";
 import {
   sessionFor,
   toStaffBooking,
@@ -115,7 +116,7 @@ test("production repository uses audience paths, cookie credentials and no calle
     },
   });
   const publicBooking = await api.lookup(record.code, record.email);
-  await api.action(record.id, "approve", { version: 1, room: "Example Room", duration: 60 }, "PA");
+  await api.perform(record, { type: "approve", roomId: "room-1", duration: 60 }, "PA");
   assert.equal((await api.admission(publicBooking)).imagePng, "cG5nLWZpeHR1cmU=");
   assert.deepEqual(
     calls.map((call) => call.url),
@@ -157,8 +158,12 @@ test("production attendance uses the attendance endpoint with an explicit action
       return response(toStaffBooking(record, sessionFor("Receptionist")));
     },
   });
-  for (const action of ["checkin", "checkout"] as const)
-    await api.action(record.id, action, { credential: "00123456", version: 2 }, "Receptionist");
+  for (const direction of ["in", "out"] as const)
+    await api.perform(
+      { id: record.id, version: 2 },
+      { type: "attend", direction, credential: "00123456" },
+      "Receptionist",
+    );
 });
 
 test("wire validation rejects accidental restricted identity in the general reception projection", async () => {
@@ -367,4 +372,44 @@ test("bounded staff responses reject overflow, impossible dates and invalid priv
     }).success,
     false,
   );
+});
+
+test("visit commands map onto the production wire contract with the visit's version", async () => {
+  const calls: { url: string; body: Record<string, unknown> }[] = [];
+  const api = createRepository({
+    fetcher: async (url, options) => {
+      calls.push({ url: String(url), body: JSON.parse(String(options?.body)) });
+      return response(toStaffBooking(record, sessionFor("PA")));
+    },
+  });
+  const visit = { id: "v1", version: 7 };
+  const cases: [VisitCommand, string, Record<string, unknown>][] = [
+    [
+      { type: "approve", roomId: "room-2", duration: 45 },
+      "approve",
+      { roomId: "room-2", duration: 45, version: 7 },
+    ],
+    [
+      { type: "reschedule", date: "2099-09-01", time: "09:00", roomId: null, reason: "Rapat" },
+      "reschedule",
+      { date: "2099-09-01", time: "09:00", roomId: null, reason: "Rapat", version: 7 },
+    ],
+    [
+      { type: "reject", rejectionReason: "Tidak sesuai" },
+      "reject",
+      { rejectionReason: "Tidak sesuai", version: 7 },
+    ],
+    [{ type: "cancel", reason: "Batal rapat" }, "cancel", { reason: "Batal rapat", version: 7 }],
+    [
+      { type: "attend", direction: "out", credential: "00123456" },
+      "attendance",
+      { action: "check_out", credential: "00123456", version: 7 },
+    ],
+  ];
+  for (const [command, operation, body] of cases) {
+    await api.perform(visit, command, "PA");
+    const call = calls.at(-1)!;
+    assert.equal(call.url, `/v1/staff/bookings/v1/${operation}`);
+    assert.deepEqual(call.body, body);
+  }
 });

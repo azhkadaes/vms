@@ -39,7 +39,7 @@ test("preview retries, fixed rescheduling, and stale writes preserve booking sta
   assert.equal(first.data.id, retry.data.id);
   const approved = await post(`/bookings/${first.data.id}/approve?role=PA`, {
     version: 1,
-    room: "Ruang Rapat Nusantara",
+    roomId: "room-1",
     duration: 60,
   });
   assert.equal(approved.data.status, "approved");
@@ -48,7 +48,7 @@ test("preview retries, fixed rescheduling, and stale writes preserve booking sta
     date: "2099-10-21",
     time: "11:00",
     duration: 90,
-    room: "Ruang Rapat Meranti",
+    roomId: "room-2",
     reason: "Fixed synthetic schedule adjustment",
   });
   assert.equal(changed.status, 200);
@@ -61,7 +61,7 @@ test("preview retries, fixed rescheduling, and stale writes preserve booking sta
     date: "2099-10-22",
     time: "11:00",
     duration: 60,
-    room: "Ruang Rapat Meranti",
+    roomId: "room-2",
     reason: "Stale change",
   });
   assert.equal(stale.status, 409);
@@ -70,7 +70,7 @@ test("preview retries, fixed rescheduling, and stale writes preserve booking sta
     date: "2099-10-22",
     time: "11:00",
     duration: 60,
-    room: "Ruang Rapat Meranti",
+    roomId: "room-2",
     reason: "Wrong role",
   });
   assert.equal(denied.status, 403);
@@ -248,11 +248,11 @@ test("Receptionist list and code/QR lookup exclude unapproved requests and retai
   }
   const pending = await create();
   await hidden(pending);
-  const premature = await post(`/bookings/${pending.id}/checkin?role=Receptionist`, { version: 1 });
+  const premature = await post(`/bookings/${pending.id}/attendance?role=Receptionist`, { action: "check_in", version: 1 });
   assert.equal(premature.status, 403);
   const approved = await post(`/bookings/${pending.id}/approve?role=PA`, {
     version: 1,
-    room: "Ruang Rapat Meranti",
+    roomId: "room-2",
     duration: 60,
   });
   assert.equal(approved.status, 200);
@@ -270,13 +270,13 @@ test("Receptionist list and code/QR lookup exclude unapproved requests and retai
   }
   assert.equal(
     (
-      await post(`/bookings/${pending.id}/checkout?role=Receptionist`, {
+      await post(`/bookings/${pending.id}/attendance?role=Receptionist`, { action: "check_out",
         version: 2,
       })
     ).status,
     403,
   );
-  const checkedIn = await post(`/bookings/${pending.id}/checkin?role=Receptionist`, {
+  const checkedIn = await post(`/bookings/${pending.id}/attendance?role=Receptionist`, { action: "check_in",
     version: 2,
     credential: pending.code,
   });
@@ -288,13 +288,13 @@ test("Receptionist list and code/QR lookup exclude unapproved requests and retai
   );
   assert.equal(
     (
-      await post(`/bookings/${pending.id}/checkin?role=Receptionist`, {
+      await post(`/bookings/${pending.id}/attendance?role=Receptionist`, { action: "check_in",
         version: 3,
       })
     ).status,
     403,
   );
-  const checkedOut = await post(`/bookings/${pending.id}/checkout?role=Receptionist`, {
+  const checkedOut = await post(`/bookings/${pending.id}/attendance?role=Receptionist`, { action: "check_out",
     version: 3,
     credential: pending.code,
   });
@@ -306,7 +306,7 @@ test("Receptionist list and code/QR lookup exclude unapproved requests and retai
   );
   assert.equal(
     (
-      await post(`/bookings/${pending.id}/checkout?role=Receptionist`, {
+      await post(`/bookings/${pending.id}/attendance?role=Receptionist`, { action: "check_out",
         version: 4,
       })
     ).status,
@@ -443,7 +443,7 @@ for (const [role, officerId, forbiddenOfficer] of [
     assert.equal(JSON.stringify(found.data).includes("FORGED"), false);
     const approved = await post(
       `/bookings/${created.data.id}/approve?role=${encodeURIComponent(role)}`,
-      { version: 1, room: "Ruang Rapat Nusantara", duration: 60 },
+      { version: 1, roomId: "room-1", duration: 60 },
     );
     assert.equal(approved.status, 403);
     const occupied = await post(path, {

@@ -74,7 +74,7 @@ test("late staff cancellation keeps its reason through a conflict and submits on
       version: visit.version,
       date: "2099-08-19",
       time: "11:30",
-      room: "Ruang Rapat Nusantara",
+      roomId: "room-1",
       duration: 60,
       reason: "Concurrent scheduling change.",
     });

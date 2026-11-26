@@ -209,7 +209,7 @@ test("Protocol Officer keeps aggregate reports without booking rows; summary CSV
   const env = await open({ role: "Protocol Officer", width: 320 });
   try {
     await total(env.page, 3);
-    assert.equal(env.requests.filter((path) => path === "/__preview/bookings").length, 0);
+    assert.equal(env.requests.filter((path) => path === "/__preview/staff/bookings").length, 0);
     assert.ok(
       (await env.page.locator(".report-counts").innerText()).includes("Lingkup kunjungan yang diizinkan"),
     );

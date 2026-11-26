@@ -437,7 +437,7 @@ test("Missed appears in staff filtering and visitor ticket with no entry QR", as
     });
     await post(`/bookings/${ordinary.id}/approve?role=PA`, {
       version: 1,
-      room: "Ruang Rapat Meranti",
+      roomId: "room-2",
       duration: 60,
     });
     api.setNow("2099-08-19T11:00:00.001+08:00");

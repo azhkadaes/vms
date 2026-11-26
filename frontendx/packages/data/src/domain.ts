@@ -139,6 +139,11 @@ export function partyLabel(b: Pick<StaffBooking, "visitors" | "visitorCount">) {
   return count ? `${count} orang` : "Rombongan belum diisi";
 }
 export const rooms = ["Ruang Rapat Nusantara", "Ruang Rapat Meranti", "Ruang Rapat Mahakam"];
+/** Preview room catalogue with the same `{ id, name }` identity the backend uses. */
+export const roomOptions = rooms.map((name, index) => ({ id: `room-${index + 1}`, name }));
+export function roomIdOf(name: string): string | null {
+  return roomOptions.find((room) => room.name === name)?.id ?? null;
+}
 export function today() {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Makassar",
@@ -280,6 +285,7 @@ export function toStaffBooking(
       ...common,
       ...identity,
       restrictedView: "full",
+      roomId: roomIdOf(b.room),
       visitorInstructions: b.visitorInstructions,
       coordinationNote: b.coordinationNote,
       code: b.code,
@@ -317,6 +323,7 @@ export function toStaffBooking(
     };
   const visible: StaffBooking = {
     ...bookingProjection(b),
+    roomId: roomIdOf(b.room),
     ...(b.attachmentAvailable ? { attachmentAvailable: true } : {}),
     ...(b.visitorPhotoToken
       ? { visitorPhotoAvailable: true, visitorPhotoName: b.visitorPhotoName }

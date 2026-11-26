@@ -55,7 +55,7 @@ test("manual visits start approved and rescheduling conflicts preserve input", a
           version: committed.version,
           date,
           time: "09:00",
-          room: "Ruang Rapat Nusantara",
+          roomId: "room-1",
           duration: 60,
           reason: "Assign fixture meeting room.",
         },
@@ -150,7 +150,7 @@ test("manual visits start approved and rescheduling conflicts preserve input", a
     await page.locator("#room").selectOption("Ruang Rapat Meranti");
     const [result] = await Promise.all([
       page.waitForResponse((response) =>
-        new URL(response.url()).pathname.endsWith(`/__preview/bookings/${created.id}/reschedule`),
+        new URL(response.url()).pathname.endsWith(`/__preview/staff/bookings/${created.id}/reschedule`),
       ),
       page.getByRole("button", { name: "Simpan perubahan", exact: true }).click(),
     ]);

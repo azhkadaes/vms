@@ -76,7 +76,7 @@ test("staff-created lifecycle becomes typed public history while staff messages 
         date: "2099-08-19",
         time: "11:00",
         duration: 60,
-        room: "Ruang Rapat Meranti",
+        roomId: "room-2",
         reason,
       })
     ).data;
@@ -88,14 +88,14 @@ test("staff-created lifecycle becomes typed public history while staff messages 
     });
     api.setNow("2099-08-19T11:00:00+08:00");
     booking = (
-      await post(api, `/bookings/${booking.id}/checkin?role=Receptionist`, {
+      await post(api, `/bookings/${booking.id}/attendance?role=Receptionist`, { action: "check_in",
         version: booking.version,
         credential: booking.code,
       })
     ).data;
     api.setNow("2099-08-19T12:30:00+08:00");
     booking = (
-      await post(api, `/bookings/${booking.id}/checkout?role=Receptionist`, {
+      await post(api, `/bookings/${booking.id}/attendance?role=Receptionist`, { action: "check_out",
         version: booking.version,
         credential: booking.code,
       })
@@ -153,7 +153,7 @@ test("cancellation is permitted just before start but rejected at/after start wi
             await post(api, `/bookings/${booking.id}/approve?role=PA`, {
               version: 1,
               duration: 60,
-              room: "Ruang Rapat Nusantara",
+              roomId: "room-1",
             })
           ).data;
         api.setNow(`2099-08-19T${time}+08:00`);

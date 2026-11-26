@@ -32,7 +32,7 @@ test("visit sort shows its default label and can restore the default order", asy
         version: 1,
         history: [],
       };
-      await page.route("**/__preview/bookings?*", (route) =>
+      await page.route("**/__preview/staff/bookings?*", (route) =>
         route.fulfill({
           json: [
             { ...base, id: "past", name: "Past", status: "checked_out", date: "2000-01-01" },
