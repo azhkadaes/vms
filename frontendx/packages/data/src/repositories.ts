@@ -144,10 +144,13 @@ export function createRepository(options: ApiOptions = {}): Repository {
         staffBookingResponse,
       );
     },
-    resolve: async (credential, role) => {
+    resolve: async (credential, role, visitId) => {
       const { staffBookingResponse } = await import("./wire.ts");
       return parse(
-        await request(staff("/resolve", role), { body: { credential }, authenticated: true }),
+        await request(staff("/resolve", role), {
+          body: { credential, visitId },
+          authenticated: true,
+        }),
         staffBookingResponse,
       );
     },

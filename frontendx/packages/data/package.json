@@ -14,6 +14,7 @@
     "./visit-log": "./src/visit-log.ts",
     "./management": "./src/management.ts",
     "./management-contract": "./src/management-contract.ts",
-    "./visit-files": "./src/visit-files.ts"
+    "./visit-files": "./src/visit-files.ts",
+    "./notifications": "./src/notifications.ts"
   }
 }

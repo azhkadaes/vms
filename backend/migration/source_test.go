@@ -42,6 +42,7 @@ var migrationOrder = []string{
 	"202611180029_create_support_booking_requests.sql",
 	"202611180030_create_vms_qr_kunjungan.sql",
 	"202611210001_expand_pegawai_phone_numbers.sql",
+	"202611230001_create_support_staff_notifications.sql",
 }
 
 var (

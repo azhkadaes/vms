@@ -661,7 +661,7 @@ export function previewApi({
           if (url.pathname === "/resolve") {
             const code = body.credential?.replace(/^VMS-DEMO:/, "");
             const b = scope(bookings, s).find((b) => b.code === code);
-            if (!b) {
+            if (!b || (body.visitId && b.id !== body.visitId)) {
               send({ message: "Kunjungan tidak ditemukan. Periksa kode." }, 404);
               return;
             }

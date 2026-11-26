@@ -13,6 +13,7 @@ import {
   useNavigate,
 } from "react-router";
 import ProfilePreview from "./features/ProfilePreview";
+import NotificationBell from "./features/NotificationBell";
 import {
   LayoutDashboard,
   CalendarDays,
@@ -30,6 +31,7 @@ import {
   DataProvider,
   SessionProvider,
   preview,
+  sessionKey,
   roles,
   useSession,
   dateLabel,
@@ -229,6 +231,11 @@ function Shell() {
             </div>
             <div className="toolbar">
               <span className="top-date mobile-hide">{dateLabel(today())} · WITA</span>
+              {!preview &&
+                session.permissions.includes("bookings") &&
+                (session.role === "PA" || session.role === "Protocol Officer") && (
+                  <NotificationBell key={sessionKey(session)} session={session} />
+                )}
               <ProfilePreview key={JSON.stringify([session.id, session.role])} session={session} />
             </div>
           </header>
@@ -300,6 +307,10 @@ function VisitRoute({
   }
   for (const key of ["new", "selected", "vip", "page"]) params.delete(key);
   return <Navigate to={`/booking${params.size ? `?${params}` : ""}`} replace />;
+}
+function StaffToaster() {
+  const { session } = useSession();
+  return <Toaster key={sessionKey(session)} />;
 }
 function Login() {
   const { session, pendingSession, loading } = useSession();
@@ -373,7 +384,7 @@ createRoot(document.getElementById("root")!).render(
       <DataProvider>
         <BrowserRouter basename="/admin">
           <SessionProvider>
-            <Toaster />
+            <StaffToaster />
             <RouteFocus />
             <Routes>
               <Route path="login" element={<Login />} />
@@ -404,7 +415,7 @@ createRoot(document.getElementById("root")!).render(
                   path="check-in"
                   element={
                     <Guard permission="checkin">
-                      <Reception mode="checkin" />
+                      <Reception key="checkin" mode="checkin" />
                     </Guard>
                   }
                 />
@@ -412,7 +423,7 @@ createRoot(document.getElementById("root")!).render(
                   path="check-out"
                   element={
                     <Guard permission="checkout">
-                      <Reception mode="checkout" />
+                      <Reception key="checkout" mode="checkout" />
                     </Guard>
                   }
                 />

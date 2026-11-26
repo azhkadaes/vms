@@ -16,6 +16,7 @@ export function SearchableMultiSelect<Value extends string>({
   disabled,
   error,
   multiple = true,
+  remoteSearch,
 }: {
   id: string;
   name?: string;
@@ -30,6 +31,12 @@ export function SearchableMultiSelect<Value extends string>({
   disabled?: boolean;
   error?: string;
   multiple?: boolean;
+  remoteSearch?: {
+    onChange: (value: string) => void;
+    selectedLabel?: string;
+    emptyMessage?: string;
+    maxLength?: number;
+  };
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -37,16 +44,22 @@ export function SearchableMultiSelect<Value extends string>({
   const input = useRef<HTMLInputElement>(null);
   const control = useRef<HTMLDivElement>(null);
   const list = useRef<HTMLDivElement>(null);
-  const visible = options.filter((option) =>
-    option.label.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()),
-  );
+  const visible = remoteSearch
+    ? options
+    : options.filter((option) =>
+        option.label.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()),
+      );
   const activeIndex = Math.min(active, Math.max(0, visible.length - 1));
   const listId = `${id}-options`;
   const selectedOption = options.find((option) => option.value === selected[0]);
+  function updateSearch(value: string) {
+    setSearch(value);
+    remoteSearch?.onChange(value);
+  }
   function changeOpen(next: boolean) {
     setOpen(next);
     if (!next) {
-      setSearch("");
+      if (!remoteSearch) updateSearch("");
       setActive(0);
     }
   }
@@ -65,16 +78,17 @@ export function SearchableMultiSelect<Value extends string>({
           : [...selected, value]
         : [value],
     );
-    setSearch("");
+    if (!remoteSearch) updateSearch("");
     setActive(0);
     input.current?.focus({ preventScroll: true });
     if (!multiple) changeOpen(false);
   }
   return (
     <div className="field searchable-multiselect">
-      {submitName && selected.map((value) => (
-        <input key={value} type="hidden" name={submitName} value={value} disabled={disabled} />
-      ))}
+      {submitName &&
+        selected.map((value) => (
+          <input key={value} type="hidden" name={submitName} value={value} disabled={disabled} />
+        ))}
       <label id={`${id}-label`} htmlFor={id}>
         {label}{" "}
         {required && (
@@ -132,14 +146,19 @@ export function SearchableMultiSelect<Value extends string>({
               aria-invalid={!!error}
               aria-describedby={error ? `${id}-error` : undefined}
               autoComplete="off"
+              maxLength={remoteSearch?.maxLength}
               disabled={disabled}
               placeholder={multiple && selected.length ? "Cari…" : placeholder}
-              value={multiple || open ? search : selectedOption?.label || ""}
+              value={
+                multiple || open
+                  ? search
+                  : selectedOption?.label || remoteSearch?.selectedLabel || ""
+              }
               onFocus={() => setOpen(true)}
               onClick={() => setOpen(true)}
               onChange={(event) => {
                 event.stopPropagation();
-                setSearch(event.target.value);
+                updateSearch(event.target.value);
                 setActive(0);
                 setOpen(true);
               }}
@@ -180,7 +199,7 @@ export function SearchableMultiSelect<Value extends string>({
                 aria-label={`Hapus ${itemLabel} ${selectedOption?.label || "terpilih"}`}
                 onClick={() => {
                   onChange([]);
-                  setSearch("");
+                  updateSearch("");
                   input.current?.focus();
                 }}
               >
@@ -257,7 +276,7 @@ export function SearchableMultiSelect<Value extends string>({
             </div>
             {!visible.length && (
               <p className="multiselect-empty" role="status">
-                Tidak ada pilihan yang cocok.
+                {remoteSearch?.emptyMessage || "Tidak ada pilihan yang cocok."}
               </p>
             )}
           </Popover.Content>

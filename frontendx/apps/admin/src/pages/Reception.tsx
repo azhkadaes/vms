@@ -25,9 +25,9 @@ import {
   VisitKind,
   TableRegion,
 } from "@vms/ui";
-import { InputOTP } from "@vms/ui/input-otp";
 import { ArrowRight, Check, KeyRound, ScanLine, ShieldCheck } from "lucide-react";
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import ReceptionPinForm from "../features/ReceptionPinForm";
 const Scanner = lazy(() => import("../features/Scanner"));
 const VisitFileViewer = lazy(() => import("../features/VisitFileViewer"));
 export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
@@ -50,6 +50,7 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
   const resolvedAt = useRef(0);
   const [checked, setChecked] = useState(false);
   const [error, setError] = useState<unknown>();
+  const [pinRejected, setPinRejected] = useState(false);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
   const dialogTrigger = useRef<HTMLElement | null>(null);
@@ -94,17 +95,20 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
       ? b.date === today() && visitTiming(b).displayStatus === "approved"
       : b.status === "checked_in",
   );
-  async function resolve(code: string) {
+  async function resolve(code: string, visitId?: string) {
     const requestId = ++attempt.current;
     setBusy(true);
     setError(null);
+    setPinRejected(false);
     setResolved(null);
     setCredential("");
     setChecked(false);
     try {
       if (!role) throw new ApiError(401, "Sesi berakhir. Silakan masuk kembali.");
-      const b = await repository.resolve(code, role);
+      const b = await repository.resolve(code, role, visitId);
       if (requestId !== attempt.current) return;
+      if (visitId && b.id !== visitId)
+        throw new ApiError(404, "Nama pengunjung dan kode kunjungan tidak cocok.");
       if (b.status !== (incoming ? "approved" : "checked_in"))
         throw new Error(
           incoming
@@ -116,7 +120,18 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
       setCredential(code);
       setChecked(false);
     } catch (err) {
-      if (requestId === attempt.current) setError(err);
+      if (requestId === attempt.current) {
+        const rejected = !!visitId && err instanceof ApiError && err.status === 404;
+        setPinRejected(rejected);
+        setError(
+          rejected
+            ? new ApiError(
+                404,
+                "Kunjungan tidak tersedia. Periksa nama pengunjung dan kode kunjungan.",
+              )
+            : err,
+        );
+      }
     } finally {
       if (requestId === attempt.current) setBusy(false);
     }
@@ -129,6 +144,7 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
     setResolved(null);
     setCredential("");
     setError(null);
+    setPinRejected(false);
     setChecked(false);
   }
   async function confirmAttendance(booking: StaffBooking) {
@@ -311,6 +327,7 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
           >
             <VisitIdentity booking={resolved} collapseVisitorNames />
             {role &&
+              permitted &&
               !isRestricted(resolved) &&
               (resolved.attachmentAvailable || resolved.visitorPhotoAvailable) && (
                 <Suspense fallback={<Loading />}>
@@ -384,35 +401,23 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
                 <Scanner onResult={resolve} />
               </Suspense>
             ) : (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  void resolve(String(new FormData(e.currentTarget).get("code")));
+              <ReceptionPinForm
+                key={mode}
+                mode={mode}
+                busy={busy}
+                pinRejected={pinRejected}
+                onPinEdit={() => {
+                  if (pinRejected) {
+                    setPinRejected(false);
+                    setError(null);
+                  }
                 }}
-              >
-                <div className="field">
-                  <RequiredFieldsHint />
-                  <label htmlFor="booking-code">
-                    Kode kunjungan <RequiredMark />
-                  </label>
-                  <InputOTP
-                    autoFocus
-                    id="booking-code"
-                    name="code"
-                    minLength={8}
-                    required
-                    aria-label="8 digit kode kunjungan"
-                  />
-                </div>
-                <div className="form-actions">
-                  <Button type="submit" disabled={busy}>
-                    {busy ? "Memeriksa…" : "Periksa kunjungan"}
-                    <ArrowRight size={16} />
-                  </Button>
-                </div>
-              </form>
+                onResolve={resolve}
+              />
             )}
-            <ErrorNotice error={error} />
+            <div id="reception-resolve-error">
+              <ErrorNotice error={error} />
+            </div>
           </>
         )}
       </Modal>

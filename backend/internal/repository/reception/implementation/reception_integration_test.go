@@ -103,7 +103,7 @@ func TestSameQRChecksOutAfterExpiryAndDoesNotResolveAgain(t *testing.T) {
 		t.Fatalf("issue QR before check-in: %v", err)
 	}
 	qr := firstTicket.Payload
-	proof := dto.ReceptionResolve{Credential: qr}
+	proof := dto.ReceptionLookup{ReceptionResolve: dto.ReceptionResolve{Credential: qr}}
 	arrival := receptionAt(tx, arrivalTime)
 	first, err := arrival.Resolve(ctx, session, proof)
 	if err != nil || first.Status != "approved" || first.Version != 1 || first.VisitorCount == nil || *first.VisitorCount != 1 || len(first.Visitors) != 1 || first.Purpose == "" || !first.Timing.CanCheckIn {
@@ -167,7 +167,11 @@ func TestRejectedReceptionProofsAreIndistinguishable(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, proof := range []string{qr, code, uuid.NewString()} {
-		if _, err := u.Resolve(ctx, session, dto.ReceptionResolve{Credential: proof}); !errors.Is(err, failure.ErrNotFound) {
+		request := dto.ReceptionLookup{
+			ReceptionResolve: dto.ReceptionResolve{Credential: proof},
+			VisitID:          fmt.Sprint(visit),
+		}
+		if _, err := u.Resolve(ctx, session, request); !errors.Is(err, failure.ErrNotFound) {
 			t.Fatalf("rejected proof returned a different error: %v", err)
 		}
 	}

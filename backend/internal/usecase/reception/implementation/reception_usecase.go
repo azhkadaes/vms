@@ -29,7 +29,7 @@ func NewReceptionUsecase(repo receptionrepository.ReceptionRepository, serialize
 	return &usecase{repo, serializer, validator, tracer}
 }
 
-func (u *usecase) Resolve(ctx context.Context, session dto.Session, req dto.ReceptionResolve) (dto.StaffBooking, error) {
+func (u *usecase) Resolve(ctx context.Context, session dto.Session, req dto.ReceptionLookup) (dto.StaffBooking, error) {
 	ctx, span := u.tracer.Start(ctx, "reception.resolve")
 	defer span.End()
 	if !policy.CanAttend(session, policy.PermCheckin) && !policy.CanAttend(session, policy.PermCheckout) {
@@ -39,11 +39,20 @@ func (u *usecase) Resolve(ctx context.Context, session dto.Session, req dto.Rece
 	if err != nil {
 		return dto.StaffBooking{}, err
 	}
+	var selectedID int32
+	if credential.Code != "" || req.VisitID != "" {
+		selectedID, err = validate.ID(req.VisitID)
+		if err != nil {
+			return dto.StaffBooking{}, failure.Validation().Add("visitId", "Pilih pengunjung dari daftar kunjungan.").Err()
+		}
+	}
 	visit, match, at, err := u.repo.Resolve(ctx, credential)
 	if err != nil {
 		return dto.StaffBooking{}, err
 	}
-	if !policy.CanResolveReception(session, visit.Status) || visit.Status == "approved" && expired(match, at) {
+	if (selectedID != 0 && visit.ID != selectedID) ||
+		!policy.CanResolveReception(session, visit.Status) ||
+		visit.Status == "approved" && expired(match, at) {
 		return dto.StaffBooking{}, receptionrepository.ErrNotFound
 	}
 	return u.serializer.Project(visit, session, at, true), nil
