@@ -940,28 +940,63 @@
   margin-top: 6px;
 }
 .scanner {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
   text-align: center;
 }
 .camera-frame {
-  height: 250px;
   position: relative;
   display: grid;
   place-items: center;
-  background: oklch(0.22765811 0.05233603 252.764921);
-  color: oklch(0.77247155 0.08202483 81.012023);
-  border-radius: 12px;
+  width: min(100%, 300px);
+  aspect-ratio: 1;
   overflow: hidden;
-  margin-bottom: 15px;
+  border-radius: 16px;
+  background: oklch(0.22765811 0.05233603 252.764921);
+  color: oklch(0.86 0.02 252);
 }
 .camera-frame video {
   position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.scanner p {
-  font-size: 0.8rem;
-  margin-top: 15px;
+.camera-frame:not(.is-active) video {
+  visibility: hidden;
+}
+.camera-placeholder {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  font-size: 0.875rem;
+}
+.camera-guide {
+  position: absolute;
+  inset: 14%;
+  border-radius: 12px;
+  box-shadow: 0 0 0 999px oklch(0 0 0 / 0.28);
+  background:
+    linear-gradient(var(--white), var(--white)) top left / 28px 3px,
+    linear-gradient(var(--white), var(--white)) top left / 3px 28px,
+    linear-gradient(var(--white), var(--white)) top right / 28px 3px,
+    linear-gradient(var(--white), var(--white)) top right / 3px 28px,
+    linear-gradient(var(--white), var(--white)) bottom left / 28px 3px,
+    linear-gradient(var(--white), var(--white)) bottom left / 3px 28px,
+    linear-gradient(var(--white), var(--white)) bottom right / 28px 3px,
+    linear-gradient(var(--white), var(--white)) bottom right / 3px 28px;
+  background-repeat: no-repeat;
+}
+.scanner-hint {
+  max-width: 300px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+.scanner-stop {
+  min-height: 36px;
 }
 .admin-quick-links {
   display: grid;
@@ -3178,41 +3213,101 @@
     min-height: 28px;
   }
 }
-.visitor-photo-confirmation {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-}
-.visitor-photo-confirmation h3 {
-  align-self: center;
-  font-size: var(--form-title-size);
-}
-.reception-file-actions {
-  display: flex;
-  flex-wrap: wrap;
+.visit-files {
+  display: grid;
   gap: var(--space-2);
 }
-.reception-pdf-viewer {
-  display: block;
+.visit-file-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
   width: 100%;
-  height: 65dvh;
+  min-height: 56px;
+  padding: var(--space-2) var(--space-3);
   border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--ink);
+  text-align: start;
+  cursor: pointer;
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease;
+}
+.visit-file-row:hover {
+  background: var(--surface-subtle);
+}
+.visit-file-row:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.visit-file-icon {
+  flex: none;
+  color: var(--action-primary);
+}
+.visit-file-text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.visit-file-text strong {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.visit-file-text span {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.visit-file-action {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 2px;
+  color: var(--action-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.modal.visit-file-viewer.is-document {
+  width: min(880px, calc(100vw - 32px));
+}
+.visit-file-stage {
+  display: grid;
+  place-items: center;
+  min-height: 160px;
+  padding: var(--space-3);
+  background: var(--surface-subtle);
+  border-radius: 12px;
+}
+.visit-file-stage.is-message {
+  gap: var(--space-3);
+  text-align: center;
+}
+.visit-file-stage img {
+  display: block;
+  max-width: 100%;
+  max-height: 62dvh;
+  object-fit: contain;
   border-radius: 8px;
 }
-.visitor-photo-viewer img {
+.visit-file-pdf {
   display: block;
-  width: auto;
-  max-width: 100%;
-  max-height: 65dvh;
-  margin-inline: auto;
-  object-fit: contain;
+  width: 100%;
+  height: 68dvh;
+  border: 1px solid var(--line);
+  border-radius: 12px;
   background: var(--surface-subtle);
-  border-radius: 8px;
+}
+.visit-file-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-3);
+}
+.visit-file-footer a,
+.visit-file-stage a {
+  text-decoration: none;
 }
 
 .report-export-modal {

@@ -207,10 +207,15 @@ test("Terbatas four-field form preserves leading zeroes, dirty draft and keyboar
       ])
         assert.equal(await page.locator(id).count(), 1);
       assert.equal(
-        await page
-          .locator('.modal input[type="email"], .modal input[type="file"], .modal textarea')
-          .count(),
+        await page.locator('.modal input[type="email"], .modal input[type="file"]').count(),
         0,
+      );
+      // The only free-text fields are the optional visit notes.
+      assert.deepEqual(
+        await page
+          .locator(".modal textarea")
+          .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("name"))),
+        ["visitorInstructions", "coordinationNote"],
       );
       await page.locator("#restricted-serviceId").fill("0012345678");
       await page.keyboard.press("Escape");
@@ -262,7 +267,7 @@ test("Terbatas four-field form preserves leading zeroes, dirty draft and keyboar
       assert.equal(b.status, "approved");
       assert.equal(b.serviceId, "0012345678");
       await page.getByRole("heading", { name: "Detail kunjungan", exact: true }).waitFor();
-      await page.getByRole("button", { name: "Edit detail", exact: true }).click();
+      await page.getByRole("button", { name: "Edit informasi pengunjung", exact: true }).click();
       assert.equal(await page.locator("#restricted-serviceId").inputValue(), "0012345678");
       await page.locator("#restricted-serviceId").fill("");
       await page.getByRole("button", { name: "Simpan perubahan", exact: true }).click();
@@ -291,7 +296,7 @@ test("PA and Admin read permitted Terbatas details without write controls; gener
         assert.equal(
           await page
             .locator(".modal")
-            .getByRole("button", { name: /^(Setujui|Tolak|Edit kunjungan|Edit detail)$/ })
+            .getByRole("button", { name: /^(Setujui|Tolak|Edit kunjungan|Edit detail|Edit informasi pengunjung)$/ })
             .count(),
           0,
         );

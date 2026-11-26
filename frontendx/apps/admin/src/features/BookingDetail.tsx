@@ -34,8 +34,7 @@ import { CalendarClock, Check, X } from "lucide-react";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import VisitNotesFields from "./VisitNotesFields";
 const RestrictedAppointment = lazy(() => import("./RestrictedAppointment"));
-const AttachmentAccess = lazy(() => import("./AttachmentAccess"));
-const VisitorPhoto = lazy(() => import("./VisitorPhoto"));
+const VisitFileViewer = lazy(() => import("./VisitFileViewer"));
 
 export default function BookingDetail({
   returnFocusTo,
@@ -181,9 +180,17 @@ export default function BookingDetail({
             )}
         </>
       )}
-      {mode !== "cancel" && session && b.attachmentAvailable && b.ndName && !restricted && (
+      {session && !restricted && (
         <Suspense fallback={<Loading />}>
-          <AttachmentAccess id={b.id} name={b.ndName} role={session.role} />
+          <VisitFileViewer
+            key={`${b.id}:${session.role}`}
+            id={b.id}
+            role={session.role}
+            attachmentName={b.ndName}
+            showAttachment={mode !== "cancel" && !!b.attachmentAvailable && !!b.ndName}
+            showPhoto={!!b.visitorPhotoAvailable}
+            visitorName={b.name}
+          />
         </Suspense>
       )}
       {editSnapshot && currentBooking.version !== editSnapshot.version && (
@@ -206,16 +213,6 @@ export default function BookingDetail({
           Hanya lihat. Persetujuan dan perubahan kunjungan umum ini dikelola oleh PA pejabat tujuan.
           Protokol mengelola kunjungan VIP dan terbatas.
         </p>
-      )}
-      {!restricted && b.visitorPhotoAvailable && session && (
-        <Suspense fallback={<Loading />}>
-          <VisitorPhoto
-            key={`${b.id}:${session.role}`}
-            id={b.id}
-            role={session.role}
-            name={b.name}
-          />
-        </Suspense>
       )}
       {mode ? (
         <form
@@ -373,18 +370,15 @@ export default function BookingDetail({
               <>
                 <div className="field">
                   <label htmlFor="room">
-                    Ruangan{" "}
-                    <span className="muted">(opsional)</span>
+                    Ruangan <span className="muted">(opsional)</span>
                   </label>
-                  <Select
-                    name="room"
-                    id="room"
-                    defaultValue={room}
-                  >
+                  <Select name="room" id="room" defaultValue={room}>
                     <option value="">Tanpa ruangan</option>
                     {room && <option value={room}>{b.room}</option>}
                     {roomOptions.map(({ id, name }) => (
-                      <option key={id} value={id}>{name}</option>
+                      <option key={id} value={id}>
+                        {name}
+                      </option>
                     ))}
                   </Select>
                 </div>

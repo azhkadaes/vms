@@ -28,7 +28,7 @@ import { InputOTP } from "@vms/ui/input-otp";
 import { ArrowRight, Check, KeyRound, ScanLine, ShieldCheck } from "lucide-react";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 const Scanner = lazy(() => import("../features/Scanner"));
-const ReceptionFiles = lazy(() => import("../features/ReceptionFiles"));
+const VisitFileViewer = lazy(() => import("../features/VisitFileViewer"));
 export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
   const [page, setPage] = useState(1);
   const q = useBookings({
@@ -314,11 +314,15 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
               !isRestricted(resolved) &&
               (resolved.attachmentAvailable || resolved.visitorPhotoAvailable) && (
                 <Suspense fallback={<Loading />}>
-                  <ReceptionFiles
+                  <VisitFileViewer
                     key={`${role}:${resolved.id}`}
-                    booking={resolved}
+                    id={resolved.id}
                     role={role}
                     credential={credential}
+                    attachmentName={resolved.ndName}
+                    showAttachment={!!resolved.attachmentAvailable}
+                    showPhoto={!!resolved.visitorPhotoAvailable}
+                    visitorName={resolved.name}
                   />
                 </Suspense>
               )}
@@ -365,10 +369,7 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
               >
                 Periksa kode lain
               </Button>
-              <Button
-                type="submit"
-                disabled={action.isPending || !checked || !permitted}
-              >
+              <Button type="submit" disabled={action.isPending || !checked || !permitted}>
                 {action.isPending
                   ? "Menyimpan…"
                   : `Konfirmasi ${incoming ? "check in" : "check out"}`}

@@ -850,12 +850,20 @@ test("production staff lists request bounded pages, load a direct detail, and ga
       .getByRole("button", { name: "Lihat detail Contract Visitor 8", exact: true })
       .click();
     await page.getByRole("heading", { name: "Detail kunjungan", exact: true }).waitFor();
+    await page.getByRole("button", { name: "Lihat Nota Dinas" }).click();
+    const memoViewer = page.getByRole("dialog", { name: "Nota Dinas", exact: true });
     const downloading = page.waitForEvent("download");
-    await page.getByRole("button", { name: "Unduh dokumen pendukung" }).click();
+    await memoViewer.getByRole("link", { name: "Unduh Nota Dinas" }).click();
     assert.equal((await downloading).suggestedFilename(), "official.pdf");
+    await page.keyboard.press("Escape");
+    await memoViewer.waitFor({ state: "hidden" });
     downloadDenied = true;
-    await page.getByRole("button", { name: "Unduh dokumen pendukung" }).click();
-    await page.getByRole("alert").filter({ hasText: "Akses dokumen tidak diizinkan." }).waitFor();
+    await page.getByRole("button", { name: "Lihat Nota Dinas" }).click();
+    await memoViewer
+      .getByRole("alert")
+      .filter({ hasText: "Akses dokumen tidak diizinkan." })
+      .waitFor();
+    await page.keyboard.press("Escape");
     assert.deepEqual(state.errors, []);
     await audit(page, "staff-detail-production-390");
     assert.equal(

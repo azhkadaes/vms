@@ -210,12 +210,12 @@ test("visit and visitor uploads stay on their own steps and both appear in the s
     assert.ok(details.includes("visitor.png"));
     await env.page.getByRole("link", { name: "Langkah sebelumnya", exact: true }).click();
     await env.page.locator("#visitorPhoto").waitFor();
-    assert.equal(await env.page.locator(".upload-field-file").innerText(), "visitor.png");
+    assert.equal(await env.page.locator(".upload-field-name").innerText(), "visitor.png");
     await env.page.getByRole("button", { name: "Hapus foto", exact: true }).click();
     await env.page.locator("#visitorPhoto-file").waitFor({ state: "detached" });
     await env.page.getByRole("link", { name: "Langkah sebelumnya", exact: true }).click();
     await env.page.locator("#nd").waitFor();
-    assert.equal(await env.page.locator(".upload-field-file").innerText(), "memo.pdf");
+    assert.equal(await env.page.locator(".upload-field-name").innerText(), "memo.pdf");
     await env.page.locator("#hasNotaDinas").uncheck();
     await env.page.locator("#nd").waitFor({ state: "detached" });
     await env.page.locator("#hasNotaDinas").check();
