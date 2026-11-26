@@ -143,7 +143,11 @@ test("staff drafts share contact and schedule rules without visitor consent impe
     visitors: [{ name: "Anggota Contoh" }],
   };
   assert.equal(staffAppointmentSchema.safeParse(form).success, true);
+  assert.equal(staffAppointmentSchema.safeParse({ ...form, time: "16:59" }).success, true);
+  assert.equal(staffAppointmentSchema.safeParse({ ...form, time: "17:00" }).success, false);
   assert.equal(bookingSchema.safeParse(form).success, false);
+  assert.equal(bookingSchema.safeParse({ ...form, ack: true, time: "16:00" }).success, true);
+  assert.equal(bookingSchema.safeParse({ ...form, ack: true, time: "16:01" }).success, false);
   assert.equal(
     staffAppointmentSchema.safeParse({ ...form, phone: "+628123456789" }).success,
     false,
@@ -159,6 +163,7 @@ test("staff drafts share contact and schedule rules without visitor consent impe
     ndName: "contoh.pdf",
   };
   assert.equal(staffAppointmentInputSchema.safeParse(input).success, true);
+  assert.equal(staffAppointmentInputSchema.safeParse({ ...input, time: "16:59" }).success, true);
   assert.equal(staffAppointmentInputSchema.safeParse({ ...input, visitors: [] }).success, false);
   assert.equal(
     staffAppointmentInputSchema.safeParse({

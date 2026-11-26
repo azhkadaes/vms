@@ -82,7 +82,7 @@ test("phone/tablet cards and a desktop table expose one readable directory witho
       );
       if (!mobile)
         assert.equal(
-          await env.page.getByRole("columnheader", { name: "Peran aktif", exact: true }).count(),
+          await env.page.getByRole("columnheader", { name: "Peran pegawai", exact: true }).count(),
           1,
         );
       await snapshot(env, `directory-${width}`);
@@ -97,19 +97,17 @@ test("search covers name/email/role, survives reload, and no-match reset restore
   const env = await open();
   const { page } = env;
   const search = page.getByRole("searchbox", { name: "Cari nama, email, atau peran", exact: true });
+  const nadia = page.getByRole("button", { name: "Lihat detail pegawai Nadia Putri", exact: true });
   try {
     for (const value of ["NADIA", "  NADIA@EXAMPLE.TEST  ", "protocol"]) {
       await search.fill(value);
       await page.getByRole("status").filter({ hasText: "Menampilkan 1 dari 3 pegawai." }).waitFor();
-      await page.getByRole("heading", { name: "Nadia Putri", exact: true }).waitFor();
+      await nadia.waitFor();
       assert.equal(await page.getByRole("article").count(), 1);
-      assert.equal(
-        await page.getByRole("heading", { name: "Nadia Putri", exact: true }).count(),
-        1,
-      );
+      assert.equal(await nadia.count(), 1);
     }
     await page.reload();
-    await page.getByRole("heading", { name: "Nadia Putri", exact: true }).waitFor();
+    await nadia.waitFor();
     assert.equal(await search.inputValue(), "protocol");
     await search.fill("tidak-ada-pegawai");
     await page.getByText("Tidak ada pegawai yang sesuai", { exact: true }).waitFor();
@@ -120,7 +118,7 @@ test("search covers name/email/role, survives reload, and no-match reset restore
     assert.equal(await search.evaluate((node) => node === document.activeElement), true);
     assert.equal(await search.inputValue(), "");
     assert.equal(new URL(page.url()).searchParams.has("q"), false);
-    await page.getByRole("heading", { name: "Aulia Rahma", exact: true }).waitFor();
+    await page.getByRole("button", { name: "Lihat detail pegawai Aulia Rahma", exact: true }).waitFor();
     assert.equal(await page.getByRole("article").count(), 3);
     await snapshot(env, "reset-390");
   } finally {
@@ -162,7 +160,10 @@ test("keyboard add/close returns focus, rejects blank names and preserves long f
     );
     await dialog.locator("#person-name").fill(longName);
     await dialog.locator("#person-password").fill("Fictional-test-password-123");
-    await dialog.locator("#person-role").selectOption("Super Admin");
+    await dialog.getByRole("combobox", { name: "Peran pegawai" }).click();
+    await page.getByRole("option", { name: "Super Admin", exact: true }).click();
+    await page.getByRole("option", { name: "PA", exact: true }).click();
+    await dialog.getByRole("combobox", { name: "Peran pegawai" }).press("Escape");
     await dialog.getByRole("button", { name: "Simpan contoh", exact: true }).focus();
     await page.keyboard.press("Enter");
     await dialog.waitFor({ state: "hidden" });

@@ -10,6 +10,8 @@ The Swagger command publishes only the implemented operations, from the contract
 
 Use Go 1.27.4 (or automatic Go toolchain download), PowerShell or GNU Make, and a prepared PostgreSQL 18 database. Run commands from the backend directory. Docker is optional for manual API startup; it is used by the separate isolated rehearsal setup.
 
+See the [environment configuration audit](docs/ENVIRONMENT-CONFIGURATION.md) for supported settings and the behavior of the old Monogo keys.
+
 1. Create the local configuration:
 
    ```powershell
@@ -62,7 +64,7 @@ Use Go 1.27.4 (or automatic Go toolchain download), PowerShell or GNU Make, and 
    go run ./cmd/vms-migrate -mode up -expect-database vms_stage1
    ```
 
-   Restore/use runtime `vms_api` credentials for the API. Never store migration credentials as the API default. A stage-1 database migrated before the per-table rebuild must be reset once first; the user runs [the reset procedure](docs/LOCAL-DEVELOPMENT.md#schema-rebuild-and-stage-1-reset-18-november-2026).
+   Run the [read-only post-migration checks](ops/post-migration/README.md) against the same database before starting the API. Restore/use runtime `vms_api` credentials for the API. Never store migration credentials as the API default. A stage-1 database migrated before the per-table rebuild must be reset once first; the user runs [the reset procedure](docs/LOCAL-DEVELOPMENT.md#schema-rebuild-and-stage-1-reset-18-november-2026).
 
 4. Start VMS:
 

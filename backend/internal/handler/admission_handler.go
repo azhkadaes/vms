@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/base64"
 	"fmt"
 
 	"github.com/gofiber/fiber/v3"
@@ -38,8 +39,6 @@ func (h *admissionHandler) Issue(c fiber.Ctx) error {
 	if err != nil {
 		return fmt.Errorf("render admission QR: %w", err)
 	}
-	return c.JSON(struct {
-		dto.Admission
-		ImagePNG []byte `json:"imagePng"`
-	}{result, imagePNG})
+	result.ImagePNG = base64.StdEncoding.EncodeToString(imagePNG)
+	return c.JSON(result)
 }

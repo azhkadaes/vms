@@ -8,6 +8,6 @@ import (
 
 // StaffScheduleStart validates a new start against the WITA booking window and database time.
 func StaffScheduleStart(date, clock string, now time.Time) (time.Time, bool) {
-	start, err := validate.Start(date, clock)
+	start, err := validate.StaffStart(date, clock)
 	return start, err == nil && start.After(now)
 }

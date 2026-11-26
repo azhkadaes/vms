@@ -1,5 +1,6 @@
 import { employeePhoneNumbers, type Employee } from "@vms/data/management-contract";
 import { officerOrganization, type Catalogs } from "@vms/data";
+import { Badge } from "@vms/ui";
 
 export default function EmployeeDetails({
   employee,
@@ -40,9 +41,9 @@ export default function EmployeeDetails({
         </span>
         <div>
           <h3>{employee.name}</h3>
-          <span className={`employee-account-badge ${employee.active ? "is-active" : ""}`}>
+          <Badge tone={employee.active ? "positive" : "neutral"}>
             {employee.active ? "Aktif" : "Nonaktif"}
-          </span>
+          </Badge>
         </div>
       </div>
       <dl className="employee-detail-grid">

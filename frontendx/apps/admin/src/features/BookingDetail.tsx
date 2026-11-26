@@ -7,6 +7,7 @@ import {
   bookingName,
   dateLabel,
   isRestricted,
+  latestStaffStart,
   today,
   useVisitCommand,
   useCatalogs,
@@ -17,6 +18,7 @@ import {
 } from "@vms/data";
 import { rejectionSchema, staffCancellationSchema } from "@vms/data/validation";
 import {
+  FieldMessage,
   Select,
   Button,
   ErrorNotice,
@@ -30,12 +32,11 @@ import {
 import { DatePicker } from "@vms/ui/date-picker";
 import { TimePicker } from "@vms/ui/time-picker";
 import { ReferenceDataNotice } from "@vms/ui/reference-data-notice";
-import { CalendarClock, Check, X } from "lucide-react";
+import { CalendarClock, Check, Pencil, X } from "lucide-react";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import VisitNotesFields from "./VisitNotesFields";
 const RestrictedAppointment = lazy(() => import("./RestrictedAppointment"));
-const AttachmentAccess = lazy(() => import("./AttachmentAccess"));
-const VisitorPhoto = lazy(() => import("./VisitorPhoto"));
+const BookingFiles = lazy(() => import("./BookingFiles"));
 
 export default function BookingDetail({
   returnFocusTo,
@@ -69,7 +70,13 @@ export default function BookingDetail({
   const cancellationNoteInput = useRef<HTMLTextAreaElement>(null);
   const [error, setError] = useState<unknown>();
   const [editing, setEditing] = useState(false);
+  const [showEditOptions, setShowEditOptions] = useState(false);
+  const visitorEdit = useRef<HTMLButtonElement>(null);
+  const scheduleEdit = useRef<HTMLButtonElement>(null);
   const restricted = isRestricted(b);
+  const canEditVisitor = allows(b, "update");
+  const canEditSchedule = restricted && allows(b, "reschedule");
+  const canEditRestricted = canEditVisitor || canEditSchedule;
   const showContactAndCode = session?.role === "PA" || session?.role === "Protocol Officer";
   const protocolReadOnly = session?.role === "Protocol Officer" && !restricted && !b.vip;
   const [rejection, setRejection] = useState({
@@ -98,6 +105,15 @@ export default function BookingDetail({
   function closeEditor() {
     setEditing(false);
     setEditSnapshot(null);
+    requestAnimationFrame(() => visitorEdit.current?.focus());
+  }
+  function startAction(action: NonNullable<typeof mode>) {
+    setError(null);
+    setRejectionErrors({});
+    setEditSnapshot(currentBooking);
+    setDirty(false);
+    setSchedule({ date: currentBooking.date, time: currentBooking.time });
+    setMode(action);
   }
   if (editing && session && allows(currentBooking, "update"))
     return (
@@ -130,10 +146,14 @@ export default function BookingDetail({
         mode === "cancel"
           ? "Batalkan kunjungan"
           : mode === "reschedule"
-            ? "Edit kunjungan"
+            ? restricted
+              ? "Edit jadwal kunjungan"
+              : "Edit kunjungan"
             : mode === "reject"
               ? "Tolak permohonan"
-              : "Detail kunjungan"
+              : canEditRestricted
+                ? "Kunjungan terbatas"
+                : "Detail kunjungan"
       }
       description={
         mode === "cancel"
@@ -155,12 +175,60 @@ export default function BookingDetail({
         </div>
       ) : (
         <>
+          {canEditRestricted && !mode && (
+            <div className="restricted-edit-toggle">
+              <Button
+                kind="secondary"
+                type="button"
+                aria-expanded={showEditOptions}
+                onClick={() => setShowEditOptions((show) => !show)}
+              >
+                <Pencil size={16} aria-hidden="true" />
+                {showEditOptions ? "Tutup opsi edit" : "Edit kunjungan"}
+              </Button>
+            </div>
+          )}
           <VisitIdentity
             booking={b}
             collapseVisitorNames
             showDocument
             showBookingCode={showContactAndCode}
             showVisitorContact={showContactAndCode}
+            restrictedSections={
+              canEditRestricted && !mode
+                ? {
+                    visitor: showEditOptions && canEditVisitor && (
+                      <Button
+                        kind="ghost"
+                        type="button"
+                        className="button-icon"
+                        aria-label="Edit detail pengunjung"
+                        title="Edit detail pengunjung"
+                        ref={visitorEdit}
+                        onClick={() => {
+                          setEditSnapshot(currentBooking);
+                          setEditing(true);
+                        }}
+                      >
+                        <Pencil size={16} aria-hidden="true" />
+                      </Button>
+                    ),
+                    visit: showEditOptions && canEditSchedule && (
+                      <Button
+                        kind="ghost"
+                        type="button"
+                        className="button-icon"
+                        aria-label="Edit jadwal kunjungan"
+                        title="Edit jadwal kunjungan"
+                        ref={scheduleEdit}
+                        onClick={() => startAction("reschedule")}
+                      >
+                        <Pencil size={16} aria-hidden="true" />
+                      </Button>
+                    ),
+                  }
+                : undefined
+            }
           />
           {b.visitorInstructions && (
             <section className="section-gap">
@@ -181,11 +249,14 @@ export default function BookingDetail({
             )}
         </>
       )}
-      {mode !== "cancel" && session && b.attachmentAvailable && b.ndName && !restricted && (
-        <Suspense fallback={<Loading />}>
-          <AttachmentAccess id={b.id} name={b.ndName} role={session.role} />
-        </Suspense>
-      )}
+      {mode !== "cancel" &&
+        !restricted &&
+        session &&
+        (b.attachmentAvailable || b.visitorPhotoAvailable) && (
+          <Suspense fallback={<Loading />}>
+            <BookingFiles key={`${b.id}:${session.role}`} booking={b} role={session.role} />
+          </Suspense>
+        )}
       {editSnapshot && currentBooking.version !== editSnapshot.version && (
         <p role="status" className="hint section-gap">
           Kunjungan ini diperbarui oleh petugas lain. Isian Anda tetap disimpan; kembali ke detail
@@ -206,16 +277,6 @@ export default function BookingDetail({
           Hanya lihat. Persetujuan dan perubahan kunjungan umum ini dikelola oleh PA pejabat tujuan.
           Protokol mengelola kunjungan VIP dan terbatas.
         </p>
-      )}
-      {!restricted && b.visitorPhotoAvailable && session && (
-        <Suspense fallback={<Loading />}>
-          <VisitorPhoto
-            key={`${b.id}:${session.role}`}
-            id={b.id}
-            role={session.role}
-            name={b.name}
-          />
-        </Suspense>
       )}
       {mode ? (
         <form
@@ -359,7 +420,7 @@ export default function BookingDetail({
                 />
                 <TimePicker
                   min="08:00"
-                  max="16:00"
+                  max={latestStaffStart}
                   id="new-time"
                   name="time"
                   label="Waktu mulai · WITA"
@@ -443,9 +504,9 @@ export default function BookingDetail({
                     Ditampilkan kepada pengaju sebagai alasan penolakan. Maksimal 1000 karakter.
                   </small>
                   {rejectionErrors.rejectionReason && (
-                    <span className="field-error" id="rejection-reason-error" role="alert">
+                    <FieldMessage tone="error" id="rejection-reason-error">
                       {rejectionErrors.rejectionReason}
-                    </span>
+                    </FieldMessage>
                   )}
                 </div>
                 <div className="field span-2">
@@ -479,9 +540,9 @@ export default function BookingDetail({
                     Maksimal 2000 karakter.
                   </small>
                   {rejectionErrors.internalRejectionNote && (
-                    <span className="field-error" id="rejection-internal-error" role="alert">
+                    <FieldMessage tone="error" id="rejection-internal-error">
                       {rejectionErrors.internalRejectionNote}
-                    </span>
+                    </FieldMessage>
                   )}
                 </div>
               </>
@@ -531,9 +592,9 @@ export default function BookingDetail({
                   karakter.
                 </small>
                 {cancellationError && (
-                  <span className="field-error" role="alert" id="staff-cancellation-error">
+                  <FieldMessage tone="error" id="staff-cancellation-error">
                     {cancellationError}
-                  </span>
+                  </FieldMessage>
                 )}
               </div>
               <div className="field span-2 section-gap">
@@ -560,9 +621,9 @@ export default function BookingDetail({
                   Maksimal 2000 karakter.
                 </small>
                 {cancellationNoteError && (
-                  <span className="field-error" role="alert" id="staff-cancellation-internal-error">
+                  <FieldMessage tone="error" id="staff-cancellation-internal-error">
                     {cancellationNoteError}
-                  </span>
+                  </FieldMessage>
                 )}
               </div>
             </>
@@ -576,6 +637,8 @@ export default function BookingDetail({
                 setDirty(false);
                 setMode(null);
                 setEditSnapshot(null);
+                if (restricted && mode === "reschedule")
+                  requestAnimationFrame(() => scheduleEdit.current?.focus());
               }}
               disabled={mutation.isPending}
             >
@@ -650,18 +713,8 @@ export default function BookingDetail({
             ))}
           </ul>
           <div className="form-actions">
-            {allows(b, "update") && (
-              <Button
-                kind="secondary"
-                onClick={() => {
-                  setEditSnapshot(currentBooking);
-                  setEditing(true);
-                }}
-              >
-                {b.status === "approved" ? "Edit informasi pengunjung" : "Edit detail"}
-              </Button>
-            )}
             {(["cancel", "reject", "reschedule", "approve"] as const)
+              .filter((a) => !restricted || a !== "reschedule")
               .filter((a) => a !== "cancel" || b.status !== "pending")
               .filter((a) => !b.createdBy || (a !== "approve" && a !== "reject"))
               .filter((a) => allows(b, a))
@@ -675,14 +728,7 @@ export default function BookingDetail({
                         ? "danger-outline"
                         : "secondary"
                   }
-                  onClick={() => {
-                    setError(null);
-                    setRejectionErrors({});
-                    setEditSnapshot(currentBooking);
-                    setDirty(false);
-                    setSchedule({ date: currentBooking.date, time: currentBooking.time });
-                    setMode(a);
-                  }}
+                  onClick={() => startAction(a)}
                 >
                   {a === "approve" ? (
                     <Check size={16} />

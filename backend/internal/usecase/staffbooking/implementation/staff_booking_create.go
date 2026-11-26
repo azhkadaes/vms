@@ -218,7 +218,7 @@ func buildCreate(input *dto.StaffBookingCreate) (entity.StaffVisit, error) {
 			roomID = &room
 		}
 	}
-	if _, err := validate.Start(input.Date, input.Time); err != nil {
+	if _, err := validate.StaffStart(input.Date, input.Time); err != nil {
 		var f *failure.Error
 		if errors.As(err, &f) {
 			for key, messages := range f.Fields {

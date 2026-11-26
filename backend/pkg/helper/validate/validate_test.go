@@ -28,6 +28,18 @@ func TestStartReportsDateAndTimeAsFormFieldErrors(t *testing.T) {
 	}
 }
 
+func TestStaffStartIncludesAllMinutesThrough1659(t *testing.T) {
+	start, err := validate.StaffStart("2026-11-18", "16:59")
+	if err != nil || !start.Equal(time.Date(2026, 11, 18, 8, 59, 0, 0, time.UTC)) {
+		t.Fatalf("got %v %v", start, err)
+	}
+	_, err = validate.StaffStart("2026-11-18", "17:00")
+	var invalid *failure.Error
+	if !errors.As(err, &invalid) || len(invalid.Fields["time"]) != 1 {
+		t.Fatalf("expected time field error, got %v", err)
+	}
+}
+
 func TestEmailIsTrimmedLowerCasedAndAPlainAddress(t *testing.T) {
 	for _, tc := range []struct {
 		raw, want string

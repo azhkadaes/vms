@@ -123,7 +123,7 @@ Confirmed version storage: Kunjungan.version INTEGER NOT NULL DEFAULT 1, positiv
 | POST /update | Restricted editor fields,version | Protocol with create permission; restricted pending/approved |
 | POST /attendance | action, credential, version | `check_in` requires an eligible Approved visit. `check_out` requires Checked in, including earlier-day visits. |
 
-The user confirmed the current frontend rule on 18 November 2026. The server derives the original scheduled end from the stored WITA date/start and duration, then evaluates eligibility using one server timestamp before replacing the schedule. Pending visits and any stored status other than Approved are ineligible. A derived Missed visit is eligible at `originalEndsAt + 7 × 24 hours`. One millisecond later it is ineligible. For example, an approved visit that ended at 11:00 WITA on 17 November remains eligible at 11:00 WITA on 24 November. The replacement start must be strictly in the future. See [the confirmed decision](../../.scratch/frontend-driven-api-2026-11-16/issues/29-reschedule-eligibility.md).
+The user confirmed the current frontend rule on 18 November 2026. The server derives the original scheduled end from the stored WITA date/start and duration, then evaluates eligibility using one server timestamp before replacing the schedule. Pending visits and any stored status other than Approved are ineligible. A derived Missed visit is eligible at `originalEndsAt + 7 × 24 hours`. One millisecond later it is ineligible. For example, an approved visit that ended at 11:00 WITA on 17 November remains eligible at 11:00 WITA on 24 November. The replacement start must be strictly in the future. See [the confirmed decision](../specs/frontend-driven-api-2026-11-16/issues/29-reschedule-eligibility.md).
 
 Within one transaction, recheck authority, the submitted expected version, current eligibility and conflicts for the replacement schedule. Update `detail_kunjungan`, retain stored `approved`, increment `Kunjungan.version`, revoke superseded admission credentials and append the audit event. Return `rescheduled: true` and timing for the replacement schedule. An authorized request with stale version, ineligible state, expired reschedule window or conflicting reservations returns 409. Field validation errors use 422. The prior D100 eligibility rule is superseded for this contract.
 
@@ -182,6 +182,8 @@ Confirmed restricted export rule: authorized Super Admin may export the current 
 ## Employee and role administration
 
 `GET /staff/employees?q=...&page=...&pageSize=...` → `{items,total,totalAll,page,pageSize,passwordMinLength}`; pageSize 1–250. `GET /staff/employees/{id}` → Employee.
+
+The backoffice avatar opens a read-only profile for the signed-in employee. A workspace-ready session can read its own employee record. The `people` permission is required to read another employee or list the directory.
 
 Employee: id,name,email,active,assignedOfficerIds,version; current schema accepts role or roles with at least one role; optional jobTitle,deputy,directorate,phone,nip. User confirmed multiple assigned roles with one active role, so legacy singular role is compatibility evidence, not a single-role requirement. Exact canonical response cleanup remains a schema decision.
 

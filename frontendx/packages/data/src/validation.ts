@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { officers, today } from "./domain.ts";
+import { isStaffStartTime, officers, staffStartTimeError, today } from "./domain.ts";
 export const emailSchema = z.string().trim().email("Periksa nama email dan domain Anda.");
 export const rejectionSchema = z.object({
   rejectionReason: z
@@ -164,8 +164,15 @@ const appointmentDuration = z
   .min(15, "Durasi harus 15-240 menit.")
   .max(240, "Durasi harus 15-240 menit.");
 const appointmentRoom = z.string().trim().max(200, "Nama ruangan maksimal 200 karakter.").optional();
+const staffStartTime = z.string().refine(isStaffStartTime, staffStartTimeError);
 export const staffAppointmentSchema = z
-  .object({ ...bookingFields, ...visitNoteFields, room: appointmentRoom, duration: appointmentDuration })
+  .object({
+    ...bookingFields,
+    ...visitNoteFields,
+    time: staffStartTime,
+    room: appointmentRoom,
+    duration: appointmentDuration,
+  })
   .refine(futureStart, scheduleError);
 export type StaffAppointmentDraft = z.input<typeof staffAppointmentSchema>;
 export const staffAppointmentSchemaFor = (available: Officer[]) =>
@@ -174,6 +181,7 @@ export const standardStaffAppointmentInputSchema = z
   .object({
     ...bookingFields,
     ...visitNoteFields,
+    time: staffStartTime,
     room: appointmentRoom,
     roomId: z.string().min(1).optional(),
     duration: appointmentDuration.default(60),
@@ -200,7 +208,7 @@ export const restrictedAppointmentSchema = z
     room: appointmentRoom,
     roomId: z.string().min(1).optional(),
     date: visitFields.date,
-    time: visitFields.time,
+    time: staffStartTime,
     officerId: optionalText(z.string().trim().min(1)),
     name: optionalText(bookingFields.name),
     organization: optionalText(bookingFields.organization),

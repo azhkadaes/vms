@@ -2,7 +2,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   useUnsavedChanges,
   ApiError,
+  allows,
   canCreateAppointment,
+  latestStaffStart,
+  preview,
   today,
   useVisitCommand,
   useCatalogs,
@@ -200,7 +203,7 @@ export default function RestrictedAppointment({
                 render={({ field, fieldState }) => (
                   <TimePicker
                     min="08:00"
-                    max="16:00"
+                    max={latestStaffStart}
                     {...field}
                     id="restricted-time"
                     label="Waktu mulai · WITA"
@@ -212,9 +215,9 @@ export default function RestrictedAppointment({
                 )}
               />
             </div>
-            {booking && (
+            {booking && allows(booking, "reschedule") && (
               <p className="muted">
-                Gunakan Ubah jadwal pada detail kunjungan untuk mengganti tanggal atau waktu.
+                Untuk mengubah tanggal atau waktu, gunakan ikon edit di Detail kunjungan.
               </p>
             )}
             <div className="form-grid section-gap">

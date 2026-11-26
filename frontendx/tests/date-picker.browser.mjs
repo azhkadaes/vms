@@ -182,7 +182,8 @@ test("staff calendar closes before its dialog and date/time changes retain the d
   const { page, errors } = await open("/admin/booking?new=1");
   try {
     await pickDate(page, "2096-02-29");
-    await pickTime(page, "10:35");
+    await pickTime(page, "16:59");
+    assert.equal(await page.locator('[data-slot="time-picker-field"]').inputValue(), "16:59");
     await calendar(page);
     assert.equal(
       await page.locator(".date-picker-popover").getAttribute("data-slot"),
@@ -224,14 +225,14 @@ test("rescheduling submits ISO date and minute-precision time through native For
     await save.waitFor();
     await pickDate(page, current);
     assert.equal(await save.count(), 0);
-    await pickTime(page, "15:25");
+    await pickTime(page, "16:59");
     await save.waitFor();
     await pickDate(page, "2096-02-29");
     const data = await page
       .locator(".modal form")
       .evaluate((form) => Object.fromEntries(new FormData(form)));
     assert.equal(data.date, "2096-02-29");
-    assert.equal(data.time, "15:25");
+    assert.equal(data.time, "16:59");
     assert.equal(await page.locator(".modal").count(), 1);
   } finally {
     await page.close();
@@ -249,14 +250,28 @@ test("restricted creation accepts date/time and editing keeps both controls read
     await page.locator(".appointment-type-menu summary").click();
     await page.getByRole("button", { name: /Kunjungan Terbatas/ }).click();
     await pickDate(page, "2096-02-29");
-    await pickTime(page, "12:35");
+    await pickTime(page, "16:59");
     await page.locator("#restricted-host").selectOption("o1");
     await page.getByRole("button", { name: "Buat kunjungan terbatas", exact: true }).click();
-    await page.getByRole("button", { name: "Edit informasi pengunjung", exact: true }).click();
+    const edit = page.getByRole("button", { name: "Edit kunjungan", exact: true });
+    await edit.waitFor();
+    const visitor = page.getByRole("region", { name: "Detail pengunjung", exact: true });
+    const visit = page.getByRole("region", { name: "Detail kunjungan", exact: true });
+    const editVisitor = visitor.getByRole("button", { name: "Edit detail pengunjung" });
+    const editSchedule = visit.getByRole("button", { name: "Edit jadwal kunjungan" });
+    assert.equal(await editVisitor.count(), 0);
+    assert.equal(await editSchedule.count(), 0);
+    await edit.press("Enter");
+    await editSchedule.click();
+    await page.getByRole("dialog", { name: "Edit jadwal kunjungan" }).waitFor();
+    assert.equal(await page.locator('[data-slot="time-picker-field"]').inputValue(), "16:59");
+    await page.getByRole("button", { name: "Kembali", exact: true }).click();
+    await editSchedule.and(page.locator(":focus")).waitFor();
+    await editVisitor.press("Enter");
     await page.getByRole("heading", { name: "Edit kunjungan terbatas", exact: true }).waitFor();
     assert.equal(await page.locator(".date-picker-value").inputValue(), "2096-02-29");
     assert.equal(await page.locator(".date-picker-trigger").isDisabled(), true);
-    assert.equal(await page.locator('[data-slot="time-picker-field"]').inputValue(), "12:35");
+    assert.equal(await page.locator('[data-slot="time-picker-field"]').inputValue(), "16:59");
     assert.equal(await page.locator("#restricted-time").isDisabled(), true);
     assert.equal(
       await page.locator('[data-slot="time-picker-field"]').getAttribute("readonly"),

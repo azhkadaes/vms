@@ -7,14 +7,14 @@
     "name": "axe"
   },
   "testEnvironment": {
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
     "windowWidth": 1280,
     "windowHeight": 900,
     "orientationAngle": 0,
     "orientationType": "landscape-primary"
   },
-  "timestamp": "2026-11-04T06:07:59.308Z",
-  "url": "http://127.0.0.1:55101/",
+  "timestamp": "2026-11-21T09:45:24.980Z",
+  "url": "http://127.0.0.1:59191/",
   "toolOptions": {
     "runOnly": {
       "type": "tag",
@@ -945,7 +945,7 @@
             }
           ],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -985,9 +985,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -1025,9 +1025,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -1265,7 +1265,7 @@
             }
           ],
           "impact": null,
-          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
+          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\" class=\"select-control \"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
           "target": [
             "#officerId"
           ]
@@ -1425,6 +1425,46 @@
             }
           ],
           "impact": null,
+          "html": "<input id=\"hasNotaDinas\" aria-describedby=\"nota-dinas-question\" type=\"checkbox\">",
+          "target": [
+            "#hasNotaDinas"
+          ]
+        },
+        {
+          "any": [],
+          "all": [
+            {
+              "id": "aria-allowed-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attributes are used correctly for the defined role"
+            },
+            {
+              "id": "aria-allowed-attr-elm",
+              "data": null,
+              "relatedNodes": [],
+              "message": "ARIA attributes are allowed for this element",
+              "impact": "critical"
+            },
+            {
+              "id": "aria-no-deprecated-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "No deprecated ARIA attributes are used"
+            }
+          ],
+          "none": [
+            {
+              "id": "aria-unsupported-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attribute is supported"
+            }
+          ],
+          "impact": null,
           "html": "<a href=\"/\" class=\"brand \" aria-label=\"Visitor Management System (VMS) · Otorita IKN · Beranda\">",
           "target": [
             "footer > div:nth-child(1) > .brand[href=\"/\"]"
@@ -1456,7 +1496,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -1474,7 +1514,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--hero"
           ]
@@ -1564,7 +1604,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -1582,9 +1622,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -1600,9 +1640,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -1708,7 +1748,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
+          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\" class=\"select-control \"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
           "target": [
             "#officerId"
           ]
@@ -1780,6 +1820,24 @@
           ],
           "none": [],
           "impact": null,
+          "html": "<input id=\"hasNotaDinas\" aria-describedby=\"nota-dinas-question\" type=\"checkbox\">",
+          "target": [
+            "#hasNotaDinas"
+          ]
+        },
+        {
+          "any": [],
+          "all": [
+            {
+              "id": "aria-conditional-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "ARIA attribute is allowed"
+            }
+          ],
+          "none": [],
+          "impact": null,
           "html": "<a href=\"/\" class=\"brand \" aria-label=\"Visitor Management System (VMS) · Otorita IKN · Beranda\">",
           "target": [
             "footer > div:nth-child(1) > .brand[href=\"/\"]"
@@ -1816,7 +1874,7 @@
             }
           ],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -1909,70 +1967,6 @@
           "html": "<span class=\"header-reveal-threshold\" aria-hidden=\"true\"></span>",
           "target": [
             ".header-reveal-threshold"
-          ]
-        },
-        {
-          "any": [],
-          "all": [
-            {
-              "id": "focusable-modal-open",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements while a modal is open"
-            },
-            {
-              "id": "focusable-disabled",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements contained within element"
-            },
-            {
-              "id": "focusable-not-tabbable",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements contained within element"
-            }
-          ],
-          "none": [],
-          "impact": null,
-          "html": "<span aria-hidden=\"true\">|</span>",
-          "target": [
-            ".language-switch--header > span[aria-hidden=\"true\"]"
-          ]
-        },
-        {
-          "any": [],
-          "all": [
-            {
-              "id": "focusable-modal-open",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements while a modal is open"
-            },
-            {
-              "id": "focusable-disabled",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements contained within element"
-            },
-            {
-              "id": "focusable-not-tabbable",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements contained within element"
-            }
-          ],
-          "none": [],
-          "impact": null,
-          "html": "<span aria-hidden=\"true\">|</span>",
-          "target": [
-            ".language-switch--hero > span[aria-hidden=\"true\"]"
           ]
         },
         {
@@ -2322,7 +2316,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<input class=\"visually-hidden date-picker-value\" required=\"\" min=\"2026-11-04\" tabindex=\"-1\" aria-hidden=\"true\" type=\"date\" value=\"\" name=\"date\">",
+          "html": "<input class=\"visually-hidden date-picker-value\" required=\"\" min=\"2026-11-21\" tabindex=\"-1\" aria-hidden=\"true\" type=\"date\" value=\"\" name=\"date\">",
           "target": [
             ".date-picker-value"
           ]
@@ -2548,7 +2542,7 @@
           "impact": null,
           "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-arrow-right\" aria-hidden=\"true\"><path d=\"M5 12h14\"></path><path d=\"m12 5 7 7-7 7\"></path></svg>",
           "target": [
-            ".button > .lucide-arrow-right[width=\"17\"][height=\"17\"]"
+            "button[type=\"submit\"] > .lucide-arrow-right[width=\"17\"][height=\"17\"]"
           ]
         },
         {
@@ -2892,7 +2886,7 @@
             }
           ],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -2910,9 +2904,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -2928,9 +2922,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -3018,7 +3012,7 @@
             }
           ],
           "impact": null,
-          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
+          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\" class=\"select-control \"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
           "target": [
             "#officerId"
           ]
@@ -3090,6 +3084,24 @@
             }
           ],
           "impact": null,
+          "html": "<input id=\"hasNotaDinas\" aria-describedby=\"nota-dinas-question\" type=\"checkbox\">",
+          "target": [
+            "#hasNotaDinas"
+          ]
+        },
+        {
+          "any": [],
+          "all": [],
+          "none": [
+            {
+              "id": "aria-prohibited-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "ARIA attribute is allowed"
+            }
+          ],
+          "impact": null,
           "html": "<a href=\"/\" class=\"brand \" aria-label=\"Visitor Management System (VMS) · Otorita IKN · Beranda\">",
           "target": [
             "footer > div:nth-child(1) > .brand[href=\"/\"]"
@@ -3126,7 +3138,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -3176,7 +3188,7 @@
             }
           ],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -3322,7 +3334,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -3354,9 +3366,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -3386,9 +3398,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -3578,7 +3590,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
+          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\" class=\"select-control \"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
           "target": [
             "#officerId"
           ]
@@ -3613,6 +3625,38 @@
           "html": "<textarea id=\"purpose\" required=\"\" rows=\"4\" placeholder=\"Ceritakan tujuan pertemuan Anda…\" name=\"purpose\" aria-invalid=\"false\"></textarea>",
           "target": [
             "#purpose"
+          ]
+        },
+        {
+          "any": [],
+          "all": [
+            {
+              "id": "aria-valid-attr-value",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attribute values are valid"
+            },
+            {
+              "id": "aria-errormessage",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "aria-errormessage exists and references elements visible to screen readers that use a supported aria-errormessage technique"
+            },
+            {
+              "id": "aria-level",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "aria-level values are valid"
+            }
+          ],
+          "none": [],
+          "impact": null,
+          "html": "<input id=\"hasNotaDinas\" aria-describedby=\"nota-dinas-question\" type=\"checkbox\">",
+          "target": [
+            "#hasNotaDinas"
           ]
         },
         {
@@ -3732,7 +3776,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -3750,9 +3794,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -3768,9 +3812,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -3876,7 +3920,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
+          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\" class=\"select-control \"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
           "target": [
             "#officerId"
           ]
@@ -3948,6 +3992,24 @@
           "all": [],
           "none": [],
           "impact": null,
+          "html": "<input id=\"hasNotaDinas\" aria-describedby=\"nota-dinas-question\" type=\"checkbox\">",
+          "target": [
+            "#hasNotaDinas"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "aria-valid-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attribute name is valid"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
           "html": "<a href=\"/\" class=\"brand \" aria-label=\"Visitor Management System (VMS) · Otorita IKN · Beranda\">",
           "target": [
             "footer > div:nth-child(1) > .brand[href=\"/\"]"
@@ -3996,9 +4058,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -4021,9 +4083,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -4121,9 +4183,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button class=\"button primary \" type=\"button\">",
+          "html": "<button class=\"button primary \" type=\"submit\" formnovalidate=\"\">",
           "target": [
-            ".button"
+            "button[type=\"submit\"]"
           ]
         }
       ]
@@ -4368,24 +4430,24 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#0a2342",
-                "bgColor": "#fdfdfd",
-                "contrastRatio": 15.49,
-                "fontSize": "9.0pt (12px)",
-                "fontWeight": "bold",
+                "fgColor": "#1769c2",
+                "bgColor": "#edf3fa",
+                "contrastRatio": 4.9,
+                "fontSize": "9.8pt (13px)",
+                "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 15.49"
+              "message": "Element has sufficient color contrast of 4.9"
             }
           ],
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -4393,24 +4455,24 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#43515f",
-                "bgColor": "#fdfdfd",
-                "contrastRatio": 7.99,
-                "fontSize": "9.0pt (12px)",
+                "fgColor": "#1769c2",
+                "bgColor": "#ffffff",
+                "contrastRatio": 5.47,
+                "fontSize": "9.8pt (13px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 7.99"
+              "message": "Element has sufficient color contrast of 5.47"
             }
           ],
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -4846,31 +4908,6 @@
                 "fgColor": "#1d1d1f",
                 "bgColor": "#ffffff",
                 "contrastRatio": 16.82,
-                "fontSize": "12.0pt (16px)",
-                "fontWeight": "normal",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element has sufficient color contrast of 16.82"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
-          "target": [
-            "#officerId"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#1d1d1f",
-                "bgColor": "#ffffff",
-                "contrastRatio": 16.82,
                 "fontSize": "10.5pt (14px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
@@ -4928,7 +4965,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<input class=\"visually-hidden date-picker-value\" required=\"\" min=\"2026-11-04\" tabindex=\"-1\" aria-hidden=\"true\" type=\"date\" value=\"\" name=\"date\">",
+          "html": "<input class=\"visually-hidden date-picker-value\" required=\"\" min=\"2026-11-21\" tabindex=\"-1\" aria-hidden=\"true\" type=\"date\" value=\"\" name=\"date\">",
           "target": [
             ".date-picker-value"
           ]
@@ -4941,7 +4978,7 @@
                 "fgColor": "#63636c",
                 "bgColor": "#ffffff",
                 "contrastRatio": 5.94,
-                "fontSize": "9.4pt (12.48px)",
+                "fontSize": "9.8pt (13px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
@@ -4953,7 +4990,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<small id=\"date-hint\">Tanggal · WITA</small>",
+          "html": "<small id=\"date-hint\" class=\"form-help \">Tanggal · WITA</small>",
           "target": [
             "#date-hint"
           ]
@@ -5036,7 +5073,7 @@
                 "fgColor": "#63636c",
                 "bgColor": "#ffffff",
                 "contrastRatio": 5.94,
-                "fontSize": "9.4pt (12.48px)",
+                "fontSize": "9.8pt (13px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
@@ -5048,7 +5085,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<small id=\"time-hint\">Jam kerja 08.00–16.00 · WITA</small>",
+          "html": "<small id=\"time-hint\" class=\"form-help \">Jam kerja 08.00–16.00 · WITA</small>",
           "target": [
             "#time-hint"
           ]
@@ -5073,7 +5110,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<label for=\"purpose\">Keperluan kunjungan <span class=\"required-mark\" aria-hidden=\"true\">*</span></label>",
+          "html": "<label for=\"purpose\">Tujuan kunjungan <span class=\"required-mark\" aria-hidden=\"true\">*</span></label>",
           "target": [
             "label[for=\"purpose\"]"
           ]
@@ -5101,6 +5138,56 @@
           "html": "<textarea id=\"purpose\" required=\"\" rows=\"4\" placeholder=\"Ceritakan tujuan pertemuan Anda…\" name=\"purpose\" aria-invalid=\"false\"></textarea>",
           "target": [
             "#purpose"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#63636c",
+                "bgColor": "#ffffff",
+                "contrastRatio": 5.94,
+                "fontSize": "10.5pt (14px)",
+                "fontWeight": "normal",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 5.94"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<p id=\"nota-dinas-question\" class=\"field-label\">Apakah Anda memiliki Nota Dinas?</p>",
+          "target": [
+            "#nota-dinas-question"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#1d1d1f",
+                "bgColor": "#ffffff",
+                "contrastRatio": 16.82,
+                "fontSize": "10.2pt (13.6px)",
+                "fontWeight": "normal",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 16.82"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<span>Ya, saya memiliki Nota Dinas atau Permohonan Kunjungan Resmi.</span>",
+          "target": [
+            ".check-label > span"
           ]
         },
         {
@@ -5150,7 +5237,7 @@
           "impact": null,
           "html": "<span class=\"booking-desktop-copy\">Lanjut ke data pengunjung</span>",
           "target": [
-            ".button > .booking-desktop-copy"
+            "button[type=\"submit\"] > .booking-desktop-copy"
           ]
         },
         {
@@ -5223,7 +5310,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<dt>Tujuan</dt>",
+          "html": "<dt>Pejabat yang dituju</dt>",
           "target": [
             "div:nth-child(1) > dt"
           ]
@@ -5273,7 +5360,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<dt>Tanggal &amp; waktu</dt>",
+          "html": "<dt>Tujuan kunjungan</dt>",
           "target": [
             "div:nth-child(2) > dt"
           ]
@@ -5298,9 +5385,59 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<dd>Belum dipilih<small>Waktu belum dipilih</small></dd>",
+          "html": "<dd>Belum diisi</dd>",
           "target": [
             "div:nth-child(2) > dd"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#63636c",
+                "bgColor": "#fdfdfe",
+                "contrastRatio": 5.84,
+                "fontSize": "8.4pt (11.2px)",
+                "fontWeight": "normal",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 5.84"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<dt>Tanggal &amp; waktu</dt>",
+          "target": [
+            "div:nth-child(3) > dt"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#1d1d1f",
+                "bgColor": "#fdfdfe",
+                "contrastRatio": 16.55,
+                "fontSize": "10.2pt (13.6px)",
+                "fontWeight": "normal",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 16.55"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<dd>Belum dipilih<small>Waktu belum dipilih</small></dd>",
+          "target": [
+            "div:nth-child(3) > dd"
           ]
         },
         {
@@ -5350,7 +5487,7 @@
           "impact": null,
           "html": "<dt>Jumlah pengunjung</dt>",
           "target": [
-            "div:nth-child(3) > dt"
+            "div:nth-child(4) > dt"
           ]
         },
         {
@@ -5375,7 +5512,7 @@
           "impact": null,
           "html": "<dd>1 orang</dd>",
           "target": [
-            "div:nth-child(3) > dd"
+            "div:nth-child(4) > dd"
           ]
         },
         {
@@ -5725,7 +5862,7 @@
           "impact": null,
           "html": "<p>",
           "target": [
-            "p:nth-child(1)"
+            "div:nth-child(2) > p:nth-child(1)"
           ]
         },
         {
@@ -6016,7 +6153,7 @@
             }
           ],
           "impact": null,
-          "html": "<dl><div><dt>Tujuan</dt><dd>Belum dipilih</dd></div><div><dt>Tanggal &amp; waktu</dt><dd>Belum dipilih<small>Waktu belum dipilih</small></dd></div><div><dt>Jumlah pengunjung</dt><dd>1 orang</dd></div></dl>",
+          "html": "<dl><div><dt>Pejabat yang dituju</dt><dd>Belum dipilih</dd></div><div><dt>Tujuan kunjungan</dt><dd>Belum diisi</dd></div><div><dt>Tanggal &amp; waktu</dt><dd>Belum dipilih<small>Waktu belum dipilih</small></dd></div><div><dt>Jumlah pengunjung</dt><dd>1 orang</dd></div></dl>",
           "target": [
             "dl"
           ]
@@ -6052,7 +6189,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<dt>Tujuan</dt>",
+          "html": "<dt>Pejabat yang dituju</dt>",
           "target": [
             "div:nth-child(1) > dt"
           ]
@@ -6088,7 +6225,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<dt>Tanggal &amp; waktu</dt>",
+          "html": "<dt>Tujuan kunjungan</dt>",
           "target": [
             "div:nth-child(2) > dt"
           ]
@@ -6106,7 +6243,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<dd>Belum dipilih<small>Waktu belum dipilih</small></dd>",
+          "html": "<dd>Belum diisi</dd>",
           "target": [
             "div:nth-child(2) > dd"
           ]
@@ -6124,7 +6261,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<dt>Jumlah pengunjung</dt>",
+          "html": "<dt>Tanggal &amp; waktu</dt>",
           "target": [
             "div:nth-child(3) > dt"
           ]
@@ -6142,9 +6279,45 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<dd>1 orang</dd>",
+          "html": "<dd>Belum dipilih<small>Waktu belum dipilih</small></dd>",
           "target": [
             "div:nth-child(3) > dd"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "dlitem",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Description list item has a <dl> parent element"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<dt>Jumlah pengunjung</dt>",
+          "target": [
+            "div:nth-child(4) > dt"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "dlitem",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Description list item has a <dl> parent element"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<dd>1 orang</dd>",
+          "target": [
+            "div:nth-child(4) > dd"
           ]
         }
       ]
@@ -6253,7 +6426,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
+          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\" class=\"select-control \"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
           "target": [
             "#officerId"
           ]
@@ -6289,7 +6462,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<small id=\"date-hint\">Tanggal · WITA</small>",
+          "html": "<small id=\"date-hint\" class=\"form-help \">Tanggal · WITA</small>",
           "target": [
             "#date-hint"
           ]
@@ -6361,7 +6534,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<small id=\"time-hint\">Jam kerja 08.00–16.00 · WITA</small>",
+          "html": "<small id=\"time-hint\" class=\"form-help \">Jam kerja 08.00–16.00 · WITA</small>",
           "target": [
             "#time-hint"
           ]
@@ -6382,6 +6555,42 @@
           "html": "<textarea id=\"purpose\" required=\"\" rows=\"4\" placeholder=\"Ceritakan tujuan pertemuan Anda…\" name=\"purpose\" aria-invalid=\"false\"></textarea>",
           "target": [
             "#purpose"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "duplicate-id-aria",
+              "data": "nota-dinas-question",
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "Document has no elements referenced with ARIA or labels that share the same id attribute"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<p id=\"nota-dinas-question\" class=\"field-label\">Apakah Anda memiliki Nota Dinas?</p>",
+          "target": [
+            "#nota-dinas-question"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "duplicate-id-aria",
+              "data": "hasNotaDinas",
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "Document has no elements referenced with ARIA or labels that share the same id attribute"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<input id=\"hasNotaDinas\" aria-describedby=\"nota-dinas-question\" type=\"checkbox\">",
+          "target": [
+            "#hasNotaDinas"
           ]
         }
       ]
@@ -6599,7 +6808,7 @@
             }
           ],
           "impact": null,
-          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
+          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\" class=\"select-control \"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
           "target": [
             "#officerId"
           ]
@@ -6613,7 +6822,7 @@
               "data": null,
               "relatedNodes": [
                 {
-                  "html": "<label for=\"purpose\">Keperluan kunjungan <span class=\"required-mark\" aria-hidden=\"true\">*</span></label>",
+                  "html": "<label for=\"purpose\">Tujuan kunjungan <span class=\"required-mark\" aria-hidden=\"true\">*</span></label>",
                   "target": [
                     "label[for=\"purpose\"]"
                   ]
@@ -6627,6 +6836,31 @@
           "html": "<textarea id=\"purpose\" required=\"\" rows=\"4\" placeholder=\"Ceritakan tujuan pertemuan Anda…\" name=\"purpose\" aria-invalid=\"false\"></textarea>",
           "target": [
             "#purpose"
+          ]
+        },
+        {
+          "any": [],
+          "all": [],
+          "none": [
+            {
+              "id": "multiple-label",
+              "data": null,
+              "relatedNodes": [
+                {
+                  "html": "<label class=\"check-label\" for=\"hasNotaDinas\"><input id=\"hasNotaDinas\" aria-describedby=\"nota-dinas-question\" type=\"checkbox\"><span>Ya, saya memiliki Nota Dinas atau Permohonan Kunjungan Resmi.</span></label>",
+                  "target": [
+                    ".check-label"
+                  ]
+                }
+              ],
+              "impact": "moderate",
+              "message": "Form field does not have multiple label elements"
+            }
+          ],
+          "impact": null,
+          "html": "<input id=\"hasNotaDinas\" aria-describedby=\"nota-dinas-question\" type=\"checkbox\">",
+          "target": [
+            "#hasNotaDinas"
           ]
         }
       ]
@@ -7152,7 +7386,7 @@
             }
           ],
           "impact": null,
-          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
+          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\" class=\"select-control \"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
           "target": [
             "#officerId"
           ]
@@ -7173,6 +7407,24 @@
           "html": "<textarea id=\"purpose\" required=\"\" rows=\"4\" placeholder=\"Ceritakan tujuan pertemuan Anda…\" name=\"purpose\" aria-invalid=\"false\"></textarea>",
           "target": [
             "#purpose"
+          ]
+        },
+        {
+          "any": [],
+          "all": [],
+          "none": [
+            {
+              "id": "title-only",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Form element does not solely use title attribute for its label"
+            }
+          ],
+          "impact": null,
+          "html": "<input id=\"hasNotaDinas\" aria-describedby=\"nota-dinas-question\" type=\"checkbox\">",
+          "target": [
+            "#hasNotaDinas"
           ]
         }
       ]
@@ -7203,11 +7455,11 @@
             {
               "id": "explicit-label",
               "data": {
-                "explicitLabel": "Keperluan kunjungan"
+                "explicitLabel": "Tujuan kunjungan"
               },
               "relatedNodes": [
                 {
-                  "html": "<label for=\"purpose\">Keperluan kunjungan <span class=\"required-mark\" aria-hidden=\"true\">*</span></label>",
+                  "html": "<label for=\"purpose\">Tujuan kunjungan <span class=\"required-mark\" aria-hidden=\"true\">*</span></label>",
                   "target": [
                     "label[for=\"purpose\"]"
                   ]
@@ -7238,6 +7490,57 @@
           "html": "<textarea id=\"purpose\" required=\"\" rows=\"4\" placeholder=\"Ceritakan tujuan pertemuan Anda…\" name=\"purpose\" aria-invalid=\"false\"></textarea>",
           "target": [
             "#purpose"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "implicit-label",
+              "data": {
+                "implicitLabel": "Ya, saya memiliki Nota Dinas atau Permohonan Kunjungan Resmi."
+              },
+              "relatedNodes": [
+                {
+                  "html": "<label class=\"check-label\" for=\"hasNotaDinas\"><input id=\"hasNotaDinas\" aria-describedby=\"nota-dinas-question\" type=\"checkbox\"><span>Ya, saya memiliki Nota Dinas atau Permohonan Kunjungan Resmi.</span></label>",
+                  "target": [
+                    ".check-label"
+                  ]
+                }
+              ],
+              "impact": "critical",
+              "message": "Element has an implicit (wrapped) <label>"
+            },
+            {
+              "id": "explicit-label",
+              "data": {
+                "explicitLabel": "Ya, saya memiliki Nota Dinas atau Permohonan Kunjungan Resmi."
+              },
+              "relatedNodes": [
+                {
+                  "html": "<label class=\"check-label\" for=\"hasNotaDinas\"><input id=\"hasNotaDinas\" aria-describedby=\"nota-dinas-question\" type=\"checkbox\"><span>Ya, saya memiliki Nota Dinas atau Permohonan Kunjungan Resmi.</span></label>",
+                  "target": [
+                    ".check-label"
+                  ]
+                }
+              ],
+              "impact": "critical",
+              "message": "Element has an explicit <label>"
+            }
+          ],
+          "all": [],
+          "none": [
+            {
+              "id": "hidden-explicit-label",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "Form element has a visible explicit <label>"
+            }
+          ],
+          "impact": null,
+          "html": "<input id=\"hasNotaDinas\" aria-describedby=\"nota-dinas-question\" type=\"checkbox\">",
+          "target": [
+            "#hasNotaDinas"
           ]
         }
       ]
@@ -8170,9 +8473,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -8188,9 +8491,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -8296,9 +8599,27 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button class=\"button primary \" type=\"button\">",
+          "html": "<input id=\"hasNotaDinas\" aria-describedby=\"nota-dinas-question\" type=\"checkbox\">",
           "target": [
-            ".button"
+            "#hasNotaDinas"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "no-focusable-content",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element does not have focusable descendants"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button primary \" type=\"submit\" formnovalidate=\"\">",
+          "target": [
+            "button[type=\"submit\"]"
           ]
         }
       ]
@@ -8753,7 +9074,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -8773,9 +9094,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -8793,9 +9114,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -9793,7 +10114,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
+          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\" class=\"select-control \"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
           "target": [
             "#officerId"
           ]
@@ -9933,7 +10254,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<small id=\"date-hint\">Tanggal · WITA</small>",
+          "html": "<small id=\"date-hint\" class=\"form-help \">Tanggal · WITA</small>",
           "target": [
             "#date-hint"
           ]
@@ -10033,7 +10354,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<small id=\"time-hint\">Jam kerja 08.00–16.00 · WITA</small>",
+          "html": "<small id=\"time-hint\" class=\"form-help \">Jam kerja 08.00–16.00 · WITA</small>",
           "target": [
             "#time-hint"
           ]
@@ -10053,7 +10374,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"field span-2\"><label for=\"purpose\">Keperluan kunjungan <span class=\"required-mark\" aria-hidden=\"true\">*</span></label><textarea id=\"purpose\" required=\"\" rows=\"4\" placeholder=\"Ceritakan tujuan pertemuan Anda…\" name=\"purpose\" aria-invalid=\"false\"></textarea></div>",
+          "html": "<div class=\"field span-2\"><label for=\"purpose\">Tujuan kunjungan <span class=\"required-mark\" aria-hidden=\"true\">*</span></label><textarea id=\"purpose\" required=\"\" rows=\"4\" placeholder=\"Ceritakan tujuan pertemuan Anda…\" name=\"purpose\" aria-invalid=\"false\"></textarea></div>",
           "target": [
             ".span-2.field:nth-child(4)"
           ]
@@ -10073,7 +10394,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<label for=\"purpose\">Keperluan kunjungan <span class=\"required-mark\" aria-hidden=\"true\">*</span></label>",
+          "html": "<label for=\"purpose\">Tujuan kunjungan <span class=\"required-mark\" aria-hidden=\"true\">*</span></label>",
           "target": [
             "label[for=\"purpose\"]"
           ]
@@ -10096,6 +10417,106 @@
           "html": "<textarea id=\"purpose\" required=\"\" rows=\"4\" placeholder=\"Ceritakan tujuan pertemuan Anda…\" name=\"purpose\" aria-invalid=\"false\"></textarea>",
           "target": [
             "#purpose"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<div class=\"section-gap\">",
+          "target": [
+            ".section-gap:nth-child(5)"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<p id=\"nota-dinas-question\" class=\"field-label\">Apakah Anda memiliki Nota Dinas?</p>",
+          "target": [
+            "#nota-dinas-question"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<label class=\"check-label\" for=\"hasNotaDinas\"><input id=\"hasNotaDinas\" aria-describedby=\"nota-dinas-question\" type=\"checkbox\"><span>Ya, saya memiliki Nota Dinas atau Permohonan Kunjungan Resmi.</span></label>",
+          "target": [
+            ".check-label"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<input id=\"hasNotaDinas\" aria-describedby=\"nota-dinas-question\" type=\"checkbox\">",
+          "target": [
+            "#hasNotaDinas"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<span>Ya, saya memiliki Nota Dinas atau Permohonan Kunjungan Resmi.</span>",
+          "target": [
+            ".check-label > span"
           ]
         },
         {
@@ -10153,9 +10574,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button class=\"button primary \" type=\"button\">",
+          "html": "<button class=\"button primary \" type=\"submit\" formnovalidate=\"\">",
           "target": [
-            ".button"
+            "button[type=\"submit\"]"
           ]
         },
         {
@@ -10175,7 +10596,7 @@
           "impact": null,
           "html": "<span class=\"booking-desktop-copy\">Lanjut ke data pengunjung</span>",
           "target": [
-            ".button > .booking-desktop-copy"
+            "button[type=\"submit\"] > .booking-desktop-copy"
           ]
         },
         {
@@ -10273,7 +10694,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<dl><div><dt>Tujuan</dt><dd>Belum dipilih</dd></div><div><dt>Tanggal &amp; waktu</dt><dd>Belum dipilih<small>Waktu belum dipilih</small></dd></div><div><dt>Jumlah pengunjung</dt><dd>1 orang</dd></div></dl>",
+          "html": "<dl><div><dt>Pejabat yang dituju</dt><dd>Belum dipilih</dd></div><div><dt>Tujuan kunjungan</dt><dd>Belum diisi</dd></div><div><dt>Tanggal &amp; waktu</dt><dd>Belum dipilih<small>Waktu belum dipilih</small></dd></div><div><dt>Jumlah pengunjung</dt><dd>1 orang</dd></div></dl>",
           "target": [
             "dl"
           ]
@@ -10293,7 +10714,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div><dt>Tujuan</dt><dd>Belum dipilih</dd></div>",
+          "html": "<div><dt>Pejabat yang dituju</dt><dd>Belum dipilih</dd></div>",
           "target": [
             "dl > div:nth-child(1)"
           ]
@@ -10313,7 +10734,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<dt>Tujuan</dt>",
+          "html": "<dt>Pejabat yang dituju</dt>",
           "target": [
             "div:nth-child(1) > dt"
           ]
@@ -10353,7 +10774,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div><dt>Tanggal &amp; waktu</dt><dd>Belum dipilih<small>Waktu belum dipilih</small></dd></div>",
+          "html": "<div><dt>Tujuan kunjungan</dt><dd>Belum diisi</dd></div>",
           "target": [
             "dl > div:nth-child(2)"
           ]
@@ -10373,7 +10794,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<dt>Tanggal &amp; waktu</dt>",
+          "html": "<dt>Tujuan kunjungan</dt>",
           "target": [
             "div:nth-child(2) > dt"
           ]
@@ -10393,9 +10814,69 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<dd>Belum dipilih<small>Waktu belum dipilih</small></dd>",
+          "html": "<dd>Belum diisi</dd>",
           "target": [
             "div:nth-child(2) > dd"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<div><dt>Tanggal &amp; waktu</dt><dd>Belum dipilih<small>Waktu belum dipilih</small></dd></div>",
+          "target": [
+            "dl > div:nth-child(3)"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<dt>Tanggal &amp; waktu</dt>",
+          "target": [
+            "div:nth-child(3) > dt"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<dd>Belum dipilih<small>Waktu belum dipilih</small></dd>",
+          "target": [
+            "div:nth-child(3) > dd"
           ]
         },
         {
@@ -10435,7 +10916,7 @@
           "impact": null,
           "html": "<div><dt>Jumlah pengunjung</dt><dd>1 orang</dd></div>",
           "target": [
-            "dl > div:nth-child(3)"
+            "dl > div:nth-child(4)"
           ]
         },
         {
@@ -10455,7 +10936,7 @@
           "impact": null,
           "html": "<dt>Jumlah pengunjung</dt>",
           "target": [
-            "div:nth-child(3) > dt"
+            "div:nth-child(4) > dt"
           ]
         },
         {
@@ -10475,7 +10956,7 @@
           "impact": null,
           "html": "<dd>1 orang</dd>",
           "target": [
-            "div:nth-child(3) > dd"
+            "div:nth-child(4) > dd"
           ]
         },
         {
@@ -11075,7 +11556,7 @@
           "impact": null,
           "html": "<p>",
           "target": [
-            "p:nth-child(1)"
+            "div:nth-child(2) > p:nth-child(1)"
           ]
         },
         {
@@ -11531,7 +12012,7 @@
             }
           ],
           "impact": null,
-          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
+          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\" class=\"select-control \"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
           "target": [
             "#officerId"
           ]
@@ -11754,12 +12235,12 @@
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 152.6,
+                "width": 154.6,
                 "height": 44
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (152.6px by 44px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (154.6px by 44px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -11807,9 +12288,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -11839,9 +12320,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -11850,12 +12331,12 @@
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 185.6,
+                "width": 184.6,
                 "height": 52
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (185.6px by 52px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (184.6px by 52px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -11935,7 +12416,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
+          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\" class=\"select-control \"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
           "target": [
             "#officerId"
           ]
@@ -12039,15 +12520,36 @@
         {
           "any": [
             {
+              "id": "target-offset",
+              "data": {
+                "closestOffset": 24,
+                "minOffset": 24
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Target has sufficient space from its closest neighbors. Safe clickable space has a diameter of 24px which is at least 24px."
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<input id=\"hasNotaDinas\" aria-describedby=\"nota-dinas-question\" type=\"checkbox\">",
+          "target": [
+            "#hasNotaDinas"
+          ]
+        },
+        {
+          "any": [
+            {
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 239.5,
+                "width": 240.5,
                 "height": 44
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (239.5px by 44px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (240.5px by 44px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -12063,9 +12565,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button class=\"button primary \" type=\"button\">",
+          "html": "<button class=\"button primary \" type=\"submit\" formnovalidate=\"\">",
           "target": [
-            ".button"
+            "button[type=\"submit\"]"
           ]
         },
         {
@@ -12198,9 +12700,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -12216,9 +12718,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         }
       ]
@@ -12425,6 +12927,38 @@
             ".hero-note > div > small"
           ],
           "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "contrastRatio": 0,
+                "fontSize": "12.0pt (16px)",
+                "fontWeight": "normal",
+                "messageKey": "bgImage",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\" class=\"select-control \"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
+                  "target": [
+                    "#officerId"
+                  ]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element's background color could not be determined due to a background image"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<select id=\"officerId\" required=\"\" name=\"officerId\" aria-invalid=\"false\" class=\"select-control \"><option value=\"\">Pilih tujuan kunjungan</option><option value=\"officer-server-42\">Pejabat dari layanan</option></select>",
+          "target": [
+            "#officerId"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background image"
         }
       ]
     }

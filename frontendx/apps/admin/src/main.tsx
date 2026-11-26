@@ -215,6 +215,7 @@ function Shell() {
             <div className="toolbar">
               <Button
                 kind="ghost"
+                size="icon"
                 className="menu-button"
                 aria-label="Buka navigasi"
                 aria-expanded={menu}
@@ -247,7 +248,7 @@ function Shell() {
                 <BookingRefresh mode={session.role === "Receptionist" ? "reception" : "staff"} />
               )}
             <Suspense fallback={<Loading />}>
-              <Outlet />
+              <Outlet key={JSON.stringify([session.id, session.role])} />
             </Suspense>
           </main>
           <footer className="admin-footer">
@@ -508,7 +509,7 @@ function Sidebar({
             Pilih halaman ruang kerja Anda.
           </Dialog.Description>
           <Dialog.Close asChild>
-            <Button className="sidebar-close" kind="ghost" aria-label="Tutup navigasi">
+            <Button className="sidebar-close" kind="ghost" size="icon" aria-label="Tutup navigasi">
               <X size={18} />
             </Button>
           </Dialog.Close>

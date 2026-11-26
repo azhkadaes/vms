@@ -1,5 +1,17 @@
-# Disposable contract-audit build cache.
-/tmp/go-build-cache/
+# Local drafts, verification output, and archived checkouts.
+/.scratch/
+/tmp/
+/.claude/
+
+# Local documentation archives and generated Phase 1 reference pages.
+/docs/archive/
+/backend/docs/archive/
+/docs/contracts/CONTRACT-ISSUES.md
+/docs/contracts/ENDPOINTS.md
+/docs/contracts/FRONTEND-TRACEABILITY.md
+/docs/contracts/GAPS.md
+/docs/contracts/INTERFACES.md
+/docs/contracts/SCHEMAS.md
 
 # Python bytecode produced by documentation tooling.
 __pycache__/

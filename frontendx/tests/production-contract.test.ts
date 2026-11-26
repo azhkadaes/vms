@@ -14,6 +14,7 @@ import {
 } from "../packages/data/src/domain.ts";
 import { bookingSchemaFor, visitSchemaFor } from "../packages/data/src/validation.ts";
 import { createManagementRepository } from "../packages/data/src/management.ts";
+import { integrationFieldSchema } from "../packages/data/src/management-contract.ts";
 import { staffReadModelResponse } from "../packages/data/src/wire.ts";
 
 const record: Booking = {
@@ -137,6 +138,47 @@ test("production repository uses audience paths, cookie credentials and no calle
   assert.equal(JSON.stringify(publicBooking.history).includes("PA:"), false);
 });
 
+test("staff writes use the booking and attendance API request shapes", async () => {
+  const requests: { url: string; method?: string; body: unknown }[] = [];
+  const api = createRepository({
+    fetcher: async (url, options) => {
+      requests.push({
+        url: String(url),
+        method: options?.method,
+        body: JSON.parse(String(options?.body)),
+      });
+      return response(toStaffBooking(record, sessionFor("PA")));
+    },
+  });
+  const restricted = {
+    visitKind: "restricted" as const,
+    officerId: "2",
+    date: "2099-08-19",
+    time: "10:00",
+    roomId: "7",
+  };
+  await api.createStaff(restricted, "booking-reference", "Protocol Officer");
+  await api.perform({ id: "12", version: 2 }, { type: "attend", direction: "in", credential: "fixture" }, "Receptionist");
+  await api.perform({ id: "12", version: 3 }, { type: "attend", direction: "out", credential: "fixture" }, "Receptionist");
+  assert.deepEqual(requests, [
+    {
+      url: "/v1/staff/bookings",
+      method: "POST",
+      body: { ...restricted, idempotencyKey: "booking-reference" },
+    },
+    {
+      url: "/v1/staff/bookings/12/attendance",
+      method: "POST",
+      body: { action: "check_in", version: 2, credential: "fixture" },
+    },
+    {
+      url: "/v1/staff/bookings/12/attendance",
+      method: "POST",
+      body: { action: "check_out", version: 3, credential: "fixture" },
+    },
+  ]);
+});
+
 test("malformed successful responses remain unavailable and cannot masquerade as a received submission", async () => {
   const api = createRepository({ fetcher: async () => response({ id: "only-an-id" }) });
   await assert.rejects(
@@ -171,7 +213,7 @@ test("production attendance uses the attendance endpoint with an explicit action
 test("wire validation rejects accidental restricted identity in the general reception projection", async () => {
   const api = createRepository({
     fetcher: async () =>
-      response([
+      response({ total: 1, totalScoped: 1, page: 1, pageSize: 25, items: [
         {
           id: "restricted",
           visitKind: "restricted",
@@ -186,7 +228,7 @@ test("wire validation rejects accidental restricted identity in the general rece
           timing: toVisitorBooking(record).timing,
           name: "PRIVATE name",
         },
-      ]),
+      ] }),
   });
   await assert.rejects(api.list("Receptionist"), ApiError);
 });
@@ -295,7 +337,7 @@ test("photo uploads keep their tokens and validation errors separate from suppor
   );
 });
 
-test("management contracts strip returned passwords and secret values and retain optimistic versions", async () => {
+test("employee updates send writable fields and a version without creation credentials", async () => {
   let submitted: unknown;
   const employee = {
     id: "staff-42",
@@ -306,39 +348,43 @@ test("management contracts strip returned passwords and secret values and retain
     assignedOfficerIds: ["server-officer"],
     version: 4,
   };
-  const api = createManagementRepository("/v1", async (url, options) => {
+  const api = createManagementRepository("/v1", async (_url, options) => {
     submitted = options?.body;
-    return response(
-      String(url).endsWith("/integrations")
-        ? [
-            {
-              id: "email",
-              name: "Email",
-              description: "Email service",
-              enabled: true,
-              health: "ready",
-              version: 1,
-              fields: [
-                {
-                  key: "credential",
-                  label: "Credential",
-                  kind: "secret",
-                  required: true,
-                  configured: true,
-                  value: "NEVER RETURN THIS VALUE",
-                },
-              ],
-            },
-          ]
-        : { ...employee, initialPassword: "NEVER RETURN THIS PASSWORD" },
-    );
+    return response({ ...employee, initialPassword: "NEVER RETURN THIS PASSWORD" });
   });
-  const result = await api.saveEmployee(employee.id, { ...employee }, 3);
+  const result = await api.saveEmployee(employee.id, {
+    ...employee,
+    phoneNumbers: ["0812345678", "+62 542 123456"],
+    initialPassword: "CREATE-ONLY-PASSWORD",
+    requirePasswordChange: true,
+  }, 3);
   assert.equal("initialPassword" in result, false);
-  assert.equal(JSON.parse(String(submitted)).version, 3);
-  const integrations = await api.integrations();
-  assert.equal(integrations[0].fields[0].value, undefined);
-  assert.equal(integrations[0].fields[0].configured, true);
+  assert.deepEqual(JSON.parse(String(submitted)), {
+    name: employee.name,
+    email: employee.email,
+    roles: ["PA"],
+    phoneNumbers: ["0812345678", "+62 542 123456"],
+    active: true,
+    assignedOfficerIds: employee.assignedOfficerIds,
+    version: 3,
+  });
+});
+
+test("deferred integration settings issue no production request and strip secret values", async () => {
+  const api = createManagementRepository("/v1", async () => {
+    assert.fail("The backend does not expose integration settings");
+  });
+  await assert.rejects(api.integrations(), (error) => error instanceof ApiError && error.status === 503);
+  const secret = integrationFieldSchema.parse({
+    key: "credential",
+    label: "Credential",
+    kind: "secret",
+    required: true,
+    configured: true,
+    value: "NEVER RETURN THIS VALUE",
+  });
+  assert.equal(secret.value, undefined);
+  assert.equal(secret.configured, true);
 });
 
 test("bounded staff responses reject overflow, impossible dates and invalid private projections", () => {

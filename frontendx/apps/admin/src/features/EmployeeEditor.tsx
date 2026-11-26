@@ -14,6 +14,7 @@ import {
   type EmployeeInput,
 } from "@vms/data/management-contract";
 import {
+  FieldMessage,
   Button,
   ErrorNotice,
   Loading,
@@ -257,9 +258,9 @@ export default function EmployeeEditor({
                     }
                   />
                   {fields.name && (
-                    <span id="person-name-error" className="field-error" role="alert">
+                    <FieldMessage tone="error" id="person-name-error">
                       {fields.name}
-                    </span>
+                    </FieldMessage>
                   )}
                 </div>
                 <div className="field">
@@ -278,9 +279,9 @@ export default function EmployeeEditor({
                     aria-describedby={fields.email ? "person-email-error" : undefined}
                   />
                   {fields.email && (
-                    <span id="person-email-error" className="field-error" role="alert">
+                    <FieldMessage tone="error" id="person-email-error">
                       {fields.email}
-                    </span>
+                    </FieldMessage>
                   )}
                 </div>
               </div>
@@ -334,9 +335,9 @@ export default function EmployeeEditor({
                         aria-describedby={fields[key] ? `person-${key}-error` : undefined}
                       />
                       {fields[key] && (
-                        <span id={`person-${key}-error`} className="field-error" role="alert">
+                        <FieldMessage tone="error" id={`person-${key}-error`}>
                           {fields[key]}
-                        </span>
+                        </FieldMessage>
                       )}
                     </div>
                   ))}
@@ -374,9 +375,9 @@ export default function EmployeeEditor({
                     </div>
                   ))}
                   {fields.phoneNumbers && (
-                    <span id="person-phones-error" className="field-error" role="alert">
+                    <FieldMessage tone="error" id="person-phones-error">
                       {fields.phoneNumbers}
-                    </span>
+                    </FieldMessage>
                   )}
                   <div>
                     <Button

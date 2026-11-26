@@ -60,8 +60,10 @@ function assertPublic(booking) {
 test("staff-created lifecycle becomes typed public history while staff messages remain separate", async () => {
   const api = await startPreview({ time: "2099-08-19T09:00:00+08:00" });
   try {
-    let { booking } = await create(api, true);
-    let publicBooking = await lookup(api, booking);
+    const { booking: created } = await create(api, true);
+    const { code, email } = created;
+    let booking = created;
+    let publicBooking = await lookup(api, { code, email });
     assertPublic(publicBooking);
     assert.deepEqual(publicBooking.history, [
       { at: "2099-08-19T01:00:00.000Z", action: "received" },
@@ -80,27 +82,29 @@ test("staff-created lifecycle becomes typed public history while staff messages 
         reason,
       })
     ).data;
-    publicBooking = await lookup(api, booking);
+    publicBooking = await lookup(api, { code, email });
     assert.deepEqual(publicBooking.history.at(-1), {
       at: "2099-08-19T01:00:00.000Z",
       action: "rescheduled",
       publicMessage: reason,
     });
     api.setNow("2099-08-19T11:00:00+08:00");
-    booking = (
-      await post(api, `/bookings/${booking.id}/attendance?role=Receptionist`, { action: "check_in",
-        version: booking.version,
-        credential: booking.code,
-      })
-    ).data;
+    const checkin = await post(api, `/bookings/${booking.id}/attendance?role=Receptionist`, {
+      action: "check_in",
+      version: booking.version,
+      credential: code,
+    });
+    assert.equal(checkin.status, 200);
+    assert.equal(checkin.data.status, "checked_in");
     api.setNow("2099-08-19T12:30:00+08:00");
-    booking = (
-      await post(api, `/bookings/${booking.id}/attendance?role=Receptionist`, { action: "check_out",
-        version: booking.version,
-        credential: booking.code,
-      })
-    ).data;
-    publicBooking = await lookup(api, booking);
+    const checkout = await post(api, `/bookings/${booking.id}/attendance?role=Receptionist`, {
+      action: "check_out",
+      version: checkin.data.version,
+      credential: code,
+    });
+    assert.equal(checkout.status, 200);
+    assert.equal(checkout.data.status, "checked_out");
+    publicBooking = await lookup(api, { code, email });
     assertPublic(publicBooking);
     assert.deepEqual(
       publicBooking.history.map((event) => event.action),

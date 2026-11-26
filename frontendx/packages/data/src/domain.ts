@@ -479,6 +479,13 @@ export function matchesAttachmentSignature(type: string, bytes: Uint8Array): boo
   const signature = attachmentSignatures[type];
   return Array.isArray(signature) && signature.every((byte, index) => bytes[index] === byte);
 }
+export const latestStaffStart = "16:59";
+export const staffStartTimeError = "Pilih waktu mulai antara 08.00–16.59 WITA.";
+
+export function isStaffStartTime(time: string) {
+  return /^\d{2}:[0-5]\d$/.test(time) && time >= "08:00" && time <= latestStaffStart;
+}
+
 export function validateReschedule(
   date: string,
   time: string,
@@ -492,8 +499,7 @@ export function validateReschedule(
   const stamp = new Date(`${date}T${time}:00+08:00`).getTime();
   if (!date || !time || !Number.isFinite(stamp) || stamp <= now)
     return "Pilih jadwal baru di masa depan (WITA).";
-  if (!/^(?:08|09|1[0-5]):[0-5]\d$|^16:00$/.test(time))
-    return "Pilih waktu mulai antara 08.00–16.00 WITA.";
+  if (!isStaffStartTime(time)) return staffStartTimeError;
   if (!Number.isInteger(duration) || duration < 15 || duration > 240)
     return "Durasi harus 15–240 menit.";
   if (availableRooms && (!restricted || room) && !availableRooms.includes(room))

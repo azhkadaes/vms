@@ -17,7 +17,7 @@ VMS manages appointments and visitor access for the Nusantara Capital Authority 
 | [VMS API](backend/README.md) | Go and Fiber service that enforces permissions, booking rules, admission, and file access. It serves 40 operations under `/v1`. |
 | [Database](docs/contracts/PHYSICAL-SCHEMA-2026-11-18.md) | PostgreSQL 18 stores visits, staff access, audit events, and operational records. Attachments are kept in private storage and read through the API. |
 
-The backend implements the [40-operation REST contract](docs/contracts/FRONTEND-DRIVEN-REST-API-2026-11-16.md). [Validation](docs/contracts/VALIDATION.md) records the Go, PostgreSQL, and API checks. The local Docker launcher serves both browser apps through the real API. The [frontend adapter tickets](.scratch/frontend-adapter-2026-11-19/map.md) track remaining workflow changes, including room selection, reception and report filters.
+The backend implements the [40-operation REST contract](docs/contracts/FRONTEND-DRIVEN-REST-API-2026-11-16.md). [Validation](docs/contracts/VALIDATION.md) records the Go, PostgreSQL, and API checks. The local Docker launcher serves both browser apps through the real API. The [frontend adapter tickets](docs/specs/frontend-adapter-2026-11-19/map.md) track remaining workflow changes, including room selection, reception and report filters.
 
 ## Local development
 

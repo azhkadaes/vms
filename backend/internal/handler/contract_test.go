@@ -306,6 +306,8 @@ func TestContractHTTP(t *testing.T) {
 		{"employees-no-people", "GET", "/v1/staff/employees", "", "ready", 403, false, false, false},
 		{"employees-invalid-page-size", "GET", "/v1/staff/employees?pageSize=251", "", "people", 422, false, false, false},
 		{"employee-detail", "GET", "/v1/staff/employees/7", "", "people", 200, false, false, false},
+		{"employee-self-profile", "GET", "/v1/staff/employees/1", "", "ready", 200, false, false, false},
+		{"employee-other-profile-denied", "GET", "/v1/staff/employees/7", "", "ready", 403, false, false, false},
 		{"employee-not-found", "GET", "/v1/staff/employees/8", "", "people", 404, false, false, false},
 		{"employee-create", "POST", "/v1/staff/employees", `{"name":"Employee Example","email":"employee@example.test","roles":["PA"],"active":true,"assignedOfficerIds":["3"],"initialPassword":"synthetic-initial-password","requirePasswordChange":true}`, "people", 201, false, false, false},
 		{"employee-duplicate-email", "POST", "/v1/staff/employees", `{"email":"duplicate@example.test"}`, "people", 422, false, false, false},

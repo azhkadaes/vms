@@ -40,6 +40,14 @@ services:
       VMS_DOCKER_SITE: "1"
       APP_PORT: "${APP_PORT:-8080}"
       VMS_DOCKER_API_HOST: api
+    # Use the checked-out gateway with existing frontend image builds.
+    volumes:
+      - type: bind
+        source: ../frontendx/tooling/backend-site.mjs
+        target: /site/tooling/backend-site.mjs
+        read_only: true
+        bind:
+          create_host_path: false
     secrets:
       - gateway_init_key
     depends_on:

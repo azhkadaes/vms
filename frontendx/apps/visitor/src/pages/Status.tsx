@@ -1,6 +1,6 @@
 import { ApiError, preview, repository, visitTiming, type PublicBooking } from "@vms/data";
 import { emailSchema } from "@vms/data/validation";
-import { Button, EmailInput, ErrorNotice, Modal, RequiredFieldsHint, RequiredMark } from "@vms/ui";
+import { FieldMessage, Button, EmailInput, ErrorNotice, Modal, RequiredFieldsHint, RequiredMark } from "@vms/ui";
 import { InputOTP } from "@vms/ui/input-otp";
 import { localizeMessage } from "@vms/ui/language";
 import { ArrowLeft, ArrowRight, Ban, RefreshCw, ShieldCheck } from "lucide-react";
@@ -255,9 +255,9 @@ export default function Status({
                   aria-describedby={emailError ? "status-email-error" : undefined}
                 />
                 {emailError && (
-                  <span id="status-email-error" className="field-error" role="alert">
+                  <FieldMessage tone="error" id="status-email-error">
                     {localizeMessage(emailError, language)}
-                  </span>
+                  </FieldMessage>
                 )}
               </div>
             </>

@@ -346,9 +346,9 @@
             "type": "string"
           },
           "imagePng": {
-            "description": "Base64-encoded PNG of the static QR with the OIKN logo centered.",
             "contentEncoding": "base64",
             "contentMediaType": "image/png",
+            "description": "Base64-encoded PNG of the static QR with the OIKN logo centered.",
             "type": "string"
           },
           "payload": {
@@ -2036,6 +2036,7 @@
                   "serviceIdLast4",
                   "organization",
                   "code",
+                  "roomId",
                   "serviceId",
                   "history",
                   "createdBy",
@@ -3697,6 +3698,7 @@
               "application/json": {
                 "example": {
                   "expiresAt": "2030-02-01T03:00:00Z",
+                  "imagePng": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=",
                   "payload": "vmsqr1.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                   "serverTime": 1896138000000
                 },
@@ -3782,6 +3784,47 @@
           "200": {
             "content": {
               "application/json": {
+                "example": {
+                  "code": "00123456",
+                  "date": "2030-02-01",
+                  "duration": 60,
+                  "email": "visitor@example.test",
+                  "history": [
+                    {
+                      "action": "created",
+                      "at": "2030-02-01T01:00:00Z"
+                    }
+                  ],
+                  "id": "101",
+                  "identityType": "KTP",
+                  "name": "Visitor Example",
+                  "officerId": "2",
+                  "organization": "Example",
+                  "pejabat": {
+                    "nama": "Official Example"
+                  },
+                  "phone": "08123456789",
+                  "purpose": "Visit Example",
+                  "room": "",
+                  "roomId": null,
+                  "status": "cancelled",
+                  "time": "10:00",
+                  "timing": {
+                    "canCancel": false,
+                    "canCheckIn": false,
+                    "canCheckOut": false,
+                    "displayStatus": "cancelled",
+                    "endsAt": 1896145200000,
+                    "opensAt": 1896139800000,
+                    "serverTime": 1896138000000
+                  },
+                  "version": 2,
+                  "vip": false,
+                  "visitKind": "standard",
+                  "visitors": [
+                    "Visitor Example"
+                  ]
+                },
                 "schema": {
                   "$ref": "#/components/schemas/PublicBooking"
                 }
@@ -3925,6 +3968,47 @@
           "200": {
             "content": {
               "application/json": {
+                "example": {
+                  "code": "00123456",
+                  "date": "2030-02-01",
+                  "duration": 60,
+                  "email": "visitor@example.test",
+                  "history": [
+                    {
+                      "action": "created",
+                      "at": "2030-02-01T01:00:00Z"
+                    }
+                  ],
+                  "id": "101",
+                  "identityType": "KTP",
+                  "name": "Visitor Example",
+                  "officerId": "2",
+                  "organization": "Example",
+                  "pejabat": {
+                    "nama": "Official Example"
+                  },
+                  "phone": "08123456789",
+                  "purpose": "Visit Example",
+                  "room": "",
+                  "roomId": null,
+                  "status": "approved",
+                  "time": "10:00",
+                  "timing": {
+                    "canCancel": true,
+                    "canCheckIn": false,
+                    "canCheckOut": false,
+                    "displayStatus": "approved",
+                    "endsAt": 1896145200000,
+                    "opensAt": 1896139800000,
+                    "serverTime": 1896138000000
+                  },
+                  "version": 1,
+                  "vip": false,
+                  "visitKind": "standard",
+                  "visitors": [
+                    "Visitor Example"
+                  ]
+                },
                 "schema": {
                   "$ref": "#/components/schemas/PublicBooking"
                 }
@@ -6113,7 +6197,9 @@
                       "name": "Employee Example",
                       "nip": "123459900",
                       "phone": "0812345678",
-                      "phoneNumbers": ["0812345678", "+62 542 123456"],
+                      "phoneNumbers": [
+                        "0812345678"
+                      ],
                       "roles": [
                         "PA"
                       ],
@@ -6204,7 +6290,6 @@
                 "name": "Employee Example",
                 "nip": "123459900",
                 "phone": "0812345678",
-                "phoneNumbers": ["0812345678", "+62 542 123456"],
                 "requirePasswordChange": true,
                 "roles": [
                   "PA"
@@ -6236,7 +6321,9 @@
                   "name": "Employee Example",
                   "nip": "123459900",
                   "phone": "0812345678",
-                  "phoneNumbers": ["0812345678", "+62 542 123456"],
+                  "phoneNumbers": [
+                    "0812345678"
+                  ],
                   "roles": [
                     "PA"
                   ],
@@ -6337,7 +6424,9 @@
                   "name": "Employee Example",
                   "nip": "123459900",
                   "phone": "0812345678",
-                  "phoneNumbers": ["0812345678", "+62 542 123456"],
+                  "phoneNumbers": [
+                    "0812345678"
+                  ],
                   "roles": [
                     "PA"
                   ],
@@ -6383,14 +6472,14 @@
             "BearerAccess": []
           }
         ],
-        "summary": "Read one employee",
+        "summary": "Read an employee profile",
         "tags": [
           "Directory"
         ],
         "x-error-conditions": {
           "400": "A malformed or unknown query parameter, path ID, or JSON request.",
           "401": "Missing, expired or revoked staff session.",
-          "403": "The ready staff session lacks people, or role selection or password change is still pending.",
+          "403": "The session is not workspace-ready, or the requested employee is someone else and the current role lacks people.",
           "404": "Employee does not exist.",
           "409": "The access token carries a stale role revision (role_changed).",
           "413": "Body over the 256 KiB JSON limit.",
@@ -6400,7 +6489,7 @@
         },
         "x-operation-number": 27,
         "x-reject-unknown-query": true,
-        "x-vms-resource-authorization": "A ready Bearer staff session with people on its current role. Writes recheck the live session inside their transaction."
+        "x-vms-resource-authorization": "A ready Bearer staff session may read the employee record whose ID matches the authenticated employee ID. Reading another employee requires people on the current role."
       },
       "patch": {
         "operationId": "staffUpdateEmployee",
@@ -6447,7 +6536,9 @@
                   "name": "Employee Example",
                   "nip": "123459900",
                   "phone": "0812345678",
-                  "phoneNumbers": ["0812345678", "+62 542 123456"],
+                  "phoneNumbers": [
+                    "0812345678"
+                  ],
                   "roles": [
                     "PA"
                   ],

@@ -51,7 +51,7 @@ export default function ProfilePreview({ session }: { session: Session }) {
         ref={trigger}
         type="button"
         kind="ghost"
-        className="profile-icon-button"
+        size="icon"
         aria-label="Buka profil saya"
         aria-haspopup="dialog"
         aria-expanded={open}
@@ -88,7 +88,7 @@ export default function ProfilePreview({ session }: { session: Session }) {
         <div className="profile-hover-heading">
           <h2>Profil saya</h2>
           <PopoverClose asChild>
-            <Button kind="ghost" className="profile-icon-button" aria-label="Tutup profil"><X size={16} /></Button>
+            <Button kind="ghost" size="icon" aria-label="Tutup profil"><X size={16} /></Button>
           </PopoverClose>
         </div>
         {preview ? (

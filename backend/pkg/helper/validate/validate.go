@@ -59,12 +59,21 @@ func Digits(value string, min, max int) bool {
 var WITA = time.FixedZone("Asia/Makassar", 8*60*60)
 
 func Start(date, clock string) (time.Time, error) {
+	return startWithin(date, clock, "16:00")
+}
+
+func StaffStart(date, clock string) (time.Time, error) {
+	return startWithin(date, clock, "16:59")
+}
+
+func startWithin(date, clock, latest string) (time.Time, error) {
 	value, err := time.ParseInLocation("2006-01-02 15:04", date+" "+clock, WITA)
 	if err != nil || value.Format("2006-01-02 15:04") != date+" "+clock {
 		return time.Time{}, failure.Validation().Add("date", "Pilih tanggal yang valid.").Err()
 	}
-	if clock < "08:00" || clock > "16:00" {
-		return time.Time{}, failure.Validation().Add("time", "Pilih waktu mulai antara 08.00–16.00 WITA.").Err()
+	if clock < "08:00" || clock > latest {
+		message := "Pilih waktu mulai antara 08.00–" + strings.Replace(latest, ":", ".", 1) + " WITA."
+		return time.Time{}, failure.Validation().Add("time", message).Err()
 	}
 	return value.UTC(), nil
 }

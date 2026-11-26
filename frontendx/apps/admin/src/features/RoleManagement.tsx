@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, preview, sessionKey, useSession } from "@vms/data";
 import { management } from "@vms/data/management";
 import type { RoleDefinition } from "@vms/data/management-contract";
-import { Button, Empty, ErrorNotice, Loading } from "@vms/ui";
+import { Button, Empty, ErrorNotice, Loading, TableRegion } from "@vms/ui";
 import { Check, LockKeyhole, Minus, Pencil, Users } from "lucide-react";
 import { useRef, useState } from "react";
 import { Link } from "react-router";
@@ -77,12 +77,7 @@ function PermissionMatrix({ records }: { records: RoleDefinition[] }) {
         </div>
       </div>
       {features.length ? (
-        <div
-          className="role-matrix-scroll"
-          role="region"
-          aria-label="Perbandingan izin peran"
-          tabIndex={0}
-        >
+        <TableRegion className="role-matrix-scroll" label="Perbandingan izin peran">
           <table className="role-matrix">
             <caption className="sr-only">Izin per fitur dan tindakan untuk setiap peran</caption>
             <thead>
@@ -132,7 +127,7 @@ function PermissionMatrix({ records }: { records: RoleDefinition[] }) {
               </tbody>
             ))}
           </table>
-        </div>
+        </TableRegion>
       ) : (
         <p className="role-matrix-note">Belum ada izin yang tersedia.</p>
       )}

@@ -2345,8 +2345,8 @@ Synthetic shape example. Optional fields may be omitted; state-dependent values 
 | --- | --- |
 | Method | GET |
 | Endpoint | `/v1/staff/employees/{id}` |
-| Authentication | Bearer and the operation-specific role/permission and visit scope. |
-| Request / frontend use | Employee detail/editor |
+| Authentication | A workspace-ready Bearer session can read its own employee ID. Reading another employee requires `people`. |
+| Request / frontend use | My profile preview and employee detail/editor |
 | Response | Employee profile,roles,assignment,active,version |
 | Response datatype | Employee (object) |
 | Success status | 200 with the response model below. |

@@ -4536,7 +4536,7 @@ Known gaps: BE-DOCUMENTS, BE-VISITS, FE-UPLOAD, BE-PHASE1-AUTH. Requirement and 
 
 | Feature / route | UI element and action | Request / returned-data use | Source / current integration |
 | --- | --- | --- | --- |
-| [F29](FRONTEND-TRACEABILITY.md#f29); /admin/booking?selected={id} | `AttachmentAccess` — Private supporting-document action in BookingDetail; existing action downloads only | Send path id and disposition=inline for view or attachment for download; MIME/Content-Disposition name the returned bytes. Current download helper omits explicit disposition=attachment. | [frontendx/apps/admin/src/features/AttachmentAccess.tsx](../../frontendx/apps/admin/src/features/AttachmentAccess.tsx); downloadAttachment only; request lacks explicit disposition=attachment |
+| [F29](FRONTEND-TRACEABILITY.md#f29); /admin/booking?selected={id} | `BookingFiles` provides preview and download for private supporting documents and visitor photos. | Staff read files with GET. Reception sends POST with the resolved credential in the request body. The frontend uses the returned bytes for both preview and download. | [BookingFiles](../../frontendx/apps/admin/src/features/BookingFiles.tsx) |
 
 **Query Parameters**
 

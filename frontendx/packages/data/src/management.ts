@@ -73,9 +73,25 @@ export function createManagementRepository(
     saveEmployee: async (id, input, version) => {
       validateAssignmentCount(input);
       const { employeeSchema } = await import("./management-contract.ts");
+      const body = {
+        name: input.name,
+        email: input.email,
+        roles: input.roles ?? (input.role ? [input.role] : undefined),
+        jobTitle: input.jobTitle,
+        deputy: input.deputy,
+        directorate: input.directorate,
+        phone: input.phone,
+        phoneNumbers: input.phoneNumbers,
+        nip: input.nip,
+        active: input.active,
+        assignedOfficerIds: input.assignedOfficerIds,
+        ...(id
+          ? { version }
+          : { initialPassword: input.initialPassword, requirePasswordChange: input.requirePasswordChange }),
+      };
       return parse(
         await request(`/staff/employees${id ? "/" + encodeURIComponent(id) : ""}`, {
-          body: { ...input, version },
+          body,
           method: id ? "PATCH" : "POST",
           authenticated: true,
         }),
@@ -101,22 +117,10 @@ export function createManagementRepository(
       );
     },
     integrations: async () => {
-      const { integrationSchema } = await import("./management-contract.ts");
-      return parse(
-        await request("/staff/integrations", { authenticated: true }),
-        integrationSchema.array(),
-      );
+      throw new ApiError(503, "Pengaturan integrasi belum tersedia.");
     },
-    saveIntegration: async (record, input) => {
-      const { integrationSchema } = await import("./management-contract.ts");
-      return parse(
-        await request(`/staff/integrations/${encodeURIComponent(record.id)}`, {
-          body: input,
-          method: "PATCH",
-          authenticated: true,
-        }),
-        integrationSchema,
-      );
+    saveIntegration: async () => {
+      throw new ApiError(503, "Pengaturan integrasi belum tersedia.");
     },
   };
 }

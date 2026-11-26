@@ -190,7 +190,7 @@ test("reception opens linked memo and photo only after resolving the visit", asy
     }
   }));
 
-test("Terbatas four-field form preserves leading zeroes, dirty draft and keyboard focus at 320px", async () =>
+test("Terbatas form preserves leading zeroes, dirty draft and keyboard focus at 320px", async () =>
   withApi(async () => {
     const { page, context } = await open(
       "Protocol Officer",
@@ -208,7 +208,7 @@ test("Terbatas four-field form preserves leading zeroes, dirty draft and keyboar
         assert.equal(await page.locator(id).count(), 1);
       assert.equal(
         await page
-          .locator('.modal input[type="email"], .modal input[type="file"], .modal textarea')
+          .locator('.modal input[type="email"], .modal input[type="file"]')
           .count(),
         0,
       );
@@ -262,7 +262,8 @@ test("Terbatas four-field form preserves leading zeroes, dirty draft and keyboar
       assert.equal(b.status, "approved");
       assert.equal(b.serviceId, "0012345678");
       await page.getByRole("heading", { name: "Detail kunjungan", exact: true }).waitFor();
-      await page.getByRole("button", { name: "Edit detail", exact: true }).click();
+      await page.getByRole("button", { name: "Edit kunjungan", exact: true }).click();
+      await page.getByRole("button", { name: "Edit detail pengunjung", exact: true }).click();
       assert.equal(await page.locator("#restricted-serviceId").inputValue(), "0012345678");
       await page.locator("#restricted-serviceId").fill("");
       await page.getByRole("button", { name: "Simpan perubahan", exact: true }).click();
@@ -272,33 +273,29 @@ test("Terbatas four-field form preserves leading zeroes, dirty draft and keyboar
     }
   }));
 
-test("PA and Admin read permitted Terbatas details without write controls; general exports exclude it", async () =>
+test("PA gets a masked service ID and the Admin visit log export omits it", async () =>
   withApi(async () => {
     const b = await fixture();
-    for (const role of ["PA", "Super Admin"]) {
-      const { page, context } = await open(
-        role,
-        `/admin/booking?selected=${b.id}`,
-        role === "PA" ? 390 : 1280,
+    const pa = await open("PA", `/admin/booking?selected=${b.id}`);
+    try {
+      const detail = pa.page.getByRole("dialog", { name: "Detail kunjungan", exact: true });
+      await detail.waitFor();
+      const text = await detail.innerText();
+      assert.ok(text.includes(b.name));
+      assert.ok(text.includes(b.organization));
+      assert.ok(text.includes("5678"));
+      assert.equal(text.includes(b.serviceId), false);
+      assert.equal(
+        await detail
+          .getByRole("button", {
+            name: /^(Setujui|Tolak|Edit kunjungan|Edit detail|Edit informasi pengunjung)$/,
+          })
+          .count(),
+        0,
       );
-      try {
-        await page.getByRole("heading", { name: "Detail kunjungan", exact: true }).waitFor();
-        const text = await page.locator(".modal").innerText();
-        assert.ok(text.includes(b.name));
-        assert.ok(text.includes(b.organization));
-        assert.ok(text.includes(role === "PA" ? "5678" : "0012345678"));
-        if (role === "PA") assert.equal(text.includes("0012345678"), false);
-        assert.equal(
-          await page
-            .locator(".modal")
-            .getByRole("button", { name: /^(Setujui|Tolak|Edit kunjungan|Edit detail)$/ })
-            .count(),
-          0,
-        );
-        await save(page, role === "PA" ? "pa-read-390" : "admin-read-1280");
-      } finally {
-        await context.close();
-      }
+      await save(pa.page, "pa-read-390");
+    } finally {
+      await pa.context.close();
     }
     await post("/bookings", {
       ack: true,
@@ -314,19 +311,18 @@ test("PA and Admin read permitted Terbatas details without write controls; gener
       visitors: ["Ordinary Export Name"],
       identityType: "KTP",
     });
-    const { page, context } = await open("Protocol Officer", "/admin/logs", 1280);
+    const { page, context } = await open("Super Admin", "/admin/booking", 1280);
     try {
-      await page.getByTestId("report-total").filter({ hasText: "1" }).waitFor();
-      assert.equal((await page.locator("body").innerText()).includes(b.name), false);
+      await page.getByRole("button", { name: "Ekspor laporan kunjungan", exact: true }).click();
+      await page.getByRole("radio", { name: /^CSV/ }).check();
       const [download] = await Promise.all([
         page.waitForEvent("download"),
-        page.getByRole("button", { name: "Unduh ringkasan CSV", exact: true }).click(),
+        page.getByRole("button", { name: "Ekspor CSV", exact: true }).click(),
       ]);
       const content = await readFile(await download.path(), "utf8");
-      assert.ok(content.includes('"Tanggal awal","Tanggal akhir","Cakupan","Status","Jumlah"'));
-      assert.equal(content.includes("Ordinary Export Name"), false);
-      for (const secret of [b.name, b.organization, b.serviceId, b.reference])
-        assert.equal(content.includes(secret), false, secret);
+      assert.ok(content.includes("Ordinary Export Name"));
+      assert.ok(content.includes(b.name));
+      assert.equal(content.includes(b.serviceId), false);
     } finally {
       await context.close();
     }

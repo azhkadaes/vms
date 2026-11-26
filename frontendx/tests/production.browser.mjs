@@ -1,8 +1,9 @@
 import test, { before, after } from "node:test";
 import assert from "node:assert/strict";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { chromium } from "playwright";
 import AxeBuilder from "@axe-core/playwright";
+import { jsPDF } from "jspdf";
 import qrcode from "qrcode";
 import { startProduction } from "./helpers/production-server.mjs";
 
@@ -47,7 +48,11 @@ async function open(path = "/admin/employees", options = {}) {
     reducedMotion: options.motion || "reduce",
     timezoneId: "Asia/Makassar",
   });
-  await context.addInitScript(() => sessionStorage.setItem("vms-preview-role", "Protocol Officer"));
+  await context.addInitScript(() => {
+    if (window.top !== window || !location.pathname.startsWith("/admin/")) return;
+    sessionStorage.setItem("vms-preview-role", "Protocol Officer");
+    document.cookie = "__Host-vms-csrf=fixture-csrf; Secure; Path=/";
+  });
   const state = {
     sessionStatus: options.sessionStatus || 200,
     passwordRequired: !!options.passwordRequired,
@@ -73,33 +78,6 @@ async function open(path = "/admin/employees", options = {}) {
         assignablePermissions: ["bookings", "approve", "reject"],
         editable: true,
         version: 1,
-      },
-    ],
-    integrations: [
-      {
-        id: "email",
-        name: "Email",
-        description: "Layanan pemberitahuan.",
-        enabled: false,
-        health: "not_configured",
-        version: 1,
-        fields: [
-          {
-            key: "endpoint",
-            label: "Alamat layanan",
-            kind: "url",
-            required: true,
-            value: "https://email.example.test",
-          },
-          {
-            key: "credential",
-            label: "Kredensial layanan",
-            kind: "secret",
-            required: true,
-            configured: true,
-            value: "MUST-NEVER-BE-RENDERED",
-          },
-        ],
       },
     ],
     calls: [],
@@ -208,20 +186,6 @@ async function open(path = "/admin/employees", options = {}) {
       Object.assign(state.definitions[0], jsonBody, { version: 2 });
       return send(state.definitions[0]);
     }
-    if (path === "/staff/integrations") return send(state.integrations);
-    if (path.startsWith("/staff/integrations/")) {
-      const record = state.integrations[0];
-      record.enabled = jsonBody.enabled;
-      record.version++;
-      for (const field of record.fields) {
-        if (field.kind === "secret")
-          field.configured = jsonBody.clearSecrets.includes(field.key)
-            ? false
-            : field.configured || !!jsonBody.values[field.key];
-        else field.value = jsonBody.values[field.key];
-      }
-      return send(record);
-    }
     if (path === "/staff/bookings")
       return send({
         items: [],
@@ -307,6 +271,109 @@ async function audit(page, name) {
   });
 }
 
+test("the visitor language control uses the same buttons across landing, task and standalone layouts", async () => {
+  for (const width of [320, 768, 1280]) {
+    const { page, close } = await open("/", { viewport: { width, height: 850 } });
+    try {
+      const mobile = width <= 760;
+      const layouts = [
+        ["/", mobile ? ".hero-toolbar" : ".visitor-header"],
+        ...(mobile
+          ? [
+              ["/?view=registration#registration", ".landing-task-toolbar"],
+              ["/?view=status#booking-status", ".landing-task-toolbar"],
+            ]
+          : []),
+        ["/booking", ".visitor-header"],
+        ["/status", ".visitor-header"],
+      ];
+      let language = "id";
+      let buttonStyles;
+      for (const [path, toolbar] of layouts) {
+        if (path !== "/") await page.goto(server.origin + path);
+        const control = page
+          .locator(toolbar)
+          .getByRole("group", { name: /^(Bahasa halaman|Page language)$/ });
+        const id = control.getByRole("button", { name: "ID · Bahasa Indonesia", exact: true });
+        const en = control.getByRole("button", { name: "EN · English", exact: true });
+        const selected = language === "id" ? id : en;
+        const other = language === "id" ? en : id;
+        assert.equal(await selected.getAttribute("aria-pressed"), "true");
+        assert.equal(await other.getAttribute("aria-pressed"), "false");
+
+        const styles = await selected.evaluate((button) => {
+          const { width, height, left, right } = button.getBoundingClientRect();
+          const { backgroundColor, borderRadius, fontSize } = getComputedStyle(button);
+          return { width, height, left, right, backgroundColor, borderRadius, fontSize };
+        });
+        const { left, right, ...appearance } = styles;
+        assert.ok(left >= 0 && right <= width);
+        assert.ok(appearance.width >= 44 && appearance.height >= 44);
+        assert.equal(
+          await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+          true,
+        );
+        buttonStyles ??= appearance;
+        assert.deepEqual(appearance, buttonStyles);
+
+        await other.press("Enter");
+        language = language === "id" ? "en" : "id";
+        assert.equal(await other.getAttribute("aria-pressed"), "true");
+        assert.equal(await page.locator("html").getAttribute("lang"), language);
+      }
+    } finally {
+      await close();
+    }
+  }
+});
+
+test("destination, purpose and picker fields share their pointer and keyboard focus ring", async () => {
+  for (const width of [390, 1280]) {
+    const { page, close } = await open("/booking", { viewport: { width, height: 900 } });
+    try {
+      const outline = (selector) =>
+        page.locator(selector).evaluate((control) => {
+          const { outlineStyle, outlineWidth, outlineOffset, outlineColor } =
+            getComputedStyle(control);
+          return { outlineStyle, outlineWidth, outlineOffset, outlineColor };
+        });
+      await page.locator("#purpose").click();
+      const focusRing = await outline("#purpose");
+      assert.equal(focusRing.outlineStyle, "solid");
+      assert.equal(focusRing.outlineWidth, "3px");
+      assert.equal(focusRing.outlineOffset, "4px");
+
+      for (const selector of ["#officerId", "#date", ".time-picker-trigger"]) {
+        await page.locator(selector).click();
+        assert.deepEqual(await outline(selector), focusRing);
+        if (selector === "#officerId") {
+          await page.keyboard.press("ArrowDown");
+          const option = page.locator("#officerId option:focus-visible");
+          await option.waitFor();
+          assert.equal((await outline("#officerId option:focus-visible")).outlineOffset, "-2px");
+          const next = page.locator("#officerId option:enabled").last();
+          await next.hover();
+          assert.equal(await next.evaluate((node) => getComputedStyle(node).borderRadius), "6px");
+          assert.notEqual(await next.evaluate((node) => getComputedStyle(node).backgroundColor), "rgba(0, 0, 0, 0)");
+        }
+        await page.keyboard.press("Escape");
+      }
+      await page.locator("#purpose").click();
+      await page.keyboard.press("Shift+Tab");
+      assert.deepEqual(await outline(".time-picker-trigger"), focusRing);
+
+      await page.goto(server.origin + "/status");
+      await page.locator("#status-code").click();
+      assert.deepEqual(await outline(".input-otp"), focusRing);
+      await page.locator("#status-email").click();
+      assert.deepEqual(await outline(".email-address"), focusRing);
+      assert.equal((await outline(".input-otp")).outlineStyle, "none");
+    } finally {
+      await close();
+    }
+  }
+});
+
 test("production email controls preserve visible labels and keyboard focus across domain switches in ID and EN", async () => {
   const env = await open("/status");
   try {
@@ -345,6 +412,36 @@ test("production email controls preserve visible labels and keyboard focus acros
     assert.deepEqual(env.state.errors, []);
   } finally {
     await env.close();
+  }
+});
+
+test("staff quick filters preserve selection when using the shared segmented control", async () => {
+  const viewport = { width: 1440, height: 900 };
+  const log = await open("/admin/booking", { viewport, permissions: ["bookings", "reports"] });
+  try {
+    const range = log.page.getByRole("group", { name: "Periode cepat" });
+    const today = range.getByRole("button", { name: "Hari ini", exact: true });
+    await today.press("Enter");
+    await log.page.waitForURL((url) => url.searchParams.get("from") === "2099-08-19");
+    await today.and(range.locator('[aria-pressed="true"]')).waitFor();
+    await log.page.setViewportSize({ width: 320, height: 900 });
+    const bounds = await range.boundingBox();
+    assert.ok(bounds && bounds.x >= 0 && bounds.x + bounds.width <= 320);
+  } finally {
+    await log.close();
+  }
+
+  const bookings = await open("/", { viewport });
+  try {
+    bookings.state.role = "Receptionist";
+    await bookings.page.goto(server.origin + "/admin/booking");
+    const filters = bookings.page.getByRole("group", { name: "Filter status" });
+    const approved = filters.getByRole("button", { name: /^Disetujui/ });
+    await approved.press("Enter");
+    await bookings.page.waitForURL((url) => url.searchParams.get("status") === "approved");
+    await approved.and(filters.locator('[aria-pressed="true"]')).waitFor();
+  } finally {
+    await bookings.close();
   }
 });
 
@@ -725,366 +822,6 @@ test("public production booking uploads bytes before submitting a token, then us
   }
 });
 
-test("production login distinguishes rate limiting and keeps entered credentials for retry", async () => {
-  const env = await open(undefined, { sessionStatus: 401 });
-  try {
-    const { page, state } = env;
-    await page.waitForURL(/\/admin\/login$/);
-    state.loginStatus = 429;
-    await page.locator("#email").fill("admin@example.test");
-    await page.locator("#password").fill("Example-password-42");
-    await page.getByRole("button", { name: "Masuk ke backoffice", exact: true }).click();
-    await page.getByRole("alert").filter({ hasText: "Terlalu banyak permintaan" }).waitFor();
-    assert.equal(await page.locator("#email").inputValue(), "admin@example.test");
-    assert.equal(await page.locator("#password").inputValue(), "Example-password-42");
-    state.loginStatus = 200;
-    await page.getByRole("button", { name: "Masuk ke backoffice", exact: true }).click();
-    await page.waitForURL(/\/admin\/dashboard$/);
-    assert.equal(await page.locator("#role").count(), 0);
-  } finally {
-    await env.close();
-  }
-});
-
-test("production staff lists request bounded pages, load a direct detail, and gate document download at the API", async () => {
-  const env = await open();
-  const { page, context, state } = env;
-  try {
-    const rows = Array.from({ length: 12 }, (_, index) => ({
-      id: `staff-visit-${index + 1}`,
-      name: `Contract Visitor ${index + 1}`,
-      organization: "Contract Organization",
-      email: "visitor@example.test",
-      phone: "00123456789",
-      officerId: "officer-server-42",
-      host: "Pejabat dari layanan",
-      vip: false,
-      date: "2099-08-19",
-      time: "10:00",
-      duration: 60,
-      room: "Ruang dari layanan",
-      purpose: "Contract verification",
-      visitors: [`Contract Visitor ${index + 1}`],
-      identityType: "KTP",
-      code: "88001001",
-      status: "approved",
-      version: 2,
-      ndName: "official.pdf",
-      attachmentAvailable: true,
-      history: [],
-      timing: {
-        serverTime: Date.parse("2099-08-19T09:00:00+08:00"),
-        opensAt: Date.parse("2099-08-19T09:30:00+08:00"),
-        endsAt: Date.parse("2099-08-19T11:00:00+08:00"),
-        displayStatus: "approved",
-        canCancel: true,
-        canCheckIn: false,
-        canCheckOut: false,
-      },
-      // The server decides allowed commands (ADR-0003); it grants cancel once the role may.
-      get allowedActions() {
-        return ["reschedule", ...(permitCancellation ? ["cancel"] : [])];
-      },
-    }));
-    let permitCancellation = false;
-    const cancellationCalls = [];
-    const staffSession = () => ({
-      active: true,
-      id: "pa-42",
-      name: "PA Layanan",
-      role: "PA",
-      permissions: ["bookings", "approve", "reschedule", ...(permitCancellation ? ["cancel"] : [])],
-      assignedOfficerIds: ["officer-server-42"],
-    });
-    await context.route("**/v1/staff/session", (route) => route.fulfill({ json: staffSession() }));
-    await context.route("**/v1/staff/session/refresh", (route) =>
-      route.fulfill({ json: staffToken(staffSession()) }),
-    );
-    const listCalls = [];
-    let downloadDenied = false;
-    await context.route("**/v1/staff/bookings**", (route) => {
-      const url = new URL(route.request().url());
-      if (url.pathname.endsWith("/cancel")) {
-        const body = route.request().postDataJSON();
-        cancellationCalls.push({ body, headers: route.request().headers() });
-        const row = rows.find((row) => row.id === url.pathname.split("/").at(-2));
-        row.status = "cancelled";
-        row.version++;
-        row.timing.displayStatus = "cancelled";
-        row.timing.canCancel = false;
-        return route.fulfill({ json: row });
-      }
-      if (url.pathname.endsWith("/attachment"))
-        return downloadDenied
-          ? route.fulfill({ status: 403, json: { message: "Akses dokumen tidak diizinkan." } })
-          : route.fulfill({
-              contentType: "application/pdf",
-              body: "%PDF-1.7\nSynthetic protected document",
-            });
-      if (url.pathname === "/v1/staff/bookings") {
-        listCalls.push(url);
-        const page = Number(url.searchParams.get("page"));
-        return route.fulfill({
-          json: {
-            items: rows
-              .filter((row) => row.status === url.searchParams.get("status"))
-              .slice((page - 1) * 7, page * 7),
-            total: rows.filter((row) => row.status === url.searchParams.get("status")).length,
-            totalScoped: 12,
-            page,
-            pageSize: 7,
-          },
-        });
-      }
-      return route.fulfill({ json: rows.find((row) => row.id === url.pathname.split("/").at(-1)) });
-    });
-    await page.goto(server.origin + "/admin/booking?status=approved&page=2");
-    await page
-      .getByRole("button", { name: "Lihat detail Contract Visitor 8", exact: true })
-      .waitFor();
-    assert.equal(listCalls[0].searchParams.get("view"), "list");
-    assert.equal(listCalls[0].searchParams.get("pageSize"), "7");
-    assert.equal(listCalls[0].searchParams.get("page"), "2");
-    assert.equal(listCalls[0].searchParams.has("role"), false);
-    await page
-      .getByRole("button", { name: "Lihat detail Contract Visitor 8", exact: true })
-      .click();
-    await page.getByRole("heading", { name: "Detail kunjungan", exact: true }).waitFor();
-    const downloading = page.waitForEvent("download");
-    await page.getByRole("button", { name: "Unduh dokumen pendukung" }).click();
-    assert.equal((await downloading).suggestedFilename(), "official.pdf");
-    downloadDenied = true;
-    await page.getByRole("button", { name: "Unduh dokumen pendukung" }).click();
-    await page.getByRole("alert").filter({ hasText: "Akses dokumen tidak diizinkan." }).waitFor();
-    assert.deepEqual(state.errors, []);
-    await audit(page, "staff-detail-production-390");
-    assert.equal(
-      await page.getByRole("button", { name: "Batalkan kunjungan", exact: true }).count(),
-      0,
-    );
-    permitCancellation = true;
-    await page.evaluate(() => window.dispatchEvent(new Event("visibilitychange")));
-    await page.getByRole("button", { name: "Batalkan kunjungan", exact: true }).click();
-    await page
-      .getByRole("textbox", { name: "Alasan pembatalan", exact: false })
-      .fill("Authorized staff cancellation reason.");
-    await audit(page, "staff-cancellation-production-390");
-    await page.getByRole("button", { name: "Batalkan kunjungan", exact: true }).click();
-    await page
-      .getByRole("status")
-      .filter({ hasText: "Kunjungan dibatalkan oleh petugas." })
-      .waitFor();
-    assert.equal(cancellationCalls.length, 1);
-    assert.deepEqual(cancellationCalls[0].body, {
-      reason: "Authorized staff cancellation reason.",
-      internalCancellationNote: "",
-      version: 2,
-    });
-    assert.equal(cancellationCalls[0].headers["x-vms-request"], "browser");
-  } finally {
-    await env.close();
-  }
-});
-
-test("a changed server role removes the previous private management screen on return to the tab", async () => {
-  const env = await open();
-  try {
-    const { page, state } = env;
-    await page
-      .getByRole("button", { name: "Lihat detail pegawai Pegawai Layanan", exact: true })
-      .waitFor();
-    state.role = "Receptionist";
-    await page.evaluate(() => window.dispatchEvent(new Event("visibilitychange")));
-    await page.getByRole("heading", { name: "Akses terbatas", exact: true }).waitFor();
-    assert.equal(await page.getByText("pegawai@example.test", { exact: true }).count(), 0);
-    assert.equal(await page.locator("#role").count(), 0);
-  } finally {
-    await env.close();
-  }
-});
-
-test("production reports use an independent aggregate route and hide counts after denied refresh", async () => {
-  const env = await open("/admin/booking", {
-    role: "PA",
-    permissions: ["bookings", "reports", "reportExport"],
-  });
-  try {
-    const { page, state } = env;
-    await page.getByRole("button", { name: "Ekspor laporan kunjungan" }).click();
-    await page.getByTestId("report-total").waitFor();
-    assert.equal(await page.getByTestId("report-total").innerText(), "0");
-    assert.equal(
-      await page.getByRole("button", { name: "Unduh ringkasan CSV", exact: true }).isDisabled(),
-      true,
-    );
-    assert.equal(
-      state.calls.some((call) => call.path === "/staff/reports/summary"),
-      true,
-    );
-    state.summaryDenied = true;
-    await page.getByRole("button", { name: "Perbarui laporan", exact: true }).click();
-    await page.getByRole("alert").filter({ hasText: "Akses laporan tidak diizinkan." }).waitFor();
-    assert.equal(await page.getByTestId("report-total").count(), 0);
-    assert.deepEqual(state.errors, []);
-  } finally {
-    await env.close();
-  }
-});
-
-test("the visitor language control uses the same buttons across landing, task and standalone layouts", async () => {
-  for (const width of [320, 768, 1280]) {
-    const { page, close } = await open("/", { viewport: { width, height: 850 } });
-    try {
-      const mobile = width <= 760;
-      const layouts = [
-        ["/", mobile ? ".hero-toolbar" : ".visitor-header"],
-        ...(mobile
-          ? [
-              ["/?view=registration#registration", ".landing-task-toolbar"],
-              ["/?view=status#booking-status", ".landing-task-toolbar"],
-            ]
-          : []),
-        ["/booking", ".visitor-header"],
-        ["/status", ".visitor-header"],
-      ];
-      let language = "id";
-      let buttonStyles;
-      for (const [path, toolbar] of layouts) {
-        if (path !== "/") await page.goto(server.origin + path);
-        const control = page
-          .locator(toolbar)
-          .getByRole("group", { name: /^(Bahasa halaman|Page language)$/ });
-        const id = control.getByRole("button", { name: "ID · Bahasa Indonesia", exact: true });
-        const en = control.getByRole("button", { name: "EN · English", exact: true });
-        const selected = language === "id" ? id : en;
-        const other = language === "id" ? en : id;
-        assert.equal(await selected.getAttribute("aria-pressed"), "true");
-        assert.equal(await other.getAttribute("aria-pressed"), "false");
-
-        const styles = await selected.evaluate((button) => {
-          const { width, height, left, right } = button.getBoundingClientRect();
-          const { backgroundColor, borderRadius, fontSize } = getComputedStyle(button);
-          return { width, height, left, right, backgroundColor, borderRadius, fontSize };
-        });
-        const { left, right, ...appearance } = styles;
-        assert.ok(left >= 0 && right <= width);
-        assert.ok(appearance.width >= 44 && appearance.height >= 44);
-        assert.equal(
-          await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
-          true,
-        );
-        buttonStyles ??= appearance;
-        assert.deepEqual(appearance, buttonStyles);
-
-        await other.press("Enter");
-        language = language === "id" ? "en" : "id";
-        assert.equal(await other.getAttribute("aria-pressed"), "true");
-        assert.equal(await page.locator("html").getAttribute("lang"), language);
-      }
-    } finally {
-      await close();
-    }
-  }
-});
-
-test("destination, purpose and picker fields share their pointer and keyboard focus ring", async () => {
-  for (const width of [390, 1280]) {
-    const { page, close } = await open("/booking", { viewport: { width, height: 900 } });
-    try {
-      const outline = (selector) =>
-        page.locator(selector).evaluate((control) => {
-          const { outlineStyle, outlineWidth, outlineOffset, outlineColor } =
-            getComputedStyle(control);
-          return { outlineStyle, outlineWidth, outlineOffset, outlineColor };
-        });
-      await page.locator("#purpose").click();
-      const focusRing = await outline("#purpose");
-      assert.equal(focusRing.outlineStyle, "solid");
-      assert.equal(focusRing.outlineWidth, "3px");
-      assert.equal(focusRing.outlineOffset, "4px");
-
-      for (const selector of ["#officerId", "#date", ".time-picker-trigger"]) {
-        await page.locator(selector).click();
-        assert.deepEqual(await outline(selector), focusRing);
-        if (selector === "#officerId") {
-          await page.keyboard.press("ArrowDown");
-          const option = page.locator("#officerId option:focus-visible");
-          await option.waitFor();
-          assert.equal((await outline("#officerId option:focus-visible")).outlineOffset, "-2px");
-          const next = page.locator("#officerId option:enabled").last();
-          await next.hover();
-          assert.equal(await next.evaluate((node) => getComputedStyle(node).borderRadius), "6px");
-          assert.notEqual(await next.evaluate((node) => getComputedStyle(node).backgroundColor), "rgba(0, 0, 0, 0)");
-        }
-        await page.keyboard.press("Escape");
-      }
-      await page.locator("#purpose").click();
-      await page.keyboard.press("Shift+Tab");
-      assert.deepEqual(await outline(".time-picker-trigger"), focusRing);
-
-      await page.goto(server.origin + "/status");
-      await page.locator("#status-code").click();
-      assert.deepEqual(await outline(".input-otp"), focusRing);
-      await page.locator("#status-email").click();
-      assert.deepEqual(await outline(".email-address"), focusRing);
-      assert.equal((await outline(".input-otp")).outlineStyle, "none");
-    } finally {
-      await close();
-    }
-  }
-});
-
-for (const role of ["PA", "Protocol Officer", "Receptionist", "Super Admin"]) {
-  test(`staff avatar shows the current employee profile on hover for ${role} without directory permission`, async () => {
-    const env = await open("/admin/login", { permissions: ["bookings"] });
-    try {
-      const { page, state } = env;
-      state.role = role;
-      state.employees.push({
-        id: "admin-42",
-        name: "Pegawai Profil Uji",
-        email: "profile@example.test",
-        roles: [role],
-        active: true,
-        version: 1,
-        assignedOfficerIds: role === "PA" ? ["3"] : [],
-        jobTitle: "Asisten",
-        directorate: "Direktorat Uji",
-        nip: "123456789",
-        phoneNumbers: ["0812345678", "+62 542 123456"],
-      });
-      await page.goto(server.origin + "/admin/dashboard");
-      const profileRequests = () => state.calls.filter((call) => call.path.startsWith("/staff/employees"));
-      const avatar = page.getByRole("button", { name: "Buka profil saya" });
-      await avatar.waitFor();
-      assert.equal(profileRequests().length, 0);
-      await avatar.hover();
-      const dialog = page.getByRole("dialog", { name: "Profil saya", exact: true });
-      await dialog.getByRole("heading", { name: "Pegawai Profil Uji" }).waitFor();
-      await dialog.getByText(role, { exact: true }).waitFor();
-      for (const value of [
-        "profile@example.test", "Asisten", "Direktorat Uji", "123456789", "0812345678", "+62 542 123456",
-      ]) await dialog.getByText(value, { exact: true }).waitFor();
-      await dialog.hover();
-      assert.equal(await dialog.isVisible(), true);
-      assert.deepEqual(profileRequests().map(({ path, method, headers }) =>
-        [path, method, headers.authorization]), [["/staff/employees/admin-42", "GET", "Bearer fixture-staff-token"]]);
-      await page.mouse.move(0, 890);
-      await dialog.waitFor({ state: "hidden" });
-      await avatar.focus();
-      await dialog.waitFor();
-      await audit(page, `profile-hover-${role.replaceAll(" ", "-")}`);
-      await page.keyboard.press("Escape");
-      await dialog.waitFor({ state: "hidden" });
-      await page.waitForFunction(
-        () => document.activeElement?.getAttribute("aria-label") === "Buka profil saya",
-      );
-    } finally {
-      await env.close();
-    }
-  });
-}
-
 test("login resumes an existing staff session instead of showing a new login form", async () => {
   const env = await open("/admin/login");
   try {
@@ -1126,6 +863,27 @@ test("login renews an expired form once and preserves entered credentials", asyn
     assert.equal(attempts, 2);
     assert.deepEqual(bodies[0], bodies[1]);
     assert.equal(await page.locator("#password").inputValue(), "Fictional-password-42");
+  } finally {
+    await env.close();
+  }
+});
+
+test("production login distinguishes rate limiting and keeps entered credentials for retry", async () => {
+  const env = await open(undefined, { sessionStatus: 401 });
+  try {
+    const { page, state } = env;
+    await page.waitForURL(/\/admin\/login$/);
+    state.loginStatus = 429;
+    await page.locator("#email").fill("admin@example.test");
+    await page.locator("#password").fill("Example-password-42");
+    await page.getByRole("button", { name: "Masuk ke backoffice", exact: true }).click();
+    await page.getByRole("alert").filter({ hasText: "Terlalu banyak permintaan" }).waitFor();
+    assert.equal(await page.locator("#email").inputValue(), "admin@example.test");
+    assert.equal(await page.locator("#password").inputValue(), "Example-password-42");
+    state.loginStatus = 200;
+    await page.getByRole("button", { name: "Masuk ke backoffice", exact: true }).click();
+    await page.waitForURL(/\/admin\/dashboard$/);
+    assert.equal(await page.locator("#role").count(), 0);
   } finally {
     await env.close();
   }
@@ -1590,6 +1348,432 @@ test("production restricted creation sends the selected officer and room IDs", a
     await env.close();
   }
 });
+
+test("production staff details preview and download both protected files", async () => {
+  const env = await open();
+  const { page, context, state } = env;
+  try {
+    const rows = Array.from({ length: 12 }, (_, index) => ({
+      id: `staff-visit-${index + 1}`,
+      name: `Contract Visitor ${index + 1}`,
+      organization: "Contract Organization",
+      email: "visitor@example.test",
+      phone: "00123456789",
+      officerId: "officer-server-42",
+      host: "Pejabat dari layanan",
+      vip: false,
+      date: "2099-08-19",
+      time: "10:00",
+      duration: 60,
+      room: "Ruang dari layanan",
+      purpose: "Contract verification",
+      visitors: [`Contract Visitor ${index + 1}`],
+      identityType: "KTP",
+      code: "88001001",
+      status: "approved",
+      version: 2,
+      ndName: "official.pdf",
+      attachmentAvailable: true,
+      visitorPhotoName: "visitor.png",
+      visitorPhotoAvailable: true,
+      history: [],
+      timing: {
+        serverTime: Date.parse("2099-08-19T09:00:00+08:00"),
+        opensAt: Date.parse("2099-08-19T09:30:00+08:00"),
+        endsAt: Date.parse("2099-08-19T11:00:00+08:00"),
+        displayStatus: "approved",
+        canCancel: true,
+        canCheckIn: false,
+        canCheckOut: false,
+      },
+      // The server decides allowed commands (ADR-0003); it grants cancel once the role may.
+      get allowedActions() {
+        return ["reschedule", ...(permitCancellation ? ["cancel"] : [])];
+      },
+    }));
+    let permitCancellation = false;
+    const cancellationCalls = [];
+    const staffSession = () => ({
+      active: true,
+      id: "pa-42",
+      name: "PA Layanan",
+      role: "PA",
+      permissions: ["bookings", "approve", "reschedule", ...(permitCancellation ? ["cancel"] : [])],
+      assignedOfficerIds: ["officer-server-42"],
+    });
+    await context.route("**/v1/staff/session", (route) =>
+      route.fulfill({ json: staffSession() }),
+    );
+    await context.route("**/v1/staff/session/refresh", (route) =>
+      route.fulfill({ json: staffToken(staffSession(), "fixture-pa-token") }),
+    );
+    const listCalls = [];
+    const memo = new jsPDF();
+    memo.text("Nota Dinas untuk pengujian", 20, 20);
+    const pdf = Buffer.from(memo.output("arraybuffer"));
+    const photo = Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=",
+      "base64",
+    );
+    let fileDenied = false;
+    const fileCalls = [];
+    await context.route("**/v1/staff/bookings**", (route) => {
+      const url = new URL(route.request().url());
+      if (url.pathname.endsWith("/cancel")) {
+        const body = route.request().postDataJSON();
+        cancellationCalls.push({ body, headers: route.request().headers() });
+        const row = rows.find((row) => row.id === url.pathname.split("/").at(-2));
+        row.status = "cancelled";
+        row.version++;
+        row.timing.displayStatus = "cancelled";
+        row.timing.canCancel = false;
+        return route.fulfill({ json: row });
+      }
+      if (/\/(attachment|visitor-photo)$/.test(url.pathname)) {
+        const memo = url.pathname.endsWith("/attachment");
+        fileCalls.push(route.request().method());
+        assert.equal(route.request().headers().authorization, "Bearer fixture-pa-token");
+        return fileDenied
+          ? route.fulfill({ status: 403, json: { message: "Akses dokumen tidak diizinkan." } })
+          : route.fulfill({
+              contentType: memo ? "application/pdf" : "image/png",
+              body: memo ? pdf : photo,
+            });
+      }
+      if (url.pathname === "/v1/staff/bookings") {
+        listCalls.push(url);
+        const page = Number(url.searchParams.get("page"));
+        return route.fulfill({
+          json: {
+            items: rows
+              .filter((row) => row.status === url.searchParams.get("status"))
+              .slice((page - 1) * 7, page * 7),
+            total: rows.filter((row) => row.status === url.searchParams.get("status")).length,
+            totalScoped: 12,
+            page,
+            pageSize: 7,
+          },
+        });
+      }
+      return route.fulfill({ json: rows.find((row) => row.id === url.pathname.split("/").at(-1)) });
+    });
+    await page.goto(server.origin + "/admin/booking?status=approved&page=2");
+    await page
+      .getByRole("button", { name: "Lihat detail Contract Visitor 8", exact: true })
+      .waitFor();
+    assert.equal(listCalls[0].searchParams.get("view"), "list");
+    assert.equal(listCalls[0].searchParams.get("pageSize"), "7");
+    assert.equal(listCalls[0].searchParams.get("page"), "2");
+    assert.equal(listCalls[0].searchParams.has("role"), false);
+    await page
+      .getByRole("button", { name: "Lihat detail Contract Visitor 8", exact: true })
+      .click();
+    const detail = page.getByRole("dialog", { name: "Detail kunjungan", exact: true });
+    await detail.waitFor();
+    const dialogFont = await detail.evaluate((element) => getComputedStyle(element).fontFamily);
+    const pageFont = await page
+      .locator(".admin-shell")
+      .evaluate((element) => getComputedStyle(element).fontFamily);
+    assert.match(pageFont, /Geist Variable/);
+    assert.equal(dialogFont, pageFont);
+    assert.equal(fileCalls.length, 0);
+    const memoButton = await detail.getByRole("button", { name: "Lihat Nota Dinas" }).boundingBox();
+    const photoButton = await detail
+      .getByRole("button", { name: "Lihat foto pengunjung" })
+      .boundingBox();
+    assert.equal(memoButton.x, photoButton.x);
+    assert.equal(memoButton.width, photoButton.width);
+    assert.equal(memoButton.height, photoButton.height);
+    for (const [name, filename, bytes] of [
+      ["Nota Dinas", "official.pdf", pdf],
+      ["foto pengunjung", "visitor.png", photo],
+    ]) {
+      const trigger = page.getByRole("button", { name: `Lihat ${name}`, exact: true });
+      await trigger.click();
+      const title = name === "Nota Dinas" ? name : "Foto pengunjung";
+      const viewer = page.getByRole("dialog", { name: title, exact: true });
+      await viewer.waitFor();
+      assert.equal(await page.locator(".modal:visible").count(), 1);
+      assert.deepEqual(await viewer.boundingBox(), { x: 0, y: 0, ...page.viewportSize() });
+      if (name === "foto pengunjung") {
+        const image = viewer.getByRole("img", { name: title });
+        await image.waitFor();
+        assert.equal(await image.evaluate(async (node) => {
+          await node.decode();
+          return node.naturalWidth;
+        }), 1);
+      } else if (await page.evaluate(() => navigator.pdfViewerEnabled)) {
+        await viewer.locator('iframe[src^="blob:"]').waitFor();
+      }
+      const downloading = page.waitForEvent("download");
+      await viewer.locator(".modal-heading").getByRole("link", { name: `Unduh ${name}` }).click();
+      const download = await downloading;
+      assert.equal(download.suggestedFilename(), filename);
+      assert.deepEqual(await readFile(await download.path()), bytes);
+      if (name === "Nota Dinas") await viewer.getByRole("button", { name: "Tutup dialog" }).click();
+      else await page.keyboard.press("Escape");
+      await viewer.waitFor({ state: "hidden" });
+      await trigger.and(page.locator(":focus")).waitFor();
+    }
+    assert.deepEqual(fileCalls, ["GET", "GET"]);
+    fileDenied = true;
+    await page.getByRole("button", { name: "Lihat Nota Dinas" }).click();
+    const deniedViewer = page.getByRole("dialog", { name: "Nota Dinas", exact: true });
+    await deniedViewer.getByRole("alert").filter({ hasText: "Akses dokumen tidak diizinkan." }).waitFor();
+    assert.equal(await deniedViewer.getByRole("link", { name: "Unduh Nota Dinas" }).count(), 0);
+    await page.keyboard.press("Escape");
+    assert.deepEqual(state.errors, []);
+    await audit(page, "staff-detail-production-390");
+    assert.equal(
+      await page.getByRole("button", { name: "Batalkan kunjungan", exact: true }).count(),
+      0,
+    );
+    permitCancellation = true;
+    await page.evaluate(() => window.dispatchEvent(new Event("visibilitychange")));
+    await page.getByRole("button", { name: "Batalkan kunjungan", exact: true }).click();
+    await page
+      .getByRole("textbox", { name: "Alasan pembatalan", exact: false })
+      .fill("Authorized staff cancellation reason.");
+    await audit(page, "staff-cancellation-production-390");
+    await page.getByRole("button", { name: "Batalkan kunjungan", exact: true }).click();
+    await page
+      .getByRole("status")
+      .filter({ hasText: "Kunjungan dibatalkan oleh petugas." })
+      .waitFor();
+    assert.equal(cancellationCalls.length, 1);
+    assert.deepEqual(cancellationCalls[0].body, {
+      reason: "Authorized staff cancellation reason.",
+      internalCancellationNote: "",
+      version: 2,
+    });
+    assert.equal(cancellationCalls[0].headers["x-vms-request"], "browser");
+  } finally {
+    await env.close();
+  }
+});
+
+test("production reception opens files and confirms attendance with the resolved credential", async () => {
+  const env = await open(undefined, { viewport: { width: 1280, height: 900 } });
+  const { page, context, state } = env;
+  try {
+    state.role = "Receptionist";
+    const visit = {
+      id: "42",
+      code: "88001001",
+      name: "Tamu Resepsionis",
+      organization: "Instansi Contoh",
+      host: "Pejabat Contoh",
+      officerId: "officer-server-42",
+      vip: false,
+      visitKind: "standard",
+      date: "2099-08-19",
+      time: "09:00",
+      duration: 60,
+      room: "Ruang Contoh",
+      status: "approved",
+      version: 1,
+      purpose: "Pengujian berkas",
+      visitors: ["Tamu Resepsionis"],
+      ndName: "surat.pdf",
+      attachmentAvailable: true,
+      visitorPhotoAvailable: true,
+      timing: {
+        serverTime: Date.parse("2099-08-19T09:00:00+08:00"),
+        opensAt: Date.parse("2099-08-19T08:30:00+08:00"),
+        endsAt: Date.parse("2099-08-19T10:00:00+08:00"),
+        displayStatus: "approved",
+        canCheckIn: true,
+        canCheckOut: false,
+        canCancel: true,
+      },
+      allowedActions: ["checkin"],
+    };
+    await context.route("**/v1/staff/resolve", (route) =>
+      route.fulfill({ json: visit }),
+    );
+    const fileCalls = [];
+    let validCredential = true;
+    await context.route("**/v1/staff/bookings**", (route) => {
+      const request = route.request();
+      const url = new URL(request.url());
+      if (url.pathname === "/v1/staff/bookings")
+        return route.fulfill({
+          json: { items: [], total: 0, totalScoped: 0, page: 1, pageSize: 25 },
+        });
+      assert.equal(request.method(), "POST");
+      assert.equal(url.search, "");
+      assert.equal(request.headers().authorization, "Bearer fixture-staff-token");
+      if (url.pathname === `/v1/staff/bookings/${visit.id}/attendance`) {
+        assert.deepEqual(request.postDataJSON(), {
+          action: "check_in",
+          credential: visit.code,
+          version: visit.version,
+        });
+        return route.fulfill({
+          json: {
+            ...visit,
+            status: "checked_in",
+            version: 2,
+            timing: {
+              ...visit.timing,
+              displayStatus: "checked_in",
+              canCheckIn: false,
+              canCheckOut: true,
+            },
+          },
+        });
+      }
+      assert.deepEqual(request.postDataJSON(), { credential: visit.code });
+      const file = url.pathname.split("/").at(-1);
+      fileCalls.push(file);
+      if (!validCredential)
+        return route.fulfill({ status: 404, json: { message: "Periksa ulang kode kunjungan." } });
+      if (file === "attachment") {
+        const memo = new jsPDF();
+        memo.text("Nota Dinas", 20, 20);
+        return route.fulfill({
+          contentType: "application/pdf",
+          body: Buffer.from(memo.output("arraybuffer")),
+        });
+      }
+      return route.fulfill({
+        contentType: "image/png",
+        body: Buffer.from(
+          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=",
+          "base64",
+        ),
+      });
+    });
+    await page.goto(server.origin + "/admin/check-in");
+    await page.getByRole("button", { name: /Kode kunjungan Masukkan/ }).click();
+    await page.locator("#booking-code").fill(visit.code);
+    await page.locator("#booking-code").press("Enter");
+    const validation = page.getByRole("dialog", { name: "Validasi pengunjung" });
+    const memoButton = await validation
+      .getByRole("button", { name: "Lihat Nota Dinas" })
+      .boundingBox();
+    const photoButton = await validation
+      .getByRole("button", { name: "Lihat foto pengunjung" })
+      .boundingBox();
+    assert.equal(memoButton.y, photoButton.y);
+    assert.equal(memoButton.width, photoButton.width);
+    assert.equal(memoButton.height, photoButton.height);
+    for (const name of ["Nota Dinas", "foto pengunjung"]) {
+      await validation.getByRole("button", { name: `Lihat ${name}` }).click();
+      const download = page.getByRole("link", { name: `Unduh ${name}` });
+      await download.waitFor();
+      assert.equal(await page.locator(".modal:visible").count(), 1);
+      await page.keyboard.press("Escape");
+      await download.waitFor({ state: "hidden" });
+      await validation.waitFor();
+    }
+    assert.deepEqual(fileCalls, ["attachment", "visitor-photo"]);
+    validCredential = false;
+    await validation.getByRole("button", { name: "Lihat Nota Dinas" }).click();
+    await page
+      .getByRole("dialog", { name: "Masukkan kode kunjungan" })
+      .getByRole("alert")
+      .filter({ hasText: "Periksa ulang kode kunjungan." })
+      .waitFor();
+    assert.equal(await validation.count(), 0);
+    await page.locator("#booking-code").fill(visit.code);
+    await page.locator("#booking-code").press("Enter");
+    await validation.getByRole("checkbox").check();
+    await validation.getByRole("button", { name: "Konfirmasi check in" }).click();
+    await page.getByRole("status").filter({ hasText: "berhasil check in" }).waitFor();
+  } finally {
+    await env.close();
+  }
+});
+
+test("a changed server role removes the previous private management screen on return to the tab", async () => {
+  const env = await open();
+  try {
+    const { page, state } = env;
+    await page
+      .getByRole("button", { name: "Lihat detail pegawai Pegawai Layanan", exact: true })
+      .waitFor();
+    state.role = "Receptionist";
+    await page.evaluate(() => window.dispatchEvent(new Event("visibilitychange")));
+    await page.getByRole("heading", { name: "Akses terbatas", exact: true }).waitFor();
+    assert.equal(await page.getByText("pegawai@example.test", { exact: true }).count(), 0);
+    assert.equal(await page.locator("#role").count(), 0);
+  } finally {
+    await env.close();
+  }
+});
+
+test("production dashboard analytics uses an aggregate route and hides counts after denied refresh", async () => {
+  const env = await open("/admin/dashboard");
+  try {
+    const { page, state } = env;
+    const total = page.locator(".analytics-card-total strong");
+    await total.waitFor();
+    assert.equal(await total.innerText(), "0");
+    assert.equal(
+      state.calls.some((call) => call.path === "/staff/reports/summary"),
+      true,
+    );
+    state.summaryDenied = true;
+    await page.getByRole("button", { name: "Perbarui statistik", exact: true }).click();
+    await page.getByRole("alert").filter({ hasText: "Akses laporan tidak diizinkan." }).waitFor();
+    assert.equal(await total.count(), 0);
+    assert.deepEqual(state.errors, []);
+  } finally {
+    await env.close();
+  }
+});
+
+for (const role of ["PA", "Protocol Officer", "Receptionist", "Super Admin"]) {
+  test(`staff avatar shows the current employee profile on hover for ${role} without directory permission`, async () => {
+    const env = await open("/admin/login", { permissions: ["bookings"] });
+    try {
+      const { page, state } = env;
+      state.role = role;
+      state.employees.push({
+        id: "admin-42",
+        name: "Pegawai Profil Uji",
+        email: "profile@example.test",
+        roles: [role],
+        active: true,
+        version: 1,
+        assignedOfficerIds: role === "PA" ? ["3"] : [],
+        jobTitle: "Asisten",
+        directorate: "Direktorat Uji",
+        nip: "123456789",
+        phoneNumbers: ["0812345678", "+62 542 123456"],
+      });
+      await page.goto(server.origin + "/admin/dashboard");
+      const profileRequests = () => state.calls.filter((call) => call.path.startsWith("/staff/employees"));
+      const avatar = page.getByRole("button", { name: "Buka profil saya" });
+      await avatar.waitFor();
+      assert.equal(profileRequests().length, 0);
+      await avatar.hover();
+      const dialog = page.getByRole("dialog", { name: "Profil saya", exact: true });
+      await dialog.getByRole("heading", { name: "Pegawai Profil Uji" }).waitFor();
+      await dialog.getByText(role, { exact: true }).waitFor();
+      for (const value of [
+        "profile@example.test", "Asisten", "Direktorat Uji", "123456789", "0812345678", "+62 542 123456",
+      ]) await dialog.getByText(value, { exact: true }).waitFor();
+      await dialog.hover();
+      assert.equal(await dialog.isVisible(), true);
+      assert.deepEqual(profileRequests().map(({ path, method, headers }) =>
+        [path, method, headers.authorization]), [["/staff/employees/admin-42", "GET", "Bearer fixture-staff-token"]]);
+      await page.mouse.move(0, 890);
+      await dialog.waitFor({ state: "hidden" });
+      await avatar.focus();
+      await dialog.waitFor();
+      await audit(page, `profile-hover-${role.replaceAll(" ", "-")}`);
+      await page.keyboard.press("Escape");
+      await dialog.waitFor({ state: "hidden" });
+      await page.waitForFunction(
+        () => document.activeElement?.getAttribute("aria-label") === "Buka profil saya",
+      );
+    } finally {
+      await env.close();
+    }
+  });
+}
 
 test("large visitor rosters stay bounded and toggle in PA, protocol and reception previews", async () => {
   for (const role of ["PA", "Protocol Officer", "Receptionist"]) {

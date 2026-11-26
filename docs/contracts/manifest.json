@@ -6,7 +6,7 @@
     "fieldRules": "FRONTEND-DRIVEN-DETAILS-2026-11-16.md",
     "validation": "UI-CONTRACT-VALIDATION-2026-11-18.md",
     "schema": "PHYSICAL-SCHEMA-2026-11-18.md",
-    "tickets": "../../.scratch/backend-api-2026-11-18/spec.md"
+    "tickets": "../specs/backend-api-2026-11-18/spec.md"
   },
   "sourceBaseline": "source-baseline.json",
   "runtimeCaptures": [
@@ -973,6 +973,11 @@
   "sourceDTOs": {
     "pkg/dto/admission.go:Admission": [
       {
+        "Name": "imagePng",
+        "Type": "string",
+        "Optional": false
+      },
+      {
         "Name": "payload",
         "Type": "string",
         "Optional": false
@@ -1703,6 +1708,11 @@
         "Optional": true
       },
       {
+        "Name": "phoneNumbers",
+        "Type": "[]string",
+        "Optional": false
+      },
+      {
         "Name": "nip",
         "Type": "string",
         "Optional": true
@@ -1757,6 +1767,11 @@
       {
         "Name": "phone",
         "Type": "string",
+        "Optional": false
+      },
+      {
+        "Name": "phoneNumbers",
+        "Type": "[]string",
         "Optional": false
       },
       {
@@ -1851,6 +1866,11 @@
       {
         "Name": "phone",
         "Type": "Optional[string]",
+        "Optional": false
+      },
+      {
+        "Name": "phoneNumbers",
+        "Type": "Optional[[]string]",
         "Optional": false
       },
       {
@@ -2942,27 +2962,19 @@
     },
     {
       "file": "frontendx/packages/data/src/attachments.ts",
-      "call": "request(`/staff/bookings/${encodeURIComponent(id)}/attachment`, { authenticated: true, responseType: \"blob\", })",
-      "operations": [
-        20
-      ]
-    },
-    {
-      "file": "frontendx/packages/data/src/attachments.ts",
-      "call": "request(`/staff${path}`, { authenticated: true, responseType: \"blob\", signal })",
-      "operations": [
-        20,
-        21
-      ]
-    },
-    {
-      "file": "frontendx/packages/data/src/attachments.ts",
       "call": "request(`/staff${path}`, options)",
       "operations": [
         20,
         21,
         37,
         38
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/http.ts",
+      "call": "request(\"/staff/session/refresh\", { body })",
+      "operations": [
+        39
       ]
     },
     {
@@ -2986,7 +2998,7 @@
     },
     {
       "file": "frontendx/packages/data/src/management.ts",
-      "call": "request(`/staff/employees${id ? \"/\" + encodeURIComponent(id) : \"\"}`, { body: { ...input, version }, method: id ? \"PATCH\" : \"POST\", authenticated: true, })",
+      "call": "request(`/staff/employees${id ? \"/\" + encodeURIComponent(id) : \"\"}`, { body, method: id ? \"PATCH\" : \"POST\", authenticated: true, })",
       "operations": [
         28,
         29
@@ -3005,16 +3017,6 @@
       "operations": [
         31
       ]
-    },
-    {
-      "file": "frontendx/packages/data/src/management.ts",
-      "call": "request(\"/staff/integrations\", { authenticated: true })",
-      "operations": []
-    },
-    {
-      "file": "frontendx/packages/data/src/management.ts",
-      "call": "request(`/staff/integrations/${encodeURIComponent(record.id)}`, { body: input, method: \"PATCH\", authenticated: true, })",
-      "operations": []
     },
     {
       "file": "frontendx/packages/data/src/read-model.ts",
@@ -3082,7 +3084,7 @@
     },
     {
       "file": "frontendx/packages/data/src/repositories.ts",
-      "call": "request( development && action === \"cancel\" ? `/staff/bookings/${encodeURIComponent(id)}/cancel?role=${encodeURIComponent(role)}` : staff(`/bookings/${encodeURIComponent(id)}/${action}`, role), { body, authenticated: true, }, )",
+      "call": "request( development && action === \"cancel\" ? `/staff/bookings/${encodeURIComponent(id)}/cancel?role=${encodeURIComponent(role)}` : staff(`/bookings/${encodeURIComponent(id)}/${endpoint}`, role), { body: requestBody, authenticated: true, }, )",
       "operations": [
         12,
         13,
@@ -3143,13 +3145,6 @@
     },
     {
       "file": "frontendx/packages/data/src/session.tsx",
-      "call": "request(\"/staff/session/refresh\", { body: { refreshRequestId } })",
-      "operations": [
-        39
-      ]
-    },
-    {
-      "file": "frontendx/packages/data/src/session.tsx",
       "call": "request(\"/staff/password\", { body: { currentPassword, newPassword }, authenticated: true, })",
       "operations": [
         36
@@ -3160,6 +3155,13 @@
       "call": "request(\"/staff/sessions\", { body: credentials })",
       "operations": [
         32
+      ]
+    },
+    {
+      "file": "frontendx/packages/data/src/session.tsx",
+      "call": "request(\"/staff/session/renew\", { body: {}, authenticated: true, signal: controller.signal, })",
+      "operations": [
+        40
       ]
     },
     {

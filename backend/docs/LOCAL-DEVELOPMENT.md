@@ -70,16 +70,20 @@ Compose builds the API and migrator into the same non-root image. Its default `p
 
 1. Open Docker Desktop and wait for its engine. Double-click `Start VMS.cmd` in the VMS checkout. The first run builds the frontend and API images, starts PostgreSQL, and applies the migrations before the API starts. Later runs reuse the images and database.
 2. Open the [visitor app](http://localhost:58101/) or the [staff app](http://localhost:58101/admin/). Both apps make requests to the real API through the same address. Use `localhost` as shown for staff sign-in.
-3. For direct API testing, set `SWAGGER_USERNAME` and `SWAGGER_PASSWORD` in `backend/.env` and open [Swagger](http://localhost:58101/swagger/index.html). You can check [readiness through the frontend](http://localhost:58101/health/ready) without signing in.
+3. For API testing, set `SWAGGER_USERNAME` and `SWAGGER_PASSWORD` in `backend/.env`, then run `Start VMS.cmd` again. The launcher prints the Swagger and readiness URLs for the configured port. With the default port, open [Swagger](http://localhost:8080/swagger/index.html) or [API readiness](http://localhost:8080/health/ready). Leave both Swagger credentials blank to disable Swagger.
 4. Double-click `Stop VMS.cmd` to stop the stack. Start it again with the same file. The database and uploads stay in Docker volumes `vms-postgres` and `vms-uploads`.
 
-The Compose project is named `vms`. Docker lists `58101:8180` on the frontend container and the direct API port on `vms-backend`. The direct API port defaults to `8080` and can be set with `APP_PORT` in `backend/.env`. Both published ports bind to loopback. The frontend and API have a dedicated network, and PostgreSQL stays on the private backend network.
+The Compose project is named `vms`. Port `58101` serves both apps. Set `APP_PORT` in `backend/.env` to change both the backend listener inside Docker and its direct port on the local machine. It defaults to `8080`. Ports `8180` and `58101` are reserved for the frontend. Both published ports listen only on the local machine, and PostgreSQL uses the private Compose network.
+
+Docker Desktop lists `58101:8180` under the frontend container and the direct API port under `vms-backend`. The frontend uses its own network connection and contacts `api` through a dedicated gateway network, so restarting Docker no longer leaves it attached to an old backend network namespace. Only the frontend address `172.30.81.2` is allowed to initialize staff forms, and the gateway secret is still required. The frontend health check also verifies backend readiness.
 
 For a new empty catalog, run `".\Start VMS.cmd" -SeedTestCatalog` from Command Prompt, or `& '.\Start VMS.cmd' -SeedTestCatalog` from PowerShell. This inserts fictional officials and rooms once and turns on a clearly labeled testing notice if no operator notice is configured. The test data stays in the local database on restart. In Swagger, try `GET /v1/public/catalogs`, `POST /v1/public/attachments`, and `POST /v1/public/bookings`.
 
 Use `-Rebuild` after pulling changes to either app or the backend. Do not enter real visitor details under the test notice.
 
 For a production deployment, put the frontend image behind an HTTPS reverse proxy that preserves the public `Host` header. Set `VMS_DOCKER_SITE=1` and `VMS_SITE_ORIGIN` to the exact public HTTPS origin, such as `https://visits.example.org`. Set the API's `STAFF_ORIGIN` to the same value and configure `VMS_DOCKER_API_HOST=api` and `APP_PORT` for the private upstream. Give the frontend and API the same mounted gateway key and restrict `GATEWAY_INIT_NETWORKS` to the frontend's private address. Route both `/admin/` and `/v1/` through the frontend gateway so login document requests can initialize signed form cookies. Keep the API and database private, and use the target environment's database TLS, secrets, employee accounts and visitor notice. The Windows local Compose override uses localhost settings and fictional test data.
+
+If local test staff accounts have been provisioned, keep their login details in `backend/.runtime/local/staff_test_accounts.env`. The file is ignored by Git and excluded from Docker builds. The launcher does not load it as application configuration.
 
 Verified on Windows on 20 November 2026. The launcher applied all 30 migrations on the first start and zero on the second. Swagger authentication, a visitor photo upload and a test booking passed. The same booking was found after using the stop and start launchers.
 

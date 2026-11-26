@@ -97,6 +97,9 @@ input,
 textarea {
   caret-color: var(--blue);
 }
+input:is([type="checkbox"], [type="radio"]) {
+  accent-color: var(--action-primary);
+}
 input::placeholder,
 textarea::placeholder {
   color: oklch(0.55473980 0.02222122 252.995728);
@@ -120,7 +123,7 @@ textarea::placeholder {
   padding-block: var(--space-2);
   padding-inline: var(--space-5);
   border: 0;
-  border-radius: 16px;
+  border-radius: var(--control-radius);
   font-weight: 600;
   font-size: 0.9rem;
   transition:
@@ -130,7 +133,7 @@ textarea::placeholder {
     transform 0.1s ease;
   white-space: nowrap;
 }
-:is(.button, .link-button, .shadcn-button, .row-link, th button) > svg {
+:is(.button, .link-button, .shadcn-button) > svg {
   flex: none;
 }
 .button:not(:disabled):active,
@@ -213,6 +216,114 @@ textarea::placeholder {
   align-items: center;
   gap: 7px;
   min-height: var(--action-height);
+}
+.button:is(.sort-label, .row-link, .inline-link) {
+  min-width: 0;
+  justify-content: flex-start;
+  padding: 0;
+  border-radius: var(--space-1);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  white-space: normal;
+}
+.button.sort-label {
+  gap: var(--space-1);
+}
+.button.row-link {
+  color: var(--ink);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.button:is(.sort-label, .row-link):hover:not(:disabled) {
+  color: var(--action-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.button.inline-link {
+  display: inline;
+  min-height: auto;
+  color: var(--blue);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.button.button-icon {
+  flex-shrink: 0;
+  inline-size: var(--action-height);
+  padding: 0;
+}
+.button:is(.sort-label, .row-link, .inline-link):active {
+  transform: none;
+}
+.button:is(.action-card, .menu-option) {
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: flex-start;
+  color: var(--ink);
+  text-align: start;
+  white-space: normal;
+}
+.button.action-card {
+  gap: var(--space-4);
+  padding: var(--action-card-inset, var(--space-6));
+  border: 1px solid var(--line);
+  background: var(--white);
+}
+.button.action-card:hover:not(:disabled) {
+  background: var(--accent-soft);
+  border-color: var(--action-secondary-border);
+}
+.button.action-card > svg:first-child {
+  color: var(--blue);
+}
+.button.menu-option {
+  flex-direction: column;
+  gap: var(--space-1);
+  min-height: 64px;
+  padding: var(--space-3);
+  border-radius: var(--field-radius);
+  background: transparent;
+}
+.button.menu-option:is(:hover, :focus-visible):not(:disabled) {
+  background: var(--action-secondary-hover);
+}
+.button.menu-option:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+.button:is(.action-card, .menu-option) small {
+  color: var(--muted);
+  font-weight: 400;
+}
+.button:is(.sort-label, .row-link, .inline-link, .action-card, .menu-option):disabled {
+  color: var(--action-disabled-text);
+}
+.segmented-control {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border-radius: var(--control-radius);
+  background: var(--white);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.segmented-control > .button {
+  flex: 1 0 auto;
+  min-width: var(--action-height);
+  padding-inline: var(--space-2);
+  border-radius: var(--field-radius);
+  font-size: var(--field-message-size);
+}
+.segmented-control > .button:focus-visible {
+  outline-offset: -3px;
+}
+@media (forced-colors: active) {
+  .segmented-control > .button[aria-pressed="true"] {
+    text-decoration: underline;
+  }
 }
 .glass {
   background: oklch(0.99999999 0 0.000000 / 0.84);
@@ -298,7 +409,7 @@ textarea::placeholder {
   align-items: center;
   gap: 5px;
   padding: 5px 9px;
-  border-radius: 7px;
+  border-radius: var(--badge-radius);
   font-size: 0.73rem;
   font-weight: 600;
   white-space: nowrap;
@@ -313,10 +424,16 @@ textarea::placeholder {
   color: oklch(0.44956814 0.09594386 72.623907);
   background-color: oklch(0.95511725 0.06504919 93.055628 / 0.8196078431);
 }
-.status-approved {
+.status-approved,
+.badge-positive {
   --badge-solid: oklch(0.94802096 0.04859548 153.513623);
   color: oklch(0.44806736 0.10590388 152.990236);
   background-color: oklch(0.94802096 0.04859548 153.513623 / 0.8196078431);
+}
+.badge-neutral {
+  --badge-solid: var(--surface-subtle);
+  background-color: var(--surface-subtle);
+  color: var(--muted);
 }
 .status-rejected {
   --badge-solid: oklch(0.93273038 0.03435065 13.349119);
@@ -440,11 +557,12 @@ textarea::placeholder {
 }
 .panel {
   background: var(--white);
-  border-radius: 20px;
-  box-shadow:
+  border: var(--panel-border, 0);
+  border-radius: var(--panel-radius);
+  box-shadow: var(--panel-shadow,
     0 2px 6px oklch(0.23157626 0.00380518 286.098854 / 0.0117647059),
     0 12px 32px -20px oklch(0.23157626 0.00380518 286.098854 / 0.1098039216),
-    inset 0 0 0 1px oklch(0.23157626 0.00380518 286.098854 / 0.0235294118);
+    inset 0 0 0 1px oklch(0.23157626 0.00380518 286.098854 / 0.0235294118));
   overflow: hidden;
 }
 .panel-heading {
@@ -554,10 +672,6 @@ textarea::placeholder {
   position: relative;
   cursor: pointer;
 }
-.upload-field-picker:has(input:focus-visible) {
-  outline: 3px solid var(--focus);
-  outline-offset: 4px;
-}
 .upload-field-picker:has(input[aria-invalid="true"]) {
   box-shadow: inset 0 0 0 1px var(--action-danger);
 }
@@ -584,17 +698,18 @@ textarea::placeholder {
   min-height: var(--field-height);
   padding: var(--field-padding-block) var(--field-padding-inline);
   background: oklch(0.99999999 0 0.000000);
-  border: 1px solid oklch(0.85489312 0.00780513 241.680674);
+  border: 1px solid var(--field-border);
   border-radius: var(--field-radius);
   font-size: var(--field-text-size);
   line-height: var(--field-text-line);
   color: var(--ink);
 }
-.field input:hover,
-.field select:hover {
-  border-color: oklch(0.66364388 0.02752881 250.076571);
+.field :is(input, select, textarea):where(:hover:not(:disabled)),
+.control:where(:hover:not(:disabled)) {
+  border-color: var(--field-border-hover);
 }
-.field :is(input, textarea)::placeholder {
+.field :is(input, textarea)::placeholder,
+.control::placeholder {
   color: var(--muted);
   opacity: 1;
 }
@@ -607,7 +722,7 @@ select.select-control {
   background-size: 14px;
 }
 .field [aria-invalid="true"] {
-  border-color: oklch(0.50170852 0.15662789 28.344907);
+  border-color: var(--field-border-invalid);
 }
 .field-error {
   color: oklch(0.48172960 0.15345777 28.212516);
@@ -619,7 +734,7 @@ select.select-control {
   gap: var(--space-2);
   min-height: var(--action-height);
   padding: var(--space-2) var(--space-3);
-  border: 1px solid oklch(0.85489312 0.00780513 241.680674);
+  border: 1px solid var(--field-border);
   border-radius: 8px;
   background: var(--white);
   color: var(--ink);
@@ -630,8 +745,7 @@ select.select-control {
 .shadcn-button-ghost { border-color: transparent; background: transparent; }
 .shadcn-button-size-icon { width: 44px; height: 44px; padding: 0; flex-shrink: 0; }
 .shadcn-button:disabled { cursor: default; opacity: 0.5; }
-.shadcn-button:focus-visible,
-.field .shadcn-input:focus-visible {
+.shadcn-button:not(:where(.date-picker-trigger, .time-picker-trigger)):focus-visible {
   border-color: var(--focus);
   outline: 3px solid color-mix(in srgb, var(--focus) 40%, transparent);
   outline-offset: 1px;
@@ -640,7 +754,7 @@ select.select-control {
 .date-picker > div.date-picker-control {
   min-height: var(--action-height);
   padding: 9px 10px;
-  border: 1px solid oklch(0.85489312 0.00780513 241.680674);
+  border: 1px solid var(--field-border);
   border-radius: 8px;
 }
 .date-picker-trigger {
@@ -648,7 +762,7 @@ select.select-control {
   width: 100%;
   min-height: var(--field-height);
   padding: var(--field-padding-block) var(--field-padding-inline);
-  border: 1px solid oklch(0.85489312 0.00780513 241.680674);
+  border: 1px solid var(--field-border);
   border-radius: var(--field-radius);
   background: oklch(0.99999999 0 0.000000);
   text-align: left;
@@ -656,8 +770,8 @@ select.select-control {
   line-height: var(--field-text-line);
   font-weight: 400;
 }
-.date-picker-trigger:hover:not(:disabled) { background: oklch(0.99999999 0 0.000000); border-color: oklch(0.66364388 0.02752881 250.076571); }
-.date-picker-trigger[aria-invalid="true"] { border-color: oklch(0.50170852 0.15662789 28.344907); }
+.date-picker-trigger:hover:not(:disabled) { background: oklch(0.99999999 0 0.000000); border-color: var(--field-border-hover); }
+.date-picker-trigger[aria-invalid="true"] { border-color: var(--field-border-invalid); }
 .date-picker-trigger svg { flex-shrink: 0; color: var(--muted); }
 .date-picker-trigger[data-empty] { color: var(--muted); }
 .date-picker-trigger span { min-width: 0; overflow-wrap: anywhere; }
@@ -798,7 +912,7 @@ select.select-control {
   width: 100%;
   min-height: var(--field-height);
   padding: var(--field-padding-block) var(--field-padding-inline);
-  border: 1px solid oklch(0.85489312 0.00780513 241.680674);
+  border: 1px solid var(--field-border);
   border-radius: var(--field-radius);
   background: oklch(0.99999999 0 0.000000);
   gap: 8px;
@@ -806,8 +920,8 @@ select.select-control {
   line-height: var(--field-text-line);
   font-weight: 400;
 }
-.time-picker-trigger:hover:not(:disabled) { background: oklch(0.99999999 0 0.000000); border-color: oklch(0.66364388 0.02752881 250.076571); }
-.time-picker-trigger[aria-invalid="true"] { border-color: oklch(0.50170852 0.15662789 28.344907); }
+.time-picker-trigger:hover:not(:disabled) { background: oklch(0.99999999 0 0.000000); border-color: var(--field-border-hover); }
+.time-picker-trigger[aria-invalid="true"] { border-color: var(--field-border-invalid); }
 .time-picker-trigger > svg { flex-shrink: 0; color: var(--muted); }
 .time-picker-trigger [data-slot="time-picker-value"] { flex: 1; text-align: left; }
 .time-picker-trigger[data-placeholder] { color: var(--muted); }
@@ -931,8 +1045,6 @@ select.select-control {
 .input-otp input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; z-index: 1; cursor: text; }
 .input-otp-slots { display: flex; gap: 5px; max-width: 100%; }
 .input-otp-slot { display: grid; place-items: center; width: clamp(31px, 5vw, 39px); height: 42px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); font-size: 1rem; font-weight: 650; font-variant-numeric: tabular-nums; }
-.input-otp:focus-within .input-otp-slot { border-color: var(--focus); }
-.input-otp:focus-within .input-otp-slot:first-child { box-shadow: 0 0 0 2px oklch(0.52411830 0.15787954 254.785480 / 0.2); }
 .toast-stack { position: fixed; z-index: 1000; top: 16px; right: 16px; display: grid; gap: 8px; width: min(360px, calc(100vw - 32px)); pointer-events: none; }
 .toast-card { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: oklch(0.99999999 0 0.000000 / 0.94); box-shadow: 0 10px 30px oklch(0.25592260 0.06610870 255.485659 / 0.14); backdrop-filter: blur(16px); color: var(--ink); font-size: .85rem; pointer-events: auto; }
 .toast-card > svg { flex: none; color: oklch(0.53004876 0.12331240 155.110657); }
@@ -952,10 +1064,12 @@ select.select-control {
   --email-surface: var(--action-secondary);
   border-color: var(--action-secondary-border);
 }
+.email-address:has([aria-invalid="true"]) {
+  border-color: var(--field-border-invalid);
+}
 .field .email-address input:is(:autofill, :-webkit-autofill) {
   box-shadow: inset 0 0 0 100px var(--email-surface);
 }
-.email-address:focus-within { outline: 2px solid var(--focus); outline-offset: 1px; }
 .email-username,
 .email-suffix {
   flex: 1 1 0;
@@ -1165,7 +1279,6 @@ select.select-control {
   width: 18px;
   height: 18px;
   margin-top: 3px;
-  accent-color: var(--navy);
 }
 .check-label span {
   max-width: 65ch;
@@ -1175,14 +1288,211 @@ select.select-control {
   flex: 1;
   min-width: 200px;
 }
-.search-field svg {
+.search-field > svg {
   position: absolute;
-  top: 15px;
-  left: 14px;
+  inset-block-start: 50%;
+  inset-inline-start: var(--field-padding-inline);
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+.search-field > .control {
+  padding-inline-start: calc(var(--field-padding-inline) + 17px + var(--space-2));
+}
+.multiselect-control[data-single] {
+  padding-right: 60px;
+}
+.multiselect-clear {
+  position: absolute;
+  top: 50%;
+  right: 31px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 28px;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
   color: var(--muted);
 }
-.search-field input {
-  padding-left: 42px;
+.multiselect-clear:hover {
+  background: var(--surface-subtle);
+}
+
+.multiselect-control {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-height: var(--field-height);
+  padding: 5px 34px 5px 8px;
+  border: 1px solid var(--field-border);
+  border-radius: var(--field-radius);
+  background: var(--white);
+}
+.multiselect-control[data-invalid] {
+  border-color: var(--field-border-invalid);
+}
+.multiselect-control[data-disabled] {
+  background: var(--surface-subtle);
+}
+.multiselect-control input[role="combobox"] {
+  flex: 1 1 80px;
+  width: 80px;
+  min-width: 60px;
+  min-height: 28px;
+  padding: 2px 3px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: var(--field-text-size);
+  line-height: var(--field-text-line);
+}
+.multiselect-control input:focus-visible {
+  outline: none;
+}
+.multiselect-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 3px 5px 3px 7px;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--ink);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+.multiselect-tag > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.multiselect-tag button {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--muted);
+}
+.multiselect-tag button:hover {
+  background: var(--action-secondary-hover);
+  color: var(--ink);
+}
+.multiselect-toggle {
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 28px;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--muted);
+}
+.multiselect-popover {
+  z-index: 95;
+  pointer-events: auto;
+  width: var(--radix-popover-trigger-width);
+  max-width: calc(100vw - 24px);
+  max-height: min(240px, var(--radix-popover-content-available-height));
+  overflow: hidden;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  box-shadow: 0 8px 24px #132d441f;
+}
+.multiselect-popover [role="listbox"] {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  max-height: calc(min(240px, var(--radix-popover-content-available-height)) - 10px);
+  padding: 2px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-padding-block: 2px;
+  scrollbar-gutter: stable;
+}
+.multiselect-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 36px;
+  padding: 8px 10px;
+  border-radius: var(--menu-option-radius);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.multiselect-option > span {
+  min-width: 0;
+}
+.multiselect-option > svg {
+  flex-shrink: 0;
+  color: var(--action-primary);
+}
+.multiselect-option > .multiselect-check {
+  display: grid;
+  flex: 0 0 17px;
+  height: 17px;
+  place-items: center;
+  border: 1px solid var(--muted);
+  border-radius: 4px;
+}
+.multiselect-option[aria-selected="true"] > .multiselect-check {
+  color: var(--white);
+  border-color: var(--action-primary);
+  background: var(--action-primary);
+}
+.multiselect-option[aria-selected="true"] {
+  background: var(--action-secondary);
+  color: var(--action-primary);
+  font-weight: 600;
+}
+.multiselect-option[data-highlighted="true"] {
+  background: var(--action-secondary-hover);
+}
+.multiselect-empty {
+  padding: 12px 10px;
+  font-size: 0.8125rem;
+}
+
+:is(
+  .field input:not(:where([type="hidden"], [type="checkbox"], [type="radio"], [type="file"])),
+  .field textarea,
+  .control,
+  .select-control,
+  .date-picker-trigger,
+  .time-picker-trigger
+):is(:focus, :open, [aria-expanded="true"]):where(
+  :not(.email-address *, .multiselect-control *, .input-otp *)
+),
+:is(.email-address, .input-otp, .multiselect-control, .upload-field-picker):focus-within,
+.email-address:is(:has(select:open)) {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+
+@media (max-width: 600px) {
+  .multiselect-tag button {
+    width: 26px;
+    height: 26px;
+  }
 }
 .table-wrap {
   --table-cell-inset: var(--space-4);
@@ -1202,19 +1512,6 @@ th {
   font-weight: 500;
   padding: 6px 22px;
   white-space: nowrap;
-}
-th button {
-  display: inline-flex;
-  gap: var(--space-1);
-  align-items: center;
-  min-height: var(--action-height);
-  border: 0;
-  background: none;
-  color: inherit;
-  padding: 0;
-  font: inherit;
-  text-align: start;
-  cursor: pointer;
 }
 td {
   padding: 19px 22px;
@@ -1261,18 +1558,6 @@ td small {
   align-items: flex-start;
   gap: var(--space-3);
 }
-.row-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: var(--action-height);
-  text-align: start;
-  background: none;
-  border: 0;
-  color: var(--ink);
-  font-weight: 600;
-  padding: 0;
-}
 .table-wrap > table td .row-link {
   align-items: baseline;
 }
@@ -1307,7 +1592,7 @@ td small {
   /* Date/time popovers portal into this shell; only the inset body should clip. */
   overflow: visible;
   background: var(--white);
-  border-radius: 20px;
+  border-radius: var(--dialog-radius);
   padding: 6px;
   box-shadow: 0 25px 100px oklch(0.23157626 0.00380518 286.098854 / 0.2);
   animation: arrive 0.18s ease-out;
@@ -1555,25 +1840,6 @@ td small {
   border-radius: 12px;
 }
 .appointment-type-options.inline { position: static; width: 100%; box-shadow: none; padding: 0; }
-.appointment-type-options button {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-  width: 100%;
-  min-height: 64px;
-  padding: 12px;
-  text-align: left;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--ink);
-  cursor: pointer;
-}
-.appointment-type-options button:hover,
-.appointment-type-options button:focus-visible { background: var(--action-secondary-hover); }
-.appointment-type-options button:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
-.appointment-type-options small { color: var(--muted); }
 
 
 

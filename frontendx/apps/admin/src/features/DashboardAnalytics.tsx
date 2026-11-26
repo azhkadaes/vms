@@ -8,7 +8,7 @@ import {
   reportStatuses,
   summaryFilterSchema,
 } from "@vms/data/reports";
-import { Button, Empty, ErrorNotice, Loading } from "@vms/ui";
+import { FieldMessage, Button, Empty, ErrorNotice, Loading } from "@vms/ui";
 import { ChevronDown, RefreshCw, SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
 import ReportMultiSelect from "./ReportMultiSelect";
@@ -91,13 +91,9 @@ export default function DashboardAnalytics() {
                         }
                       />
                       {errors[name]?.[0] && (
-                        <span
-                          className="field-error"
-                          role="alert"
-                          id={`analytics-${String(name)}-error`}
-                        >
+                        <FieldMessage tone="error" id={`analytics-${String(name)}-error`}>
                           {errors[name]![0]}
-                        </span>
+                        </FieldMessage>
                       )}
                     </div>
                   ))}
@@ -130,6 +126,7 @@ export default function DashboardAnalytics() {
           </Popover>
           <Button
             kind="ghost"
+            size="icon"
             aria-label="Perbarui statistik"
             title="Perbarui statistik"
             disabled={q.isFetching}

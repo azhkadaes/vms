@@ -86,7 +86,9 @@ export const TimePicker = forwardRef<TimePickerHandle, TimePickerProps>(
           </TimePickerFooter>
         </TimePickerContent>
       </ReuiTimePicker>
-      <FieldMessage id={`${id}-hint`}>{t("Jam kerja 08.00–16.00 · WITA", "Office hours 08:00–16:00 · WITA")}</FieldMessage>
+      <FieldMessage id={`${id}-hint`}>
+        {t(`Waktu mulai ${min.replace(":", ".")}–${max.replace(":", ".")} · WITA`, `Start time ${min}–${max} · WITA`)}
+      </FieldMessage>
       {message && <FieldMessage id={`${id}-error`} tone="error">{message}</FieldMessage>}
     </div>;
   },

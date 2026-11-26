@@ -92,8 +92,9 @@ export function createRepository(options: ApiOptions = {}): Repository {
       );
     },
     list: async (role, signal) => {
-      const { staffBookingResponse } = await import("./wire.ts");
+      const { staffBookingResponse, staffReadModelResponse } = await import("./wire.ts");
       const result = await request(staff("/bookings", role), { signal, authenticated: true });
+      if (!development) return (await parse(result, staffReadModelResponse)).items;
       if (!Array.isArray(result))
         throw new ApiError(502, "Respons layanan tidak valid. Coba lagi.");
       return Promise.all(result.map((value) => parse(value, staffBookingResponse)));

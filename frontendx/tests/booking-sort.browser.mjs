@@ -55,13 +55,15 @@ test("visit sort shows its default label and can restore the default order", asy
         }),
       );
       await page.goto(`${origin}/admin/booking`);
-      const sort = page.getByRole("combobox", { name: "Urutan janji temu" });
+      const sort = page.getByRole("combobox", { name: "Urutan kunjungan" });
       await sort.waitFor();
       await page.locator("tbody tr").first().waitFor();
       assert.equal(await sort.inputValue(), "");
       assert.equal(await sort.locator("option:checked").textContent(), "Urutkan");
       assert.equal(await page.locator('label[for="booking-sort"]').innerText(), "Urutkan");
-      const names = () => page.locator("tbody .row-link").allTextContents();
+      const nameSelector = role === "PA" ? "tbody .row-link" : "tbody .person-cell strong";
+      const names = async () =>
+        (await page.locator(nameSelector).allTextContents()).map((name) => name.trim());
       const expected = role === "PA" ? ["Pending", "Upcoming", "Past"] : ["Upcoming", "Past"];
       assert.deepEqual(await names(), expected);
       await page.getByRole("button", { name: "Jadwal · WITA", exact: true }).click();
@@ -71,13 +73,14 @@ test("visit sort shows its default label and can restore the default order", asy
       assert.equal(new URL(page.url()).searchParams.has("dir"), false);
       assert.equal(new URL(page.url()).searchParams.has("sort"), false);
       await page.waitForFunction(
-        (first) => document.querySelector("tbody .row-link")?.textContent === first,
-        expected[0],
+        ({ selector, first }) => document.querySelector(selector)?.textContent.trim() === first,
+        { selector: nameSelector, first: expected[0] },
       );
       assert.deepEqual(await names(), expected);
       await sort.selectOption("time");
       await page.waitForFunction(
-        () => document.querySelector("tbody .row-link")?.textContent === "Past",
+        (selector) => document.querySelector(selector)?.textContent.trim() === "Past",
+        nameSelector,
       );
       assert.equal((await names())[0], "Past");
       await page.reload();

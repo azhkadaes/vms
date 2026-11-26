@@ -1,4 +1,4 @@
-import { Component, forwardRef, useEffect, type ReactNode, type ButtonHTMLAttributes } from "react";
+import { Component, useEffect, type ReactNode, type ComponentPropsWithRef } from "react";
 import { useLocation } from "react-router";
 import { ArrowRight } from "lucide-react";
 import { preview } from "@vms/data/config";
@@ -50,19 +50,35 @@ export function Brand({
     <div className={className}>{content}</div>
   );
 }
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  kind?: "primary" | "secondary" | "ghost" | "danger" | "danger-outline";
-};
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { children, kind = "primary", className = "", ...props },
-  ref,
-) {
+export function Button({
+  children,
+  kind = "primary",
+  size = "default",
+  className = "",
+  ...props
+}: ComponentPropsWithRef<"button"> & {
+  kind?:
+    | "primary"
+    | "secondary"
+    | "ghost"
+    | "danger"
+    | "danger-outline"
+    | "action-card"
+    | "menu-option"
+    | "sort-label"
+    | "row-link"
+    | "inline-link";
+  size?: "default" | "icon";
+}) {
   return (
-    <button ref={ref} className={`button ${kind} ${className}`} {...props}>
+    <button
+      className={`button ${kind}${size === "icon" ? " button-icon" : ""} ${className}`}
+      {...props}
+    >
       {children}
     </button>
   );
-});
+}
 export function PreviewNotice() {
   const { t } = useUiLanguage();
   return preview ? (
