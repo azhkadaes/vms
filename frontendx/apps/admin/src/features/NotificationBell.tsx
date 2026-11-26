@@ -128,8 +128,9 @@ export default function NotificationBell({ session }: { session: Session }) {
             <ul className="notification-list">
               {current.data.items.map((item) => (
                 <li key={item.id}>
-                  <button
+                  <Button
                     type="button"
+                    kind="action-card"
                     className="notification-row"
                     data-unread={!item.readAt || undefined}
                     disabled={markRead.isPending}
@@ -148,7 +149,7 @@ export default function NotificationBell({ session }: { session: Session }) {
                       Kunjungan #{item.visitId} · {dateTime.format(new Date(item.at))} WITA
                     </small>
                     {!item.readAt && <span className="notification-unread">Belum dibaca</span>}
-                  </button>
+                  </Button>
                 </li>
               ))}
             </ul>

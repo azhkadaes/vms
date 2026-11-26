@@ -2778,7 +2778,8 @@
   display: grid;
   gap: var(--space-2);
 }
-.visit-file-row {
+.button.visit-file-row {
+  font: inherit;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -2795,10 +2796,10 @@
     background-color 0.16s ease,
     border-color 0.16s ease;
 }
-.visit-file-row:hover {
+.button.visit-file-row:hover {
   background: var(--surface-subtle);
 }
-.visit-file-row:focus-visible {
+.button.visit-file-row:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
@@ -2905,7 +2906,8 @@
 }
 .notification-history { width: min(460px, calc(100vw - 32px)); }
 .notification-list { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
-.notification-row {
+.button.notification-row {
+  font: inherit;
   display: grid;
   gap: 4px;
   width: 100%;
@@ -2918,8 +2920,8 @@
   text-align: start;
   cursor: pointer;
 }
-.notification-row[data-unread] { background: var(--action-secondary); }
-.notification-row:hover:not(:disabled) { background: var(--action-secondary-hover); }
+.button.notification-row[data-unread] { background: var(--action-secondary); }
+.button.notification-row:hover:not(:disabled) { background: var(--action-secondary-hover); }
 .notification-unread { font-size: .75rem; color: var(--action-primary); }
 
 .report-export-modal {

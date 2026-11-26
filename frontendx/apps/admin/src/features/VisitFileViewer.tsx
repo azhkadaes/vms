@@ -49,9 +49,10 @@ export default function VisitFileViewer({
       {kinds.map((kind) => {
         const Icon = kind === "attachment" ? FileText : Image;
         return (
-          <button
+          <Button
             key={kind}
             type="button"
+            kind="action-card"
             className="visit-file-row"
             aria-label={labels[kind].open}
             onClick={(event) => setViewer({ kind, trigger: event.currentTarget })}
@@ -64,7 +65,7 @@ export default function VisitFileViewer({
             <span className="visit-file-action" aria-hidden="true">
               Lihat <ChevronRight size={16} />
             </span>
-          </button>
+          </Button>
         );
       })}
       {viewer && (
@@ -160,7 +161,11 @@ function FileContent({
     );
 
   const download = (
-    <a className="button ghost" href={url} download={fileName.replace(/[\\/\u0000-\u001f]/g, "_")}>
+    <a
+      className="link-button ghost"
+      href={url}
+      download={fileName.replace(/[\\/\u0000-\u001f]/g, "_")}
+    >
       <Download size={16} aria-hidden="true" /> Unduh {labels[kind].title}
     </a>
   );
@@ -185,7 +190,7 @@ function FileContent({
         <div className="visit-file-stage is-message">
           <FileText size={32} aria-hidden="true" className="muted" />
           <p className="muted">Browser ini tidak dapat menampilkan PDF di dalam halaman.</p>
-          <a className="button secondary" href={url} target="_blank" rel="noopener">
+          <a className="link-button secondary" href={url} target="_blank" rel="noopener">
             <ExternalLink size={16} aria-hidden="true" /> Buka di tab baru
           </a>
         </div>

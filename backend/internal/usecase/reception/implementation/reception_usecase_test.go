@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"slices"
+	"strconv"
 	"testing"
 	"time"
 
@@ -170,7 +171,7 @@ func TestAttendanceNeedsTheVisitorsCredentialAndCurrentVersion(t *testing.T) {
 func TestResolveFindsOnlyVisitsTheDeskCanActOn(t *testing.T) {
 	during := start.Add(-10 * time.Minute)
 	resolve := func(s *receptionStore, credential string) (dto.StaffBooking, error) {
-		return reception(desk, s).Resolve(context.Background(), desk, dto.ReceptionResolve{Credential: credential})
+		return reception(desk, s).Resolve(context.Background(), desk, dto.ReceptionLookup{ReceptionResolve: dto.ReceptionResolve{Credential: credential}, VisitID: strconv.Itoa(int(s.visit.ID))})
 	}
 	got, err := resolve(store("approved", during), "00123456")
 	if err != nil {
