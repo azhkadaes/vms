@@ -7,7 +7,6 @@ import {
   bookingName,
   dateLabel,
   isRestricted,
-  preview,
   today,
   useVisitCommand,
   useCatalogs,
@@ -182,9 +181,9 @@ export default function BookingDetail({
             )}
         </>
       )}
-      {mode !== "cancel" && !preview && b.attachmentAvailable && b.ndName && !restricted && (
+      {mode !== "cancel" && session && b.attachmentAvailable && b.ndName && !restricted && (
         <Suspense fallback={<Loading />}>
-          <AttachmentAccess id={b.id} name={b.ndName} />
+          <AttachmentAccess id={b.id} name={b.ndName} role={session.role} />
         </Suspense>
       )}
       {editSnapshot && currentBooking.version !== editSnapshot.version && (

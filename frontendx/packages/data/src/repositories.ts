@@ -5,18 +5,23 @@ import { ApiError } from "./errors.ts";
 import { createHttpClient } from "./http.ts";
 import { reportFilterParams } from "./report-filter.ts";
 
-export function createRepository({
-  development = false,
-  base = "/v1",
-  fetcher = fetch,
-}: { development?: boolean; base?: string; fetcher?: typeof fetch } = {}): Repository {
+export type ApiOptions = { development?: boolean; base?: string; fetcher?: typeof fetch };
+/**
+ * One HTTP client for either adapter behind the contract seam: the Go backend or the preview
+ * server. The preview takes production paths (ADR-0001); it only needs the impersonated role.
+ */
+export function createApi({ development = false, base = "/v1", fetcher = fetch }: ApiOptions = {}) {
   const request = createHttpClient(development ? "/__preview" : base, fetcher);
-  // The preview server takes production paths (ADR-0001); it only needs the impersonated role.
   const staff = (path: string, role: string) =>
     development
       ? `/staff${path}${path.includes("?") ? "&" : "?"}role=${encodeURIComponent(role)}`
       : `/staff${path}`;
   const publicPath = (path: string) => `/public${path}`;
+  return { request, staff, publicPath };
+}
+export function createRepository(options: ApiOptions = {}): Repository {
+  const development = options.development ?? false;
+  const { request, staff, publicPath } = createApi(options);
   async function parse<T>(
     value: unknown,
     schema: { safeParse: (value: unknown) => { success: true; data: T } | { success: false } },

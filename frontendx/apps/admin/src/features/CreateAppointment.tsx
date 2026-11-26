@@ -16,7 +16,7 @@ import {
 } from "@vms/data";
 import VisitNotesFields from "./VisitNotesFields";
 import { AppointmentRoomField } from "./AppointmentRoomField";
-import { uploadAttachment } from "@vms/data/attachments";
+import { visitFiles } from "@vms/data/visit-files";
 import { staffAppointmentSchemaFor, type StaffAppointmentDraft } from "@vms/data/validation";
 import {
   Select,
@@ -189,9 +189,9 @@ export default function CreateAppointment({
         roomId: room || undefined,
         visitors: [values.name, ...values.visitors.map((v) => v.name)],
         ndName: document?.name,
-        attachmentToken: await uploadAttachment(document, "staff"),
+        attachmentToken: await visitFiles.upload(document, "staff", "attachment"),
         visitorPhotoName: photo.name,
-        visitorPhotoToken: await uploadAttachment(photo, "staff", "visitorPhoto"),
+        visitorPhotoToken: await visitFiles.upload(photo, "staff", "visitor-photo"),
       };
       const payload = JSON.stringify(input);
       if (attempt.current?.payload !== payload)

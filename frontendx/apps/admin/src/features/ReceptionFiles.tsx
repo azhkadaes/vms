@@ -1,10 +1,10 @@
 import type { Role, StaffBooking } from "@vms/data";
-import { loadArrivalFile } from "@vms/data/attachments";
+import { visitFiles, type VisitFileKind } from "@vms/data/visit-files";
 import { Button, ErrorNotice, Modal } from "@vms/ui";
 import { FileText, Image } from "lucide-react";
 import { useEffect, useState } from "react";
 
-type FileKind = Parameters<typeof loadArrivalFile>[3];
+type FileKind = VisitFileKind;
 
 export default function ReceptionFiles({
   booking,
@@ -73,7 +73,8 @@ function FileContent({
   useEffect(() => {
     const controller = new AbortController();
     let objectUrl: string | undefined;
-    void loadArrivalFile(id, role, credential, kind, controller.signal)
+    void visitFiles
+      .open(id, kind, role, { credential, signal: controller.signal })
       .then((blob) => {
         if (controller.signal.aborted) return;
         objectUrl = URL.createObjectURL(blob);

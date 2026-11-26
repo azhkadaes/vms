@@ -1,6 +1,7 @@
 import type { Plugin } from "vite";
 import { readFilter } from "../packages/data/src/report-filter.ts";
 import { createHash } from "node:crypto";
+import { Readable } from "node:stream";
 import {
   aggregateVisits,
   canReadSummary,
@@ -185,32 +186,56 @@ export function previewApi({
               { arrival, now: requestTime },
             );
           const toVisitorBooking = (booking: Booking) => projectVisitor(booking, requestTime);
-          if (["/visitor-photos", "/attachments"].includes(url.pathname) && req.method === "POST") {
-            const photo = url.pathname === "/visitor-photos";
-            const type = req.headers["content-type"] || "";
-            const invalidType = photo ? "Gunakan foto JPEG atau PNG." : "Gunakan berkas PDF.";
-            if (photo ? !visitorPhotoTypes.includes(type) : type !== notaDinasType) {
-              res.writeHead(422).end(JSON.stringify({ message: invalidType }));
+          if (url.pathname === "/attachments" && req.method === "POST") {
+            // ADR-0001: the production upload — multipart `file`, `reference` and `purpose`.
+            const reply = (status: number, data: unknown) =>
+              res.writeHead(status).end(JSON.stringify(data));
+            const headers = new Headers();
+            for (const [key, value] of Object.entries(req.headers))
+              if (value !== undefined) headers.set(key, String(value));
+            let form: FormData;
+            try {
+              form = await new Request("http://preview.local/attachments", {
+                method: "POST",
+                headers,
+                body: Readable.toWeb(req) as ReadableStream,
+                duplex: "half",
+              } as RequestInit).formData();
+            } catch {
+              reply(422, { message: "Unggahan harus berupa formulir berkas." });
               return;
             }
-            const chunks: Buffer[] = [];
-            let size = 0;
-            for await (const chunk of req) {
-              size += chunk.length;
-              if (size > 5 * 1024 * 1024) {
-                res.writeHead(413).end(JSON.stringify({ message: "Berkas maksimal 5 MB." }));
-                return;
-              }
-              chunks.push(Buffer.from(chunk));
+            const file = form.get("file");
+            const purpose = form.get("purpose");
+            if (
+              !(file instanceof File) ||
+              typeof form.get("reference") !== "string" ||
+              (purpose !== "document" && purpose !== "visitorPhoto")
+            ) {
+              reply(422, { message: "Periksa berkas yang diunggah." });
+              return;
             }
-            const bytes = Buffer.concat(chunks);
-            if (!matchesAttachmentSignature(type, bytes)) {
-              res.writeHead(422).end(JSON.stringify({ message: invalidType }));
+            const photo = purpose === "visitorPhoto";
+            const invalidType = photo ? "Gunakan foto JPEG atau PNG." : "Gunakan berkas PDF.";
+            if (file.size > 5 * 1024 * 1024) {
+              reply(413, { message: "Berkas maksimal 5 MB." });
+              return;
+            }
+            const bytes = Buffer.from(await file.arrayBuffer());
+            if (
+              (photo ? !visitorPhotoTypes.includes(file.type) : file.type !== notaDinasType) ||
+              !matchesAttachmentSignature(file.type, bytes)
+            ) {
+              reply(422, { message: invalidType });
               return;
             }
             const token = crypto.randomUUID();
-            (photo ? visitorPhotos : documents).set(token, { bytes, type });
-            res.end(JSON.stringify({ token }));
+            (photo ? visitorPhotos : documents).set(token, { bytes, type: file.type });
+            reply(201, {
+              token,
+              expiresAt: new Date(now() + 15 * 60_000).toISOString(),
+              serverTime: now(),
+            });
             return;
           }
           let body: any = {};
