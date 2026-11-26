@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { preview } from "./config.ts";
 import { commandAction, type VisitCommand } from "./contracts.ts";
-import { can, officers, roomOptions, rooms, scope, type StaffBooking } from "./domain.ts";
+import { allows, officers, roomOptions, rooms, scope, type StaffBooking } from "./domain.ts";
 import { ApiError } from "./errors.ts";
 import {
   readStaffBooking,
@@ -124,7 +124,7 @@ export function useVisitCommand() {
   return useMutation({
     mutationFn: ({ booking, command }: { booking: StaffBooking; command: VisitCommand }) => {
       if (!session) throw new ApiError(401, "Sesi berakhir. Silakan masuk kembali.");
-      if (!can(session, booking, commandAction(command)))
+      if (!allows(booking, commandAction(command)))
         throw new ApiError(403, "Tindakan tidak diizinkan untuk kunjungan ini.");
       return repository.perform(booking, command, session.role);
     },

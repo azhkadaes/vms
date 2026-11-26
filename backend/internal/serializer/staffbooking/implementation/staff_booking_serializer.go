@@ -32,6 +32,13 @@ func Project(v entity.StaffVisit, s dto.Session, at time.Time, arrival bool) dto
 		ID: id(v.ID), Date: v.Date, Time: v.Time, Duration: v.Duration, Room: v.Room, Status: v.Status,
 		Version: v.Version, Timing: policy.VisitTiming(v.Status, start, v.Duration, at), Rescheduled: v.Rescheduled,
 	}
+	kind := "standard"
+	if v.Kind == "terbatas" {
+		kind = "restricted"
+	}
+	b.AllowedActions = policy.AllowedActions(s, policy.VisitFacts{
+		Kind: kind, OfficerID: v.OfficerID, VIP: v.Kind == "vip", Status: v.Status, Start: start, Duration: v.Duration,
+	}, at)
 	if v.Kind == "terbatas" {
 		return restricted(b, v, s, arrival)
 	}

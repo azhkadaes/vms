@@ -1,6 +1,6 @@
 # ADR-0003: The server decides which visit commands a staff member may run
 
-Status: accepted (2026-11-26), not yet implemented
+Status: accepted (2026-11-26); `allowedActions` implemented, the single Go field-visibility table not yet
 
 ## Context
 
@@ -14,3 +14,5 @@ Staff visit responses carry `allowedActions: VisitCommandName[]`, computed from 
 
 - This changes the API contract (`backend/docs/openapi.json` and `wire.ts`).
 - `can()` and the policy parts of `toStaffBooking` move into the preview server as fake behaviour (see ADR-0001).
+- Implemented: `policy.AllowedActions` in `backend/internal/policy/visit.go` sets `allowedActions` on every staff visit response. The client checks it with `allows()`, and the old client `can()` now lives only in `frontendx/tooling/preview-policy.ts` as the preview server's fake.
+- Still open: one Go table for restricted-visit field visibility. Today the serializer and the `wire.ts` allow-list are still kept in sync by hand.

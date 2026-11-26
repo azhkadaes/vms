@@ -420,3 +420,16 @@ test("visit commands map onto the production wire contract with the visit's vers
     assert.deepEqual(call.body, body);
   }
 });
+
+test("staff visits carry the server's allowedActions and nothing else decides them", async () => {
+  const visit = toStaffBooking(record, sessionFor("PA"), { allowedActions: ["approve", "reject"] });
+  const parse = (body: unknown) =>
+    createRepository({ fetcher: async () => response(body) }).resolve("00123456", "PA");
+  assert.deepEqual((await parse(visit)).allowedActions, ["approve", "reject"]);
+  const { allowedActions: _omitted, ...missing } = visit;
+  await assert.rejects(parse(missing), (error: unknown) => error instanceof ApiError && error.status === 502);
+  await assert.rejects(
+    parse({ ...visit, allowedActions: ["delete"] }),
+    (error: unknown) => error instanceof ApiError && error.status === 502,
+  );
+});

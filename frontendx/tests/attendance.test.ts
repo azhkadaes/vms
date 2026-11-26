@@ -1,8 +1,8 @@
 import test from "node:test";
+import { can } from "../tooling/preview-policy.ts";
 import assert from "node:assert/strict";
 import {
   getVisitTiming,
-  can,
   sessionFor,
   statuses,
   selectBookings,
@@ -10,6 +10,7 @@ import {
 } from "../packages/data/src/domain.ts";
 
 const visit: StaffBooking = {
+  allowedActions: [],
   id: "timed",
   date: "2099-08-19",
   time: "10:00",

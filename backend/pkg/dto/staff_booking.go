@@ -11,6 +11,7 @@ type StaffBooking struct {
 	Status                   string               `json:"status"`
 	Version                  int                  `json:"version"`
 	Timing                   BookingTiming        `json:"timing"`
+	AllowedActions           []string             `json:"allowedActions"`
 	VisitKind                string               `json:"visitKind"`
 	Rescheduled              bool                 `json:"rescheduled,omitempty"`
 	RoomID                   *string              `json:"roomId,omitempty"`

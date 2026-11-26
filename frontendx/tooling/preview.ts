@@ -14,8 +14,8 @@ import { hasReservationConflict } from "../packages/data/src/scheduling.ts";
 import {
   canReadVisitLog, projectVisitLog, selectVisitLog, summarizeVisitLog, visitLogFilterSchema,
 } from "../packages/data/src/visit-log.ts";
+import { allowedActions, can } from "./preview-policy.ts";
 import {
-  can,
   canCreateAppointment,
   isRestricted,
   matchesAttachmentSignature,
@@ -183,7 +183,7 @@ export function previewApi({
                 attachmentAvailable: !!booking.attachmentToken && documents.has(booking.attachmentToken),
               },
               actor,
-              { arrival, now: requestTime },
+              { arrival, now: requestTime, allowedActions: allowedActions(actor, booking, requestTime) },
             );
           const toVisitorBooking = (booking: Booking) => projectVisitor(booking, requestTime);
           if (url.pathname === "/attachments" && req.method === "POST") {

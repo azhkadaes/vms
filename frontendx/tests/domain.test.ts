@@ -1,4 +1,5 @@
 import { bookingSchema, visitSchema } from "../packages/data/src/validation.ts";
+import { can } from "../tooling/preview-policy.ts";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { emailDomains, splitEmail, joinEmail, phoneDigits } from "../packages/data/src/contact.ts";
@@ -9,7 +10,6 @@ import {
   staffAppointmentInputSchema,
 } from "../packages/data/src/validation.ts";
 import {
-  can,
   statuses,
   bookingStatusesFor,
   scope,

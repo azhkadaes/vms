@@ -1,9 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { can, sessionFor, type StaffBooking } from "../packages/data/src/domain.ts";
+import { sessionFor, type StaffBooking } from "../packages/data/src/domain.ts";
+import { can } from "../tooling/preview-policy.ts";
 import { staffCancellationSchema } from "../packages/data/src/validation.ts";
 
 const visit: StaffBooking = {
+  allowedActions: [],
   id: "staff-cancel",
   code: "88002001",
   date: "2099-08-19",

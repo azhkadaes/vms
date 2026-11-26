@@ -1,4 +1,4 @@
-import type { PublicBooking, Role, StaffBooking } from "./domain.ts";
+import type { PublicBooking, Role, StaffBooking, VisitAction } from "./domain.ts";
 import type { SummaryExport, SummaryFilter, VisitSummary } from "./reports.ts";
 import type { VisitLogFilter, VisitLogResponse, VisitLogSnapshot } from "./visit-log.ts";
 import type { SubmissionResolution } from "./submission.ts";
@@ -24,8 +24,7 @@ export interface Admission {
   expiresAt: string;
   serverTime: number;
 }
-export type BookingAction =
-  "approve" | "reject" | "reschedule" | "checkin" | "checkout" | "update" | "cancel";
+export type BookingAction = VisitAction;
 type VisitNotes = { visitorInstructions?: string; coordinationNote?: string };
 /** `null` clears the room; an omitted `roomId` keeps the current one. */
 type RoomChange = { roomId?: string | null };
@@ -54,7 +53,7 @@ export type VisitCommand =
       serviceId?: string;
     } & RoomChange &
       VisitNotes);
-/** The policy name a command is authorised under (`can(session, visit, name)`). */
+/** The `allowedActions` entry a command needs (ADR-0003). */
 export function commandAction(command: VisitCommand): BookingAction {
   if (command.type === "attend") return command.direction === "in" ? "checkin" : "checkout";
   return command.type;

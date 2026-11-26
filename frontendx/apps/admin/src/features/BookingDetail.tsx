@@ -1,7 +1,7 @@
 import {
   useUnsavedChanges,
   ApiError,
-  can,
+  allows,
   canReadInternalRejection,
   canReadInternalCancellation,
   bookingName,
@@ -99,7 +99,7 @@ export default function BookingDetail({
     setEditing(false);
     setEditSnapshot(null);
   }
-  if (editing && session && can(session, currentBooking, "update"))
+  if (editing && session && allows(currentBooking, "update"))
     return (
       <Suspense
         fallback={
@@ -650,7 +650,7 @@ export default function BookingDetail({
             ))}
           </ul>
           <div className="form-actions">
-            {session && can(session, b, "update") && (
+            {allows(b, "update") && (
               <Button
                 kind="secondary"
                 onClick={() => {
@@ -664,7 +664,7 @@ export default function BookingDetail({
             {(["cancel", "reject", "reschedule", "approve"] as const)
               .filter((a) => a !== "cancel" || b.status !== "pending")
               .filter((a) => !b.createdBy || (a !== "approve" && a !== "reject"))
-              .filter((a) => session && can(session, b, a))
+              .filter((a) => allows(b, a))
               .map((a) => (
                 <Button
                   key={a}

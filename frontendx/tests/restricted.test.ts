@@ -1,4 +1,5 @@
 import test from "node:test";
+import { can } from "../tooling/preview-policy.ts";
 import assert from "node:assert/strict";
 import {
   restrictedAppointmentSchema,
@@ -8,7 +9,6 @@ import {
 import {
   scope,
   sessionFor,
-  can,
   canCreateAppointment,
   toVisitorBooking,
   toStaffBooking,
