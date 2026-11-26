@@ -669,7 +669,7 @@ select.select-control {
   overflow: hidden;
   padding: 4px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--modal-radius);
   background: var(--white);
   color: var(--ink);
   box-shadow: 0 4px 14px oklch(0.23157626 0.00380518 286.098854 / 0.1019607843);
@@ -934,7 +934,7 @@ select.select-control {
 .input-otp:focus-within .input-otp-slot { border-color: var(--focus); }
 .input-otp:focus-within .input-otp-slot:first-child { box-shadow: 0 0 0 2px oklch(0.52411830 0.15787954 254.785480 / 0.2); }
 .toast-stack { position: fixed; z-index: 1000; top: 16px; right: 16px; display: grid; gap: 8px; width: min(360px, calc(100vw - 32px)); pointer-events: none; }
-.toast-card { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: oklch(0.99999999 0 0.000000 / 0.94); box-shadow: 0 10px 30px oklch(0.25592260 0.06610870 255.485659 / 0.14); backdrop-filter: blur(16px); color: var(--ink); font-size: .85rem; pointer-events: auto; }
+.toast-card { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--modal-radius); background: oklch(0.99999999 0 0.000000 / 0.94); box-shadow: 0 10px 30px oklch(0.25592260 0.06610870 255.485659 / 0.14); backdrop-filter: blur(16px); color: var(--ink); font-size: .85rem; pointer-events: auto; }
 .toast-card > svg { flex: none; color: oklch(0.53004876 0.12331240 155.110657); }
 .toast-error > svg { color: oklch(0.50389613 0.17911356 20.270547); }
 .toast-card span { flex: 1; }
@@ -1304,20 +1304,22 @@ td small {
   transform: translate(-50%, -50%);
   width: min(660px, calc(100vw - 32px));
   max-height: var(--modal-max-height);
-  /* Date/time popovers portal into this shell; only the inset body should clip. */
+  /* Date/time popovers portal into this shell; only the scroll body should clip. */
   overflow: visible;
   background: var(--white);
-  border-radius: 20px;
-  padding: 6px;
-  box-shadow: 0 25px 100px oklch(0.23157626 0.00380518 286.098854 / 0.2);
+  border: 1px solid var(--line);
+  border-radius: var(--modal-radius);
+  box-shadow:
+    0 1px 2px oklch(0.18848897 0.01661066 273.774258 / 0.06),
+    0 16px 48px -12px oklch(0.18848897 0.01661066 273.774258 / 0.22);
   animation: arrive 0.18s ease-out;
 }
 .modal-scroll {
-  max-height: calc(var(--modal-max-height) - 12px);
+  max-height: calc(var(--modal-max-height) - 2px);
   overflow-y: auto;
   overflow-x: hidden;
   padding: 22px;
-  border-radius: 14px;
+  border-radius: calc(var(--modal-radius) - 1px);
   scrollbar-gutter: stable;
   overscroll-behavior: contain;
   scroll-padding-block: 22px;
@@ -1352,6 +1354,9 @@ td small {
   align-items: flex-start;
   gap: 20px;
   margin-block-end: var(--form-section-gap);
+}
+.modal-heading .button {
+  border-radius: var(--modal-control-radius);
 }
 .modal-heading h2 {
   font-size: 1.5rem;

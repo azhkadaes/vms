@@ -49,6 +49,8 @@
   --action-height: 44px;
   --menu-option-height: var(--space-8);
   --menu-option-radius: 6px;
+  --modal-radius: 8px;
+  --modal-control-radius: 6px;
   --font:
     -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui,
     sans-serif;
