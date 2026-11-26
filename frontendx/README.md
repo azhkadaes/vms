@@ -2,9 +2,7 @@
 
 The public visitor portal and staff workspace share UI components and typed data adapters. The visitor app handles registration and admission. The staff app handles booking decisions, reception, employee administration and reporting.
 
-The [Go backend](../backend/README.md) implements the new 40-operation contract. The [UI contract review](../docs/contracts/UI-CONTRACT-VALIDATION-2026-11-18.md#6-frontend-work-not-backend) lists the remaining adapter changes before the apps can use it end to end. See the [frontend requirements](../docs/frontend/BUSINESS-REQUIREMENTS.md) and [verification](../docs/frontend/VERIFICATION.md) for behavior and test coverage.
-
-The [4 November readiness review](../docs/frontend/FRONTEND-READINESS-2026-11-04.md) and [compatibility review](../docs/frontend/BACKEND-COMPATIBILITY-2026-11-04.md) are historical records.
+The [Go backend](../backend/README.md) implements the new 40-operation contract. The [UI contract review](../docs/contracts/UI-CONTRACT-VALIDATION-2026-11-18.md#6-frontend-work-not-backend) lists the remaining adapter changes before the apps can use it end to end. Domain terms are in the [glossary](../CONTEXT.md) and architecture decisions in [docs/adr](../docs/adr).
 
 ## Run locally
 
@@ -29,7 +27,7 @@ This runs formatting, strict types, logic tests, isolated preview API tests, bot
 
 The preview browser runner starts and stops its own two servers when the ports are free. To test a server you already started, set VMS_TEST_URL=http://127.0.0.1:3000. It never kills a process occupying a port. Production browser tests serve the latest dist files on a temporary loopback port; run npm.cmd run build first when invoking test:production alone.
 
-Build outputs: apps/visitor/dist at / and apps/admin/dist at /admin/. Both use the same-origin API prefix /v1. Copy .env.example to .env.local only when changing that public prefix; both Vite apps read the workspace environment directory. VITE_* values are public and must contain no secrets. See [deployment gates](../docs/frontend/DEPLOYMENT.md).
+Build outputs: apps/visitor/dist at / and apps/admin/dist at /admin/. Both use the same-origin API prefix /v1. Copy .env.example to .env.local only when changing that public prefix; both Vite apps read the workspace environment directory. VITE_* values are public and must contain no secrets.
 
 ## Current behavior
 

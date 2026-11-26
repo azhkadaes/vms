@@ -4321,7 +4321,7 @@ Known gaps: BE-ATTENDANCE, BE-PHASE1-AUTH. Requirement and source evidence: Phas
 | Feature / route | UI element and action | Request / returned-data use | Source / current integration |
 | --- | --- | --- | --- |
 | [F02](FRONTEND-TRACEABILITY.md#f02); /; /booking | `BookingForm` — Three-step booking form, companion-name rows, optional supporting-document picker and submit/receipt panel | Send the selected file and UUID reference; retain UploadResult.token as attachmentToken and check expiresAt/serverTime. New uploads require attachmentsEnabled=true. | [frontendx/apps/visitor/src/pages/Booking.tsx](../../frontendx/apps/visitor/src/pages/Booking.tsx); BookingSubmission; actual create adapter exists; no backend booking route |
-| [F45](FRONTEND-TRACEABILITY.md#f45); public/staff submission forms | `uploadAttachment` — Shared file-picker upload/retry transport for public and staff forms | Send one file and stable per-File/audience UUID reference; token/expiresAt/serverTime feed the public create attachmentToken field. | [frontendx/packages/data/src/attachments.ts](../../frontendx/packages/data/src/attachments.ts); WeakMap reuses reference for same File/audience; optional upload still attempted without capability check |
+| [F45](FRONTEND-TRACEABILITY.md#f45); public/staff submission forms | `uploadAttachment` — Shared file-picker upload/retry transport for public and staff forms | Send one file and stable per-File/audience UUID reference; token/expiresAt/serverTime feed the public create attachmentToken field. | [frontendx/packages/data/src/visit-files.ts](../../frontendx/packages/data/src/visit-files.ts); WeakMap reuses reference for same File/audience; optional upload still attempted without capability check |
 
 **Query Parameters**
 
@@ -4426,7 +4426,7 @@ Known gaps: BE-DOCUMENTS, BE-VISITS, FE-BOUNDS, FE-UPLOAD. Requirement and sourc
 | Feature / route | UI element and action | Request / returned-data use | Source / current integration |
 | --- | --- | --- | --- |
 | [F21](FRONTEND-TRACEABILITY.md#f21); /admin/booking?new=1; /admin/today?new=1 | `CreateAppointment` — Staff standard-appointment dialog: official dropdown, schedule, representative/roster, note fields, document picker and submit | Upload file/reference and use token as attachmentToken on the create command; keep private bytes outside JSON. | [frontendx/apps/admin/src/features/CreateAppointment.tsx](../../frontendx/apps/admin/src/features/CreateAppointment.tsx); useCreateAppointment; UUID retained while payload unchanged; room/duration not collected |
-| [F45](FRONTEND-TRACEABILITY.md#f45); public/staff submission forms | `uploadAttachment` — Shared file-picker upload/retry transport for public and staff forms | Use the same multipart/result shape with Bearer/current create authority; token feeds staff standard creation. | [frontendx/packages/data/src/attachments.ts](../../frontendx/packages/data/src/attachments.ts); WeakMap reuses reference for same File/audience; optional upload still attempted without capability check |
+| [F45](FRONTEND-TRACEABILITY.md#f45); public/staff submission forms | `uploadAttachment` — Shared file-picker upload/retry transport for public and staff forms | Use the same multipart/result shape with Bearer/current create authority; token feeds staff standard creation. | [frontendx/packages/data/src/visit-files.ts](../../frontendx/packages/data/src/visit-files.ts); WeakMap reuses reference for same File/audience; optional upload still attempted without capability check |
 
 **Query Parameters**
 
