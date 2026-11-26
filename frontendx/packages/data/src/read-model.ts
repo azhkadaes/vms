@@ -11,6 +11,8 @@ export type ReadFilter = {
   status?: string;
   /** Visit types separated by commas: standard, vip, restricted. */
   kind?: string;
+  /** Official IDs separated by commas. */
+  officer?: string;
   sort?: string;
   dir?: string;
   date?: string;

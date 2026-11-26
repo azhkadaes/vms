@@ -11,6 +11,7 @@ import {
   selectBookings,
   today,
   useBookingDetail,
+  useCatalogs,
   useBookings,
   useSession,
   type SortKey,
@@ -104,6 +105,12 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
   const kinds = showKindFilter
     ? visitKindOptions.filter((k) => requestedKind.split(",").includes(k))
     : [];
+  const officerOptions = (useCatalogs().data?.officers || []).map(({ id, name }) => ({
+    value: id,
+    label: name,
+  }));
+  const officers = reception ? (params.get("officer") || "").split(",").filter(Boolean) : [];
+  const officerNames = officerOptions.filter((o) => officers.includes(o.value)).map((o) => o.label);
   const requestedSort = params.get("sort");
   const sort: SortKey = ["name", "organization", "host", "time", "status"].includes(
     requestedSort || "",
@@ -132,6 +139,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
       q: settledSearch,
       status: status || "all",
       ...(kinds.length ? { kind: kinds.join(",") } : {}),
+      ...(officers.length ? { officer: officers.join(",") } : {}),
       sort: ["priority", "name", "organization", "host", "time", "status"].includes(sort)
         ? sort
         : "priority",
@@ -154,7 +162,11 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
     );
   }, [reception, params, setParams]);
   const list = (q.data || []).filter(
-    (b) => (!todayOnly || b.date === today()) && (!kinds.length || kinds.includes(kindOf(b))),
+    (b) =>
+      (!todayOnly || b.date === today()) &&
+      (!kinds.length || kinds.includes(kindOf(b))) &&
+      (!officers.length ||
+        (b.restrictedView !== "reception" && officerNames.includes(b.host || ""))),
   );
   const rows = !preview
     ? q.data || []
@@ -211,7 +223,8 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
   }
   function resetFilters() {
     setParams((p) => {
-      for (const key of ["q", "status", "list-kind", "sort", "dir", "page"]) p.delete(key);
+      for (const key of ["q", "status", "list-kind", "officer", "sort", "dir", "page"])
+        p.delete(key);
       return p;
     });
   }
@@ -340,6 +353,16 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
             selected={statuses}
             onChange={(values) => update("status", values.join(","))}
           />
+          {reception && (
+            <CheckboxDropdown
+              className="booking-filter"
+              label="Tujuan kunjungan"
+              allLabel="Semua tujuan"
+              options={officerOptions}
+              selected={officers}
+              onChange={(values) => update("officer", values.join(","))}
+            />
+          )}
           {showKindFilter && (
             <CheckboxDropdown
               className="booking-filter"

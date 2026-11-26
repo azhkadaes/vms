@@ -4364,6 +4364,15 @@
             }
           },
           {
+            "description": "Official IDs to keep, separated by commas; empty keeps every official. Rows whose official is hidden from the caller never match.",
+            "in": "query",
+            "name": "officer",
+            "schema": {
+              "pattern": "^[1-9][0-9]{0,9}(,[1-9][0-9]{0,9})*$",
+              "type": "string"
+            }
+          },
+          {
             "in": "query",
             "name": "date",
             "schema": {

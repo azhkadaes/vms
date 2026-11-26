@@ -65,14 +65,22 @@ func (u *usecase) List(ctx context.Context, session dto.Session, query staffbook
 	}
 	bookings := make([]dto.StaffBooking, 0, len(visits))
 	for _, visit := range visits {
-		bookings = append(bookings, u.serializer.Project(visit, session, at, false))
+		booking := u.serializer.Project(visit, session, at, false)
+		// A row whose official is hidden never matches, so the filter cannot reveal it.
+		if filter.officers != nil && (booking.Officer == nil || !slices.Contains(filter.officers, visit.OfficerID)) {
+			continue
+		}
+		bookings = append(bookings, booking)
 	}
-	return selectPage(bookings, filter), nil
+	page := selectPage(bookings, filter)
+	page.TotalScoped = len(visits)
+	return page, nil
 }
 
 type filter struct {
 	staffbookingusecase.Query
 	statuses, kinds []string
+	officers        []int32
 	page, pageSize  int
 }
 
@@ -129,6 +137,17 @@ func parseFilter(q staffbookingusecase.Query) (filter, error) {
 	if !ok {
 		fields.Add("kind", "Pilih tipe kunjungan yang tersedia.")
 	}
+	var officers []int32
+	if q.Officer != "" {
+		for _, raw := range strings.Split(q.Officer, ",") {
+			id, err := validate.ID(raw)
+			if err != nil || slices.Contains(officers, id) {
+				fields.Add("officer", "Pilih ID pejabat yang valid tanpa pengulangan.")
+				break
+			}
+			officers = append(officers, id)
+		}
+	}
 	if q.Date != "" {
 		date, err := time.Parse(time.DateOnly, q.Date)
 		if err != nil || date.Year() < 1 || date.Format(time.DateOnly) != q.Date {
@@ -155,7 +174,7 @@ func parseFilter(q staffbookingusecase.Query) (filter, error) {
 	if err != nil || pageSize < 1 || pageSize > 100 || q.PageSize != "" && strconv.Itoa(pageSize) != q.PageSize {
 		fields.Add("pageSize", "Ukuran halaman harus antara 1 dan 100.")
 	}
-	return filter{Query: q, statuses: statuses, kinds: kinds, page: page, pageSize: pageSize}, fields.Err()
+	return filter{Query: q, statuses: statuses, kinds: kinds, officers: officers, page: page, pageSize: pageSize}, fields.Err()
 }
 
 func defaultTo(value, fallback string) string {

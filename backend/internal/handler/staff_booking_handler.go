@@ -17,13 +17,13 @@ func NewStaffBookingHandler(usecase staffbookingusecase.StaffBookingUsecase) *st
 }
 
 func (h *staffBookingHandler) List(c fiber.Ctx) error {
-	keys := []string{"view", "q", "status", "kind", "date", "vip", "sort", "dir", "page", "pageSize", "mode"}
+	keys := []string{"view", "q", "status", "kind", "officer", "date", "vip", "sort", "dir", "page", "pageSize", "mode"}
 	values, err := Query(c, keys...)
 	if err != nil {
 		return err
 	}
 	var query staffbookingusecase.Query
-	fields := []*string{&query.View, &query.Search, &query.Status, &query.Kind, &query.Date, &query.VIP, &query.Sort, &query.Direction, &query.Page, &query.PageSize, &query.Mode}
+	fields := []*string{&query.View, &query.Search, &query.Status, &query.Kind, &query.Officer, &query.Date, &query.VIP, &query.Sort, &query.Direction, &query.Page, &query.PageSize, &query.Mode}
 	for i, key := range keys {
 		*fields[i], err = values.String(key)
 		if err != nil {
