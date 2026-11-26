@@ -7,7 +7,10 @@ import { staffSession } from "./staff-session.ts";
 export type ReadFilter = {
   view: "list" | "dashboard" | "reception";
   q?: string;
+  /** One status, "all", or several separated by commas. */
   status?: string;
+  /** Visit types separated by commas: standard, vip, restricted. */
+  kind?: string;
   sort?: string;
   dir?: string;
   date?: string;

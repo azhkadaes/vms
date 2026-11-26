@@ -435,11 +435,11 @@ test("staff quick filters preserve selection when using the shared segmented con
   try {
     bookings.state.role = "Receptionist";
     await bookings.page.goto(server.origin + "/admin/booking");
-    const filters = bookings.page.getByRole("group", { name: "Filter status" });
-    const approved = filters.getByRole("button", { name: /^Disetujui/ });
-    await approved.press("Enter");
+    const status = bookings.page.getByRole("button", { name: /^Status / });
+    await status.click();
+    await bookings.page.getByRole("checkbox", { name: /^Disetujui/ }).check();
     await bookings.page.waitForURL((url) => url.searchParams.get("status") === "approved");
-    await approved.and(filters.locator('[aria-pressed="true"]')).waitFor();
+    assert.equal(await status.innerText(), "Disetujui");
   } finally {
     await bookings.close();
   }

@@ -72,7 +72,37 @@ func (u *usecase) List(ctx context.Context, session dto.Session, query staffbook
 
 type filter struct {
 	staffbookingusecase.Query
-	page, pageSize int
+	statuses, kinds []string
+	page, pageSize  int
+}
+
+var (
+	listStatuses = []string{"pending", "approved", "missed", "rejected", "cancelled", "checked_in", "checked_out"}
+	visitKinds   = []string{"standard", "vip", "restricted"}
+)
+
+// splitList reads a comma-separated filter; ok is false when any entry is empty, repeated or unknown.
+func splitList(value string, allowed []string) (values []string, ok bool) {
+	if value == "" {
+		return nil, true
+	}
+	for _, part := range strings.Split(value, ",") {
+		if !slices.Contains(allowed, part) || slices.Contains(values, part) {
+			return nil, false
+		}
+		values = append(values, part)
+	}
+	return values, true
+}
+
+func listKind(b dto.StaffBooking) string {
+	if b.VisitKind == "restricted" {
+		return "restricted"
+	}
+	if b.VIP != nil && *b.VIP {
+		return "vip"
+	}
+	return "standard"
 }
 
 func parseFilter(q staffbookingusecase.Query) (filter, error) {
@@ -88,8 +118,16 @@ func parseFilter(q staffbookingusecase.Query) (filter, error) {
 	if utf8.RuneCountInString(q.Search) > 200 {
 		fields.Add("q", "Pencarian maksimal 200 karakter.")
 	}
-	if !slices.Contains([]string{"all", "pending", "approved", "missed", "rejected", "cancelled", "checked_in", "checked_out"}, q.Status) {
-		fields.Add("status", "Pilih status kunjungan yang tersedia.")
+	var statuses []string
+	if q.Status != "all" {
+		var ok bool
+		if statuses, ok = splitList(q.Status, listStatuses); !ok {
+			fields.Add("status", "Pilih status kunjungan yang tersedia.")
+		}
+	}
+	kinds, ok := splitList(q.Kind, visitKinds)
+	if !ok {
+		fields.Add("kind", "Pilih tipe kunjungan yang tersedia.")
 	}
 	if q.Date != "" {
 		date, err := time.Parse(time.DateOnly, q.Date)
@@ -117,7 +155,7 @@ func parseFilter(q staffbookingusecase.Query) (filter, error) {
 	if err != nil || pageSize < 1 || pageSize > 100 || q.PageSize != "" && strconv.Itoa(pageSize) != q.PageSize {
 		fields.Add("pageSize", "Ukuran halaman harus antara 1 dan 100.")
 	}
-	return filter{Query: q, page: page, pageSize: pageSize}, fields.Err()
+	return filter{Query: q, statuses: statuses, kinds: kinds, page: page, pageSize: pageSize}, fields.Err()
 }
 
 func defaultTo(value, fallback string) string {
@@ -148,7 +186,8 @@ func selectPage(items []dto.StaffBooking, f filter) dto.StaffBookingPage {
 		if f.View == "reception" && !inReception(booking, f) {
 			continue
 		}
-		if f.View == "list" && (f.Date != "" && booking.Date != f.Date || f.VIP == "1" && (booking.VIP == nil || !*booking.VIP)) {
+		if f.View == "list" && (f.Date != "" && booking.Date != f.Date || f.VIP == "1" && (booking.VIP == nil || !*booking.VIP) ||
+			f.kinds != nil && !slices.Contains(f.kinds, listKind(booking))) {
 			continue
 		}
 		rank, found := searchRank(booking, f.Search)
@@ -157,7 +196,7 @@ func selectPage(items []dto.StaffBooking, f filter) dto.StaffBookingPage {
 		}
 		if out.StatusCounts != nil {
 			countStatus(out.StatusCounts, status)
-			if f.Status != "all" && f.Status != status {
+			if f.statuses != nil && !slices.Contains(f.statuses, status) {
 				continue
 			}
 		}

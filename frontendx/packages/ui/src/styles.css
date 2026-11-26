@@ -2050,3 +2050,90 @@ td small {
   outline: 3px solid var(--focus);
   outline-offset: 4px;
 }
+
+/* Checkbox dropdown filter */
+.checkbox-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  text-align: start;
+  cursor: pointer;
+}
+.checkbox-dropdown-trigger[data-active] {
+  border-color: var(--action-secondary-border);
+  background: var(--accent-soft);
+}
+.checkbox-dropdown-trigger:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.checkbox-dropdown-trigger > svg {
+  flex: none;
+  color: var(--muted);
+}
+.checkbox-dropdown-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.shadcn-popover.checkbox-dropdown-popover {
+  width: max(var(--radix-popover-trigger-width), 13rem);
+}
+.checkbox-dropdown-popover fieldset {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.checkbox-dropdown-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  padding: 0 var(--space-2);
+  border-radius: var(--menu-option-radius);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.checkbox-dropdown-option:hover {
+  background: var(--surface-subtle);
+}
+.checkbox-dropdown-option input {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--action-primary);
+}
+.checkbox-dropdown-option > span:first-of-type {
+  flex: 1;
+  min-width: 0;
+}
+.checkbox-dropdown-count {
+  padding: 0 var(--space-1);
+  border-radius: var(--space-1);
+  background: var(--surface-subtle);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+.checkbox-dropdown-clear {
+  width: 100%;
+  min-height: 36px;
+  margin-block-start: var(--space-1);
+  padding: 0 var(--space-2);
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: transparent;
+  color: var(--action-primary);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-align: start;
+  cursor: pointer;
+}
+.checkbox-dropdown-clear:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}

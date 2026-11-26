@@ -4323,19 +4323,20 @@
             }
           },
           {
+            "description": "One status, \"all\", or several statuses separated by commas, such as \"pending,approved\".",
             "in": "query",
             "name": "status",
             "schema": {
-              "enum": [
-                "all",
-                "pending",
-                "approved",
-                "rejected",
-                "cancelled",
-                "checked_in",
-                "checked_out",
-                "missed"
-              ],
+              "pattern": "^(all|(pending|approved|missed|rejected|cancelled|checked_in|checked_out)(,(pending|approved|missed|rejected|cancelled|checked_in|checked_out))*)$",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Visit types to keep, separated by commas; empty keeps every type.",
+            "in": "query",
+            "name": "kind",
+            "schema": {
+              "pattern": "^(standard|vip|restricted)(,(standard|vip|restricted))*$",
               "type": "string"
             }
           },

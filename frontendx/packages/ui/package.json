@@ -13,6 +13,7 @@
     "./input-otp": "./src/input-otp.tsx",
     "./toast": "./src/toast.tsx",
     "./popover": "./src/components/ui/popover.tsx",
+    "./checkbox-dropdown": "./src/checkbox-dropdown.tsx",
     "./reference-data-notice": "./src/reference-data-notice.tsx",
     "./styles.css": "./src/styles.css",
     "./assets/ikn-logo.png": "./src/assets/ikn-logo.png"

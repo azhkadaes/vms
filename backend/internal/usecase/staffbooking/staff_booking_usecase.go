@@ -7,7 +7,8 @@ import (
 )
 
 type Query struct {
-	View, Search, Status, Date, VIP, Sort, Direction, Mode string
+	// Status and Kind accept a comma-separated list; an empty Kind means every kind.
+	View, Search, Status, Kind, Date, VIP, Sort, Direction, Mode string
 	Page, PageSize                                         string
 }
 

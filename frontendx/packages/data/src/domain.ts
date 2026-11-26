@@ -398,10 +398,11 @@ export type SortKey = "priority" | "name" | "organization" | "host" | "time" | "
 export function selectBookings<T extends Omit<StaffBooking, "allowedActions">>(
   list: T[],
   q: string,
-  status: string,
+  status: string | string[],
   sort: SortKey,
   desc = false,
 ) {
+  const statuses = Array.isArray(status) ? status : status === "all" ? [] : [status];
   const needle = q.trim().toLocaleLowerCase("id");
   const rank = (b: T) =>
     b.name?.toLowerCase().startsWith(needle)
@@ -415,10 +416,12 @@ export function selectBookings<T extends Omit<StaffBooking, "allowedActions">>(
             : 4;
   const filtered = list.filter(
     (b) =>
-      (status === "all" ||
-        (status === "missed"
-          ? visitTiming(b).displayStatus === "missed"
-          : b.status === status && visitTiming(b).displayStatus !== "missed")) &&
+      (!statuses.length ||
+        statuses.some((s) =>
+          s === "missed"
+            ? visitTiming(b).displayStatus === "missed"
+            : b.status === s && visitTiming(b).displayStatus !== "missed",
+        )) &&
       (!needle ||
         [b.name, ...(b.visitors || []), b.organization, b.host, b.code, b.reference].some((v) =>
           v?.toLowerCase().includes(needle),

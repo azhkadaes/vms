@@ -478,22 +478,9 @@
 .booking-mobile-list {
   display: none;
 }
-.mobile-status-filter {
-  display: none;
-}
 @container booking-list (max-width: 900px) {
-  .booking-desktop-table,
-  .booking-panel .booking-tabs {
+  .booking-desktop-table {
     display: none;
-  }
-  .mobile-status-filter {
-    display: grid;
-    gap: 8px;
-    padding: 20px 20px 0;
-  }
-  .mobile-status-filter label {
-    font-size: 0.875rem;
-    font-weight: 600;
   }
   .booking-mobile-list {
     display: block;
@@ -552,12 +539,11 @@
     flex-basis: 100%;
     min-width: 0;
   }
-  .booking-toolbar .booking-sort {
+  .booking-toolbar .booking-filter {
     flex: 1 1 150px;
     min-width: min(100%, 12rem);
   }
-  .booking-toolbar :is(input:not([type="checkbox"]), select),
-  .mobile-status-filter select {
+  .booking-toolbar :is(input:not([type="checkbox"]), .checkbox-dropdown-trigger) {
     font-size: 1rem;
   }
 }
@@ -726,43 +712,20 @@
 .tabular {
   font-variant-numeric: tabular-nums;
 }
-.booking-tabs {
-  overflow-x: auto;
-  padding: var(--space-3) var(--space-5) 0;
-}
-.booking-tabs button span {
-  border-radius: var(--space-1);
-  background: var(--surface-subtle);
-  padding: 2px var(--space-1);
-  font-size: 0.65rem;
-}
 .booking-toolbar {
   display: flex;
   gap: 15px;
   align-items: flex-end;
   padding: 22px;
 }
-.booking-sort {
+.booking-filter {
   flex: 0 1 205px;
 }
-.booking-toolbar select {
-  width: 100%;
+.booking-toolbar .checkbox-dropdown-trigger {
   font-size: 0.78rem;
 }
 .booking-toolbar input {
   font-size: 0.82rem;
-}
-.vip-filter {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  min-height: 44px;
-  white-space: nowrap;
-  font-size: 0.79rem;
-}
-.vip-filter input {
-  width: 16px;
-  height: 16px;
 }
 .page-number {
   align-self: center;

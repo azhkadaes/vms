@@ -28,7 +28,8 @@ import {
   VisitKind,
   TableRegion,
 } from "@vms/ui";
-import { SegmentedControl } from "@vms/ui/segmented-control";
+import { CheckboxDropdown } from "@vms/ui/checkbox-dropdown";
+import { visitKindLabels } from "@vms/data/visit-log";
 import { toast } from "@vms/ui/toast";
 import {
   ArrowDownUp,
@@ -47,6 +48,15 @@ const CreateAppointment = lazy(() => import("../features/CreateAppointment"));
 const RestrictedAppointment = lazy(() => import("../features/RestrictedAppointment"));
 const Reports = lazy(() => import("./Reports"));
 const BookingDetail = lazy(() => import("../features/BookingDetail"));
+const visitKindOptions = ["standard", "vip", "restricted"] as const;
+type ListKind = (typeof visitKindOptions)[number];
+function kindOf(b: { visitKind?: string; vip?: boolean }): ListKind {
+  return isRestricted(b as Parameters<typeof isRestricted>[0])
+    ? "restricted"
+    : b.vip
+      ? "vip"
+      : "standard";
+}
 export default function Bookings({ todayOnly = false }: { todayOnly?: boolean }) {
   const { session } = useSession();
   const [params, setParams] = useSearchParams();
@@ -62,8 +72,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
       params.get("kind") === "restricted" && params.get("new") === "1" ? "restricted" : "standard",
     );
   const reception = session?.role === "Receptionist";
-  const showVipFilter = !!session && session.role !== "PA";
-  const vipOnly = showVipFilter && params.get("vip") === "1";
+  const showKindFilter = session?.role === "Protocol Officer";
   const statusOptions = session ? bookingStatusesFor(session) : [];
   const creating = params.get("new") === "1";
   const kind = params.get("kind");
@@ -77,11 +86,14 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
   }
   const search = params.get("q") || "";
   const settledSearch = useDebouncedValue(search, preview ? 0 : 250);
-  const requestedStatus = params.get("status") || "all";
-  const status =
-    requestedStatus === "all" || statusOptions.some((s) => s === requestedStatus)
-      ? requestedStatus
-      : "all";
+  // `status` and `kind` hold comma-separated choices; none chosen means every row.
+  const requestedStatus = params.get("status") || "";
+  const statuses = statusOptions.filter((s) => requestedStatus.split(",").includes(s));
+  const status = statuses.join(",");
+  const requestedKind = params.get("list-kind") || "";
+  const kinds = showKindFilter
+    ? visitKindOptions.filter((k) => requestedKind.split(",").includes(k))
+    : [];
   const requestedSort = params.get("sort");
   const sort: SortKey = ["name", "organization", "host", "time", "status"].includes(
     requestedSort || "",
@@ -89,29 +101,32 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
     ? (requestedSort as SortKey)
     : "priority";
   useEffect(() => {
-    if (!session || requestedStatus === status) return;
+    if (!session || (requestedStatus === status && requestedKind === kinds.join(","))) return;
     setParams(
       (p) => {
-        if (requestedStatus !== status) p.delete("status");
+        if (status) p.set("status", status);
+        else p.delete("status");
+        if (kinds.length) p.set("list-kind", kinds.join(","));
+        else p.delete("list-kind");
         p.delete("page");
         return p;
       },
       { replace: true },
     );
-  }, [session, requestedStatus, status, setParams]);
+  }, [session, requestedStatus, status, requestedKind, kinds, setParams]);
   const desc = sort !== "priority" && params.get("dir") === "desc";
   const page = Math.min(100000, Math.max(1, Math.floor(Number(params.get("page")) || 1)));
   const q = useBookings({
     filter: {
       view: "list",
       q: settledSearch,
-      status,
+      status: status || "all",
+      ...(kinds.length ? { kind: kinds.join(",") } : {}),
       sort: ["priority", "name", "organization", "host", "time", "status"].includes(sort)
         ? sort
         : "priority",
       dir: desc ? "desc" : "asc",
       ...(todayOnly ? { date: today() } : {}),
-      vip: vipOnly ? "1" : "0",
       page,
       pageSize: 7,
     },
@@ -129,14 +144,14 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
     );
   }, [reception, params, setParams]);
   const list = (q.data || []).filter(
-    (b) => (!todayOnly || b.date === today()) && (!vipOnly || (b.vip && !isRestricted(b))),
+    (b) => (!todayOnly || b.date === today()) && (!kinds.length || kinds.includes(kindOf(b))),
   );
   const rows = !preview
     ? q.data || []
     : selectBookings(
         list,
         search,
-        status,
+        statuses,
         ["priority", "name", "organization", "host", "time", "status"].includes(sort)
           ? sort
           : "priority",
@@ -146,13 +161,14 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
   const pages = Math.max(1, Math.ceil(total / 7));
   const activePage = Math.min(page, pages);
   const accessLost = q.error instanceof ApiError && [401, 403].includes(q.error.status);
-  const selected = !selectedId || accessLost
-    ? undefined
-    : preview
-      ? q.data?.find((b) => b.id === selectedId)
-      : detail.error instanceof ApiError && [401, 403, 404].includes(detail.error.status)
-        ? undefined
-        : detail.data;
+  const selected =
+    !selectedId || accessLost
+      ? undefined
+      : preview
+        ? q.data?.find((b) => b.id === selectedId)
+        : detail.error instanceof ApiError && [401, 403, 404].includes(detail.error.status)
+          ? undefined
+          : detail.data;
   function update(key: string, value: string) {
     setParams((p) => {
       value ? p.set(key, value) : p.delete(key);
@@ -185,7 +201,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
   }
   function resetFilters() {
     setParams((p) => {
-      for (const key of ["q", "status", "sort", "dir", "vip", "page"]) p.delete(key);
+      for (const key of ["q", "status", "list-kind", "sort", "dir", "page"]) p.delete(key);
       return p;
     });
   }
@@ -296,40 +312,6 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
         <ErrorNotice error="Kunjungan tidak tersedia dalam akses Anda." />
       )}
       <section className="panel section-gap booking-panel">
-        <div className="booking-tabs">
-          <SegmentedControl
-            label="Filter status"
-            value={status}
-            options={["all", ...statusOptions].map((value) => ({
-              value,
-              label: (
-                <>
-                  {value === "all" ? "Semua" : labels[value as keyof typeof labels]}
-                  <span>
-                    {value === "all" ? list.length : list.filter((b) => b.status === value).length}
-                  </span>
-                </>
-              ),
-            }))}
-            onChange={(value) => update("status", value)}
-          />
-        </div>
-        <div className="mobile-status-filter">
-          <label htmlFor="booking-status">Status janji temu</label>
-          <Select
-            id="booking-status"
-            className="control"
-            value={status}
-            onChange={(e) => update("status", e.target.value)}
-          >
-            {["all", ...statusOptions].map((s) => (
-              <option key={s} value={s}>
-                {s === "all" ? "Semua status" : labels[s as keyof typeof labels]} ·{" "}
-                {s === "all" ? list.length : list.filter((b) => b.status === s).length}
-              </option>
-            ))}
-          </Select>
-        </div>
         <div className="booking-toolbar">
           <SearchField
             aria-label="Cari kunjungan"
@@ -337,32 +319,29 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
             value={search}
             onChange={(e) => update("q", e.target.value)}
           />
-          <div className="field booking-sort">
-            <label htmlFor="booking-sort">Urutkan</label>
-            <Select
-              id="booking-sort"
-              className="control"
-              aria-label="Urutan kunjungan"
-              value={sort === "priority" ? "" : sort}
-              onChange={(e) => update("sort", e.target.value)}
-            >
-              <option value="">Urutkan</option>
-              <option value="time">Waktu kunjungan</option>
-              <option value="name">Nama pengunjung</option>
-              <option value="organization">Instansi</option>
-              <option value="host">Tujuan</option>
-              <option value="status">Status</option>
-            </Select>
-          </div>
-          {showVipFilter && (
-            <label className="vip-filter">
-              <input
-                type="checkbox"
-                checked={vipOnly}
-                onChange={(e) => update("vip", e.target.checked ? "1" : "")}
-              />
-              VIP saja
-            </label>
+          <CheckboxDropdown
+            className="booking-filter"
+            label="Status"
+            allLabel="Semua status"
+            options={statusOptions.map((value) => ({
+              value,
+              label: labels[value as keyof typeof labels],
+            }))}
+            selected={statuses}
+            onChange={(values) => update("status", values.join(","))}
+          />
+          {showKindFilter && (
+            <CheckboxDropdown
+              className="booking-filter"
+              label="Tipe kunjungan"
+              allLabel="Semua tipe"
+              options={visitKindOptions.map((value) => ({
+                value,
+                label: visitKindLabels[value],
+              }))}
+              selected={kinds}
+              onChange={(values) => update("list-kind", values.join(","))}
+            />
           )}
         </div>
         <QueryState
