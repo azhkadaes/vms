@@ -303,6 +303,7 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
       </section>
       <Modal
         returnFocusTo={dialogTrigger.current}
+        className={method === "qr" && !resolved ? "scanner-modal" : undefined}
         open={!!method}
         onClose={close}
         title={

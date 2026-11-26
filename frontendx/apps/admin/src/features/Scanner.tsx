@@ -5,6 +5,20 @@ import { useEffect, useRef, useState } from "react";
 
 type State = "idle" | "starting" | "active";
 
+function cameraError(err: unknown) {
+  // Browsers only expose the camera on HTTPS or localhost; a LAN http:// address has no mediaDevices.
+  if (!window.isSecureContext)
+    return "Kamera hanya bisa dibuka lewat alamat HTTPS. Buka backoffice melalui https, atau gunakan kode kunjungan.";
+  const name = err instanceof DOMException ? err.name : "";
+  if (name === "NotFoundError" || name === "OverconstrainedError" || !navigator.mediaDevices)
+    return "Tidak ada kamera yang terdeteksi. Sambungkan kamera, atau gunakan kode kunjungan.";
+  if (name === "NotAllowedError" || name === "SecurityError")
+    return "Izin kamera ditolak. Izinkan kamera di pengaturan browser, atau gunakan kode kunjungan.";
+  if (name === "NotReadableError")
+    return "Kamera sedang dipakai aplikasi lain. Tutup aplikasi tersebut, atau gunakan kode kunjungan.";
+  return "Kamera tidak dapat dibuka. Periksa izin kamera, atau gunakan kode kunjungan.";
+}
+
 export default function Scanner({ onResult }: { onResult: (value: string) => unknown }) {
   const video = useRef<HTMLVideoElement>(null);
   const stream = useRef<MediaStream | null>(null);
@@ -68,11 +82,11 @@ export default function Scanner({ onResult }: { onResult: (value: string) => unk
         timer.current = setTimeout(tick, 180);
       };
       tick();
-    } catch {
+    } catch (err) {
       if (current !== run.current) return;
       stop();
       setState("idle");
-      setError("Kamera tidak dapat dibuka. Periksa izin kamera, atau gunakan kode kunjungan.");
+      setError(cameraError(err));
     }
   }
 

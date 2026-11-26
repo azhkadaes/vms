@@ -869,20 +869,22 @@
     animation: none;
   }
 }
+/* The dialog shrinks to the camera so the frame fills it instead of floating in empty space. */
+.modal.scanner-modal {
+  width: min(400px, calc(100vw - 32px));
+}
 .scanner {
   display: grid;
-  justify-items: center;
   gap: var(--space-3);
-  text-align: center;
 }
 .camera-frame {
   position: relative;
   display: grid;
   place-items: center;
-  width: min(100%, 300px);
+  width: 100%;
   aspect-ratio: 1;
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: 12px;
   background: oklch(0.22765811 0.05233603 252.764921);
   color: oklch(0.86 0.02 252);
 }
@@ -920,13 +922,15 @@
   background-repeat: no-repeat;
 }
 .scanner-hint {
-  max-width: 300px;
   margin: 0;
   color: var(--muted);
   font-size: 0.8125rem;
 }
 .scanner-stop {
+  justify-self: start;
   min-height: 36px;
+  margin-block-start: calc(var(--space-1) - var(--space-3));
+  margin-inline-start: calc(-1 * var(--space-3));
 }
 .admin-quick-links {
   display: grid;
