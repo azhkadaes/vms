@@ -762,6 +762,113 @@
   font-size: 0.76rem;
   margin-top: 6px;
 }
+.reception-steps {
+  display: grid;
+  gap: var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.reception-step {
+  position: relative;
+  min-width: 0;
+  padding-inline-start: 34px;
+}
+.reception-step-number {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--action-primary);
+  font-size: 0.75rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.reception-step:first-child::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: 10.5px;
+  top: 28px;
+  bottom: calc(6px - var(--space-6));
+  width: 1px;
+  background: var(--line);
+}
+/* Digit slots: two groups of four, the active slot is the only focus indicator. */
+.field .input-otp.reception-code-input {
+  width: 100%;
+}
+.field .input-otp.reception-code-input:focus-within {
+  outline: none;
+}
+.reception-code-input .input-otp-slots {
+  gap: 6px;
+}
+.reception-code-input .input-otp-slot {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
+  height: var(--field-height);
+  border-color: var(--field-border);
+  font-size: 1.125rem;
+  transition:
+    border-color 120ms ease-out,
+    box-shadow 120ms ease-out;
+}
+.reception-code-input .input-otp-slot:nth-child(4) {
+  margin-inline-end: 14px;
+}
+.reception-code-input .input-otp-slot:nth-child(4)::after {
+  content: "";
+  position: absolute;
+  inset-inline-end: -11px;
+  width: 8px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--field-border-hover);
+}
+.reception-code-input:hover .input-otp-slot,
+.reception-code-input .input-otp-slot:not(:empty) {
+  border-color: var(--field-border-hover);
+}
+.input-otp.reception-code-input[data-invalid] .input-otp-slot {
+  outline: none;
+  border-color: var(--field-border-invalid);
+  background: color-mix(in oklch, var(--action-danger) 4%, var(--white));
+}
+/* Focus wins over the error tint so the receptionist sees where typing lands. */
+.input-otp.reception-code-input:focus-within .input-otp-slot[data-active] {
+  outline: none;
+  border-color: var(--focus);
+  box-shadow:
+    0 0 0 1px var(--focus),
+    0 0 0 4px color-mix(in oklch, var(--focus) 18%, transparent);
+}
+.reception-code-input:focus-within .input-otp-slot[data-active]:empty::before {
+  content: "";
+  width: 1.5px;
+  height: 1.25rem;
+  background: var(--ink);
+  animation: reception-caret 1s steps(1) infinite;
+}
+@keyframes reception-caret {
+  50% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reception-code-input .input-otp-slot {
+    transition: none;
+  }
+  .reception-code-input:focus-within .input-otp-slot[data-active]:empty::before {
+    animation: none;
+  }
+}
 .scanner {
   display: grid;
   justify-items: center;

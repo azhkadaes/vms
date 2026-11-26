@@ -70,50 +70,64 @@ export default function ReceptionPinForm({
       }}
     >
       <RequiredFieldsHint />
-      <div className="field">
-        <label htmlFor="booking-code">
-          Kode kunjungan <RequiredMark />
-        </label>
-        <InputOTP
-          id="booking-code"
-          name="code"
-          minLength={8}
-          required
-          readOnly={busy}
-          aria-label="8 digit kode kunjungan"
-          aria-invalid={pinRejected}
-          aria-describedby={pinRejected ? "reception-resolve-error" : undefined}
-          onValueChange={onPinEdit}
-        />
-      </div>
-      <SearchableMultiSelect
-        id="reception-visit"
-        label="Nama pengunjung"
-        itemLabel="pengunjung"
-        placeholder="Cari nama atau referensi kunjungan…"
-        multiple={false}
-        required
-        disabled={busy}
-        options={options}
-        selected={visitId ? [visitId] : []}
-        onChange={([value]) => {
-          setSelected(options.find((option) => option.value === value));
-          onPinEdit();
-        }}
-        remoteSearch={{
-          maxLength: 200,
-          onChange: (value) => {
-            setSearch(value);
-            changePage(1);
-          },
-          selectedLabel: selected?.label,
-          emptyMessage: pending
-            ? "Memuat daftar pengunjung…"
-            : query.error
-              ? "Daftar pengunjung belum tersedia."
-              : undefined,
-        }}
-      />
+      <ol className="reception-steps">
+        <li className="field reception-step">
+          <span className="reception-step-number" aria-hidden="true">
+            1
+          </span>
+          <label htmlFor="booking-code">
+            Kode kunjungan <RequiredMark />
+          </label>
+          <InputOTP
+            id="booking-code"
+            name="code"
+            className="reception-code-input"
+            minLength={8}
+            required
+            readOnly={busy}
+            aria-label="8 digit kode kunjungan"
+            aria-invalid={pinRejected}
+            aria-describedby={
+              pinRejected ? "booking-code-help reception-resolve-error" : "booking-code-help"
+            }
+            onValueChange={onPinEdit}
+          />
+          <small id="booking-code-help">8 digit angka yang dibawa pengunjung.</small>
+        </li>
+        <li className="reception-step">
+          <span className="reception-step-number" aria-hidden="true">
+            2
+          </span>
+          <SearchableMultiSelect
+            id="reception-visit"
+            label="Nama pengunjung"
+            itemLabel="pengunjung"
+            placeholder="Cari nama atau referensi kunjungan…"
+            multiple={false}
+            required
+            disabled={busy}
+            options={options}
+            selected={visitId ? [visitId] : []}
+            onChange={([value]) => {
+              setSelected(options.find((option) => option.value === value));
+              onPinEdit();
+            }}
+            remoteSearch={{
+              maxLength: 200,
+              onChange: (value) => {
+                setSearch(value);
+                changePage(1);
+              },
+              selectedLabel: selected?.label,
+              emptyMessage: pending
+                ? "Memuat daftar pengunjung…"
+                : query.error
+                  ? "Daftar pengunjung belum tersedia."
+                  : undefined,
+            }}
+          />
+        </li>
+      </ol>
       <QueryState pending={false} error={query.error} retry={query.refetch}>
         {!preview && ready && query.total !== undefined && (page > 1 || query.total > pageSize) && (
           <nav className="form-actions" aria-label="Halaman daftar nama pengunjung">
