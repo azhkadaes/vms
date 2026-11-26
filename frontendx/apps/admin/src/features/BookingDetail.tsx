@@ -36,7 +36,7 @@ import { CalendarClock, Check, Pencil, X } from "lucide-react";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import VisitNotesFields from "./VisitNotesFields";
 const RestrictedAppointment = lazy(() => import("./RestrictedAppointment"));
-const BookingFiles = lazy(() => import("./BookingFiles"));
+const VisitFileViewer = lazy(() => import("./VisitFileViewer"));
 
 export default function BookingDetail({
   returnFocusTo,
@@ -249,14 +249,19 @@ export default function BookingDetail({
             )}
         </>
       )}
-      {mode !== "cancel" &&
-        !restricted &&
-        session &&
-        (b.attachmentAvailable || b.visitorPhotoAvailable) && (
-          <Suspense fallback={<Loading />}>
-            <BookingFiles key={`${b.id}:${session.role}`} booking={b} role={session.role} />
-          </Suspense>
-        )}
+      {session && !restricted && (
+        <Suspense fallback={<Loading />}>
+          <VisitFileViewer
+            key={`${b.id}:${session.role}`}
+            id={b.id}
+            role={session.role}
+            attachmentName={b.ndName}
+            showAttachment={mode !== "cancel" && !!b.attachmentAvailable && !!b.ndName}
+            showPhoto={!!b.visitorPhotoAvailable}
+            visitorName={b.name}
+          />
+        </Suspense>
+      )}
       {editSnapshot && currentBooking.version !== editSnapshot.version && (
         <p role="status" className="hint section-gap">
           Kunjungan ini diperbarui oleh petugas lain. Isian Anda tetap disimpan; kembali ke detail
@@ -434,18 +439,15 @@ export default function BookingDetail({
               <>
                 <div className="field">
                   <label htmlFor="room">
-                    Ruangan{" "}
-                    <span className="muted">(opsional)</span>
+                    Ruangan <span className="muted">(opsional)</span>
                   </label>
-                  <Select
-                    name="room"
-                    id="room"
-                    defaultValue={room}
-                  >
+                  <Select name="room" id="room" defaultValue={room}>
                     <option value="">Tanpa ruangan</option>
                     {room && <option value={room}>{b.room}</option>}
                     {roomOptions.map(({ id, name }) => (
-                      <option key={id} value={id}>{name}</option>
+                      <option key={id} value={id}>
+                        {name}
+                      </option>
                     ))}
                   </Select>
                 </div>

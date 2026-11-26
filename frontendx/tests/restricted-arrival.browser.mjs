@@ -212,6 +212,13 @@ test("Terbatas form preserves leading zeroes, dirty draft and keyboard focus at 
           .count(),
         0,
       );
+      // The only free-text fields are the optional visit notes.
+      assert.deepEqual(
+        await page
+          .locator(".modal textarea")
+          .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("name"))),
+        ["visitorInstructions", "coordinationNote"],
+      );
       await page.locator("#restricted-serviceId").fill("0012345678");
       await page.keyboard.press("Escape");
       await page.getByRole("heading", { name: "Buang perubahan?" }).waitFor();

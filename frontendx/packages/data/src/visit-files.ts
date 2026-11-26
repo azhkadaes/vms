@@ -134,16 +134,3 @@ export function createVisitFiles(options: ApiOptions = {}): VisitFiles {
 }
 
 export const visitFiles = createVisitFiles({ development: preview, base: apiBase });
-
-/** Opens a visit file and hands it to the browser as a download named `name`. */
-export async function saveVisitFile(visitId: string, kind: VisitFileKind, role: Role, name: string) {
-  const blob = await visitFiles.open(visitId, kind, role);
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = name.replace(/[\\/\u0000-\u001f]/g, "_");
-  document.body.append(link);
-  link.click();
-  link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}

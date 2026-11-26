@@ -29,7 +29,7 @@ import { InputOTP } from "@vms/ui/input-otp";
 import { ArrowRight, Check, KeyRound, ScanLine, ShieldCheck } from "lucide-react";
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 const Scanner = lazy(() => import("../features/Scanner"));
-const BookingFiles = lazy(() => import("../features/BookingFiles"));
+const VisitFileViewer = lazy(() => import("../features/VisitFileViewer"));
 export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
   const [page, setPage] = useState(1);
   const q = useBookings({
@@ -314,12 +314,16 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
               !isRestricted(resolved) &&
               (resolved.attachmentAvailable || resolved.visitorPhotoAvailable) && (
                 <Suspense fallback={<Loading />}>
-                  <BookingFiles
+                  <VisitFileViewer
                     key={`${role}:${resolved.id}`}
-                    booking={resolved}
+                    id={resolved.id}
                     role={role}
                     credential={credential}
                     onAccessRejected={discardResolved}
+                    attachmentName={resolved.ndName}
+                    showAttachment={!!resolved.attachmentAvailable}
+                    showPhoto={!!resolved.visitorPhotoAvailable}
+                    visitorName={resolved.name}
                   />
                 </Suspense>
               )}
@@ -366,10 +370,7 @@ export default function Reception({ mode }: { mode: "checkin" | "checkout" }) {
               >
                 Periksa kode lain
               </Button>
-              <Button
-                type="submit"
-                disabled={action.isPending || !checked || !permitted}
-              >
+              <Button type="submit" disabled={action.isPending || !checked || !permitted}>
                 {action.isPending
                   ? "Menyimpan…"
                   : `Konfirmasi ${incoming ? "check in" : "check out"}`}
