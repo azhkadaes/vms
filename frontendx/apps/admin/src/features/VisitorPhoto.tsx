@@ -1,7 +1,8 @@
 import { loadVisitorPhoto } from "@vms/data/attachments";
-import { Button, ErrorNotice, Modal } from "@vms/ui";
+import { Button } from "@vms/ui";
 import { Eye } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import FileViewer from "./FileViewer";
 
 export default function VisitorPhoto({
   id,
@@ -14,11 +15,12 @@ export default function VisitorPhoto({
 }) {
   const [open, setOpen] = useState(false);
   const trigger = useRef<HTMLButtonElement | null>(null);
+  const load = useCallback((signal: AbortSignal) => loadVisitorPhoto(id, role, signal), [id, role]);
   return (
     <section className="visitor-photo-confirmation section-gap" aria-label="Foto pengunjung">
       <h3>Foto pengunjung</h3>
       <Button
-        kind="secondary"
+        kind="ghost"
         type="button"
         onClick={(event) => {
           trigger.current = event.currentTarget;
@@ -28,67 +30,15 @@ export default function VisitorPhoto({
         <Eye size={16} aria-hidden="true" /> Lihat foto
       </Button>
       {open && (
-        <Modal
-          open
-          layer="confirmation"
-          className="visitor-photo-viewer"
+        <FileViewer
           title="Foto pengunjung"
           description={name || "Foto wajah perwakilan"}
+          file={{ kind: "image", alt: `Foto pengunjung ${name || "perwakilan"}` }}
+          load={load}
           onClose={() => setOpen(false)}
           returnFocusTo={trigger.current}
-        >
-          <PhotoContent id={id} role={role} name={name} />
-        </Modal>
+        />
       )}
     </section>
-  );
-}
-
-function PhotoContent({ id, role, name }: { id: string; role: string; name?: string }) {
-  const [attempt, setAttempt] = useState(0);
-  const [photo, setPhoto] = useState<{ id: string; url: string }>();
-  const [error, setError] = useState<unknown>();
-  useEffect(() => {
-    const controller = new AbortController();
-    let url: string | undefined;
-    setPhoto(undefined);
-    setError(undefined);
-    void loadVisitorPhoto(id, role, controller.signal)
-      .then((blob) => {
-        if (controller.signal.aborted) return;
-        url = URL.createObjectURL(blob);
-        setPhoto({ id, url });
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) setError(error);
-      });
-    return () => {
-      controller.abort();
-      if (url) URL.revokeObjectURL(url);
-    };
-  }, [id, role, attempt]);
-  if (error)
-    return (
-      <div>
-        <ErrorNotice error={error} />
-        <Button kind="ghost" type="button" onClick={() => setAttempt((value) => value + 1)}>
-          Coba lagi
-        </Button>
-      </div>
-    );
-
-  if (photo?.id === id)
-    return (
-      <img
-        src={photo.url}
-        alt={`Foto pengunjung ${name || "perwakilan"}`}
-        onError={() => setError(new Error("Foto tidak dapat ditampilkan. Coba lagi."))}
-      />
-    );
-
-  return (
-    <p role="status" className="muted">
-      Memuat foto pengunjung…
-    </p>
   );
 }

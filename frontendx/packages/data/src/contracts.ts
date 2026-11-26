@@ -52,7 +52,7 @@ export interface Repository {
     input: Record<string, unknown>,
     role: Role,
   ): Promise<StaffBooking>;
-  resolve(credential: string, role: Role): Promise<StaffBooking>;
+  resolve(credential: string, role: Role, visitId?: string): Promise<StaffBooking>;
   lookup(code: string, email: string): Promise<PublicBooking>;
   cancel(
     id: string,

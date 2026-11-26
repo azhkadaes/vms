@@ -347,6 +347,46 @@ test("production email controls preserve visible labels and keyboard focus acros
   }
 });
 
+test("visitor PIN highlights the active digit and marks every slot after a rejected lookup", async () => {
+  const env = await open("/status");
+  try {
+    const { page, context } = env;
+    await context.route("**/v1/public/lookup", (route) =>
+      route.fulfill({ status: 404, json: { code: "not_found", message: "Kode atau email tidak cocok." } }),
+    );
+    const pin = page.locator("#status-code");
+    const slots = page.locator(".status-code-input .input-otp-slot");
+    const highlighted = () => slots.evaluateAll((nodes) =>
+      nodes.flatMap((node, index) => getComputedStyle(node).outlineStyle === "none" ? [] : [index]),
+    );
+    await pin.focus();
+    assert.equal(await pin.locator("..").evaluate((node) => getComputedStyle(node).outlineStyle), "none");
+    assert.deepEqual(await highlighted(), [0]);
+    await pin.pressSequentially("123");
+    assert.deepEqual(await highlighted(), [3]);
+    await pin.press("ArrowLeft");
+    assert.deepEqual(await highlighted(), [2]);
+    await pin.fill("12345678");
+    const [inputBox, digitBox] = await Promise.all([pin.boundingBox(), slots.nth(4).boundingBox()]);
+    await pin.click({
+      position: { x: digitBox.x - inputBox.x + digitBox.width / 2, y: digitBox.height / 2 },
+    });
+    assert.deepEqual(await highlighted(), [4]);
+    await pin.press("9");
+    assert.equal(await pin.inputValue(), "12349678");
+    await page.locator("#status-email").fill("fixture@example.test");
+    await page.getByRole("button", { name: "Lihat kunjungan", exact: true }).click();
+    await page.getByRole("alert").filter({ hasText: "Kode atau email tidak cocok." }).waitFor();
+    assert.equal(await pin.getAttribute("aria-invalid"), "true");
+    assert.equal((await highlighted()).length, 8);
+    await pin.fill("12345679");
+    assert.equal(await pin.getAttribute("aria-invalid"), "false");
+    assert.equal((await highlighted()).length, 1);
+  } finally {
+    await env.close();
+  }
+});
+
 test("production mobile navigation has valid dialog semantics and retains keyboard focus", async () => {
   const env = await open();
   try {
@@ -1019,7 +1059,10 @@ test("destination, purpose and picker fields share their pointer and keyboard fo
 
       await page.goto(server.origin + "/status");
       await page.locator("#status-code").click();
-      assert.deepEqual(await outline(".input-otp"), focusRing);
+      assert.equal((await outline(".input-otp")).outlineStyle, "none");
+      assert.deepEqual(await outline(".input-otp-slot[data-active]"), {
+        ...focusRing, outlineWidth: "2px", outlineOffset: "0px",
+      });
       await page.locator("#status-email").click();
       assert.deepEqual(await outline(".email-address"), focusRing);
       assert.equal((await outline(".input-otp")).outlineStyle, "none");
@@ -1663,6 +1706,20 @@ test("large visitor rosters stay bounded and toggle in PA, protocol and receptio
             .getByRole("button", { name: /Kode kunjungan Masukkan/ })
             .click();
           await page.locator("#booking-code").fill(visit.code);
+          assert.equal(await page.getByRole("button", { name: "Periksa kunjungan" }).isDisabled(), true);
+          const name = page.getByRole("combobox", { name: "Nama pengunjung" });
+          const control = name.locator("..");
+          const borderBeforeFocus = await control.evaluate((node) => getComputedStyle(node).borderColor);
+          await name.fill("Pengunjung Uji");
+          const focus = await control.evaluate((node) => {
+            const { borderColor, boxShadow, outlineStyle } = getComputedStyle(node);
+            return { borderColor, boxShadow, outlineStyle };
+          });
+          assert.deepEqual(focus, { borderColor: borderBeforeFocus, boxShadow: "none", outlineStyle: "solid" });
+          assert.equal(await name.evaluate((node) => getComputedStyle(node).outlineStyle), "none");
+          const option = page.getByRole("option", { name: /^Pengunjung Uji/ });
+          await option.waitFor();
+          await name.press("Enter");
           await page.locator("#booking-code").press("Enter");
         } else {
           await page.goto(server.origin + "/admin/booking?status=approved");

@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/azhkadaes/vms/backend/internal/handler"
 	catalogrepository "github.com/azhkadaes/vms/backend/internal/repository/catalog/implementation"
+	"github.com/azhkadaes/vms/backend/internal/repository/notification"
 	catalogserializer "github.com/azhkadaes/vms/backend/internal/serializer/catalog/implementation"
 	catalogcontract "github.com/azhkadaes/vms/backend/internal/usecase/catalog"
 	catalogusecase "github.com/azhkadaes/vms/backend/internal/usecase/catalog/implementation"
@@ -20,6 +21,10 @@ func StaffRouter(deps *Dependencies) {
 	ReceptionRouter(deps)
 	BookingFileRouter(deps)
 	ReportRouter(deps)
+	notifications := handler.NewStaffNotifications(notification.New(deps.DB))
+	inbox := deps.App.Group("/v1/staff/notifications", deps.StaffAuth, deps.Workspace)
+	inbox.Get("", notifications.List)
+	inbox.Post("/:id/read", notifications.MarkRead)
 }
 
 // RegisterStaffRoutes shares the staff routes between runtime and injected usecases. Each area is

@@ -111,8 +111,10 @@ func TestReceptionContract(t *testing.T) {
 		name, path, payload string
 		status              int
 	}{
-		{"reception-resolve", resolve, `{"credential":"00123456"}`, 200},
-		{"reception-resolve-missing", resolve, `{"credential":"12345678"}`, 404},
+		{"reception-resolve", resolve, `{"credential":"00123456","visitId":"1"}`, 200},
+		{"reception-resolve-missing", resolve, `{"credential":"12345678","visitId":"1"}`, 404},
+		{"reception-resolve-pin-without-visitor", resolve, `{"credential":"00123456"}`, 422},
+		{"reception-resolve-pin-with-other-visitor", resolve, `{"credential":"00123456","visitId":"2"}`, 404},
 		{"reception-resolve-expired", resolve, `{"credential":"synthetic-expired-qr"}`, 404},
 		{"reception-check-in", attendance, `{"action":"check_in","credential":"00123456","version":5}`, 200},
 		{"reception-credential-expired", attendance, `{"action":"check_in","credential":"synthetic-expired-qr","version":5}`, 409},

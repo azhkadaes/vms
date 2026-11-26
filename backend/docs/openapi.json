@@ -1454,6 +1454,26 @@
         ],
         "type": "object"
       },
+      "ReceptionLookup": {
+        "additionalProperties": false,
+        "properties": {
+          "credential": {
+            "description": "Eight-digit booking PIN or opaque admission QR scanned at reception.",
+            "maxLength": 1024,
+            "minLength": 1,
+            "type": "string"
+          },
+          "visitId": {
+            "description": "Visit selected from the receptionist queue. Required when using a PIN.",
+            "pattern": "^[1-9][0-9]{0,9}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "credential"
+        ],
+        "type": "object"
+      },
       "ReceptionResolve": {
         "additionalProperties": false,
         "properties": {
@@ -7459,10 +7479,11 @@
           "content": {
             "application/json": {
               "example": {
-                "credential": "00123456"
+                "credential": "00123456",
+                "visitId": "1"
               },
               "schema": {
-                "$ref": "#/components/schemas/ReceptionResolve"
+                "$ref": "#/components/schemas/ReceptionLookup"
               }
             }
           },

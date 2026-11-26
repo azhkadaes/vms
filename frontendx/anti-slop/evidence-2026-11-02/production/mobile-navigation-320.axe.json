@@ -7,14 +7,14 @@
     "name": "axe"
   },
   "testEnvironment": {
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
     "windowWidth": 320,
     "windowHeight": 900,
     "orientationAngle": 0,
     "orientationType": "landscape-primary"
   },
-  "timestamp": "2099-08-19T01:00:01.969Z",
-  "url": "http://127.0.0.1:55101/admin/employees",
+  "timestamp": "2099-08-19T01:00:01.520Z",
+  "url": "http://localhost:60762/admin/employees",
   "toolOptions": {
     "runOnly": {
       "type": "tag",
@@ -1692,38 +1692,6 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-chart-column\" aria-hidden=\"true\">",
-          "target": [
-            ".lucide-chart-column"
-          ]
-        },
-        {
-          "any": [],
-          "all": [
-            {
-              "id": "focusable-modal-open",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements while a modal is open"
-            },
-            {
-              "id": "focusable-disabled",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements contained within element"
-            },
-            {
-              "id": "focusable-not-tabbable",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements contained within element"
-            }
-          ],
-          "none": [],
-          "impact": null,
           "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-users\" aria-hidden=\"true\">",
           "target": [
             ".lucide-users"
@@ -1759,70 +1727,6 @@
           "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-shield\" aria-hidden=\"true\">",
           "target": [
             ".lucide-shield[width=\"18\"][height=\"18\"]"
-          ]
-        },
-        {
-          "any": [],
-          "all": [
-            {
-              "id": "focusable-modal-open",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements while a modal is open"
-            },
-            {
-              "id": "focusable-disabled",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements contained within element"
-            },
-            {
-              "id": "focusable-not-tabbable",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements contained within element"
-            }
-          ],
-          "none": [],
-          "impact": null,
-          "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-plug\" aria-hidden=\"true\">",
-          "target": [
-            ".lucide-plug"
-          ]
-        },
-        {
-          "any": [],
-          "all": [
-            {
-              "id": "focusable-modal-open",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements while a modal is open"
-            },
-            {
-              "id": "focusable-disabled",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements contained within element"
-            },
-            {
-              "id": "focusable-not-tabbable",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements contained within element"
-            }
-          ],
-          "none": [],
-          "impact": null,
-          "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-file-text\" aria-hidden=\"true\">",
-          "target": [
-            ".lucide-file-text"
           ]
         },
         {
@@ -2729,7 +2633,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"avatar\">AL</div>",
+          "html": "<span class=\"avatar\" aria-hidden=\"true\">AL</span>",
           "target": [
             ".avatar"
           ]
@@ -2829,7 +2733,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<span>Terakhir diperbarui <time datetime=\"2099-08-19T01:00:00.666Z\">09.00.00 WITA</time></span>",
+          "html": "<span>Terakhir diperbarui <time datetime=\"2099-08-19T01:00:00.596Z\">09.00.00 WITA</time></span>",
           "target": [
             ".bookings-refresh-copy > span:nth-child(1)"
           ]
@@ -2854,7 +2758,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<time datetime=\"2099-08-19T01:00:00.666Z\">09.00.00 WITA</time>",
+          "html": "<time datetime=\"2099-08-19T01:00:00.596Z\">09.00.00 WITA</time>",
           "target": [
             "time"
           ]
@@ -2993,7 +2897,7 @@
                 "bgColor": "#ffffff",
                 "contrastRatio": 18.53,
                 "fontSize": "12.0pt (16px)",
-                "fontWeight": "bold",
+                "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
@@ -3004,9 +2908,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<h3>Pegawai Layanan</h3>",
+          "html": "<button type=\"button\" class=\"employee-name\" aria-label=\"Lihat detail pegawai Pegawai Layanan\">Pegawai Layanan</button>",
           "target": [
-            "h3"
+            "h3 > .employee-name[type=\"button\"]"
           ]
         },
         {
@@ -3079,7 +2983,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<dt>Peran aktif</dt>",
+          "html": "<dt>Peran pegawai</dt>",
           "target": [
             "div:nth-child(2) > dt"
           ]
@@ -3157,6 +3061,31 @@
           "html": "<dd>Aktif</dd>",
           "target": [
             "div:nth-child(3) > dd"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#596273",
+                "bgColor": "#ffffff",
+                "contrastRatio": 6.14,
+                "fontSize": "10.8pt (14.4px)",
+                "fontWeight": "normal",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 6.14"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<span class=\"employee-detail-label\">Detail</span>",
+          "target": [
+            "article > .employee-detail-action.ghost[aria-label=\"Detail pegawai Pegawai Layanan\"] > .employee-detail-label"
           ]
         },
         {
@@ -3304,84 +3233,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<span class=\"lw-sidebar-link-label\">Analitik</span>",
-          "target": [
-            "a[title=\"Analitik\"] > .lw-sidebar-link-label"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#55555e",
-                "bgColor": "#ffffff",
-                "contrastRatio": 7.37,
-                "fontSize": "10.3pt (13.76px)",
-                "fontWeight": "normal",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element has sufficient color contrast of 7.37"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
           "html": "<span class=\"lw-sidebar-link-label\">Peran &amp; akses</span>",
           "target": [
             "a[title=\"Peran & akses\"] > .lw-sidebar-link-label"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#55555e",
-                "bgColor": "#ffffff",
-                "contrastRatio": 7.37,
-                "fontSize": "10.3pt (13.76px)",
-                "fontWeight": "normal",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element has sufficient color contrast of 7.37"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<span class=\"lw-sidebar-link-label\">Integrasi</span>",
-          "target": [
-            "a[title=\"Integrasi\"] > .lw-sidebar-link-label"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#55555e",
-                "bgColor": "#ffffff",
-                "contrastRatio": 7.37,
-                "fontSize": "10.3pt (13.76px)",
-                "fontWeight": "normal",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element has sufficient color contrast of 7.37"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<span class=\"lw-sidebar-link-label\">Laporan kunjungan</span>",
-          "target": [
-            "a[title=\"Laporan kunjungan\"] > .lw-sidebar-link-label"
           ]
         },
         {
@@ -4036,39 +3890,6 @@
             }
           ],
           "impact": null,
-          "html": "<a title=\"Analitik\" class=\"lw-sidebar-link\" href=\"/admin/analytics\" data-discover=\"true\">",
-          "target": [
-            "a[title=\"Analitik\"]"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "has-visible-text",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element has text that is visible to screen readers"
-            },
-            {
-              "id": "non-empty-title",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element has a title attribute"
-            }
-          ],
-          "all": [],
-          "none": [
-            {
-              "id": "focusable-no-name",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element is not in tab order or has accessible text"
-            }
-          ],
-          "impact": null,
           "html": "<a title=\"Pegawai\" aria-current=\"page\" class=\"lw-sidebar-link active nav-separator active\" href=\"/admin/employees\" data-discover=\"true\">",
           "target": [
             ".active"
@@ -4105,72 +3926,6 @@
           "html": "<a title=\"Peran & akses\" class=\"lw-sidebar-link\" href=\"/admin/roles\" data-discover=\"true\">",
           "target": [
             "a[title=\"Peran & akses\"]"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "has-visible-text",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element has text that is visible to screen readers"
-            },
-            {
-              "id": "non-empty-title",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element has a title attribute"
-            }
-          ],
-          "all": [],
-          "none": [
-            {
-              "id": "focusable-no-name",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element is not in tab order or has accessible text"
-            }
-          ],
-          "impact": null,
-          "html": "<a title=\"Integrasi\" class=\"lw-sidebar-link\" href=\"/admin/integration\" data-discover=\"true\">",
-          "target": [
-            "a[title=\"Integrasi\"]"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "has-visible-text",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element has text that is visible to screen readers"
-            },
-            {
-              "id": "non-empty-title",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element has a title attribute"
-            }
-          ],
-          "all": [],
-          "none": [
-            {
-              "id": "focusable-no-name",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element is not in tab order or has accessible text"
-            }
-          ],
-          "impact": null,
-          "html": "<a title=\"Laporan kunjungan\" class=\"lw-sidebar-link\" href=\"/admin/logs\" data-discover=\"true\">",
-          "target": [
-            "a[title=\"Laporan kunjungan\"]"
           ]
         },
         {
@@ -4883,66 +4638,6 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<a title=\"Analitik\" class=\"lw-sidebar-link\" href=\"/admin/analytics\" data-discover=\"true\">",
-          "target": [
-            "a[title=\"Analitik\"]"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "region",
-              "data": {
-                "isIframe": false
-              },
-              "relatedNodes": [],
-              "impact": "moderate",
-              "message": "All page content is contained by landmarks"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<span class=\"lw-sidebar-link-label\">Analitik</span>",
-          "target": [
-            "a[title=\"Analitik\"] > .lw-sidebar-link-label"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "region",
-              "data": {
-                "isIframe": false
-              },
-              "relatedNodes": [],
-              "impact": "moderate",
-              "message": "All page content is contained by landmarks"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<div class=\"lw-sidebar-item\">",
-          "target": [
-            ".lw-sidebar-item:nth-child(3)"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "region",
-              "data": {
-                "isIframe": false
-              },
-              "relatedNodes": [],
-              "impact": "moderate",
-              "message": "All page content is contained by landmarks"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
           "html": "<a title=\"Pegawai\" aria-current=\"page\" class=\"lw-sidebar-link active nav-separator active\" href=\"/admin/employees\" data-discover=\"true\">",
           "target": [
             ".active"
@@ -4985,7 +4680,7 @@
           "impact": null,
           "html": "<div class=\"lw-sidebar-item\">",
           "target": [
-            ".lw-sidebar-item:nth-child(4)"
+            ".lw-sidebar-item:nth-child(3)"
           ]
         },
         {
@@ -5026,126 +4721,6 @@
           "html": "<span class=\"lw-sidebar-link-label\">Peran &amp; akses</span>",
           "target": [
             "a[title=\"Peran & akses\"] > .lw-sidebar-link-label"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "region",
-              "data": {
-                "isIframe": false
-              },
-              "relatedNodes": [],
-              "impact": "moderate",
-              "message": "All page content is contained by landmarks"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<div class=\"lw-sidebar-item\">",
-          "target": [
-            ".lw-sidebar-item:nth-child(5)"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "region",
-              "data": {
-                "isIframe": false
-              },
-              "relatedNodes": [],
-              "impact": "moderate",
-              "message": "All page content is contained by landmarks"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<a title=\"Integrasi\" class=\"lw-sidebar-link\" href=\"/admin/integration\" data-discover=\"true\">",
-          "target": [
-            "a[title=\"Integrasi\"]"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "region",
-              "data": {
-                "isIframe": false
-              },
-              "relatedNodes": [],
-              "impact": "moderate",
-              "message": "All page content is contained by landmarks"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<span class=\"lw-sidebar-link-label\">Integrasi</span>",
-          "target": [
-            "a[title=\"Integrasi\"] > .lw-sidebar-link-label"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "region",
-              "data": {
-                "isIframe": false
-              },
-              "relatedNodes": [],
-              "impact": "moderate",
-              "message": "All page content is contained by landmarks"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<div class=\"lw-sidebar-item\">",
-          "target": [
-            ".lw-sidebar-item:nth-child(6)"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "region",
-              "data": {
-                "isIframe": false
-              },
-              "relatedNodes": [],
-              "impact": "moderate",
-              "message": "All page content is contained by landmarks"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<a title=\"Laporan kunjungan\" class=\"lw-sidebar-link\" href=\"/admin/logs\" data-discover=\"true\">",
-          "target": [
-            "a[title=\"Laporan kunjungan\"]"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "region",
-              "data": {
-                "isIframe": false
-              },
-              "relatedNodes": [],
-              "impact": "moderate",
-              "message": "All page content is contained by landmarks"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<span class=\"lw-sidebar-link-label\">Laporan kunjungan</span>",
-          "target": [
-            "a[title=\"Laporan kunjungan\"] > .lw-sidebar-link-label"
           ]
         },
         {
@@ -5438,38 +5013,6 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<a title=\"Analitik\" class=\"lw-sidebar-link\" href=\"/admin/analytics\" data-discover=\"true\">",
-          "target": [
-            "a[title=\"Analitik\"]"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "target-size",
-              "data": {
-                "minSize": 24,
-                "width": 221,
-                "height": 47
-              },
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Control has sufficient size (221px by 47px, should be at least 24px by 24px)"
-            },
-            {
-              "id": "target-offset",
-              "data": {
-                "closestOffset": 24,
-                "minOffset": 24
-              },
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Target has sufficient space from its closest neighbors. Safe clickable space has a diameter of 24px which is at least 24px."
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
           "html": "<a title=\"Pegawai\" aria-current=\"page\" class=\"lw-sidebar-link active nav-separator active\" href=\"/admin/employees\" data-discover=\"true\">",
           "target": [
             ".active"
@@ -5505,70 +5048,6 @@
           "html": "<a title=\"Peran & akses\" class=\"lw-sidebar-link\" href=\"/admin/roles\" data-discover=\"true\">",
           "target": [
             "a[title=\"Peran & akses\"]"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "target-size",
-              "data": {
-                "minSize": 24,
-                "width": 221,
-                "height": 47
-              },
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Control has sufficient size (221px by 47px, should be at least 24px by 24px)"
-            },
-            {
-              "id": "target-offset",
-              "data": {
-                "closestOffset": 24,
-                "minOffset": 24
-              },
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Target has sufficient space from its closest neighbors. Safe clickable space has a diameter of 24px which is at least 24px."
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<a title=\"Integrasi\" class=\"lw-sidebar-link\" href=\"/admin/integration\" data-discover=\"true\">",
-          "target": [
-            "a[title=\"Integrasi\"]"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "target-size",
-              "data": {
-                "minSize": 24,
-                "width": 221,
-                "height": 47
-              },
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Control has sufficient size (221px by 47px, should be at least 24px by 24px)"
-            },
-            {
-              "id": "target-offset",
-              "data": {
-                "closestOffset": 24,
-                "minOffset": 24
-              },
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Target has sufficient space from its closest neighbors. Safe clickable space has a diameter of 24px which is at least 24px."
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<a title=\"Laporan kunjungan\" class=\"lw-sidebar-link\" href=\"/admin/logs\" data-discover=\"true\">",
-          "target": [
-            "a[title=\"Laporan kunjungan\"]"
           ]
         },
         {
@@ -5723,6 +5202,12 @@
                   ]
                 },
                 {
+                  "html": "<button class=\"button ghost profile-icon-button\" type=\"button\" aria-label=\"Buka profil saya\" aria-haspopup=\"dialog\" aria-expanded=\"false\" aria-controls=\"radix-_r_3_\" data-state=\"closed\"><span class=\"avatar\" aria-hidden=\"true\">AL</span></button>",
+                  "target": [
+                    ".profile-icon-button"
+                  ]
+                },
+                {
                   "html": "<button class=\"button primary \">",
                   "target": [
                     ".primary"
@@ -5741,9 +5226,15 @@
                   ]
                 },
                 {
-                  "html": "<button class=\"button secondary \" aria-label=\"Edit pegawai Pegawai Layanan\">Edit</button>",
+                  "html": "<button type=\"button\" class=\"employee-name\" aria-label=\"Lihat detail pegawai Pegawai Layanan\">Pegawai Layanan</button>",
                   "target": [
-                    "article > .secondary[aria-label=\"Edit pegawai Pegawai Layanan\"]"
+                    "h3 > .employee-name[type=\"button\"]"
+                  ]
+                },
+                {
+                  "html": "<button class=\"button ghost employee-detail-action\" aria-label=\"Detail pegawai Pegawai Layanan\" title=\"Lihat detail pegawai Pegawai Layanan\">",
+                  "target": [
+                    "article > .employee-detail-action.ghost[aria-label=\"Detail pegawai Pegawai Layanan\"]"
                   ]
                 }
               ],
@@ -5806,38 +5297,6 @@
       "help": "Elements must meet minimum color contrast ratio thresholds",
       "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=playwright",
       "nodes": [
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "contrastRatio": 0,
-                "fontSize": "10.8pt (14.4px)",
-                "fontWeight": "normal",
-                "messageKey": "bgGradient",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<button class=\"button secondary \" aria-label=\"Edit pegawai Pegawai Layanan\">Edit</button>",
-                  "target": [
-                    "article > .secondary[aria-label=\"Edit pegawai Pegawai Layanan\"]"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element's background color could not be determined due to a background gradient"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<button class=\"button secondary \" aria-label=\"Edit pegawai Pegawai Layanan\">Edit</button>",
-          "target": [
-            "article > .secondary[aria-label=\"Edit pegawai Pegawai Layanan\"]"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
-        },
         {
           "any": [
             {

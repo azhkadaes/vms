@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import { CheckCircle2, CircleAlert, X } from "lucide-react";
+import { CheckCircle2, CircleAlert, Info, X } from "lucide-react";
 
-type Tone = "success" | "error";
-type Toast = { id: number; message: string; tone: Tone };
+type Tone = "success" | "error" | "info";
+type Toast = { id: number; message: string; tone: Tone; description?: string };
+const icons = { success: CheckCircle2, error: CircleAlert, info: Info };
 const eventName = "vms:toast";
 let nextId = 0;
 
-export function toast(message: string, tone: Tone = "success") {
-  window.dispatchEvent(new CustomEvent<Toast>(eventName, { detail: { id: ++nextId, message, tone } }));
+export function toast(message: string, tone: Tone = "success", description?: string) {
+  window.dispatchEvent(
+    new CustomEvent<Toast>(eventName, { detail: { id: ++nextId, message, tone, description } }),
+  );
 }
 
 export function Toaster() {
@@ -21,11 +24,33 @@ export function Toaster() {
     window.addEventListener(eventName, listener);
     return () => window.removeEventListener(eventName, listener);
   }, []);
-  return <div className="toast-stack" aria-live="polite" aria-atomic="false">
-    {items.map((item) => <div className={`toast-card toast-${item.tone}`} key={item.id} role="status">
-      {item.tone === "success" ? <CheckCircle2 size={18} /> : <CircleAlert size={18} />}
-      <span>{item.message}</span>
-      <button type="button" aria-label="Tutup notifikasi" onClick={() => setItems((current) => current.filter((i) => i.id !== item.id))}><X size={16} /></button>
-    </div>)}
-  </div>;
+  return (
+    <div className="toast-stack" aria-live="polite" aria-atomic="false">
+      {items.map((item) => {
+        const Icon = icons[item.tone];
+        return (
+          <div className={`toast-card toast-${item.tone}`} key={item.id} role="status">
+            <Icon size={18} aria-hidden="true" />
+            <span className="toast-content">
+              {item.description ? (
+                <>
+                  <strong>{item.message}</strong>
+                  <span>{item.description}</span>
+                </>
+              ) : (
+                item.message
+              )}
+            </span>
+            <button
+              type="button"
+              aria-label="Tutup notifikasi"
+              onClick={() => setItems((current) => current.filter((i) => i.id !== item.id))}
+            >
+              <X size={16} />
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
 }

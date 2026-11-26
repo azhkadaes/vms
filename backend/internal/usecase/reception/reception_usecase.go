@@ -8,6 +8,6 @@ import (
 )
 
 type ReceptionUsecase interface {
-	Resolve(context.Context, dto.Session, dto.ReceptionResolve) (dto.StaffBooking, error)
+	Resolve(context.Context, dto.Session, dto.ReceptionLookup) (dto.StaffBooking, error)
 	Attendance(context.Context, entity.SessionProof, int32, dto.ReceptionAttendance) (dto.StaffBooking, error)
 }

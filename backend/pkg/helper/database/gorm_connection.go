@@ -89,7 +89,7 @@ var readinessTables = []string{
 	"support.staff_sessions", "support.refresh_lineage", "support.refresh_recovery",
 	"vms.form_documents", "support.form_document_uploads",
 	"vms.detail_kunjungan", "vms.detail_pengunjung", "vms.kunjungan", "support.booking_requests",
-	"vms.qr_kunjungan",
+	"vms.qr_kunjungan", "support.staff_notifications",
 }
 
 // Readiness includes the migrated schema, not merely a working socket.

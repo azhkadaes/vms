@@ -7,14 +7,14 @@
     "name": "axe"
   },
   "testEnvironment": {
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
     "windowWidth": 390,
     "windowHeight": 900,
     "orientationAngle": 0,
     "orientationType": "landscape-primary"
   },
-  "timestamp": "2099-08-19T01:00:04.691Z",
-  "url": "http://127.0.0.1:55101/admin/booking?status=approved&selected=staff-visit-8",
+  "timestamp": "2099-08-19T01:00:04.218Z",
+  "url": "http://localhost:60762/admin/booking?status=approved&selected=staff-visit-8",
   "toolOptions": {
     "runOnly": {
       "type": "tag",
@@ -1096,9 +1096,9 @@
             }
           ],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_f_\" aria-describedby=\"radix-_r_h_\" aria-labelledby=\"radix-_r_g_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_f_"
           ]
         },
         {
@@ -1283,7 +1283,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"table-wrap booking-desktop-table\" tabindex=\"0\" role=\"region\" aria-label=\"Daftar janji temu\">",
+          "html": "<div class=\"table-wrap booking-desktop-table\" tabindex=\"0\" role=\"region\" aria-label=\"Daftar kunjungan\">",
           "target": [
             ".table-wrap"
           ]
@@ -1301,9 +1301,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_f_\" aria-describedby=\"radix-_r_h_\" aria-labelledby=\"radix-_r_g_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_f_"
           ]
         }
       ]
@@ -1355,9 +1355,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_f_\" aria-describedby=\"radix-_r_h_\" aria-labelledby=\"radix-_r_g_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_f_"
           ]
         },
         {
@@ -1445,9 +1445,9 @@
             }
           ],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_f_\" aria-describedby=\"radix-_r_h_\" aria-labelledby=\"radix-_r_g_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_f_"
           ]
         }
       ]
@@ -1476,9 +1476,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_f_\" aria-describedby=\"radix-_r_h_\" aria-labelledby=\"radix-_r_g_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_f_"
           ]
         }
       ]
@@ -1748,9 +1748,9 @@
             }
           ],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_f_\" aria-describedby=\"radix-_r_h_\" aria-labelledby=\"radix-_r_g_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_f_"
           ]
         },
         {
@@ -1838,9 +1838,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_f_\" aria-describedby=\"radix-_r_h_\" aria-labelledby=\"radix-_r_g_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_f_"
           ]
         }
       ]
@@ -1888,9 +1888,9 @@
             }
           ],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_f_\" aria-describedby=\"radix-_r_h_\" aria-labelledby=\"radix-_r_g_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_f_"
           ]
         }
       ]
@@ -1970,9 +1970,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_f_\" aria-describedby=\"radix-_r_h_\" aria-labelledby=\"radix-_r_g_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_f_"
           ]
         },
         {
@@ -2120,9 +2120,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_f_\" aria-describedby=\"radix-_r_h_\" aria-labelledby=\"radix-_r_g_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_f_"
           ]
         },
         {
@@ -2255,9 +2255,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_f_\" aria-describedby=\"radix-_r_h_\" aria-labelledby=\"radix-_r_g_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_f_"
           ]
         }
       ]
@@ -2373,9 +2373,9 @@
               "data": null,
               "relatedNodes": [
                 {
-                  "html": "<h2 id=\"radix-_r_d_\">Batalkan kunjungan</h2>",
+                  "html": "<h2 id=\"radix-_r_g_\">Batalkan kunjungan</h2>",
                   "target": [
-                    "#radix-_r_d_"
+                    "#radix-_r_g_"
                   ]
                 },
                 {
@@ -2438,7 +2438,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<strong>Janji temu</strong>",
+          "html": "<strong>Kunjungan</strong>",
           "target": [
             "strong"
           ]
@@ -2463,9 +2463,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"avatar\">PL</div>",
+          "html": "<span class=\"avatar\" aria-hidden=\"true\">PL</span>",
           "target": [
-            ".toolbar:nth-child(2) > .avatar"
+            ".avatar[aria-hidden=\"true\"]"
           ]
         },
         {
@@ -2488,7 +2488,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<span>Terakhir diperbarui <time datetime=\"2099-08-19T01:00:03.943Z\">09.00.03 WITA</time></span>",
+          "html": "<span>Terakhir diperbarui <time datetime=\"2099-08-19T01:00:03.184Z\">09.00.03 WITA</time></span>",
           "target": [
             ".bookings-refresh-copy > span:nth-child(1)"
           ]
@@ -2513,7 +2513,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<time datetime=\"2099-08-19T01:00:03.943Z\">09.00.03 WITA</time>",
+          "html": "<time datetime=\"2099-08-19T01:00:03.184Z\">09.00.03 WITA</time>",
           "target": [
             "time"
           ]
@@ -2563,7 +2563,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<h1>Janji temu</h1>",
+          "html": "<h1>Kunjungan</h1>",
           "target": [
             "h1"
           ]
@@ -2638,32 +2638,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<select id=\"booking-status\" class=\"control\">",
-          "target": [
-            "#booking-status"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#11131b",
-                "bgColor": "#ffffff",
-                "contrastRatio": 18.53,
-                "fontSize": "12.0pt (16px)",
-                "fontWeight": "normal",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element has sufficient color contrast of 18.53"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<input class=\"control\" aria-label=\"Cari janji temu\" placeholder=\"Cari nama, instansi, atau tujuan…\" value=\"\" style=\"\">",
+          "html": "<input class=\"control\" aria-label=\"Cari kunjungan\" placeholder=\"Cari nama, instansi, atau tujuan…\" value=\"\" style=\"\">",
           "target": [
             "input"
           ]
@@ -2676,7 +2651,7 @@
                 "fgColor": "#11131b",
                 "bgColor": "#ffffff",
                 "contrastRatio": 18.53,
-                "fontSize": "10.0pt (13.28px)",
+                "fontSize": "10.5pt (14px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
@@ -2691,31 +2666,6 @@
           "html": "<label for=\"booking-sort\">Urutkan</label>",
           "target": [
             "label[for=\"booking-sort\"]"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#11131b",
-                "bgColor": "#ffffff",
-                "contrastRatio": 18.53,
-                "fontSize": "12.0pt (16px)",
-                "fontWeight": "normal",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element has sufficient color contrast of 18.53"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<select id=\"booking-sort\" class=\"control\" aria-label=\"Urutan janji temu\">",
-          "target": [
-            "#booking-sort"
           ]
         },
         {
@@ -3888,9 +3838,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<h2 id=\"radix-_r_d_\">Batalkan kunjungan</h2>",
+          "html": "<h2 id=\"radix-_r_g_\">Batalkan kunjungan</h2>",
           "target": [
-            "#radix-_r_d_"
+            "#radix-_r_g_"
           ]
         },
         {
@@ -3913,9 +3863,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<p id=\"radix-_r_e_\">Pembatalan oleh petugas dicatat dalam audit dan menutup izin masuk serta reservasi. Tindakan ini juga dapat dilakukan sesudah waktu mulai jika Anda berwenang.</p>",
+          "html": "<p id=\"radix-_r_h_\">Pembatalan oleh petugas dicatat dalam audit dan menutup izin masuk serta reservasi. Tindakan ini juga dapat dilakukan sesudah waktu mulai jika Anda berwenang.</p>",
           "target": [
-            "#radix-_r_e_"
+            "#radix-_r_h_"
           ]
         },
         {
@@ -4026,7 +3976,7 @@
                 "fgColor": "#1d1d1f",
                 "bgColor": "#ffffff",
                 "contrastRatio": 16.82,
-                "fontSize": "10.0pt (13.28px)",
+                "fontSize": "10.5pt (14px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
@@ -4076,7 +4026,7 @@
                 "fgColor": "#63636c",
                 "bgColor": "#ffffff",
                 "contrastRatio": 5.94,
-                "fontSize": "9.4pt (12.48px)",
+                "fontSize": "9.8pt (13px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
@@ -4101,7 +4051,7 @@
                 "fgColor": "#1d1d1f",
                 "bgColor": "#ffffff",
                 "contrastRatio": 16.82,
-                "fontSize": "10.0pt (13.28px)",
+                "fontSize": "10.5pt (14px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
@@ -4126,7 +4076,7 @@
                 "fgColor": "#63636c",
                 "bgColor": "#ffffff",
                 "contrastRatio": 5.94,
-                "fontSize": "10.0pt (13.28px)",
+                "fontSize": "10.5pt (14px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
@@ -4176,7 +4126,7 @@
                 "fgColor": "#63636c",
                 "bgColor": "#ffffff",
                 "contrastRatio": 5.94,
-                "fontSize": "9.4pt (12.48px)",
+                "fontSize": "9.8pt (13px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
@@ -4288,7 +4238,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<select id=\"booking-status\" class=\"control\">",
+          "html": "<select id=\"booking-status\" class=\"select-control control\">",
           "target": [
             "#booking-status"
           ]
@@ -4306,7 +4256,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<select id=\"booking-sort\" class=\"control\" aria-label=\"Urutan janji temu\">",
+          "html": "<select id=\"booking-sort\" aria-label=\"Urutan kunjungan\" class=\"select-control control\">",
           "target": [
             "#booking-sort"
           ]
@@ -4315,7 +4265,7 @@
           "any": [
             {
               "id": "duplicate-id-aria",
-              "data": "radix-_r_d_",
+              "data": "radix-_r_g_",
               "relatedNodes": [],
               "impact": "critical",
               "message": "Document has no elements referenced with ARIA or labels that share the same id attribute"
@@ -4324,16 +4274,16 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<h2 id=\"radix-_r_d_\">Batalkan kunjungan</h2>",
+          "html": "<h2 id=\"radix-_r_g_\">Batalkan kunjungan</h2>",
           "target": [
-            "#radix-_r_d_"
+            "#radix-_r_g_"
           ]
         },
         {
           "any": [
             {
               "id": "duplicate-id-aria",
-              "data": "radix-_r_e_",
+              "data": "radix-_r_h_",
               "relatedNodes": [],
               "impact": "critical",
               "message": "Document has no elements referenced with ARIA or labels that share the same id attribute"
@@ -4342,9 +4292,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<p id=\"radix-_r_e_\">Pembatalan oleh petugas dicatat dalam audit dan menutup izin masuk serta reservasi. Tindakan ini juga dapat dilakukan sesudah waktu mulai jika Anda berwenang.</p>",
+          "html": "<p id=\"radix-_r_h_\">Pembatalan oleh petugas dicatat dalam audit dan menutup izin masuk serta reservasi. Tindakan ini juga dapat dilakukan sesudah waktu mulai jika Anda berwenang.</p>",
           "target": [
-            "#radix-_r_e_"
+            "#radix-_r_h_"
           ]
         },
         {
@@ -4445,9 +4395,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<h2 id=\"radix-_r_d_\">Batalkan kunjungan</h2>",
+          "html": "<h2 id=\"radix-_r_g_\">Batalkan kunjungan</h2>",
           "target": [
-            "#radix-_r_d_"
+            "#radix-_r_g_"
           ]
         },
         {
@@ -4579,9 +4529,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<h2 id=\"radix-_r_d_\">Batalkan kunjungan</h2>",
+          "html": "<h2 id=\"radix-_r_g_\">Batalkan kunjungan</h2>",
           "target": [
-            "#radix-_r_d_"
+            "#radix-_r_g_"
           ]
         },
         {
@@ -5096,9 +5046,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_f_\" aria-describedby=\"radix-_r_h_\" aria-labelledby=\"radix-_r_g_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_f_"
           ]
         },
         {
@@ -5156,7 +5106,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div><h2 id=\"radix-_r_d_\">Batalkan kunjungan</h2><p id=\"radix-_r_e_\">Pembatalan oleh petugas dicatat dalam audit dan menutup izin masuk serta reservasi. Tindakan ini juga dapat dilakukan sesudah waktu mulai jika Anda berwenang.</p></div>",
+          "html": "<div><h2 id=\"radix-_r_g_\">Batalkan kunjungan</h2><p id=\"radix-_r_h_\">Pembatalan oleh petugas dicatat dalam audit dan menutup izin masuk serta reservasi. Tindakan ini juga dapat dilakukan sesudah waktu mulai jika Anda berwenang.</p></div>",
           "target": [
             ".modal-heading > div"
           ]
@@ -5176,9 +5126,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<h2 id=\"radix-_r_d_\">Batalkan kunjungan</h2>",
+          "html": "<h2 id=\"radix-_r_g_\">Batalkan kunjungan</h2>",
           "target": [
-            "#radix-_r_d_"
+            "#radix-_r_g_"
           ]
         },
         {
@@ -5196,9 +5146,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<p id=\"radix-_r_e_\">Pembatalan oleh petugas dicatat dalam audit dan menutup izin masuk serta reservasi. Tindakan ini juga dapat dilakukan sesudah waktu mulai jika Anda berwenang.</p>",
+          "html": "<p id=\"radix-_r_h_\">Pembatalan oleh petugas dicatat dalam audit dan menutup izin masuk serta reservasi. Tindakan ini juga dapat dilakukan sesudah waktu mulai jika Anda berwenang.</p>",
           "target": [
-            "#radix-_r_e_"
+            "#radix-_r_h_"
           ]
         },
         {
@@ -5747,9 +5697,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+          "html": "<div role=\"dialog\" id=\"radix-_r_f_\" aria-describedby=\"radix-_r_h_\" aria-labelledby=\"radix-_r_g_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
           "target": [
-            "#radix-_r_c_"
+            "#radix-_r_f_"
           ]
         }
       ]
@@ -5774,12 +5724,12 @@
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 50,
+                "width": 52,
                 "height": 44
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (50px by 44px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (52px by 44px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -5806,12 +5756,12 @@
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 314,
+                "width": 304,
                 "height": 120
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (314px by 120px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (304px by 120px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -5838,12 +5788,12 @@
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 314,
+                "width": 304,
                 "height": 96
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (314px by 96px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (304px by 96px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -5870,12 +5820,12 @@
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 82.6,
+                "width": 84.6,
                 "height": 44
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (82.6px by 44px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (84.6px by 44px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -5902,12 +5852,12 @@
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 159.7,
+                "width": 161.7,
                 "height": 44
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (159.7px by 44px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (161.7px by 44px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -6016,25 +5966,31 @@
                   ]
                 },
                 {
+                  "html": "<button class=\"button ghost profile-icon-button\" type=\"button\" aria-label=\"Buka profil saya\" aria-haspopup=\"dialog\" aria-expanded=\"false\" aria-controls=\"radix-_r_3_\" data-state=\"closed\"><span class=\"avatar\" aria-hidden=\"true\">PL</span></button>",
+                  "target": [
+                    ".profile-icon-button"
+                  ]
+                },
+                {
                   "html": "<button class=\"button ghost \" type=\"button\" aria-label=\"Perbarui data kunjungan\">",
                   "target": [
                     "button[aria-label=\"Perbarui data kunjungan\"]"
                   ]
                 },
                 {
-                  "html": "<select id=\"booking-status\" class=\"control\">",
+                  "html": "<select id=\"booking-status\" class=\"select-control control\">",
                   "target": [
                     "#booking-status"
                   ]
                 },
                 {
-                  "html": "<input class=\"control\" aria-label=\"Cari janji temu\" placeholder=\"Cari nama, instansi, atau tujuan…\" value=\"\" style=\"\">",
+                  "html": "<input class=\"control\" aria-label=\"Cari kunjungan\" placeholder=\"Cari nama, instansi, atau tujuan…\" value=\"\" style=\"\">",
                   "target": [
                     "input"
                   ]
                 },
                 {
-                  "html": "<select id=\"booking-sort\" class=\"control\" aria-label=\"Urutan janji temu\">",
+                  "html": "<select id=\"booking-sort\" aria-label=\"Urutan kunjungan\" class=\"select-control control\">",
                   "target": [
                     "#booking-sort"
                   ]
@@ -6147,6 +6103,70 @@
       "help": "Elements must meet minimum color contrast ratio thresholds",
       "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=playwright",
       "nodes": [
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "contrastRatio": 0,
+                "fontSize": "12.0pt (16px)",
+                "fontWeight": "normal",
+                "messageKey": "bgImage",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<select id=\"booking-status\" class=\"select-control control\">",
+                  "target": [
+                    "#booking-status"
+                  ]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element's background color could not be determined due to a background image"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<select id=\"booking-status\" class=\"select-control control\">",
+          "target": [
+            "#booking-status"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background image"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "contrastRatio": 0,
+                "fontSize": "12.0pt (16px)",
+                "fontWeight": "normal",
+                "messageKey": "bgImage",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<select id=\"booking-sort\" aria-label=\"Urutan kunjungan\" class=\"select-control control\">",
+                  "target": [
+                    "#booking-sort"
+                  ]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element's background color could not be determined due to a background image"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<select id=\"booking-sort\" aria-label=\"Urutan kunjungan\" class=\"select-control control\">",
+          "target": [
+            "#booking-sort"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background image"
+        },
         {
           "any": [
             {
@@ -6640,9 +6660,9 @@
               },
               "relatedNodes": [
                 {
-                  "html": "<div role=\"dialog\" id=\"radix-_r_c_\" aria-describedby=\"radix-_r_e_\" aria-labelledby=\"radix-_r_d_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
+                  "html": "<div role=\"dialog\" id=\"radix-_r_f_\" aria-describedby=\"radix-_r_h_\" aria-labelledby=\"radix-_r_g_\" data-state=\"open\" class=\"modal\" tabindex=\"-1\" style=\"pointer-events: auto;\">",
                   "target": [
-                    "#radix-_r_c_"
+                    "#radix-_r_f_"
                   ]
                 }
               ],

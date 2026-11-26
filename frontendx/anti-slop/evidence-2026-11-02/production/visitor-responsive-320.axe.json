@@ -7,14 +7,14 @@
     "name": "axe"
   },
   "testEnvironment": {
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
     "windowWidth": 320,
     "windowHeight": 740,
     "orientationAngle": 0,
     "orientationType": "landscape-primary"
   },
-  "timestamp": "2026-11-04T06:07:52.244Z",
-  "url": "http://127.0.0.1:55101/",
+  "timestamp": "2026-11-23T02:46:32.447Z",
+  "url": "http://localhost:60762/",
   "toolOptions": {
     "runOnly": {
       "type": "tag",
@@ -1032,7 +1032,7 @@
             }
           ],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -1072,9 +1072,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -1112,9 +1112,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -1232,7 +1232,7 @@
             }
           ],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--hero"
           ]
@@ -1272,9 +1272,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--hero > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--hero > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -1312,9 +1312,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--hero > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--hero > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -1383,7 +1383,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -1401,7 +1401,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--hero"
           ]
@@ -1455,7 +1455,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -1473,9 +1473,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -1491,9 +1491,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -1545,7 +1545,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--hero"
           ]
@@ -1563,9 +1563,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--hero > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--hero > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -1581,9 +1581,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--hero > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--hero > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -1635,7 +1635,7 @@
             }
           ],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -1653,7 +1653,7 @@
             }
           ],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--hero"
           ]
@@ -1746,70 +1746,6 @@
           "html": "<span class=\"header-reveal-threshold\" aria-hidden=\"true\"></span>",
           "target": [
             ".header-reveal-threshold"
-          ]
-        },
-        {
-          "any": [],
-          "all": [
-            {
-              "id": "focusable-modal-open",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements while a modal is open"
-            },
-            {
-              "id": "focusable-disabled",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements contained within element"
-            },
-            {
-              "id": "focusable-not-tabbable",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements contained within element"
-            }
-          ],
-          "none": [],
-          "impact": null,
-          "html": "<span aria-hidden=\"true\">|</span>",
-          "target": [
-            ".language-switch--header > span"
-          ]
-        },
-        {
-          "any": [],
-          "all": [
-            {
-              "id": "focusable-modal-open",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements while a modal is open"
-            },
-            {
-              "id": "focusable-disabled",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements contained within element"
-            },
-            {
-              "id": "focusable-not-tabbable",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "No focusable elements contained within element"
-            }
-          ],
-          "none": [],
-          "impact": null,
-          "html": "<span aria-hidden=\"true\">|</span>",
-          "target": [
-            ".language-switch--hero > span"
           ]
         },
         {
@@ -2085,7 +2021,7 @@
             }
           ],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -2103,9 +2039,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -2121,9 +2057,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -2175,7 +2111,7 @@
             }
           ],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--hero"
           ]
@@ -2193,9 +2129,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--hero > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--hero > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -2211,9 +2147,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--hero > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--hero > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         }
       ]
@@ -2247,7 +2183,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -2265,7 +2201,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--hero"
           ]
@@ -2315,7 +2251,7 @@
             }
           ],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -2347,7 +2283,7 @@
             }
           ],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--hero"
           ]
@@ -2429,7 +2365,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -2461,9 +2397,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -2493,9 +2429,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -2589,7 +2525,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--hero"
           ]
@@ -2621,9 +2557,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--hero > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--hero > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -2653,9 +2589,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--hero > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--hero > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -2739,7 +2675,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -2757,9 +2693,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -2775,9 +2711,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -2829,7 +2765,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--hero"
           ]
@@ -2847,9 +2783,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--hero > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--hero > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -2865,9 +2801,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--hero > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--hero > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -2931,9 +2867,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -2956,9 +2892,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -2981,9 +2917,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--hero > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--hero > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -3006,9 +2942,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--hero > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--hero > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         }
       ]
@@ -3100,6 +3036,56 @@
       "help": "Elements must meet minimum color contrast ratio thresholds",
       "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=playwright",
       "nodes": [
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#1769c2",
+                "bgColor": "#edf3fa",
+                "contrastRatio": 4.9,
+                "fontSize": "9.8pt (13px)",
+                "fontWeight": "normal",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 4.9"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
+          "target": [
+            ".language-switch--hero > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#1769c2",
+                "bgColor": "#ffffff",
+                "contrastRatio": 5.47,
+                "fontSize": "9.8pt (13px)",
+                "fontWeight": "normal",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 5.47"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
+          "target": [
+            ".language-switch--hero > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
+          ]
+        },
         {
           "any": [
             {
@@ -4160,9 +4146,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -4178,9 +4164,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -4214,9 +4200,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--hero > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--hero > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -4232,9 +4218,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--hero > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--hero > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         }
       ]
@@ -4549,7 +4535,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"language-switch language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--header"
           ]
@@ -4569,9 +4555,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -4589,9 +4575,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -4869,27 +4855,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"hero-toolbar-actions\">",
-          "target": [
-            ".hero-toolbar-actions"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "region",
-              "data": {
-                "isIframe": false
-              },
-              "relatedNodes": [],
-              "impact": "moderate",
-              "message": "All page content is contained by landmarks"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<div class=\"language-switch language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "html": "<div class=\"segmented-control language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
             ".language-switch--hero"
           ]
@@ -4909,9 +4875,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--hero > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--hero > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -4929,9 +4895,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--hero > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--hero > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -5363,9 +5329,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -5395,9 +5361,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -5459,9 +5425,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--hero > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--hero > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -5491,9 +5457,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--hero > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--hero > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -5626,9 +5592,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--header > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--header > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -5644,9 +5610,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--header > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--header > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         },
         {
@@ -5662,9 +5628,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            ".language-switch--hero > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
+            ".language-switch--hero > .secondary[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
           ]
         },
         {
@@ -5680,9 +5646,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            ".language-switch--hero > button[lang=\"en\"][aria-label=\"EN · English\"]"
+            ".language-switch--hero > .ghost[aria-label=\"EN · English\"][lang=\"en\"]"
           ]
         }
       ]
@@ -5752,82 +5718,6 @@
       "help": "Elements must meet minimum color contrast ratio thresholds",
       "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=playwright",
       "nodes": [
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "contrastRatio": 0,
-                "fontSize": "9.0pt (12px)",
-                "fontWeight": "bold",
-                "messageKey": "imgNode",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<div class=\"language-switch language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
-                  "target": [
-                    ".language-switch--hero"
-                  ]
-                },
-                {
-                  "html": "<img class=\"hero-image\" width=\"1920\" height=\"1080\" fetchpriority=\"high\" alt=\"Gedung di kawasan Ibu Kota Nusantara dikelilingi lanskap hijau\" src=\"/assets/nusantara-GadTnK_L.jpg\">",
-                  "target": [
-                    ".hero-image"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element's background color could not be determined because element contains an image node"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<button type=\"button\" lang=\"id\" aria-label=\"ID · Bahasa Indonesia\" aria-pressed=\"true\">ID</button>",
-          "target": [
-            ".language-switch--hero > button[aria-label=\"ID · Bahasa Indonesia\"][lang=\"id\"]"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "contrastRatio": 0,
-                "fontSize": "9.0pt (12px)",
-                "fontWeight": "normal",
-                "messageKey": "imgNode",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<div class=\"language-switch language-switch--hero\" role=\"group\" aria-label=\"Bahasa halaman\">",
-                  "target": [
-                    ".language-switch--hero"
-                  ]
-                },
-                {
-                  "html": "<img class=\"hero-image\" width=\"1920\" height=\"1080\" fetchpriority=\"high\" alt=\"Gedung di kawasan Ibu Kota Nusantara dikelilingi lanskap hijau\" src=\"/assets/nusantara-GadTnK_L.jpg\">",
-                  "target": [
-                    ".hero-image"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element's background color could not be determined because element contains an image node"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<button type=\"button\" lang=\"en\" aria-label=\"EN · English\" aria-pressed=\"false\">EN</button>",
-          "target": [
-            ".language-switch--hero > button[lang=\"en\"][aria-label=\"EN · English\"]"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
-        },
         {
           "any": [
             {

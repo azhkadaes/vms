@@ -21,7 +21,7 @@ func (h *receptionHandler) Resolve(c fiber.Ctx) error {
 	if err := NoQuery(c); err != nil {
 		return err
 	}
-	var req dto.ReceptionResolve
+	var req dto.ReceptionLookup
 	if err := DecodeJSON(c, &req); err != nil {
 		return err
 	}

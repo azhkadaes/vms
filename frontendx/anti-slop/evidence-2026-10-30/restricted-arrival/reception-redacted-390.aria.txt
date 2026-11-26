@@ -3,7 +3,7 @@
 - banner:
   - button "Buka navigasi"
   - strong: Kunjungan
-  - text: DP
+  - button "Buka profil saya"
 - region "Pratinjau lokal": Preview lokal · Data contoh, tanpa email atau unggahan nyata. Gunakan data fiktif.
 - main:
   - region "Pembaruan data kunjungan":
@@ -37,13 +37,13 @@
     - text: VIP Checked in
     - paragraph: Pemerintah Kota Balikpapan · 2 orang
     - term: Jadwal · WITA
-    - definition: 15 November 2026 · 10:30
+    - definition: 23 November 2026 · 10:30
     - term: Tujuan
     - definition: Kepala Otorita IKN
   - article:
-    - heading "TRB-49bf206e" [level=2]
+    - heading "TRB-eea2eeb0" [level=2]
     - text: Terbatas Disetujui
-    - paragraph: TRB-49bf206e
+    - paragraph: TRB-eea2eeb0
     - term: Jadwal · WITA
     - definition: 19 Agustus 2099 · 10:00
   - article:
@@ -51,19 +51,19 @@
     - text: Terbatas Terlewat
     - paragraph: TRB-demo-restricted-2
     - term: Jadwal · WITA
-    - definition: 15 November 2026 · 15:00
+    - definition: 23 November 2026 · 15:00
   - article:
     - heading "TRB-demo-restricted-1" [level=2]
     - text: Terbatas Terlewat
     - paragraph: TRB-demo-restricted-1
     - term: Jadwal · WITA
-    - definition: 15 November 2026 · 14:00
+    - definition: 23 November 2026 · 14:00
   - article:
     - heading "Indah Permata" [level=2]
     - text: VIP Terlewat
     - paragraph: Universitas Mulawarman · 2 orang
     - term: Jadwal · WITA
-    - definition: 15 November 2026 · 13:30
+    - definition: 23 November 2026 · 13:30
     - term: Tujuan
     - definition: Kepala Otorita IKN
   - article:
@@ -71,7 +71,7 @@
     - text: Checked out
     - paragraph: Universitas Mulawarman · 2 orang
     - term: Jadwal · WITA
-    - definition: 15 November 2026 · 11:30
+    - definition: 23 November 2026 · 11:30
     - term: Tujuan
     - definition: Direktorat Pelayanan Dasar
   - article:
@@ -79,7 +79,7 @@
     - text: Terlewat Jadwal diubah
     - paragraph: Kementerian PUPR · 1 orang
     - term: Jadwal · WITA
-    - definition: 15 November 2026 · 11:00
+    - definition: 23 November 2026 · 11:00
     - term: Tujuan
     - definition: Direktorat Data dan Kecerdasan Buatan
   - text: 1–7 dari 8 booking

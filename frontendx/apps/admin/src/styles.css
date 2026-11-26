@@ -2549,10 +2549,6 @@
   border-radius: 7px;
   background: var(--white);
 }
-.multiselect-control:focus-within {
-  border-color: var(--focus);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--focus) 15%, transparent);
-}
 .multiselect-control[data-invalid] {
   border-color: var(--action-danger);
 }
@@ -3184,9 +3180,6 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: var(--space-3);
-  padding: var(--space-4);
-  border: 1px solid var(--line);
-  border-radius: 12px;
 }
 .visitor-photo-confirmation h3 {
   align-self: center;
@@ -3195,25 +3188,70 @@
 .reception-file-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--space-1);
 }
-.reception-pdf-viewer {
-  display: block;
-  width: 100%;
-  height: 65dvh;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+.file-viewer {
+  width: min(760px, calc(100vw - 32px));
 }
-.visitor-photo-viewer img {
-  display: block;
-  width: auto;
-  max-width: 100%;
-  max-height: 65dvh;
-  margin-inline: auto;
-  object-fit: contain;
+.file-viewer-frame {
+  display: grid;
+  place-items: center;
+  height: 60dvh;
+  overflow: hidden;
   background: var(--surface-subtle);
   border-radius: 8px;
 }
+.file-viewer-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.file-viewer-frame img {
+  display: block;
+  max-width: 100%;
+  max-height: 60dvh;
+  object-fit: contain;
+}
+.file-viewer-status {
+  padding: var(--space-3);
+}
+.notification-bell.button {
+  position: relative;
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+}
+.notification-bell > span {
+  position: absolute;
+  inset-block-start: 2px;
+  inset-inline-end: 0;
+  min-width: 18px;
+  padding-inline: 3px;
+  border-radius: 10px;
+  background: var(--action-primary);
+  color: var(--white);
+  font-size: .68rem;
+  text-align: center;
+}
+.notification-history { width: min(460px, calc(100vw - 32px)); }
+.notification-list { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.notification-row {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--white);
+  text-align: start;
+  cursor: pointer;
+}
+.notification-row[data-unread] { background: var(--action-secondary); }
+.notification-row:hover:not(:disabled) { background: var(--action-secondary-hover); }
+.notification-unread { font-size: .75rem; color: var(--action-primary); }
 
 .report-export-modal {
   width: min(900px, calc(100vw - 32px));

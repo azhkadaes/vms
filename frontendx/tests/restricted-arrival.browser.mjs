@@ -62,6 +62,11 @@ async function open(role, route, width = 390) {
   await page.goto(origin + route);
   return { context, page };
 }
+async function selectReceptionVisitor(page, name) {
+  await page.getByRole("combobox", { name: "Nama pengunjung" }).fill(name);
+  await page.getByRole("option").filter({ hasText: name }).click();
+}
+
 async function save(page, name) {
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
   await page.screenshot({ path: fileURLToPath(new URL(`${name}.png`, evidence)), fullPage: true });
@@ -131,7 +136,16 @@ test("reception opens linked memo and photo only after resolving the visit", asy
     const { page, context } = await open("Receptionist", "/admin/check-in");
     try {
       await page.getByRole("button", { name: /Kode kunjungan Masukkan/ }).click();
+      await selectReceptionVisitor(page, booking.name);
+      const wrongPin = booking.code === "00000000" ? "99999999" : "00000000";
+      const pin = page.locator("#booking-code");
+      await pin.fill(wrongPin);
+      await pin.press("Enter");
+      await page.getByRole("alert").filter({ hasText: "Periksa nama pengunjung dan kode kunjungan." }).waitFor();
+      assert.equal(await pin.getAttribute("aria-invalid"), "true");
+      assert.equal(await page.locator(".input-otp[data-invalid] .input-otp-slot").count(), 8);
       await page.locator("#booking-code").fill(booking.code);
+      assert.equal(await pin.getAttribute("aria-invalid"), "false");
       await page.locator("#booking-code").press("Enter");
       const validation = page.getByRole("dialog", { name: "Validasi pengunjung" });
       const roster = validation.locator("summary").filter({ hasText: "2 orang" });
@@ -151,9 +165,17 @@ test("reception opens linked memo and photo only after resolving the visit", asy
         await earlyWarning.evaluate((node) => node.classList.contains("error-notice")),
         true,
       );
+      assert.equal(await validation.getByRole("region", { name: "Dokumen verifikasi" }).count(), 0);
+      api.setNow("2099-08-19T09:30:00+08:00");
+      await validation.getByRole("button", { name: "Periksa kode lain" }).press("Enter");
+      await selectReceptionVisitor(page, booking.name);
+      await page.locator("#booking-code").fill(booking.code);
+      await page.locator("#booking-code").press("Enter");
       const memoButton = validation.getByRole("button", { name: "Lihat Nota Dinas" });
       await memoButton.click();
       const memoViewer = page.getByRole("dialog", { name: "Nota Dinas", exact: true });
+      const memoFrame = memoViewer.locator(".file-viewer-frame");
+      await memoFrame.waitFor();
       if (await page.evaluate(() => navigator.pdfViewerEnabled))
         await memoViewer.locator('iframe[src^="blob:"]').waitFor();
       else
@@ -163,6 +185,7 @@ test("reception opens linked memo and photo only after resolving the visit", asy
       await memoButton.and(page.locator(":focus")).waitFor();
       await validation.getByRole("button", { name: "Lihat foto pengunjung" }).press("Enter");
       const photoViewer = page.getByRole("dialog", { name: "Foto pengunjung", exact: true });
+      await photoViewer.locator(".file-viewer-frame").waitFor();
       const image = photoViewer.getByRole("img", { name: "Foto pengunjung" });
       await image.waitFor();
       assert.equal(await image.evaluate(async (node) => {
@@ -173,6 +196,7 @@ test("reception opens linked memo and photo only after resolving the visit", asy
       await photoViewer.waitFor({ state: "hidden" });
       api.setNow("2099-08-19T09:30:00+08:00");
       await validation.getByRole("button", { name: "Periksa kode lain" }).press("Enter");
+      await selectReceptionVisitor(page, booking.name);
       await page.locator("#booking-code").fill(booking.code);
       await page.locator("#booking-code").press("Enter");
       const verified = validation.getByRole("checkbox");
@@ -348,6 +372,7 @@ test("reception gates identity by code, blocks early arrival, then permits check
       await save(page, "reception-redacted-390");
       await page.goto(origin + "/admin/check-in");
       await page.getByRole("button", { name: /Kode kunjungan Masukkan/ }).click();
+      await selectReceptionVisitor(page, b.reference);
       await page.locator("#booking-code").fill(b.code);
       await page.getByRole("button", { name: "Periksa kunjungan", exact: true }).click();
       await page.getByRole("heading", { name: "Validasi pengunjung", exact: true }).waitFor();
@@ -364,6 +389,7 @@ test("reception gates identity by code, blocks early arrival, then permits check
       await save(page, "reception-early-390");
       api.setNow("2099-08-19T09:30:00+08:00");
       await page.getByRole("button", { name: "Periksa kode lain", exact: true }).click();
+      await selectReceptionVisitor(page, b.reference);
       await page.locator("#booking-code").fill(b.code);
       await page.getByRole("button", { name: "Periksa kunjungan", exact: true }).click();
       await page.getByRole("checkbox").check();
@@ -374,6 +400,7 @@ test("reception gates identity by code, blocks early arrival, then permits check
       await page.goto(origin + "/admin/check-out");
       await page.getByText(b.reference, { exact: true }).first().waitFor();
       await page.getByRole("button", { name: /Kode kunjungan Masukkan/ }).click();
+      await selectReceptionVisitor(page, b.reference);
       await page.locator("#booking-code").fill(b.code);
       await page.getByRole("button", { name: "Periksa kunjungan", exact: true }).click();
       await page.getByRole("checkbox").check();
@@ -393,6 +420,7 @@ test("a stale arrival confirmation clears previously resolved identity and requi
     try {
       const trigger = page.getByRole("button", { name: /Kode kunjungan Masukkan/ });
       await trigger.click();
+      await selectReceptionVisitor(page, b.reference);
       await page.locator("#booking-code").fill(b.code);
       await page.getByRole("button", { name: "Periksa kunjungan", exact: true }).click();
       await page.getByRole("checkbox").check();
@@ -408,6 +436,7 @@ test("a stale arrival confirmation clears previously resolved identity and requi
       await page.locator("#booking-code").waitFor();
       assert.equal((await page.locator(".modal").innerText()).includes(b.name), false);
       await page.getByRole("alert").filter({ hasText: "Data telah berubah" }).waitFor();
+      await selectReceptionVisitor(page, b.reference);
       await page.locator("#booking-code").fill(b.code);
       await page.getByRole("button", { name: "Periksa kunjungan", exact: true }).click();
       await page.getByText("Updated Arrival Name", { exact: true }).waitFor();

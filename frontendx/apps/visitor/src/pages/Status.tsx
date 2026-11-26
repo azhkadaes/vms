@@ -28,6 +28,7 @@ export default function Status({
   const emailInput = useRef<HTMLInputElement>(null);
   const [booking, setBooking] = useState<PublicBooking | null>(null);
   const [error, setError] = useState<unknown>();
+  const [rejectedLookup, setRejectedLookup] = useState<{ code: string; email: string }>();
   const [busy, setBusy] = useState(false);
   const [cancel, setCancel] = useState(false);
   const dialogTrigger = useRef<HTMLElement | null>(null);
@@ -37,6 +38,13 @@ export default function Status({
   const focusLookup = useRef(false);
   const restoreUpdateFocus = useRef(false);
   const cancellationAvailable = useCancellationWindow(booking);
+  const codeRejected = rejectedLookup?.code === code && rejectedLookup.email === email;
+  function clearLookupRejection() {
+    if (rejectedLookup) {
+      setRejectedLookup(undefined);
+      setError(null);
+    }
+  }
   useEffect(() => {
     if (booking && focusResult.current) {
       focusResult.current = false;
@@ -64,11 +72,18 @@ export default function Status({
       !focusOnResult && document.activeElement === resultToolbar.current?.querySelector("button");
     setBusy(true);
     setError(null);
+    setRejectedLookup(undefined);
     try {
       const result = await repository.lookup(code, parsedEmail.data);
       focusResult.current = focusOnResult;
       setBooking(result);
     } catch (err) {
+      if (
+        focusOnResult &&
+        err instanceof ApiError &&
+        (err.status === 404 || (preview && err.status === 401))
+      )
+        setRejectedLookup({ code, email });
       setError(err);
     } finally {
       setBusy(false);
@@ -233,9 +248,15 @@ export default function Status({
                   className="status-code-input"
                   id="status-code"
                   required
+                  readOnly={busy}
                   value={code}
-                  onValueChange={setCode}
+                  onValueChange={(next) => {
+                    setCode(next);
+                    clearLookupRejection();
+                  }}
                   aria-label={t("8 digit kode kunjungan", "8-digit visit code")}
+                  aria-invalid={codeRejected}
+                  aria-describedby={codeRejected ? "status-lookup-error" : undefined}
                 />
               </div>
               <div className="field section-gap status-email-field">
@@ -249,6 +270,7 @@ export default function Status({
                   value={email}
                   onValueChange={(nextEmail) => {
                     setEmail(nextEmail);
+                    clearLookupRejection();
                     if (emailError && emailSchema.safeParse(nextEmail).success) setEmailError("");
                   }}
                   aria-invalid={!!emailError}
@@ -261,7 +283,9 @@ export default function Status({
                 )}
               </div>
             </>
-            <ErrorNotice error={error} />
+            <div id="status-lookup-error">
+              <ErrorNotice error={error} />
+            </div>
             <div className="form-actions">
               <Button disabled={busy}>
                 {busy ? t("Memeriksa…", "Checking…") : t("Lihat kunjungan", "View visit")}

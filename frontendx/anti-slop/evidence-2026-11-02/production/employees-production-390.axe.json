@@ -7,14 +7,14 @@
     "name": "axe"
   },
   "testEnvironment": {
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
     "windowWidth": 390,
     "windowHeight": 900,
     "orientationAngle": 0,
     "orientationType": "landscape-primary"
   },
-  "timestamp": "2099-08-19T01:00:03.440Z",
-  "url": "http://127.0.0.1:55101/admin/employees",
+  "timestamp": "2099-08-19T01:00:03.263Z",
+  "url": "http://localhost:60762/admin/employees",
   "toolOptions": {
     "runOnly": {
       "type": "tag",
@@ -1029,6 +1029,46 @@
             }
           ],
           "impact": null,
+          "html": "<button class=\"button ghost profile-icon-button\" type=\"button\" aria-label=\"Buka profil saya\" aria-haspopup=\"dialog\" aria-expanded=\"false\" aria-controls=\"radix-_r_3_\" data-state=\"closed\"><span class=\"avatar\" aria-hidden=\"true\">AL</span></button>",
+          "target": [
+            ".profile-icon-button"
+          ]
+        },
+        {
+          "any": [],
+          "all": [
+            {
+              "id": "aria-allowed-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attributes are used correctly for the defined role"
+            },
+            {
+              "id": "aria-allowed-attr-elm",
+              "data": null,
+              "relatedNodes": [],
+              "message": "ARIA attributes are allowed for this element",
+              "impact": "critical"
+            },
+            {
+              "id": "aria-no-deprecated-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "No deprecated ARIA attributes are used"
+            }
+          ],
+          "none": [
+            {
+              "id": "aria-unsupported-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attribute is supported"
+            }
+          ],
+          "impact": null,
           "html": "<section class=\"bookings-refresh\" aria-label=\"Pembaruan direktori pegawai\" data-freshness=\"current\">",
           "target": [
             ".bookings-refresh"
@@ -1111,7 +1151,7 @@
           "impact": null,
           "html": "<button class=\"button ghost \" type=\"button\" aria-label=\"Perbarui direktori pegawai\">",
           "target": [
-            "button[type=\"button\"]"
+            "button[aria-label=\"Perbarui direktori pegawai\"]"
           ]
         },
         {
@@ -1229,9 +1269,49 @@
             }
           ],
           "impact": null,
-          "html": "<button class=\"button secondary \" aria-label=\"Edit pegawai Pegawai Layanan\">Edit</button>",
+          "html": "<button type=\"button\" class=\"employee-name\" aria-label=\"Lihat detail pegawai Pegawai Layanan\">Pegawai Layanan</button>",
           "target": [
-            "article > .secondary[aria-label=\"Edit pegawai Pegawai Layanan\"]"
+            "h3 > .employee-name[type=\"button\"]"
+          ]
+        },
+        {
+          "any": [],
+          "all": [
+            {
+              "id": "aria-allowed-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attributes are used correctly for the defined role"
+            },
+            {
+              "id": "aria-allowed-attr-elm",
+              "data": null,
+              "relatedNodes": [],
+              "message": "ARIA attributes are allowed for this element",
+              "impact": "critical"
+            },
+            {
+              "id": "aria-no-deprecated-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "No deprecated ARIA attributes are used"
+            }
+          ],
+          "none": [
+            {
+              "id": "aria-unsupported-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attribute is supported"
+            }
+          ],
+          "impact": null,
+          "html": "<button class=\"button ghost employee-detail-action\" aria-label=\"Detail pegawai Pegawai Layanan\" title=\"Lihat detail pegawai Pegawai Layanan\">",
+          "target": [
+            "article > .employee-detail-action.ghost[aria-label=\"Detail pegawai Pegawai Layanan\"]"
           ]
         }
       ]
@@ -1350,6 +1430,24 @@
           ],
           "none": [],
           "impact": null,
+          "html": "<button class=\"button ghost profile-icon-button\" type=\"button\" aria-label=\"Buka profil saya\" aria-haspopup=\"dialog\" aria-expanded=\"false\" aria-controls=\"radix-_r_3_\" data-state=\"closed\"><span class=\"avatar\" aria-hidden=\"true\">AL</span></button>",
+          "target": [
+            ".profile-icon-button"
+          ]
+        },
+        {
+          "any": [],
+          "all": [
+            {
+              "id": "aria-conditional-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "ARIA attribute is allowed"
+            }
+          ],
+          "none": [],
+          "impact": null,
           "html": "<section class=\"bookings-refresh\" aria-label=\"Pembaruan direktori pegawai\" data-freshness=\"current\">",
           "target": [
             ".bookings-refresh"
@@ -1388,7 +1486,7 @@
           "impact": null,
           "html": "<button class=\"button ghost \" type=\"button\" aria-label=\"Perbarui direktori pegawai\">",
           "target": [
-            "button[type=\"button\"]"
+            "button[aria-label=\"Perbarui direktori pegawai\"]"
           ]
         },
         {
@@ -1440,9 +1538,27 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<button class=\"button secondary \" aria-label=\"Edit pegawai Pegawai Layanan\">Edit</button>",
+          "html": "<button type=\"button\" class=\"employee-name\" aria-label=\"Lihat detail pegawai Pegawai Layanan\">Pegawai Layanan</button>",
           "target": [
-            "article > .secondary[aria-label=\"Edit pegawai Pegawai Layanan\"]"
+            "h3 > .employee-name[type=\"button\"]"
+          ]
+        },
+        {
+          "any": [],
+          "all": [
+            {
+              "id": "aria-conditional-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "ARIA attribute is allowed"
+            }
+          ],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button ghost employee-detail-action\" aria-label=\"Detail pegawai Pegawai Layanan\" title=\"Lihat detail pegawai Pegawai Layanan\">",
+          "target": [
+            "article > .employee-detail-action.ghost[aria-label=\"Detail pegawai Pegawai Layanan\"]"
           ]
         }
       ]
@@ -1648,6 +1764,38 @@
           ],
           "none": [],
           "impact": null,
+          "html": "<span class=\"avatar\" aria-hidden=\"true\">AL</span>",
+          "target": [
+            ".avatar"
+          ]
+        },
+        {
+          "any": [],
+          "all": [
+            {
+              "id": "focusable-modal-open",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "No focusable elements while a modal is open"
+            },
+            {
+              "id": "focusable-disabled",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "No focusable elements contained within element"
+            },
+            {
+              "id": "focusable-not-tabbable",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "No focusable elements contained within element"
+            }
+          ],
+          "none": [],
+          "impact": null,
           "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-plus\" aria-hidden=\"true\"><path d=\"M5 12h14\"></path><path d=\"M12 5v14\"></path></svg>",
           "target": [
             ".lucide-plus"
@@ -1715,6 +1863,70 @@
           "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-search\" aria-hidden=\"true\">",
           "target": [
             ".lucide-search"
+          ]
+        },
+        {
+          "any": [],
+          "all": [
+            {
+              "id": "focusable-modal-open",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "No focusable elements while a modal is open"
+            },
+            {
+              "id": "focusable-disabled",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "No focusable elements contained within element"
+            },
+            {
+              "id": "focusable-not-tabbable",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "No focusable elements contained within element"
+            }
+          ],
+          "none": [],
+          "impact": null,
+          "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-eye\" aria-hidden=\"true\">",
+          "target": [
+            "article > .employee-detail-action.ghost[aria-label=\"Detail pegawai Pegawai Layanan\"] > .lucide-eye[width=\"16\"][height=\"16\"]"
+          ]
+        },
+        {
+          "any": [],
+          "all": [
+            {
+              "id": "focusable-modal-open",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "No focusable elements while a modal is open"
+            },
+            {
+              "id": "focusable-disabled",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "No focusable elements contained within element"
+            },
+            {
+              "id": "focusable-not-tabbable",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "No focusable elements contained within element"
+            }
+          ],
+          "none": [],
+          "impact": null,
+          "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-eye\" aria-hidden=\"true\">",
+          "target": [
+            ".employee-actions > .employee-detail-action.ghost[aria-label=\"Detail pegawai Pegawai Layanan\"] > .lucide-eye[width=\"16\"][height=\"16\"]"
           ]
         }
       ]
@@ -1784,6 +1996,24 @@
             }
           ],
           "impact": null,
+          "html": "<button class=\"button ghost profile-icon-button\" type=\"button\" aria-label=\"Buka profil saya\" aria-haspopup=\"dialog\" aria-expanded=\"false\" aria-controls=\"radix-_r_3_\" data-state=\"closed\"><span class=\"avatar\" aria-hidden=\"true\">AL</span></button>",
+          "target": [
+            ".profile-icon-button"
+          ]
+        },
+        {
+          "any": [],
+          "all": [],
+          "none": [
+            {
+              "id": "aria-prohibited-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "ARIA attribute is allowed"
+            }
+          ],
+          "impact": null,
           "html": "<section class=\"bookings-refresh\" aria-label=\"Pembaruan direktori pegawai\" data-freshness=\"current\">",
           "target": [
             ".bookings-refresh"
@@ -1822,7 +2052,7 @@
           "impact": null,
           "html": "<button class=\"button ghost \" type=\"button\" aria-label=\"Perbarui direktori pegawai\">",
           "target": [
-            "button[type=\"button\"]"
+            "button[aria-label=\"Perbarui direktori pegawai\"]"
           ]
         },
         {
@@ -1856,9 +2086,27 @@
             }
           ],
           "impact": null,
-          "html": "<button class=\"button secondary \" aria-label=\"Edit pegawai Pegawai Layanan\">Edit</button>",
+          "html": "<button type=\"button\" class=\"employee-name\" aria-label=\"Lihat detail pegawai Pegawai Layanan\">Pegawai Layanan</button>",
           "target": [
-            "article > .secondary[aria-label=\"Edit pegawai Pegawai Layanan\"]"
+            "h3 > .employee-name[type=\"button\"]"
+          ]
+        },
+        {
+          "any": [],
+          "all": [],
+          "none": [
+            {
+              "id": "aria-prohibited-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "ARIA attribute is allowed"
+            }
+          ],
+          "impact": null,
+          "html": "<button class=\"button ghost employee-detail-action\" aria-label=\"Detail pegawai Pegawai Layanan\" title=\"Lihat detail pegawai Pegawai Layanan\">",
+          "target": [
+            "article > .employee-detail-action.ghost[aria-label=\"Detail pegawai Pegawai Layanan\"]"
           ]
         }
       ]
@@ -2001,7 +2249,7 @@
     },
     {
       "id": "aria-valid-attr-value",
-      "impact": null,
+      "impact": "critical",
       "tags": [
         "cat.aria",
         "wcag2a",
@@ -2172,7 +2420,7 @@
           "impact": null,
           "html": "<button class=\"button ghost \" type=\"button\" aria-label=\"Perbarui direktori pegawai\">",
           "target": [
-            "button[type=\"button\"]"
+            "button[aria-label=\"Perbarui direktori pegawai\"]"
           ]
         },
         {
@@ -2266,9 +2514,41 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<button class=\"button secondary \" aria-label=\"Edit pegawai Pegawai Layanan\">Edit</button>",
+          "html": "<button type=\"button\" class=\"employee-name\" aria-label=\"Lihat detail pegawai Pegawai Layanan\">Pegawai Layanan</button>",
           "target": [
-            "article > .secondary[aria-label=\"Edit pegawai Pegawai Layanan\"]"
+            "h3 > .employee-name[type=\"button\"]"
+          ]
+        },
+        {
+          "any": [],
+          "all": [
+            {
+              "id": "aria-valid-attr-value",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attribute values are valid"
+            },
+            {
+              "id": "aria-errormessage",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "aria-errormessage exists and references elements visible to screen readers that use a supported aria-errormessage technique"
+            },
+            {
+              "id": "aria-level",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "aria-level values are valid"
+            }
+          ],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button ghost employee-detail-action\" aria-label=\"Detail pegawai Pegawai Layanan\" title=\"Lihat detail pegawai Pegawai Layanan\">",
+          "target": [
+            "article > .employee-detail-action.ghost[aria-label=\"Detail pegawai Pegawai Layanan\"]"
           ]
         }
       ]
@@ -2338,6 +2618,24 @@
           "all": [],
           "none": [],
           "impact": null,
+          "html": "<button class=\"button ghost profile-icon-button\" type=\"button\" aria-label=\"Buka profil saya\" aria-haspopup=\"dialog\" aria-expanded=\"false\" aria-controls=\"radix-_r_3_\" data-state=\"closed\"><span class=\"avatar\" aria-hidden=\"true\">AL</span></button>",
+          "target": [
+            ".profile-icon-button"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "aria-valid-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attribute name is valid"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
           "html": "<section class=\"bookings-refresh\" aria-label=\"Pembaruan direktori pegawai\" data-freshness=\"current\">",
           "target": [
             ".bookings-refresh"
@@ -2376,7 +2674,7 @@
           "impact": null,
           "html": "<button class=\"button ghost \" type=\"button\" aria-label=\"Perbarui direktori pegawai\">",
           "target": [
-            "button[type=\"button\"]"
+            "button[aria-label=\"Perbarui direktori pegawai\"]"
           ]
         },
         {
@@ -2428,9 +2726,27 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button class=\"button secondary \" aria-label=\"Edit pegawai Pegawai Layanan\">Edit</button>",
+          "html": "<button type=\"button\" class=\"employee-name\" aria-label=\"Lihat detail pegawai Pegawai Layanan\">Pegawai Layanan</button>",
           "target": [
-            "article > .secondary[aria-label=\"Edit pegawai Pegawai Layanan\"]"
+            "h3 > .employee-name[type=\"button\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "aria-valid-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attribute name is valid"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button ghost employee-detail-action\" aria-label=\"Detail pegawai Pegawai Layanan\" title=\"Lihat detail pegawai Pegawai Layanan\">",
+          "target": [
+            "article > .employee-detail-action.ghost[aria-label=\"Detail pegawai Pegawai Layanan\"]"
           ]
         }
       ]
@@ -2477,6 +2793,24 @@
         {
           "any": [
             {
+              "id": "aria-label",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "aria-label attribute exists and is not empty"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button ghost profile-icon-button\" type=\"button\" aria-label=\"Buka profil saya\" aria-haspopup=\"dialog\" aria-expanded=\"false\" aria-controls=\"radix-_r_3_\" data-state=\"closed\"><span class=\"avatar\" aria-hidden=\"true\">AL</span></button>",
+          "target": [
+            ".profile-icon-button"
+          ]
+        },
+        {
+          "any": [
+            {
               "id": "button-has-visible-text",
               "data": null,
               "relatedNodes": [],
@@ -2514,7 +2848,7 @@
           "impact": null,
           "html": "<button class=\"button ghost \" type=\"button\" aria-label=\"Perbarui direktori pegawai\">",
           "target": [
-            "button[type=\"button\"]"
+            "button[aria-label=\"Perbarui direktori pegawai\"]"
           ]
         },
         {
@@ -2537,9 +2871,41 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button class=\"button secondary \" aria-label=\"Edit pegawai Pegawai Layanan\">Edit</button>",
+          "html": "<button type=\"button\" class=\"employee-name\" aria-label=\"Lihat detail pegawai Pegawai Layanan\">Pegawai Layanan</button>",
           "target": [
-            "article > .secondary[aria-label=\"Edit pegawai Pegawai Layanan\"]"
+            "h3 > .employee-name[type=\"button\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "button-has-visible-text",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "Element has inner text that is visible to screen readers"
+            },
+            {
+              "id": "aria-label",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "aria-label attribute exists and is not empty"
+            },
+            {
+              "id": "non-empty-title",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "Element has a title attribute"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button ghost employee-detail-action\" aria-label=\"Detail pegawai Pegawai Layanan\" title=\"Lihat detail pegawai Pegawai Layanan\">",
+          "target": [
+            "article > .employee-detail-action.ghost[aria-label=\"Detail pegawai Pegawai Layanan\"]"
           ]
         }
       ]
@@ -2590,7 +2956,7 @@
                   ]
                 },
                 {
-                  "html": "<h3>Pegawai Layanan</h3>",
+                  "html": "<h3><button type=\"button\" class=\"employee-name\" aria-label=\"Lihat detail pegawai Pegawai Layanan\">Pegawai Layanan</button></h3>",
                   "target": [
                     "h3"
                   ]
@@ -2626,7 +2992,7 @@
     },
     {
       "id": "color-contrast",
-      "impact": "serious",
+      "impact": null,
       "tags": [
         "cat.color",
         "wcag2aa",
@@ -2665,7 +3031,7 @@
           "impact": null,
           "html": "<strong>Pegawai</strong>",
           "target": [
-            ".toolbar:nth-child(1) > strong"
+            "strong"
           ]
         },
         {
@@ -2688,7 +3054,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"avatar\">AL</div>",
+          "html": "<span class=\"avatar\" aria-hidden=\"true\">AL</span>",
           "target": [
             ".avatar"
           ]
@@ -2788,7 +3154,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<span>Terakhir diperbarui <time datetime=\"2099-08-19T01:00:01.951Z\">09.00.01 WITA</time></span>",
+          "html": "<span>Terakhir diperbarui <time datetime=\"2099-08-19T01:00:01.913Z\">09.00.01 WITA</time></span>",
           "target": [
             ".bookings-refresh-copy > span:nth-child(1)"
           ]
@@ -2813,7 +3179,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<time datetime=\"2099-08-19T01:00:01.951Z\">09.00.01 WITA</time>",
+          "html": "<time datetime=\"2099-08-19T01:00:01.913Z\">09.00.01 WITA</time>",
           "target": [
             "time"
           ]
@@ -2840,7 +3206,7 @@
           "impact": null,
           "html": "<button class=\"button ghost \" type=\"button\" aria-label=\"Perbarui direktori pegawai\">",
           "target": [
-            "button[type=\"button\"]"
+            "button[aria-label=\"Perbarui direktori pegawai\"]"
           ]
         },
         {
@@ -2952,7 +3318,7 @@
                 "bgColor": "#ffffff",
                 "contrastRatio": 18.53,
                 "fontSize": "12.0pt (16px)",
-                "fontWeight": "bold",
+                "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
@@ -2963,9 +3329,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<h3>Pegawai Layanan</h3>",
+          "html": "<button type=\"button\" class=\"employee-name\" aria-label=\"Lihat detail pegawai Pegawai Layanan\">Pegawai Layanan</button>",
           "target": [
-            "h3"
+            "h3 > .employee-name[type=\"button\"]"
           ]
         },
         {
@@ -3038,7 +3404,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<dt>Peran aktif</dt>",
+          "html": "<dt>Peran pegawai</dt>",
           "target": [
             "div:nth-child(2) > dt"
           ]
@@ -3116,6 +3482,31 @@
           "html": "<dd>Aktif</dd>",
           "target": [
             "div:nth-child(3) > dd"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#596273",
+                "bgColor": "#ffffff",
+                "contrastRatio": 6.14,
+                "fontSize": "10.8pt (14.4px)",
+                "fontWeight": "normal",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 6.14"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<span class=\"employee-detail-label\">Detail</span>",
+          "target": [
+            "article > .employee-detail-action.ghost[aria-label=\"Detail pegawai Pegawai Layanan\"] > .employee-detail-label"
           ]
         },
         {
@@ -3206,7 +3597,7 @@
             }
           ],
           "impact": null,
-          "html": "<dl><div><dt>Email</dt><dd>pegawai@example.test</dd></div><div><dt>Peran aktif</dt><dd>PA</dd></div><div><dt>Status akun</dt><dd>Aktif</dd></div></dl>",
+          "html": "<dl><div><dt>Email</dt><dd>pegawai@example.test</dd></div><div><dt>Peran pegawai</dt><dd>PA</dd></div><div><dt>Status akun</dt><dd>Aktif</dd></div></dl>",
           "target": [
             "dl"
           ]
@@ -3278,7 +3669,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<dt>Peran aktif</dt>",
+          "html": "<dt>Peran pegawai</dt>",
           "target": [
             "div:nth-child(2) > dt"
           ]
@@ -3492,7 +3883,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<h3>Pegawai Layanan</h3>",
+          "html": "<h3><button type=\"button\" class=\"employee-name\" aria-label=\"Lihat detail pegawai Pegawai Layanan\">Pegawai Layanan</button></h3>",
           "target": [
             "h3"
           ]
@@ -3625,7 +4016,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<h3>Pegawai Layanan</h3>",
+          "html": "<h3><button type=\"button\" class=\"employee-name\" aria-label=\"Lihat detail pegawai Pegawai Layanan\">Pegawai Layanan</button></h3>",
           "target": [
             "h3"
           ]
@@ -4322,6 +4713,24 @@
           "all": [],
           "none": [],
           "impact": null,
+          "html": "<button class=\"button ghost profile-icon-button\" type=\"button\" aria-label=\"Buka profil saya\" aria-haspopup=\"dialog\" aria-expanded=\"false\" aria-controls=\"radix-_r_3_\" data-state=\"closed\"><span class=\"avatar\" aria-hidden=\"true\">AL</span></button>",
+          "target": [
+            ".profile-icon-button"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "no-focusable-content",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element does not have focusable descendants"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
           "html": "<button class=\"button primary \">",
           "target": [
             ".primary"
@@ -4342,7 +4751,7 @@
           "impact": null,
           "html": "<button class=\"button ghost \" type=\"button\" aria-label=\"Perbarui direktori pegawai\">",
           "target": [
-            "button[type=\"button\"]"
+            "button[aria-label=\"Perbarui direktori pegawai\"]"
           ]
         },
         {
@@ -4358,9 +4767,27 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button class=\"button secondary \" aria-label=\"Edit pegawai Pegawai Layanan\">Edit</button>",
+          "html": "<button type=\"button\" class=\"employee-name\" aria-label=\"Lihat detail pegawai Pegawai Layanan\">Pegawai Layanan</button>",
           "target": [
-            "article > .secondary[aria-label=\"Edit pegawai Pegawai Layanan\"]"
+            "h3 > .employee-name[type=\"button\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "no-focusable-content",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element does not have focusable descendants"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button ghost employee-detail-action\" aria-label=\"Detail pegawai Pegawai Layanan\" title=\"Lihat detail pegawai Pegawai Layanan\">",
+          "target": [
+            "article > .employee-detail-action.ghost[aria-label=\"Detail pegawai Pegawai Layanan\"]"
           ]
         }
       ]
@@ -4593,7 +5020,7 @@
           "impact": null,
           "html": "<strong>Pegawai</strong>",
           "target": [
-            ".toolbar:nth-child(1) > strong"
+            "strong"
           ]
         },
         {
@@ -4611,7 +5038,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"toolbar\"><span class=\"top-date mobile-hide\">19 Agustus 2099 · WITA</span><div class=\"avatar\">AL</div></div>",
+          "html": "<div class=\"toolbar\">",
           "target": [
             ".toolbar:nth-child(2)"
           ]
@@ -4631,9 +5058,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"avatar\">AL</div>",
+          "html": "<button class=\"button ghost profile-icon-button\" type=\"button\" aria-label=\"Buka profil saya\" aria-haspopup=\"dialog\" aria-expanded=\"false\" aria-controls=\"radix-_r_3_\" data-state=\"closed\"><span class=\"avatar\" aria-hidden=\"true\">AL</span></button>",
           "target": [
-            ".avatar"
+            ".profile-icon-button"
           ]
         },
         {
@@ -4791,7 +5218,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"bookings-refresh-copy\"><span>Terakhir diperbarui <time datetime=\"2099-08-19T01:00:01.951Z\">09.00.01 WITA</time></span><span role=\"status\" aria-atomic=\"true\" class=\"visually-hidden\"></span></div>",
+          "html": "<div class=\"bookings-refresh-copy\"><span>Terakhir diperbarui <time datetime=\"2099-08-19T01:00:01.913Z\">09.00.01 WITA</time></span><span role=\"status\" aria-atomic=\"true\" class=\"visually-hidden\"></span></div>",
           "target": [
             ".bookings-refresh-copy"
           ]
@@ -4811,7 +5238,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<span>Terakhir diperbarui <time datetime=\"2099-08-19T01:00:01.951Z\">09.00.01 WITA</time></span>",
+          "html": "<span>Terakhir diperbarui <time datetime=\"2099-08-19T01:00:01.913Z\">09.00.01 WITA</time></span>",
           "target": [
             ".bookings-refresh-copy > span:nth-child(1)"
           ]
@@ -4831,7 +5258,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<time datetime=\"2099-08-19T01:00:01.951Z\">09.00.01 WITA</time>",
+          "html": "<time datetime=\"2099-08-19T01:00:01.913Z\">09.00.01 WITA</time>",
           "target": [
             "time"
           ]
@@ -4873,7 +5300,7 @@
           "impact": null,
           "html": "<button class=\"button ghost \" type=\"button\" aria-label=\"Perbarui direktori pegawai\">",
           "target": [
-            "button[type=\"button\"]"
+            "button[aria-label=\"Perbarui direktori pegawai\"]"
           ]
         },
         {
@@ -5111,7 +5538,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<h3>Pegawai Layanan</h3>",
+          "html": "<h3><button type=\"button\" class=\"employee-name\" aria-label=\"Lihat detail pegawai Pegawai Layanan\">Pegawai Layanan</button></h3>",
           "target": [
             "h3"
           ]
@@ -5131,7 +5558,27 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<dl><div><dt>Email</dt><dd>pegawai@example.test</dd></div><div><dt>Peran aktif</dt><dd>PA</dd></div><div><dt>Status akun</dt><dd>Aktif</dd></div></dl>",
+          "html": "<button type=\"button\" class=\"employee-name\" aria-label=\"Lihat detail pegawai Pegawai Layanan\">Pegawai Layanan</button>",
+          "target": [
+            "h3 > .employee-name[type=\"button\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<dl><div><dt>Email</dt><dd>pegawai@example.test</dd></div><div><dt>Peran pegawai</dt><dd>PA</dd></div><div><dt>Status akun</dt><dd>Aktif</dd></div></dl>",
           "target": [
             "dl"
           ]
@@ -5211,7 +5658,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div><dt>Peran aktif</dt><dd>PA</dd></div>",
+          "html": "<div><dt>Peran pegawai</dt><dd>PA</dd></div>",
           "target": [
             "dl > div:nth-child(2)"
           ]
@@ -5231,7 +5678,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<dt>Peran aktif</dt>",
+          "html": "<dt>Peran pegawai</dt>",
           "target": [
             "div:nth-child(2) > dt"
           ]
@@ -5331,9 +5778,29 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button class=\"button secondary \" aria-label=\"Edit pegawai Pegawai Layanan\">Edit</button>",
+          "html": "<button class=\"button ghost employee-detail-action\" aria-label=\"Detail pegawai Pegawai Layanan\" title=\"Lihat detail pegawai Pegawai Layanan\">",
           "target": [
-            "article > .secondary[aria-label=\"Edit pegawai Pegawai Layanan\"]"
+            "article > .employee-detail-action.ghost[aria-label=\"Detail pegawai Pegawai Layanan\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<span class=\"employee-detail-label\">Detail</span>",
+          "target": [
+            "article > .employee-detail-action.ghost[aria-label=\"Detail pegawai Pegawai Layanan\"] > .employee-detail-label"
           ]
         },
         {
@@ -5514,12 +5981,12 @@
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 50,
+                "width": 52,
                 "height": 44
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (50px by 44px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (52px by 44px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -5538,6 +6005,38 @@
           "html": "<button class=\"button ghost menu-button\" aria-label=\"Buka navigasi\" aria-expanded=\"false\">",
           "target": [
             ".menu-button"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "target-size",
+              "data": {
+                "minSize": 24,
+                "width": 44,
+                "height": 44
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Control has sufficient size (44px by 44px, should be at least 24px by 24px)"
+            },
+            {
+              "id": "target-offset",
+              "data": {
+                "closestOffset": 24,
+                "minOffset": 24
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Target has sufficient space from its closest neighbors. Safe clickable space has a diameter of 24px which is at least 24px."
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button ghost profile-icon-button\" type=\"button\" aria-label=\"Buka profil saya\" aria-haspopup=\"dialog\" aria-expanded=\"false\" aria-controls=\"radix-_r_3_\" data-state=\"closed\"><span class=\"avatar\" aria-hidden=\"true\">AL</span></button>",
+          "target": [
+            ".profile-icon-button"
           ]
         },
         {
@@ -5578,12 +6077,12 @@
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 113.3,
+                "width": 114.3,
                 "height": 44
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (113.3px by 44px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (114.3px by 44px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -5601,7 +6100,7 @@
           "impact": null,
           "html": "<button class=\"button ghost \" type=\"button\" aria-label=\"Perbarui direktori pegawai\">",
           "target": [
-            "button[type=\"button\"]"
+            "button[aria-label=\"Perbarui direktori pegawai\"]"
           ]
         },
         {
@@ -5639,15 +6138,36 @@
         {
           "any": [
             {
-              "id": "target-size",
+              "id": "target-offset",
               "data": {
-                "minSize": 24,
-                "width": 58.9,
-                "height": 45.6
+                "closestOffset": 24,
+                "minOffset": 24
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (58.9px by 45.6px, should be at least 24px by 24px)"
+              "message": "Target has sufficient space from its closest neighbors. Safe clickable space has a diameter of 24px which is at least 24px."
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button type=\"button\" class=\"employee-name\" aria-label=\"Lihat detail pegawai Pegawai Layanan\">Pegawai Layanan</button>",
+          "target": [
+            "h3 > .employee-name[type=\"button\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "target-size",
+              "data": {
+                "minSize": 24,
+                "width": 82.8,
+                "height": 44
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Control has sufficient size (82.8px by 44px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -5663,9 +6183,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button class=\"button secondary \" aria-label=\"Edit pegawai Pegawai Layanan\">Edit</button>",
+          "html": "<button class=\"button ghost employee-detail-action\" aria-label=\"Detail pegawai Pegawai Layanan\" title=\"Lihat detail pegawai Pegawai Layanan\">",
           "target": [
-            "article > .secondary[aria-label=\"Edit pegawai Pegawai Layanan\"]"
+            "article > .employee-detail-action.ghost[aria-label=\"Detail pegawai Pegawai Layanan\"]"
           ]
         }
       ]
@@ -5717,55 +6237,42 @@
       ]
     },
     {
-      "id": "color-contrast",
-      "impact": "serious",
+      "id": "aria-valid-attr-value",
+      "impact": "critical",
       "tags": [
-        "cat.color",
-        "wcag2aa",
-        "wcag143",
-        "TTv5",
-        "TT13.c",
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
         "EN-301-549",
-        "EN-9.1.4.3",
-        "ACT",
+        "EN-9.4.1.2",
         "RGAAv4",
-        "RGAA-3.2.1"
+        "RGAA-7.1.1"
       ],
-      "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
-      "help": "Elements must meet minimum color contrast ratio thresholds",
-      "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=playwright",
+      "description": "Ensure all ARIA attributes have valid values",
+      "help": "ARIA attributes must conform to valid values",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/aria-valid-attr-value?application=playwright",
       "nodes": [
         {
-          "any": [
+          "any": [],
+          "all": [
             {
-              "id": "color-contrast",
+              "id": "aria-valid-attr-value",
               "data": {
-                "contrastRatio": 0,
-                "fontSize": "10.8pt (14.4px)",
-                "fontWeight": "normal",
-                "messageKey": "bgGradient",
-                "expectedContrastRatio": "4.5:1"
+                "messageKey": "controlsWithinPopup",
+                "needsReview": "aria-controls=\"radix-_r_3_\""
               },
-              "relatedNodes": [
-                {
-                  "html": "<button class=\"button secondary \" aria-label=\"Edit pegawai Pegawai Layanan\">Edit</button>",
-                  "target": [
-                    "article > .secondary[aria-label=\"Edit pegawai Pegawai Layanan\"]"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element's background color could not be determined due to a background gradient"
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "Unable to determine if aria-controls referenced ID exists on the page while using aria-haspopup: aria-controls=\"radix-_r_3_\""
             }
           ],
-          "all": [],
           "none": [],
-          "impact": "serious",
-          "html": "<button class=\"button secondary \" aria-label=\"Edit pegawai Pegawai Layanan\">Edit</button>",
+          "impact": "critical",
+          "html": "<button class=\"button ghost profile-icon-button\" type=\"button\" aria-label=\"Buka profil saya\" aria-haspopup=\"dialog\" aria-expanded=\"false\" aria-controls=\"radix-_r_3_\" data-state=\"closed\"><span class=\"avatar\" aria-hidden=\"true\">AL</span></button>",
           "target": [
-            "article > .secondary[aria-label=\"Edit pegawai Pegawai Layanan\"]"
+            ".profile-icon-button"
           ],
-          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          "failureSummary": "Fix all of the following:\n  Unable to determine if aria-controls referenced ID exists on the page while using aria-haspopup: aria-controls=\"radix-_r_3_\""
         }
       ]
     }

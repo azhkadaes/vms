@@ -929,15 +929,28 @@ select.select-control {
 }
 .input-otp { position: relative; width: fit-content; max-width: 100%; }
 .input-otp input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; z-index: 1; cursor: text; }
+.input-otp input:focus-visible { outline: none; }
 .input-otp-slots { display: flex; gap: 5px; max-width: 100%; }
 .input-otp-slot { display: grid; place-items: center; width: clamp(31px, 5vw, 39px); height: 42px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); font-size: 1rem; font-weight: 650; font-variant-numeric: tabular-nums; }
-.input-otp:focus-within .input-otp-slot { border-color: var(--focus); }
-.input-otp:focus-within .input-otp-slot:first-child { box-shadow: 0 0 0 2px oklch(0.52411830 0.15787954 254.785480 / 0.2); }
+.input-otp:not([data-invalid]):focus-within .input-otp-slot[data-active] {
+  outline: 2px solid var(--focus);
+  outline-offset: 0;
+}
+.input-otp[data-invalid] .input-otp-slot {
+  outline: 2px solid var(--action-danger);
+  outline-offset: -2px;
+}
 .toast-stack { position: fixed; z-index: 1000; top: 16px; right: 16px; display: grid; gap: 8px; width: min(360px, calc(100vw - 32px)); pointer-events: none; }
 .toast-card { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: oklch(0.99999999 0 0.000000 / 0.94); box-shadow: 0 10px 30px oklch(0.25592260 0.06610870 255.485659 / 0.14); backdrop-filter: blur(16px); color: var(--ink); font-size: .85rem; pointer-events: auto; }
 .toast-card > svg { flex: none; color: oklch(0.53004876 0.12331240 155.110657); }
 .toast-error > svg { color: oklch(0.50389613 0.17911356 20.270547); }
-.toast-card span { flex: 1; }
+.toast-info {
+  border-inline-start: 3px solid var(--action-primary);
+  background: color-mix(in oklch, var(--action-primary) 6%, var(--white));
+}
+.toast-info > svg { color: var(--action-primary); }
+.toast-content { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.toast-content > span { display: block; margin-block-start: 2px; color: var(--muted); }
 .toast-card button { flex: none; border: 0; background: transparent; cursor: pointer; color: var(--muted); }
 .email-address {
   --email-surface: var(--white);
@@ -1649,7 +1662,8 @@ td small {
 ):is(:focus, :open, [aria-expanded="true"]):where(
   :not(.email-address *, .multiselect-control *, .input-otp *)
 ),
-:is(.email-address, .input-otp, .multiselect-control, .upload-field-picker):focus-within,
+:is(.email-address, .upload-field-picker):focus-within,
+.multiselect-control:has(input:focus),
 .email-address:is(:has(select:open)) {
   outline: 3px solid var(--focus);
   outline-offset: 4px;

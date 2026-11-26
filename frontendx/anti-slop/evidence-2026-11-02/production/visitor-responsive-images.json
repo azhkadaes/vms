@@ -1,17 +1,17 @@
 [
   {
     "width": 320,
-    "currentSrc": "http://127.0.0.1:55101/assets/nusantara-1440-SPr5E660.avif",
+    "currentSrc": "http://localhost:60762/assets/nusantara-1440-SPr5E660.avif",
     "resources": [
       {
-        "name": "http://127.0.0.1:55101/assets/nusantara-1440-SPr5E660.avif",
+        "name": "http://localhost:60762/assets/nusantara-1440-SPr5E660.avif",
         "bytes": 76427,
         "initiator": "link"
       }
     ],
     "fontResources": [
       {
-        "name": "http://127.0.0.1:55101/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
+        "name": "http://localhost:60762/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
         "initiator": "link"
       }
     ],
@@ -22,17 +22,17 @@
   },
   {
     "width": 390,
-    "currentSrc": "http://127.0.0.1:55101/assets/nusantara-1920-8rcmx7Cf.avif",
+    "currentSrc": "http://localhost:60762/assets/nusantara-1920-8rcmx7Cf.avif",
     "resources": [
       {
-        "name": "http://127.0.0.1:55101/assets/nusantara-1920-8rcmx7Cf.avif",
+        "name": "http://localhost:60762/assets/nusantara-1920-8rcmx7Cf.avif",
         "bytes": 132908,
         "initiator": "link"
       }
     ],
     "fontResources": [
       {
-        "name": "http://127.0.0.1:55101/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
+        "name": "http://localhost:60762/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
         "initiator": "link"
       }
     ],
@@ -43,17 +43,17 @@
   },
   {
     "width": 430,
-    "currentSrc": "http://127.0.0.1:55101/assets/nusantara-1920-8rcmx7Cf.avif",
+    "currentSrc": "http://localhost:60762/assets/nusantara-1920-8rcmx7Cf.avif",
     "resources": [
       {
-        "name": "http://127.0.0.1:55101/assets/nusantara-1920-8rcmx7Cf.avif",
+        "name": "http://localhost:60762/assets/nusantara-1920-8rcmx7Cf.avif",
         "bytes": 132908,
         "initiator": "link"
       }
     ],
     "fontResources": [
       {
-        "name": "http://127.0.0.1:55101/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
+        "name": "http://localhost:60762/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
         "initiator": "link"
       }
     ],
@@ -64,17 +64,17 @@
   },
   {
     "width": 760,
-    "currentSrc": "http://127.0.0.1:55101/assets/nusantara-1440-SPr5E660.avif",
+    "currentSrc": "http://localhost:60762/assets/nusantara-1440-SPr5E660.avif",
     "resources": [
       {
-        "name": "http://127.0.0.1:55101/assets/nusantara-1440-SPr5E660.avif",
+        "name": "http://localhost:60762/assets/nusantara-1440-SPr5E660.avif",
         "bytes": 76427,
         "initiator": "link"
       }
     ],
     "fontResources": [
       {
-        "name": "http://127.0.0.1:55101/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
+        "name": "http://localhost:60762/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
         "initiator": "link"
       }
     ],
@@ -85,17 +85,17 @@
   },
   {
     "width": 761,
-    "currentSrc": "http://127.0.0.1:55101/assets/nusantara-1440-SPr5E660.avif",
+    "currentSrc": "http://localhost:60762/assets/nusantara-1440-SPr5E660.avif",
     "resources": [
       {
-        "name": "http://127.0.0.1:55101/assets/nusantara-1440-SPr5E660.avif",
+        "name": "http://localhost:60762/assets/nusantara-1440-SPr5E660.avif",
         "bytes": 76427,
         "initiator": "link"
       }
     ],
     "fontResources": [
       {
-        "name": "http://127.0.0.1:55101/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
+        "name": "http://localhost:60762/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
         "initiator": "link"
       }
     ],
@@ -106,17 +106,17 @@
   },
   {
     "width": 768,
-    "currentSrc": "http://127.0.0.1:55101/assets/nusantara-1440-SPr5E660.avif",
+    "currentSrc": "http://localhost:60762/assets/nusantara-1440-SPr5E660.avif",
     "resources": [
       {
-        "name": "http://127.0.0.1:55101/assets/nusantara-1440-SPr5E660.avif",
+        "name": "http://localhost:60762/assets/nusantara-1440-SPr5E660.avif",
         "bytes": 76427,
         "initiator": "link"
       }
     ],
     "fontResources": [
       {
-        "name": "http://127.0.0.1:55101/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
+        "name": "http://localhost:60762/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
         "initiator": "link"
       }
     ],
@@ -127,17 +127,17 @@
   },
   {
     "width": 1280,
-    "currentSrc": "http://127.0.0.1:55101/assets/nusantara-1440-SPr5E660.avif",
+    "currentSrc": "http://localhost:60762/assets/nusantara-1440-SPr5E660.avif",
     "resources": [
       {
-        "name": "http://127.0.0.1:55101/assets/nusantara-1440-SPr5E660.avif",
+        "name": "http://localhost:60762/assets/nusantara-1440-SPr5E660.avif",
         "bytes": 76427,
         "initiator": "link"
       }
     ],
     "fontResources": [
       {
-        "name": "http://127.0.0.1:55101/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
+        "name": "http://localhost:60762/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
         "initiator": "link"
       }
     ],
@@ -148,17 +148,17 @@
   },
   {
     "width": 1440,
-    "currentSrc": "http://127.0.0.1:55101/assets/nusantara-1920-8rcmx7Cf.avif",
+    "currentSrc": "http://localhost:60762/assets/nusantara-1920-8rcmx7Cf.avif",
     "resources": [
       {
-        "name": "http://127.0.0.1:55101/assets/nusantara-1920-8rcmx7Cf.avif",
+        "name": "http://localhost:60762/assets/nusantara-1920-8rcmx7Cf.avif",
         "bytes": 132908,
         "initiator": "link"
       }
     ],
     "fontResources": [
       {
-        "name": "http://127.0.0.1:55101/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
+        "name": "http://localhost:60762/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
         "initiator": "link"
       }
     ],
@@ -169,17 +169,17 @@
   },
   {
     "width": 740,
-    "currentSrc": "http://127.0.0.1:55101/assets/nusantara-1920-8rcmx7Cf.avif",
+    "currentSrc": "http://localhost:60762/assets/nusantara-1920-8rcmx7Cf.avif",
     "resources": [
       {
-        "name": "http://127.0.0.1:55101/assets/nusantara-1920-8rcmx7Cf.avif",
+        "name": "http://localhost:60762/assets/nusantara-1920-8rcmx7Cf.avif",
         "bytes": 132908,
         "initiator": "link"
       }
     ],
     "fontResources": [
       {
-        "name": "http://127.0.0.1:55101/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
+        "name": "http://localhost:60762/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
         "initiator": "link"
       }
     ],

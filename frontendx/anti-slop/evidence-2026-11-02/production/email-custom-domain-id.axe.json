@@ -7,14 +7,14 @@
     "name": "axe"
   },
   "testEnvironment": {
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
     "windowWidth": 390,
     "windowHeight": 900,
     "orientationAngle": 0,
     "orientationType": "landscape-primary"
   },
-  "timestamp": "2099-08-19T01:00:01.720Z",
-  "url": "http://127.0.0.1:55101/status",
+  "timestamp": "2099-08-19T01:00:01.977Z",
+  "url": "http://localhost:55354/status",
   "toolOptions": {
     "runOnly": {
       "type": "tag",
@@ -66,18 +66,6 @@
       "nodes": []
     },
     {
-      "id": "aria-allowed-role",
-      "impact": null,
-      "tags": [
-        "cat.aria",
-        "best-practice"
-      ],
-      "description": "Ensure role attribute has an appropriate value for the element",
-      "help": "ARIA role should be appropriate for the element",
-      "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/aria-allowed-role?application=playwright",
-      "nodes": []
-    },
-    {
       "id": "aria-braille-equivalent",
       "impact": null,
       "tags": [
@@ -110,23 +98,6 @@
       "description": "Ensure every ARIA button, link and menuitem has an accessible name",
       "help": "ARIA commands must have an accessible name",
       "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/aria-command-name?application=playwright",
-      "nodes": []
-    },
-    {
-      "id": "aria-deprecated-role",
-      "impact": null,
-      "tags": [
-        "cat.aria",
-        "wcag2a",
-        "wcag412",
-        "EN-301-549",
-        "EN-9.4.1.2",
-        "RGAAv4",
-        "RGAA-7.1.1"
-      ],
-      "description": "Ensure elements do not use deprecated roles",
-      "help": "Deprecated ARIA roles must not be used",
-      "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/aria-deprecated-role?application=playwright",
       "nodes": []
     },
     {
@@ -196,23 +167,6 @@
       "nodes": []
     },
     {
-      "id": "aria-required-attr",
-      "impact": null,
-      "tags": [
-        "cat.aria",
-        "wcag2a",
-        "wcag412",
-        "EN-301-549",
-        "EN-9.4.1.2",
-        "RGAAv4",
-        "RGAA-7.1.1"
-      ],
-      "description": "Ensure elements with ARIA roles have all required ARIA attributes",
-      "help": "Required ARIA attributes must be provided",
-      "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/aria-required-attr?application=playwright",
-      "nodes": []
-    },
-    {
       "id": "aria-required-children",
       "impact": null,
       "tags": [
@@ -244,23 +198,6 @@
       "description": "Ensure elements with an ARIA role that require parent roles are contained by them",
       "help": "Certain ARIA roles must be contained by particular parents",
       "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/aria-required-parent?application=playwright",
-      "nodes": []
-    },
-    {
-      "id": "aria-roles",
-      "impact": null,
-      "tags": [
-        "cat.aria",
-        "wcag2a",
-        "wcag412",
-        "EN-301-549",
-        "EN-9.4.1.2",
-        "RGAAv4",
-        "RGAA-7.1.1"
-      ],
-      "description": "Ensure all elements with a role attribute use a valid value",
-      "help": "ARIA roles used must conform to valid values",
-      "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/aria-roles?application=playwright",
       "nodes": []
     },
     {
@@ -962,9 +899,9 @@
             }
           ],
           "impact": null,
-          "html": "<select class=\"language-select language-switch--header\" aria-label=\"Bahasa halaman\"><option value=\"id\" lang=\"id\" label=\"ID\">Bahasa Indonesia</option><option value=\"en\" lang=\"en\" label=\"EN\">English</option></select>",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
-            "select"
+            ".segmented-control"
           ]
         },
         {
@@ -1002,7 +939,87 @@
             }
           ],
           "impact": null,
-          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" type=\"text\" value=\"\">",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
+          "target": [
+            ".secondary"
+          ]
+        },
+        {
+          "any": [],
+          "all": [
+            {
+              "id": "aria-allowed-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attributes are used correctly for the defined role"
+            },
+            {
+              "id": "aria-allowed-attr-elm",
+              "data": null,
+              "relatedNodes": [],
+              "message": "ARIA attributes are allowed for this element",
+              "impact": "critical"
+            },
+            {
+              "id": "aria-no-deprecated-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "No deprecated ARIA attributes are used"
+            }
+          ],
+          "none": [
+            {
+              "id": "aria-unsupported-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attribute is supported"
+            }
+          ],
+          "impact": null,
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
+          "target": [
+            ".ghost"
+          ]
+        },
+        {
+          "any": [],
+          "all": [
+            {
+              "id": "aria-allowed-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attributes are used correctly for the defined role"
+            },
+            {
+              "id": "aria-allowed-attr-elm",
+              "data": null,
+              "relatedNodes": [],
+              "message": "ARIA attributes are allowed for this element",
+              "impact": "critical"
+            },
+            {
+              "id": "aria-no-deprecated-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "No deprecated ARIA attributes are used"
+            }
+          ],
+          "none": [
+            {
+              "id": "aria-unsupported-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attribute is supported"
+            }
+          ],
+          "impact": null,
+          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" aria-invalid=\"false\" type=\"text\" value=\"\">",
           "target": [
             "#status-code"
           ]
@@ -1042,7 +1059,7 @@
             }
           ],
           "impact": null,
-          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"nama.anda\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
+          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"emailpengunjung\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
           "target": [
             "#status-email"
           ]
@@ -1122,9 +1139,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" aria-label=\"Ubah domain email: pilih dari daftar\">Ubah</button>",
+          "html": "<select id=\"status-email-domain\" required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" aria-label=\"Domain email\" class=\"select-control \">",
           "target": [
-            "button[type=\"button\"]"
+            "#status-email-domain"
           ]
         },
         {
@@ -1165,6 +1182,37 @@
           "html": "<a href=\"/\" class=\"brand \" aria-label=\"Visitor Management System (VMS) · Otorita IKN · Beranda\">",
           "target": [
             "footer > div:nth-child(1) > .brand[href=\"/\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aria-allowed-role",
+      "impact": null,
+      "tags": [
+        "cat.aria",
+        "best-practice"
+      ],
+      "description": "Ensure role attribute has an appropriate value for the element",
+      "help": "ARIA role should be appropriate for the element",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/aria-allowed-role?application=playwright",
+      "nodes": [
+        {
+          "any": [
+            {
+              "id": "aria-allowed-role",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "minor",
+              "message": "ARIA role is allowed for given element"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "target": [
+            ".segmented-control"
           ]
         }
       ]
@@ -1216,9 +1264,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<select class=\"language-select language-switch--header\" aria-label=\"Bahasa halaman\"><option value=\"id\" lang=\"id\" label=\"ID\">Bahasa Indonesia</option><option value=\"en\" lang=\"en\" label=\"EN\">English</option></select>",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
-            "select"
+            ".segmented-control"
           ]
         },
         {
@@ -1234,7 +1282,43 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" type=\"text\" value=\"\">",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
+          "target": [
+            ".secondary"
+          ]
+        },
+        {
+          "any": [],
+          "all": [
+            {
+              "id": "aria-conditional-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "ARIA attribute is allowed"
+            }
+          ],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
+          "target": [
+            ".ghost"
+          ]
+        },
+        {
+          "any": [],
+          "all": [
+            {
+              "id": "aria-conditional-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "ARIA attribute is allowed"
+            }
+          ],
+          "none": [],
+          "impact": null,
+          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" aria-invalid=\"false\" type=\"text\" value=\"\">",
           "target": [
             "#status-code"
           ]
@@ -1252,7 +1336,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"nama.anda\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
+          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"emailpengunjung\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
           "target": [
             "#status-email"
           ]
@@ -1288,9 +1372,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" aria-label=\"Ubah domain email: pilih dari daftar\">Ubah</button>",
+          "html": "<select id=\"status-email-domain\" required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" aria-label=\"Domain email\" class=\"select-control \">",
           "target": [
-            "button[type=\"button\"]"
+            "#status-email-domain"
           ]
         },
         {
@@ -1309,6 +1393,42 @@
           "html": "<a href=\"/\" class=\"brand \" aria-label=\"Visitor Management System (VMS) · Otorita IKN · Beranda\">",
           "target": [
             "footer > div:nth-child(1) > .brand[href=\"/\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aria-deprecated-role",
+      "impact": null,
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "RGAAv4",
+        "RGAA-7.1.1"
+      ],
+      "description": "Ensure elements do not use deprecated roles",
+      "help": "Deprecated ARIA roles must not be used",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/aria-deprecated-role?application=playwright",
+      "nodes": [
+        {
+          "any": [],
+          "all": [],
+          "none": [
+            {
+              "id": "deprecatedrole",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "minor",
+              "message": "ARIA role is not deprecated"
+            }
+          ],
+          "impact": null,
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "target": [
+            ".segmented-control"
           ]
         }
       ]
@@ -1706,9 +1826,9 @@
             }
           ],
           "impact": null,
-          "html": "<select class=\"language-select language-switch--header\" aria-label=\"Bahasa halaman\"><option value=\"id\" lang=\"id\" label=\"ID\">Bahasa Indonesia</option><option value=\"en\" lang=\"en\" label=\"EN\">English</option></select>",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
-            "select"
+            ".segmented-control"
           ]
         },
         {
@@ -1724,7 +1844,43 @@
             }
           ],
           "impact": null,
-          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" type=\"text\" value=\"\">",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
+          "target": [
+            ".secondary"
+          ]
+        },
+        {
+          "any": [],
+          "all": [],
+          "none": [
+            {
+              "id": "aria-prohibited-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "ARIA attribute is allowed"
+            }
+          ],
+          "impact": null,
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
+          "target": [
+            ".ghost"
+          ]
+        },
+        {
+          "any": [],
+          "all": [],
+          "none": [
+            {
+              "id": "aria-prohibited-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "ARIA attribute is allowed"
+            }
+          ],
+          "impact": null,
+          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" aria-invalid=\"false\" type=\"text\" value=\"\">",
           "target": [
             "#status-code"
           ]
@@ -1742,7 +1898,7 @@
             }
           ],
           "impact": null,
-          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"nama.anda\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
+          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"emailpengunjung\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
           "target": [
             "#status-email"
           ]
@@ -1778,9 +1934,9 @@
             }
           ],
           "impact": null,
-          "html": "<button type=\"button\" aria-label=\"Ubah domain email: pilih dari daftar\">Ubah</button>",
+          "html": "<select id=\"status-email-domain\" required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" aria-label=\"Domain email\" class=\"select-control \">",
           "target": [
-            "button[type=\"button\"]"
+            "#status-email-domain"
           ]
         },
         {
@@ -1799,6 +1955,92 @@
           "html": "<a href=\"/\" class=\"brand \" aria-label=\"Visitor Management System (VMS) · Otorita IKN · Beranda\">",
           "target": [
             "footer > div:nth-child(1) > .brand[href=\"/\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aria-required-attr",
+      "impact": null,
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "RGAAv4",
+        "RGAA-7.1.1"
+      ],
+      "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+      "help": "Required ARIA attributes must be provided",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/aria-required-attr?application=playwright",
+      "nodes": [
+        {
+          "any": [
+            {
+              "id": "aria-required-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "All required ARIA attributes are present"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "target": [
+            ".segmented-control"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aria-roles",
+      "impact": null,
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "RGAAv4",
+        "RGAA-7.1.1"
+      ],
+      "description": "Ensure all elements with a role attribute use a valid value",
+      "help": "ARIA roles used must conform to valid values",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/aria-roles?application=playwright",
+      "nodes": [
+        {
+          "any": [],
+          "all": [],
+          "none": [
+            {
+              "id": "invalidrole",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA role is valid"
+            },
+            {
+              "id": "abstractrole",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "Abstract roles are not used"
+            },
+            {
+              "id": "unsupportedrole",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA role is supported"
+            }
+          ],
+          "impact": null,
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
+          "target": [
+            ".segmented-control"
           ]
         }
       ]
@@ -1878,9 +2120,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<select class=\"language-select language-switch--header\" aria-label=\"Bahasa halaman\"><option value=\"id\" lang=\"id\" label=\"ID\">Bahasa Indonesia</option><option value=\"en\" lang=\"en\" label=\"EN\">English</option></select>",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
-            "select"
+            ".segmented-control"
           ]
         },
         {
@@ -1910,7 +2152,71 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" type=\"text\" value=\"\">",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
+          "target": [
+            ".secondary"
+          ]
+        },
+        {
+          "any": [],
+          "all": [
+            {
+              "id": "aria-valid-attr-value",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attribute values are valid"
+            },
+            {
+              "id": "aria-errormessage",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "aria-errormessage exists and references elements visible to screen readers that use a supported aria-errormessage technique"
+            },
+            {
+              "id": "aria-level",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "aria-level values are valid"
+            }
+          ],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
+          "target": [
+            ".ghost"
+          ]
+        },
+        {
+          "any": [],
+          "all": [
+            {
+              "id": "aria-valid-attr-value",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attribute values are valid"
+            },
+            {
+              "id": "aria-errormessage",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "aria-errormessage exists and references elements visible to screen readers that use a supported aria-errormessage technique"
+            },
+            {
+              "id": "aria-level",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "aria-level values are valid"
+            }
+          ],
+          "none": [],
+          "impact": null,
+          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" aria-invalid=\"false\" type=\"text\" value=\"\">",
           "target": [
             "#status-code"
           ]
@@ -1942,7 +2248,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"nama.anda\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
+          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"emailpengunjung\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
           "target": [
             "#status-email"
           ]
@@ -2006,9 +2312,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" aria-label=\"Ubah domain email: pilih dari daftar\">Ubah</button>",
+          "html": "<select id=\"status-email-domain\" required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" aria-label=\"Domain email\" class=\"select-control \">",
           "target": [
-            "button[type=\"button\"]"
+            "#status-email-domain"
           ]
         },
         {
@@ -2092,9 +2398,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<select class=\"language-select language-switch--header\" aria-label=\"Bahasa halaman\"><option value=\"id\" lang=\"id\" label=\"ID\">Bahasa Indonesia</option><option value=\"en\" lang=\"en\" label=\"EN\">English</option></select>",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
-            "select"
+            ".segmented-control"
           ]
         },
         {
@@ -2110,7 +2416,43 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" type=\"text\" value=\"\">",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
+          "target": [
+            ".secondary"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "aria-valid-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attribute name is valid"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
+          "target": [
+            ".ghost"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "aria-valid-attr",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "ARIA attribute name is valid"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" aria-invalid=\"false\" type=\"text\" value=\"\">",
           "target": [
             "#status-code"
           ]
@@ -2128,7 +2470,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"nama.anda\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
+          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"emailpengunjung\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
           "target": [
             "#status-email"
           ]
@@ -2164,9 +2506,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" aria-label=\"Ubah domain email: pilih dari daftar\">Ubah</button>",
+          "html": "<select id=\"status-email-domain\" required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" aria-label=\"Domain email\" class=\"select-control \">",
           "target": [
-            "button[type=\"button\"]"
+            "#status-email-domain"
           ]
         },
         {
@@ -2219,7 +2561,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" type=\"text\" value=\"\">",
+          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" aria-invalid=\"false\" type=\"text\" value=\"\">",
           "target": [
             "#status-code"
           ]
@@ -2237,7 +2579,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"nama.anda\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
+          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"emailpengunjung\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
           "target": [
             "#status-email"
           ]
@@ -2352,9 +2694,34 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" aria-label=\"Ubah domain email: pilih dari daftar\">Ubah</button>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            "button[type=\"button\"]"
+            ".secondary"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "button-has-visible-text",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "Element has inner text that is visible to screen readers"
+            },
+            {
+              "id": "aria-label",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "aria-label attribute exists and is not empty"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
+          "target": [
+            ".ghost"
           ]
         },
         {
@@ -2372,7 +2739,7 @@
           "impact": null,
           "html": "<button class=\"button primary \">",
           "target": [
-            ".button"
+            ".primary"
           ]
         }
       ]
@@ -2459,7 +2826,7 @@
     },
     {
       "id": "color-contrast",
-      "impact": null,
+      "impact": "serious",
       "tags": [
         "cat.color",
         "wcag2aa",
@@ -2481,24 +2848,49 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#43515f",
-                "bgColor": "#fdfdfd",
-                "contrastRatio": 7.99,
-                "fontSize": "9.4pt (12.48px)",
+                "fgColor": "#1769c2",
+                "bgColor": "#e0ebf7",
+                "contrastRatio": 4.53,
+                "fontSize": "9.8pt (13px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 7.99"
+              "message": "Element has sufficient color contrast of 4.53"
             }
           ],
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<select class=\"language-select language-switch--header\" aria-label=\"Bahasa halaman\"><option value=\"id\" lang=\"id\" label=\"ID\">Bahasa Indonesia</option><option value=\"en\" lang=\"en\" label=\"EN\">English</option></select>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            "select"
+            ".secondary"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#1769c2",
+                "bgColor": "#ffffff",
+                "contrastRatio": 5.47,
+                "fontSize": "9.8pt (13px)",
+                "fontWeight": "normal",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 5.47"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
+          "target": [
+            ".ghost"
           ]
         },
         {
@@ -2659,7 +3051,7 @@
                 "fgColor": "#1d1d1f",
                 "bgColor": "#ffffff",
                 "contrastRatio": 16.82,
-                "fontSize": "10.0pt (13.28px)",
+                "fontSize": "10.5pt (14px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
@@ -2691,7 +3083,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" type=\"text\" value=\"\">",
+          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" aria-invalid=\"false\" type=\"text\" value=\"\">",
           "target": [
             "#status-code"
           ]
@@ -2704,7 +3096,7 @@
                 "fgColor": "#1d1d1f",
                 "bgColor": "#ffffff",
                 "contrastRatio": 16.82,
-                "fontSize": "10.0pt (13.28px)",
+                "fontSize": "10.5pt (14px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
@@ -2727,73 +3119,23 @@
               "id": "color-contrast",
               "data": {
                 "fgColor": "#1d1d1f",
-                "bgColor": "#ffffff",
-                "contrastRatio": 16.82,
+                "bgColor": "#edf3fa",
+                "contrastRatio": 15.06,
                 "fontSize": "12.0pt (16px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 16.82"
+              "message": "Element has sufficient color contrast of 15.06"
             }
           ],
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"nama.anda\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
+          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"emailpengunjung\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
           "target": [
             "#status-email"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#1d1d1f",
-                "bgColor": "#ffffff",
-                "contrastRatio": 16.82,
-                "fontSize": "12.0pt (16px)",
-                "fontWeight": "normal",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element has sufficient color contrast of 16.82"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<input id=\"status-email-custom-...\" inputmode=\"url\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" autocomplete=\"off\" placeholder=\"instansi.go.id\" aria-label=\"Domain email lain\" required=\"\" pattern=\"[^@\\s]+\\.[^@\\s]+\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" ...>",
-          "target": [
-            "#status-email-custom-domain"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#185088",
-                "bgColor": "#ffffff",
-                "contrastRatio": 8.26,
-                "fontSize": "9.0pt (12px)",
-                "fontWeight": "normal",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element has sufficient color contrast of 8.26"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<button type=\"button\" aria-label=\"Ubah domain email: pilih dari daftar\">Ubah</button>",
-          "target": [
-            "button[type=\"button\"]"
           ]
         },
         {
@@ -2804,7 +3146,7 @@
                 "fgColor": "#63636c",
                 "bgColor": "#ffffff",
                 "contrastRatio": 5.94,
-                "fontSize": "10.5pt (14px)",
+                "fontSize": "9.8pt (13px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "4.5:1"
               },
@@ -2816,7 +3158,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<small id=\"status-email-hint\">Ketik nama sebelum @, lalu pilih domain. Untuk email instansi, pilih Domain lain.</small>",
+          "html": "<small id=\"status-email-hint\" class=\"form-help \">Isi bagian sebelum @, lalu pilih akhiran email. Pilih Lainnya jika tidak ada di daftar.</small>",
           "target": [
             "#status-email-hint"
           ]
@@ -2843,7 +3185,7 @@
           "impact": null,
           "html": "<button class=\"button primary \">",
           "target": [
-            ".button"
+            ".primary"
           ]
         },
         {
@@ -3141,7 +3483,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" type=\"text\" value=\"\">",
+          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" aria-invalid=\"false\" type=\"text\" value=\"\">",
           "target": [
             "#status-code"
           ]
@@ -3159,7 +3501,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"nama.anda\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
+          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"emailpengunjung\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
           "target": [
             "#status-email"
           ]
@@ -3177,7 +3519,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<small id=\"status-email-hint\">Ketik nama sebelum @, lalu pilih domain. Untuk email instansi, pilih Domain lain.</small>",
+          "html": "<small id=\"status-email-hint\" class=\"form-help \">Isi bagian sebelum @, lalu pilih akhiran email. Pilih Lainnya jika tidak ada di daftar.</small>",
           "target": [
             "#status-email-hint"
           ]
@@ -3276,24 +3618,6 @@
             {
               "id": "multiple-label",
               "data": null,
-              "relatedNodes": [],
-              "impact": "moderate",
-              "message": "Form field does not have multiple label elements"
-            }
-          ],
-          "impact": null,
-          "html": "<select class=\"language-select language-switch--header\" aria-label=\"Bahasa halaman\"><option value=\"id\" lang=\"id\" label=\"ID\">Bahasa Indonesia</option><option value=\"en\" lang=\"en\" label=\"EN\">English</option></select>",
-          "target": [
-            "select"
-          ]
-        },
-        {
-          "any": [],
-          "all": [],
-          "none": [
-            {
-              "id": "multiple-label",
-              "data": null,
               "relatedNodes": [
                 {
                   "html": "<label for=\"status-code\">Kode kunjungan <span class=\"required-mark\" aria-hidden=\"true\">*</span></label>",
@@ -3307,7 +3631,7 @@
             }
           ],
           "impact": null,
-          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" type=\"text\" value=\"\">",
+          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" aria-invalid=\"false\" type=\"text\" value=\"\">",
           "target": [
             "#status-code"
           ]
@@ -3332,7 +3656,7 @@
             }
           ],
           "impact": null,
-          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"nama.anda\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
+          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"emailpengunjung\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
           "target": [
             "#status-email"
           ]
@@ -3353,6 +3677,24 @@
           "html": "<input id=\"status-email-custom-...\" inputmode=\"url\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" autocomplete=\"off\" placeholder=\"instansi.go.id\" aria-label=\"Domain email lain\" required=\"\" pattern=\"[^@\\s]+\\.[^@\\s]+\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" ...>",
           "target": [
             "#status-email-custom-domain"
+          ]
+        },
+        {
+          "any": [],
+          "all": [],
+          "none": [
+            {
+              "id": "multiple-label",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "Form field does not have multiple label elements"
+            }
+          ],
+          "impact": null,
+          "html": "<select id=\"status-email-domain\" required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" aria-label=\"Domain email\" class=\"select-control \">",
+          "target": [
+            "#status-email-domain"
           ]
         }
       ]
@@ -3690,25 +4032,7 @@
             }
           ],
           "impact": null,
-          "html": "<select class=\"language-select language-switch--header\" aria-label=\"Bahasa halaman\"><option value=\"id\" lang=\"id\" label=\"ID\">Bahasa Indonesia</option><option value=\"en\" lang=\"en\" label=\"EN\">English</option></select>",
-          "target": [
-            "select"
-          ]
-        },
-        {
-          "any": [],
-          "all": [],
-          "none": [
-            {
-              "id": "title-only",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Form element does not solely use title attribute for its label"
-            }
-          ],
-          "impact": null,
-          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" type=\"text\" value=\"\">",
+          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" aria-invalid=\"false\" type=\"text\" value=\"\">",
           "target": [
             "#status-code"
           ]
@@ -3726,7 +4050,7 @@
             }
           ],
           "impact": null,
-          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"nama.anda\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
+          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"emailpengunjung\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
           "target": [
             "#status-email"
           ]
@@ -3747,6 +4071,24 @@
           "html": "<input id=\"status-email-custom-...\" inputmode=\"url\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" autocomplete=\"off\" placeholder=\"instansi.go.id\" aria-label=\"Domain email lain\" required=\"\" pattern=\"[^@\\s]+\\.[^@\\s]+\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" ...>",
           "target": [
             "#status-email-custom-domain"
+          ]
+        },
+        {
+          "any": [],
+          "all": [],
+          "none": [
+            {
+              "id": "title-only",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Form element does not solely use title attribute for its label"
+            }
+          ],
+          "impact": null,
+          "html": "<select id=\"status-email-domain\" required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" aria-label=\"Domain email\" class=\"select-control \">",
+          "target": [
+            "#status-email-domain"
           ]
         }
       ]
@@ -3809,7 +4151,7 @@
             }
           ],
           "impact": null,
-          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" type=\"text\" value=\"\">",
+          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" aria-invalid=\"false\" type=\"text\" value=\"\">",
           "target": [
             "#status-code"
           ]
@@ -3851,7 +4193,7 @@
             }
           ],
           "impact": null,
-          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"nama.anda\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
+          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"emailpengunjung\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
           "target": [
             "#status-email"
           ]
@@ -4458,9 +4800,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<option value=\"id\" lang=\"id\" label=\"ID\">Bahasa Indonesia</option>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            "option[value=\"id\"]"
+            ".secondary"
           ]
         },
         {
@@ -4476,9 +4818,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<option value=\"en\" lang=\"en\" label=\"EN\">English</option>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            "option[value=\"en\"]"
+            ".ghost"
           ]
         },
         {
@@ -4494,9 +4836,135 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" aria-label=\"Ubah domain email: pilih dari daftar\">Ubah</button>",
+          "html": "<option value=\"\" disabled=\"\">domain.com</option>",
           "target": [
-            "button[type=\"button\"]"
+            "option[value=\"\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "no-focusable-content",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element does not have focusable descendants"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<option value=\"gmail.com\">gmail.com</option>",
+          "target": [
+            "option[value=\"gmail.com\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "no-focusable-content",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element does not have focusable descendants"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<option value=\"outlook.com\">outlook.com</option>",
+          "target": [
+            "option[value=\"outlook.com\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "no-focusable-content",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element does not have focusable descendants"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<option value=\"yahoo.com\">yahoo.com</option>",
+          "target": [
+            "option[value=\"yahoo.com\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "no-focusable-content",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element does not have focusable descendants"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<option value=\"hotmail.com\">hotmail.com</option>",
+          "target": [
+            "option[value=\"hotmail.com\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "no-focusable-content",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element does not have focusable descendants"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<option value=\"icloud.com\">icloud.com</option>",
+          "target": [
+            "option[value=\"icloud.com\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "no-focusable-content",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element does not have focusable descendants"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<option value=\"ikn.go.id\">ikn.go.id</option>",
+          "target": [
+            "option[value=\"ikn.go.id\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "no-focusable-content",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element does not have focusable descendants"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<option value=\"other\">Lainnya</option>",
+          "target": [
+            "option[value=\"other\"]"
           ]
         },
         {
@@ -4514,7 +4982,7 @@
           "impact": null,
           "html": "<button class=\"button primary \">",
           "target": [
-            ".button"
+            ".primary"
           ]
         }
       ]
@@ -4829,9 +5297,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<select class=\"language-select language-switch--header\" aria-label=\"Bahasa halaman\"><option value=\"id\" lang=\"id\" label=\"ID\">Bahasa Indonesia</option><option value=\"en\" lang=\"en\" label=\"EN\">English</option></select>",
+          "html": "<div class=\"segmented-control language-switch--header\" role=\"group\" aria-label=\"Bahasa halaman\">",
           "target": [
-            "select"
+            ".segmented-control"
           ]
         },
         {
@@ -4849,9 +5317,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<option value=\"id\" lang=\"id\" label=\"ID\">Bahasa Indonesia</option>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            "option[value=\"id\"]"
+            ".secondary"
           ]
         },
         {
@@ -4869,9 +5337,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<option value=\"en\" lang=\"en\" label=\"EN\">English</option>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            "option[value=\"en\"]"
+            ".ghost"
           ]
         },
         {
@@ -5209,7 +5677,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" type=\"text\" value=\"\">",
+          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" aria-invalid=\"false\" type=\"text\" value=\"\">",
           "target": [
             "#status-code"
           ]
@@ -5289,7 +5757,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"email-address\">",
+          "html": "<div class=\"email-address\" data-filled=\"true\">",
           "target": [
             ".email-address"
           ]
@@ -5309,7 +5777,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"email-username\"><input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"nama.anda\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\"></div>",
+          "html": "<div class=\"email-username\">",
           "target": [
             ".email-username"
           ]
@@ -5329,7 +5797,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"nama.anda\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
+          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"emailpengunjung\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
           "target": [
             "#status-email"
           ]
@@ -5409,9 +5877,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" aria-label=\"Ubah domain email: pilih dari daftar\">Ubah</button>",
+          "html": "<select id=\"status-email-domain\" required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" aria-label=\"Domain email\" class=\"select-control \">",
           "target": [
-            "button[type=\"button\"]"
+            "#status-email-domain"
           ]
         },
         {
@@ -5429,9 +5897,189 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<small id=\"status-email-hint\">Ketik nama sebelum @, lalu pilih domain. Untuk email instansi, pilih Domain lain.</small>",
+          "html": "<option value=\"\" disabled=\"\">domain.com</option>",
+          "target": [
+            "option[value=\"\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<option value=\"gmail.com\">gmail.com</option>",
+          "target": [
+            "option[value=\"gmail.com\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<option value=\"outlook.com\">outlook.com</option>",
+          "target": [
+            "option[value=\"outlook.com\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<option value=\"yahoo.com\">yahoo.com</option>",
+          "target": [
+            "option[value=\"yahoo.com\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<option value=\"hotmail.com\">hotmail.com</option>",
+          "target": [
+            "option[value=\"hotmail.com\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<option value=\"icloud.com\">icloud.com</option>",
+          "target": [
+            "option[value=\"icloud.com\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<option value=\"ikn.go.id\">ikn.go.id</option>",
+          "target": [
+            "option[value=\"ikn.go.id\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<option value=\"other\">Lainnya</option>",
+          "target": [
+            "option[value=\"other\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<small id=\"status-email-hint\" class=\"form-help \">Isi bagian sebelum @, lalu pilih akhiran email. Pilih Lainnya jika tidak ada di daftar.</small>",
           "target": [
             "#status-email-hint"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "region",
+              "data": {
+                "isIframe": false
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "All page content is contained by landmarks"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<div id=\"status-lookup-error\"></div>",
+          "target": [
+            "#status-lookup-error"
           ]
         },
         {
@@ -5471,7 +6119,7 @@
           "impact": null,
           "html": "<button class=\"button primary \">",
           "target": [
-            ".button"
+            ".primary"
           ]
         },
         {
@@ -5958,9 +6606,9 @@
             }
           ],
           "impact": null,
-          "html": "<select class=\"language-select language-switch--header\" aria-label=\"Bahasa halaman\"><option value=\"id\" lang=\"id\" label=\"ID\">Bahasa Indonesia</option><option value=\"en\" lang=\"en\" label=\"EN\">English</option></select>",
+          "html": "<select id=\"status-email-domain\" required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" aria-label=\"Domain email\" class=\"select-control \">",
           "target": [
-            "select"
+            "#status-email-domain"
           ]
         }
       ]
@@ -6113,12 +6761,12 @@
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 60,
+                "width": 44,
                 "height": 44
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (60px by 44px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (44px by 44px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -6134,9 +6782,41 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<select class=\"language-select language-switch--header\" aria-label=\"Bahasa halaman\"><option value=\"id\" lang=\"id\" label=\"ID\">Bahasa Indonesia</option><option value=\"en\" lang=\"en\" label=\"EN\">English</option></select>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            "select"
+            ".secondary"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "target-size",
+              "data": {
+                "minSize": 24,
+                "width": 44,
+                "height": 44
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Control has sufficient size (44px by 44px, should be at least 24px by 24px)"
+            },
+            {
+              "id": "target-offset",
+              "data": {
+                "closestOffset": 24,
+                "minOffset": 24
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Target has sufficient space from its closest neighbors. Safe clickable space has a diameter of 24px which is at least 24px."
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
+          "target": [
+            ".ghost"
           ]
         },
         {
@@ -6198,7 +6878,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" type=\"text\" value=\"\">",
+          "html": "<input id=\"status-code\" required=\"\" aria-label=\"8 digit kode kunjungan\" inputmode=\"numeric\" autocomplete=\"off\" pattern=\"[0-9]{8}\" maxlength=\"8\" aria-invalid=\"false\" type=\"text\" value=\"\">",
           "target": [
             "#status-code"
           ]
@@ -6209,12 +6889,12 @@
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 133.4,
+                "width": 143.4,
                 "height": 46
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (133.4px by 46px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (143.4px by 46px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -6230,7 +6910,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"nama.anda\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
+          "html": "<input required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" id=\"status-email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"emailpengunjung\" pattern=\"[^@\\s]+\" type=\"text\" value=\"visitor\">",
           "target": [
             "#status-email"
           ]
@@ -6240,13 +6920,18 @@
             {
               "id": "target-size",
               "data": {
-                "minSize": 24,
-                "width": 109.2,
-                "height": 46
+                "messageKey": "obscured"
               },
-              "relatedNodes": [],
+              "relatedNodes": [
+                {
+                  "html": "<select id=\"status-email-domain\" required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" aria-label=\"Domain email\" class=\"select-control \">",
+                  "target": [
+                    "#status-email-domain"
+                  ]
+                }
+              ],
               "impact": "serious",
-              "message": "Control has sufficient size (109.2px by 46px, should be at least 24px by 24px)"
+              "message": "Control is ignored because it is fully obscured and thus not clickable"
             },
             {
               "id": "target-offset",
@@ -6273,12 +6958,12 @@
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 44.2,
-                "height": 34
+                "width": 143.4,
+                "height": 46
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (44.2px by 34px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (143.4px by 46px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -6294,9 +6979,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" aria-label=\"Ubah domain email: pilih dari daftar\">Ubah</button>",
+          "html": "<select id=\"status-email-domain\" required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" aria-label=\"Domain email\" class=\"select-control \">",
           "target": [
-            "button[type=\"button\"]"
+            "#status-email-domain"
           ]
         },
         {
@@ -6305,12 +6990,12 @@
               "id": "target-size",
               "data": {
                 "minSize": 24,
-                "width": 161.4,
+                "width": 162.4,
                 "height": 44
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Control has sufficient size (161.4px by 44px, should be at least 24px by 24px)"
+              "message": "Control has sufficient size (162.4px by 44px, should be at least 24px by 24px)"
             },
             {
               "id": "target-offset",
@@ -6328,7 +7013,7 @@
           "impact": null,
           "html": "<button class=\"button primary \">",
           "target": [
-            ".button"
+            ".primary"
           ]
         },
         {
@@ -6429,9 +7114,9 @@
             }
           ],
           "impact": null,
-          "html": "<option value=\"id\" lang=\"id\" label=\"ID\">Bahasa Indonesia</option>",
+          "html": "<button class=\"button secondary \" type=\"button\" aria-pressed=\"true\" aria-label=\"ID · Bahasa Indonesia\" lang=\"id\">ID</button>",
           "target": [
-            "option[value=\"id\"]"
+            ".secondary"
           ]
         },
         {
@@ -6447,14 +7132,93 @@
             }
           ],
           "impact": null,
-          "html": "<option value=\"en\" lang=\"en\" label=\"EN\">English</option>",
+          "html": "<button class=\"button ghost \" type=\"button\" aria-pressed=\"false\" aria-label=\"EN · English\" lang=\"en\">EN</button>",
           "target": [
-            "option[value=\"en\"]"
+            ".ghost"
           ]
         }
       ]
     }
   ],
-  "incomplete": [],
+  "incomplete": [
+    {
+      "id": "color-contrast",
+      "impact": "serious",
+      "tags": [
+        "cat.color",
+        "wcag2aa",
+        "wcag143",
+        "TTv5",
+        "TT13.c",
+        "EN-301-549",
+        "EN-9.1.4.3",
+        "ACT",
+        "RGAAv4",
+        "RGAA-3.2.1"
+      ],
+      "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+      "help": "Elements must meet minimum color contrast ratio thresholds",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=playwright",
+      "nodes": [
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "contrastRatio": 0,
+                "fontSize": "12.0pt (16px)",
+                "fontWeight": "normal",
+                "messageKey": "bgOverlap",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element's background color could not be determined because it is overlapped by another element"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<input id=\"status-email-custom-...\" inputmode=\"url\" autocapitalize=\"none\" autocorrect=\"off\" spellcheck=\"false\" autocomplete=\"off\" placeholder=\"instansi.go.id\" aria-label=\"Domain email lain\" required=\"\" pattern=\"[^@\\s]+\\.[^@\\s]+\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" ...>",
+          "target": [
+            "#status-email-custom-domain"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "contrastRatio": 0,
+                "fontSize": "12.0pt (16px)",
+                "fontWeight": "normal",
+                "messageKey": "bgImage",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<select id=\"status-email-domain\" required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" aria-label=\"Domain email\" class=\"select-control \">",
+                  "target": [
+                    "#status-email-domain"
+                  ]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element's background color could not be determined due to a background image"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<select id=\"status-email-domain\" required=\"\" aria-invalid=\"false\" aria-describedby=\"status-email-hint\" aria-label=\"Domain email\" class=\"select-control \">",
+          "target": [
+            "#status-email-domain"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background image"
+        }
+      ]
+    }
+  ],
   "violations": []
 }
