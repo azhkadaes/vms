@@ -1,5 +1,0 @@
-- dialog "Buat janji temu":
-  - heading "Buat janji temu" [level=2]
-  - paragraph: Menyiapkan formulir janji temu.
-  - button "Tutup dialog"
-  - status "Memuat data"
