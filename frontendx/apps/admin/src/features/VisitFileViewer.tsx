@@ -182,19 +182,18 @@ function FileContent({
         <div className="visit-file-footer">{download}</div>
       </>
     );
+  // The browser's PDF toolbar already offers download and print, so only the fallback adds one.
+  if (navigator.pdfViewerEnabled)
+    return <iframe className="visit-file-pdf" src={url} title="Pratinjau Nota Dinas" />;
   return (
     <>
-      {navigator.pdfViewerEnabled ? (
-        <iframe className="visit-file-pdf" src={url} title="Pratinjau Nota Dinas" />
-      ) : (
-        <div className="visit-file-stage is-message">
-          <FileText size={32} aria-hidden="true" className="muted" />
-          <p className="muted">Browser ini tidak dapat menampilkan PDF di dalam halaman.</p>
-          <a className="link-button secondary" href={url} target="_blank" rel="noopener">
-            <ExternalLink size={16} aria-hidden="true" /> Buka di tab baru
-          </a>
-        </div>
-      )}
+      <div className="visit-file-stage is-message">
+        <FileText size={32} aria-hidden="true" className="muted" />
+        <p className="muted">Browser ini tidak dapat menampilkan PDF di dalam halaman.</p>
+        <a className="link-button secondary" href={url} target="_blank" rel="noopener">
+          <ExternalLink size={16} aria-hidden="true" /> Buka di tab baru
+        </a>
+      </div>
       <div className="visit-file-footer">{download}</div>
     </>
   );
