@@ -44,7 +44,8 @@
   --control-radius: 16px;
   --badge-radius: 7px;
   --panel-radius: 20px;
-  --dialog-radius: 20px;
+  --dialog-radius: 8px;
+  --dialog-control-radius: 6px;
   --field-text-size: 1rem;
   --field-text-line: 1.5rem;
   --field-label-size: 0.875rem;

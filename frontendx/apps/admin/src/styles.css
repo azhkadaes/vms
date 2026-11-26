@@ -2054,8 +2054,6 @@
 /* Confirmation above an open editor */
 .management-confirm-modal {
   width: min(440px, calc(100vw - 32px));
-  border: 1px solid var(--line);
-  border-radius: 16px;
   box-shadow:
     0 24px 80px #0f172a4d,
     0 8px 24px #0f172a26;
@@ -2109,13 +2107,10 @@
   width: min(640px, calc(100vw - 32px));
   max-height: var(--editor-max-height);
   overflow: hidden;
-  padding: 6px;
 }
 .employee-editor-modal .modal-scroll {
-  max-height: calc(var(--editor-max-height) - 12px);
   overflow-x: hidden;
   padding: 0;
-  border-radius: 14px;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
   scrollbar-color: var(--line) transparent;
@@ -2363,10 +2358,6 @@
   .employee-editor-modal {
     --editor-max-height: calc(100dvh - 24px);
     width: calc(100vw - 24px);
-    border-radius: 14px;
-  }
-  .employee-editor-modal .modal-scroll {
-    border-radius: 8px;
   }
   .employee-editor-modal .modal-heading,
   .employee-editor-section {
@@ -3054,7 +3045,7 @@
   overflow-y: auto;
   background: var(--white);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--dialog-radius);
   box-shadow: 0 8px 30px #14243b1a;
   padding: 18px;
 }
