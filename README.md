@@ -1,27 +1,141 @@
-# Visitor Management System
+# Visitor Management System (VMS)
 
-VMS manages appointments and visitor access for the Nusantara Capital Authority (OIKN). It connects a public visitor portal with a staff workspace so a visit can be requested, reviewed, checked in and out, and reported on in one system.
+VMS handles visits to OIKN officials, from booking to check-out. It has a public visitor portal and a staff backoffice.
 
-## What people can do
+## Features
 
-- **Visitors** choose an official and a time, submit the visitor roster and required files, and use their booking code and email to check the result. Visitors can request an admission QR after approval. Visitors can cancel an eligible booking before it starts.
-- **Pimpinan’s Assistants and Protocol Officers** manage visits within their assignments and permissions. They can create, approve, reject, reschedule or cancel eligible visits. The API checks for overlapping reservations for the same official or room.
-- **Receptionists** resolve admission credentials and record check-in and checkout. The same QR can be used for checkout after a successful check-in, including for an overnight visit.
-- **Super Admins** manage staff accounts and role permissions, and use the visit log to review and export records. Reports and visit details follow the active role’s access rules.
+- **Visitors** book a visit with an official, upload the required files, and check their booking with a code and email. Approved visits get an admission QR code.
+- **Pimpinan's Assistants and Protocol Officers** approve, reject, reschedule or cancel visits.
+- **Receptionists** check visitors in and out with the visit code or QR.
+- **Super Admins** manage staff roles and export the visit log.
 
-## How the system fits together
+## Tech stack
 
-| Part | What it does |
+| Part | Folder | Tech |
+| --- | --- | --- |
+| Visitor and staff apps | `frontendx` | React, TypeScript, Vite |
+| API | `backend` | Go, Fiber, served under `/v1` |
+| Database | — | PostgreSQL 18 |
+
+In Docker, a small Node gateway serves both apps and forwards `/v1` to the API.
+
+## Getting started
+
+### Requirements
+
+- Windows
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- Node 22, for frontend development
+- Go 1.27.4, for backend development
+
+### Run with Docker
+
+1. Open Docker Desktop.
+2. Double-click **`Start VMS.cmd`**. The first time, add fictional officials and rooms with:
+
+   ```powershell
+   & '.\Start VMS.cmd' -SeedTestCatalog
+   ```
+
+3. Open the apps:
+
+   | App | URL |
+   | --- | --- |
+   | Visitor | http://localhost:58101/ |
+   | Staff | http://localhost:58101/admin/ |
+   | API health | http://localhost:8080/health/ready |
+   | Swagger | http://localhost:8080/swagger/index.html |
+
+The first start creates the secrets in `backend/.runtime/local/`, builds the images, starts PostgreSQL, runs the migrations, and starts the API and frontend. Data stays in the Docker volumes `vms-postgres` and `vms-uploads`.
+
+| Task | Command |
 | --- | --- |
-| [Visitor and staff apps](frontendx/README.md) | React and TypeScript apps for public registration and staff operations. The local preview uses fictional data. |
-| [VMS API](backend/README.md) | Go and Fiber service that enforces permissions, booking rules, admission, and file access. It serves 40 operations under `/v1`. |
-| [Database](docs/contracts/PHYSICAL-SCHEMA-2026-11-18.md) | PostgreSQL 18 stores visits, staff access, audit events, and operational records. Attachments are kept in private storage and read through the API. |
+| Stop | `Stop VMS.cmd` |
+| Rebuild after pulling code | `& '.\Start VMS.cmd' -Rebuild` |
+| API and migration logs | `docker compose -p vms logs --tail 50 api migrate` |
 
-The backend implements the [40-operation REST contract](docs/contracts/FRONTEND-DRIVEN-REST-API-2026-11-16.md). [Validation](docs/contracts/VALIDATION.md) records the Go, PostgreSQL, and API checks. The local Docker launcher serves both browser apps through the real API. The [frontend adapter tickets](docs/specs/frontend-adapter-2026-11-19/map.md) track remaining workflow changes, including room selection, reception and report filters.
+### Frontend only (demo data)
 
-## Local development
+```powershell
+cd frontendx
+npm.cmd ci
+npm.cmd run dev
+```
 
-- Start the [frontend preview](frontendx/README.md#run-locally) to try the visitor and staff flows with demo data.
-- On Windows, open [Start VMS.cmd](Start%20VMS.cmd) to start PostgreSQL, the API and both browser apps. See the [Docker launcher guide](backend/docs/LOCAL-DEVELOPMENT.md#persistent-docker-on-windows) for testing and stopping them.
-- Follow the [backend setup](backend/README.md#manual-setup) to configure PostgreSQL, run the migrations and start the API.
-- See the [documentation index](docs/README.md) for requirements, the API contract and verification.
+Visitor: http://127.0.0.1:3000/. Staff: http://127.0.0.1:3002/admin/. It runs without a backend and doesn't save anything.
+
+## Configuration
+
+Settings live in `backend/.env`. Create it with `.\vms.ps1 env-setup` from `backend`. The Docker launcher reads only these:
+
+| Key | Default | Notes |
+| --- | --- | --- |
+| `APP_PORT` | `8080` | API port. `8180` and `58101` are taken by the frontend. |
+| `SWAGGER_USERNAME`, `SWAGGER_PASSWORD` | blank | Set both to turn on Swagger. |
+
+The full list is in [Environment settings](backend/docs/ENVIRONMENT-CONFIGURATION.md).
+
+## Database migrations
+
+The Docker launcher runs migrations on every start, before the API starts. There's no down migration.
+
+To check them by hand, from `backend`:
+
+```powershell
+$env:VMS_PRIVATE_DIR = './.runtime/local'
+$env:VMS_STAGE1_IMAGE = 'vms-backend'
+docker compose -p vms -f docker-compose.yml -f docker-compose.local.yml run --rm migrate -mode status -expect-database vms_stage1
+```
+
+## Development
+
+Backend commands, run from `backend`. Every Makefile target has a Windows version:
+
+| Make | Windows | What it does |
+| --- | --- | --- |
+| `make env-setup` | `.\vms.ps1 env-setup` | Creates `.env` from `.env.example` if it's missing |
+| `make build` | `.\vms.ps1 build` | Builds `bin\vms-api.exe` |
+| `make run` | `.\vms.ps1 run` | Runs the API from source |
+| `make start` | `.\vms.ps1 start` | `env-setup`, then build, then run |
+| `make swagger` | `.\vms.ps1 swagger` | Regenerates `docs/openapi.json` |
+| `make test` | `.\vms.ps1 test` | Runs the Go tests |
+| `make lint` | `.\vms.ps1 lint` | Runs `go vet` |
+| `make migration-plan` | `.\vms.ps1 migration-plan` | Lists migrations without a database |
+| `make contract-check` | `.\vms.ps1 contract-check` | Checks the code against `docs/contracts` (needs Python and Node) |
+
+Frontend commands, run from `frontendx`:
+
+| Command | What it does |
+| --- | --- |
+| `npm.cmd run dev` | Starts both apps with demo data |
+| `npm.cmd test` | Runs the unit tests |
+| `npm.cmd run build` | Builds both apps |
+| `npm.cmd run check` | Format, types, tests, builds, browser checks |
+
+## Production
+
+The Docker launcher is for local use only. It runs in development mode, doesn't encrypt the database connection, and uses `localhost` addresses. A production deployment needs:
+
+- PostgreSQL 18 with `verify-full` TLS, and the roles `vms_migrator` and `vms_api`
+- `APP_ENVIRONMENT=production` and an HTTPS `STAFF_ORIGIN`
+- The frontend image behind an HTTPS proxy that keeps the original `Host` header
+
+See the [backend README](backend/README.md#manual-setup) and the production notes in the [Docker launcher guide](backend/docs/LOCAL-DEVELOPMENT.md#persistent-docker-on-windows).
+
+A new database has roles and permissions but no staff accounts. Add those directly in the database.
+
+## Project structure
+
+```text
+backend/      Go API, migrations, Docker files, ops scripts
+frontendx/    Visitor app, staff app, shared packages, tests
+docs/         Requirements, API contract, decisions
+Start VMS.cmd / Stop VMS.cmd   Local Docker launcher
+```
+
+## Documentation
+
+- [Frontend](frontendx/README.md)
+- [Backend](backend/README.md)
+- [Docker launcher guide](backend/docs/LOCAL-DEVELOPMENT.md#persistent-docker-on-windows)
+- [Docs index](docs/README.md)
