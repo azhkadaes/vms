@@ -280,27 +280,40 @@ test("Terbatas four-field form preserves leading zeroes, dirty draft and keyboar
 test("PA and Admin read permitted Terbatas details without write controls; general exports exclude it", async () =>
   withApi(async () => {
     const b = await fixture();
-    for (const role of ["PA", "Super Admin"]) {
-      const { page, context } = await open(
-        role,
-        `/admin/booking?selected=${b.id}`,
-        role === "PA" ? 390 : 1280,
-      );
+    const writeControls = /^(Setujui|Tolak|Edit kunjungan|Edit detail|Edit informasi pengunjung)$/;
+    {
+      const { page, context } = await open("PA", `/admin/booking?selected=${b.id}`, 390);
       try {
         await page.getByRole("heading", { name: "Detail kunjungan", exact: true }).waitFor();
         const text = await page.locator(".modal").innerText();
         assert.ok(text.includes(b.name));
         assert.ok(text.includes(b.organization));
-        assert.ok(text.includes(role === "PA" ? "5678" : "0012345678"));
-        if (role === "PA") assert.equal(text.includes("0012345678"), false);
+        assert.ok(text.includes("5678"));
+        assert.equal(text.includes("0012345678"), false);
         assert.equal(
-          await page
-            .locator(".modal")
-            .getByRole("button", { name: /^(Setujui|Tolak|Edit kunjungan|Edit detail|Edit informasi pengunjung)$/ })
-            .count(),
+          await page.locator(".modal").getByRole("button", { name: writeControls }).count(),
           0,
         );
-        await save(page, role === "PA" ? "pa-read-390" : "admin-read-1280");
+        await save(page, "pa-read-390");
+      } finally {
+        await context.close();
+      }
+    }
+    {
+      // Super Admin reads visits through the visit log, which never shows the No ID Dinas.
+      const search = new URLSearchParams({ q: b.name, selected: b.id });
+      const { page, context } = await open("Super Admin", `/admin/booking?${search}`, 1280);
+      try {
+        const dialog = page.getByRole("dialog", { name: "Detail log kunjungan", exact: true });
+        await dialog.waitFor();
+        const text = await dialog.innerText();
+        assert.ok(text.includes(b.name));
+        assert.ok(text.includes(b.organization));
+        assert.ok(text.includes(b.reference));
+        assert.ok(text.includes("Terbatas"));
+        assert.equal(text.includes(b.serviceId), false);
+        assert.equal(await dialog.getByRole("button", { name: writeControls }).count(), 0);
+        await save(page, "admin-read-1280");
       } finally {
         await context.close();
       }
@@ -319,10 +332,14 @@ test("PA and Admin read permitted Terbatas details without write controls; gener
       visitors: ["Ordinary Export Name"],
       identityType: "KTP",
     });
-    const { page, context } = await open("Protocol Officer", "/admin/logs", 1280);
+    const { page, context } = await open("Protocol Officer", "/admin/booking", 1280);
     try {
+      // The summary export moved into a dialog on the bookings page; /logs redirects there.
+      await page.getByRole("button", { name: "Ekspor laporan kunjungan", exact: true }).click();
       await page.getByTestId("report-total").filter({ hasText: "1" }).waitFor();
-      assert.equal((await page.locator("body").innerText()).includes(b.name), false);
+      // Protocol still sees its Terbatas visit in the list behind the dialog; the report must not.
+      const report = page.getByRole("dialog", { name: "Ekspor laporan kunjungan", exact: true });
+      assert.equal((await report.innerText()).includes(b.name), false);
       const [download] = await Promise.all([
         page.waitForEvent("download"),
         page.getByRole("button", { name: "Unduh ringkasan CSV", exact: true }).click(),
