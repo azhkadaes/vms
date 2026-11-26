@@ -95,3 +95,32 @@ test("note projections retain visitor instructions and exclude coordination from
     false,
   );
 });
+
+test("staff wire maps the official's PAs and phone numbers for the receptionist list", () => {
+  const timing = {
+    serverTime: 0,
+    opensAt: 0,
+    endsAt: 0,
+    displayStatus: "approved",
+    canCheckIn: false,
+    canCheckOut: false,
+    canCancel: false,
+  };
+  const wire = {
+    id: "1",
+    date: "2099-01-01",
+    time: "10:00",
+    duration: 60,
+    room: "",
+    status: "approved",
+    version: 1,
+    timing,
+    allowedActions: [],
+    pejabat: { nama: "Synthetic host", pa: [{ nama: "Synthetic PA", nomorHp: ["0811", "0812"] }] },
+  };
+  const parsed = staffBookingResponse.parse(wire);
+  assert.equal(parsed.host, "Synthetic host");
+  assert.deepEqual(parsed.officerPAs, [{ name: "Synthetic PA", phones: ["0811", "0812"] }]);
+  const { pa: _, ...officer } = wire.pejabat;
+  assert.equal("officerPAs" in staffBookingResponse.parse({ ...wire, pejabat: officer }), false);
+});

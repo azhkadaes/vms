@@ -59,3 +59,32 @@ func TestRestrictedBookingKeys(t *testing.T) {
 		})
 	}
 }
+
+func TestOfficerPAsOnlyInReceptionList(t *testing.T) {
+	at := time.Date(2026, 11, 19, 4, 0, 0, 0, time.UTC)
+	pas := []entity.OfficerPA{{Name: "PA Contoh", Phones: []string{"0811", "0812"}}}
+	for _, tc := range []struct {
+		name, role, kind string
+		arrival          bool
+		want             int
+	}{
+		{"reception list", policy.RoleReceptionist, "umum", false, 1},
+		{"reception arrival", policy.RoleReceptionist, "umum", true, 0},
+		{"protocol", policy.RoleProtocol, "umum", false, 0},
+		{"restricted reception list", policy.RoleReceptionist, "terbatas", false, 0},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			visit := entity.StaffVisit{Visit: entity.Visit{ID: 1, Kind: tc.kind, Date: "2026-11-19", Time: "12:30", Duration: 60,
+				Status: "approved", Version: 1, OfficerID: 5, OfficerName: "Officer", OfficerPAs: pas}}
+			session := dto.Session{Active: true, Role: tc.role, Permissions: []string{policy.PermBookings}}
+			booking := Project(visit, session, at, tc.arrival)
+			got := 0
+			if booking.Officer != nil {
+				got = len(booking.Officer.PAs)
+			}
+			if got != tc.want || (got == 1 && !slices.Equal(booking.Officer.PAs[0].Phones, pas[0].Phones)) {
+				t.Fatalf("officer PAs: %+v", booking.Officer)
+			}
+		})
+	}
+}

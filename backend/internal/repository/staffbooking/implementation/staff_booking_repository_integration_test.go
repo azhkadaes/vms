@@ -30,6 +30,12 @@ func TestStaffReaderFiltersAndLoadsCreatorFromAudit(t *testing.T) {
 	var staff int32
 	scanID(t, tx.Raw(`INSERT INTO vms.pegawai(nama,email,status_aktif,must_change_password)
 		VALUES ('Renamed staff',?,true,false) RETURNING id`, uuid.NewString()+"@example.test"), &staff)
+	if err := tx.Exec(`UPDATE vms.pegawai SET nomor_hp=ARRAY['0811','0812'] WHERE id=?`, staff).Error; err != nil {
+		t.Fatal(err)
+	}
+	if err := tx.Exec(`INSERT INTO vms.pegawai_pejabat(id_pegawai,id_pejabat,status_aktif) VALUES (?,?,true)`, staff, ids[1]).Error; err != nil {
+		t.Fatal(err)
+	}
 	standard := addVisit(t, tx, ids[0], "umum", "pending", "91000001")
 	vip := addVisit(t, tx, ids[0], "vip", "approved", "91000002")
 	restricted := addVisit(t, tx, ids[0], "terbatas", "approved", "91000003")
@@ -65,6 +71,11 @@ func TestStaffReaderFiltersAndLoadsCreatorFromAudit(t *testing.T) {
 	items = fixtureRows(items)
 	if err != nil || len(items) != 3 || items[0].ID != vip || items[1].ID != restricted || items[2].ID != other {
 		t.Fatalf("unexpected reception scope: %+v, %v", items, err)
+	}
+	if !slices.ContainsFunc(items[2].OfficerPAs, func(pa entity.OfficerPA) bool {
+		return pa.Name == "Renamed staff" && slices.Equal(pa.Phones, []string{"0811", "0812"})
+	}) {
+		t.Fatalf("officer PA missing: %+v", items[2].OfficerPAs)
 	}
 }
 

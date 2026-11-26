@@ -10,6 +10,7 @@ type Visit struct {
 	Version      int
 	OfficerID    int32
 	OfficerName  string
+	OfficerPAs   []OfficerPA `gorm:"-"`
 	RoomID       *int32
 	Room         string
 	Date         string
@@ -28,6 +29,12 @@ type Visit struct {
 	Cancellation *string
 	CheckIn      *time.Time
 	CheckOut     *time.Time
+}
+
+// OfficerPA is an active employee on an active PA assignment to the visit's official.
+type OfficerPA struct {
+	Name   string   `json:"nama"`
+	Phones []string `json:"nomorHp"`
 }
 
 type BookingRequest struct {

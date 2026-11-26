@@ -5943,6 +5943,29 @@
             "nama": {
               "type": "string",
               "minLength": 1
+            },
+            "pa": {
+              "type": "array",
+              "description": "Active PAs of the official with their phone numbers; sent only on the Receptionist's visit list.",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "nama": {
+                    "type": "string"
+                  },
+                  "nomorHp": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "nama",
+                  "nomorHp"
+                ]
+              }
             }
           },
           "required": [

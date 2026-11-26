@@ -35,6 +35,13 @@ type PublicSubmissionResolution struct {
 
 type BookingOfficer struct {
 	Name string `json:"nama"`
+	// PAs is set only for the receptionist's visit list.
+	PAs []BookingOfficerPA `json:"pa,omitempty"`
+}
+
+type BookingOfficerPA struct {
+	Name   string   `json:"nama"`
+	Phones []string `json:"nomorHp"`
 }
 
 type BookingTiming struct {

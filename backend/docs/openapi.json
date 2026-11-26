@@ -514,6 +514,29 @@
           "nama": {
             "minLength": 1,
             "type": "string"
+          },
+          "pa": {
+            "description": "Active PAs of the official with their phone numbers; sent only on the Receptionist's visit list.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "nama": {
+                  "type": "string"
+                },
+                "nomorHp": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "required": [
+                "nama",
+                "nomorHp"
+              ],
+              "type": "object"
+            },
+            "type": "array"
           }
         },
         "required": [

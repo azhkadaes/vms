@@ -48,6 +48,10 @@ func Project(v entity.StaffVisit, s dto.Session, at time.Time, arrival bool) dto
 	vip := v.Kind == "vip"
 	b.VIP, b.VisitorCount = &vip, &v.VisitorCount
 	if s.Role == policy.RoleReceptionist && !arrival {
+		b.Officer.PAs = make([]dto.BookingOfficerPA, len(v.OfficerPAs))
+		for i, pa := range v.OfficerPAs {
+			b.Officer.PAs[i] = dto.BookingOfficerPA{Name: pa.Name, Phones: pa.Phones}
+		}
 		return b
 	}
 	b.OfficerID = id(v.OfficerID)

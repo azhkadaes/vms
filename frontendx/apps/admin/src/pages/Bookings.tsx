@@ -14,6 +14,7 @@ import {
   useBookings,
   useSession,
   type SortKey,
+  type StaffBooking,
 } from "@vms/data";
 import {
   Select,
@@ -56,6 +57,15 @@ function kindOf(b: { visitKind?: string; vip?: boolean }): ListKind {
     : b.vip
       ? "vip"
       : "standard";
+}
+function officerPAs(pas: StaffBooking["officerPAs"]) {
+  if (!pas?.length) return "Belum ada PA";
+  return pas.map((pa) => (
+    <div key={pa.name + pa.phones.join()}>
+      {pa.name}
+      <small>{pa.phones.join(", ") || "Nomor HP belum diisi"}</small>
+    </div>
+  ));
 }
 export default function Bookings({ todayOnly = false }: { todayOnly?: boolean }) {
   const { session } = useSession();
@@ -383,6 +393,12 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                           <dd>{b.host || "Belum ditentukan"}</dd>
                         </div>
                       )}
+                      {reception && b.restrictedView !== "reception" && (
+                        <div>
+                          <dt>PA pejabat</dt>
+                          <dd>{officerPAs(b.officerPAs)}</dd>
+                        </div>
+                      )}
                     </dl>
                     {!reception && (
                       <Button
@@ -405,6 +421,7 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                     <tr>
                       <th aria-sort={sortDirection("name")}>{col("name", "Pengunjung")}</th>
                       <th aria-sort={sortDirection("host")}>{col("host", "Tujuan kunjungan")}</th>
+                      {reception && <th>PA pejabat</th>}
                       <th aria-sort={sortDirection("time")}>{col("time", "Jadwal · WITA")}</th>
                       <th aria-sort={sortDirection("status")}>{col("status", "Status")}</th>
                       {!reception && (
@@ -458,6 +475,13 @@ export default function Bookings({ todayOnly = false }: { todayOnly?: boolean })
                             : b.host || "Belum ditentukan"}
                           <small>{b.room || "Ruangan belum ditentukan"}</small>
                         </td>
+                        {reception && (
+                          <td>
+                            {b.restrictedView === "reception"
+                              ? "Identitas melalui kode/QR"
+                              : officerPAs(b.officerPAs)}
+                          </td>
+                        )}
                         <td className="tabular">
                           {b.time}
                           <small>{dateLabel(b.date)}</small>

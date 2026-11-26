@@ -35,7 +35,10 @@ const visitRows = `SELECT v.id, v.kode_kunjungan AS code, v.tipe_kunjungan::text
 	v.alasan_pembatalan AS cancellation, v.catatan_internal_pembatalan AS internal_cancellation,
 	coalesce(created.actor_name,'') AS creator_name, coalesce(created.actor_role,'') AS creator_role,
 	EXISTS (SELECT 1 FROM vms.audit_log a WHERE a.entity_type='kunjungan' AND a.entity_id=v.id
-		AND a.jenis_kegiatan='rescheduled') AS rescheduled
+		AND a.jenis_kegiatan='rescheduled') AS rescheduled,
+	(SELECT coalesce(json_agg(json_build_object('nama', e.nama, 'nomorHp', e.nomor_hp) ORDER BY e.nama, e.id),'[]')::text
+		FROM vms.pegawai_pejabat pp JOIN vms.pegawai e ON e.id=pp.id_pegawai
+		WHERE pp.id_pejabat=d.id_pejabat AND pp.status_aktif AND e.status_aktif) AS officer_pa_json
 	FROM vms.kunjungan v
 	JOIN vms.detail_kunjungan d ON d.id=v.id_detail_kunjungan
 	JOIN vms.detail_pengunjung p ON p.id=v.id_detail_pengunjung
@@ -53,6 +56,7 @@ const visitRows = `SELECT v.id, v.kode_kunjungan AS code, v.tipe_kunjungan::text
 type staffVisitRow struct {
 	entity.StaffVisit `gorm:"embedded"`
 	Roster            string
+	OfficerPAJSON     string `gorm:"column:officer_pa_json"`
 }
 
 func scope(s dto.Session) (string, []any) {
@@ -89,6 +93,9 @@ func scanVisits(tx *gorm.DB, condition string, args []any) ([]entity.StaffVisit,
 	for i, row := range rows {
 		if err := json.Unmarshal([]byte(row.Roster), &row.Visitors); err != nil {
 			return nil, fmt.Errorf("read staff visit roster: %w", err)
+		}
+		if err := json.Unmarshal([]byte(row.OfficerPAJSON), &row.OfficerPAs); err != nil {
+			return nil, fmt.Errorf("read staff visit officer PAs: %w", err)
 		}
 		visits[i] = row.StaffVisit
 	}

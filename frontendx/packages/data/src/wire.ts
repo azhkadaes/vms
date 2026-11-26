@@ -33,7 +33,12 @@ const details = {
   phone: z.string(),
   officerId: z.string(),
   host: z.string().optional(),
-  pejabat: z.object({ nama: z.string() }).optional(),
+  pejabat: z
+    .object({
+      nama: z.string(),
+      pa: z.array(z.object({ nama: z.string(), nomorHp: z.array(z.string()) })).optional(),
+    })
+    .optional(),
   vip: z.boolean(),
   purpose: z.string(),
   visitors: z.array(z.string()).max(20),
@@ -143,6 +148,9 @@ export const staffBookingResponse = z
   .transform(({ pejabat, ...booking }) => ({
     ...booking,
     ...(pejabat ? { host: pejabat.nama } : {}),
+    ...(pejabat?.pa
+      ? { officerPAs: pejabat.pa.map((pa) => ({ name: pa.nama, phones: pa.nomorHp })) }
+      : {}),
   }));
 export const catalogsResponse = z
   .object({

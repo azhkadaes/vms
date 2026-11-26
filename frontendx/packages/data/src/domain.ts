@@ -122,6 +122,8 @@ export interface StaffBooking
   serviceIdLast4?: string;
   internalRejectionNote?: string;
   createdBy?: { name: string; role: Role };
+  /** Receptionist list only: the official's active PAs. */
+  officerPAs?: { name: string; phones: string[] }[];
 }
 type ScopeRecord = Pick<StaffBooking, "visitKind" | "status" | "officerId" | "vip">;
 export const officers: Catalogs["officers"] = [
